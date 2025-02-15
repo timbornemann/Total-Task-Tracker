@@ -1,0 +1,27 @@
+name: Deploy to Raspberry Pi
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Deploy to Raspberry Pi
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ secrets.RPI_HOST }}
+        username: ${{ secrets.RPI_USER }}
+        key: ${{ secrets.RPI_SSH_KEY }}
+        script: |
+          cd /home/${{ secrets.RPI_USER }}/TotalTaskTracker
+          git pull origin main
+          docker compose down
+          docker compose build
+          docker compose up -d
