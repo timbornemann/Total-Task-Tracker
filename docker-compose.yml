@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: total-task-tracker-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: total_task_tracker
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./src/database/dbschema.sql:/docker-entrypoint-initdb.d/dbschema.sql
+      - mysql_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: total-task-tracker-phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    ports:
+      - "0.0.0.0:3002:80"
+    depends_on:
+      - mysql
+
+volumes:
+  mysql_data: 
