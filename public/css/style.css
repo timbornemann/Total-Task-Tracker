@@ -1,0 +1,19 @@
+/*! tailwindcss v4.1.5 | MIT License | https://tailwindcss.com */
+.visible {
+  visibility: visible;
+}
+.absolute {
+  position: absolute;
+}
+.fixed {
+  position: fixed;
+}
+.static {
+  position: static;
+}
+.contents {
+  display: contents;
+}
+.table {
+  display: table;
+}
