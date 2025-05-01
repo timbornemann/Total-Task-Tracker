@@ -9,14 +9,14 @@
 ## Datenbankdesign
 [✅] Datenbankschema entwerfen
   [✅] Tabelle für Aufgaben mit rekursiver parent_id-Struktur
-  [] Tabelle für Meilensteine
-  [] Tabelle für Dateien/Anhänge
-[] SQL-Skripte für Tabellenerstellung
-[] Testdaten erstellen
+  [✅] Tabelle für Meilensteine
+  [✅] Tabelle für Dateien/Anhänge
+[✅] SQL-Skripte für Tabellenerstellung
+
 
 ## Backend-Entwicklung
 [] PHP-Projektstruktur aufsetzen
-[] Datenbank-Verbindungsklasse erstellen
+[✅] Datenbank-Verbindungsklasse erstellen
 [] API-Endpunkte entwickeln:
   [] Aufgaben CRUD-Operationen
   [] Unteraufgaben verwalten
