@@ -8,7 +8,7 @@ class Database
     private function __construct()
     {
         // Pfad zur Konfigurationsdatei
-        $configPath = dirname(__DIR__, 3) . '/config/db_config.ini';
+        $configPath = dirname(__DIR__, 2) . '/config/db_config.ini';
         $config = parse_ini_file($configPath);
 
         if ($config === false) {
