@@ -18,7 +18,7 @@
 [] PHP-Projektstruktur aufsetzen
 [✅] Datenbank-Verbindungsklasse erstellen
 [] API-Endpunkte entwickeln:
-  [] Aufgaben CRUD-Operationen
+  [✅] Aufgaben CRUD-Operationen
   [] Unteraufgaben verwalten
   [] Meilensteine CRUD-Operationen
   [] Dateianhänge hochladen/löschen
