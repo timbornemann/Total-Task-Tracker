@@ -1,12 +1,23 @@
--- 1. Datenbank erstellen (falls nicht vorhanden)
-CREATE DATABASE IF NOT EXISTS total_task_tracker
+-- 1. Add this at the beginning of your dbschema.sql file
+DROP DATABASE IF EXISTS total_task_tracker;
+CREATE DATABASE total_task_tracker
   DEFAULT CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
 -- 2. Verwendung der Datenbank
 USE total_task_tracker;
 
--- 3. Tabelle: tasks (mit neuen Feldern)
+-- 3. Tabelle: milestones (z. B. „Projektstart", „Abgabe")
+CREATE TABLE IF NOT EXISTS milestones (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    due_date DATE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- 4. Tabelle: tasks (mit neuen Feldern)
 CREATE TABLE IF NOT EXISTS tasks (
     id INT AUTO_INCREMENT PRIMARY KEY,
     parent_id INT DEFAULT NULL,
@@ -18,7 +29,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     is_pinned BOOLEAN DEFAULT FALSE,
     is_favorite BOOLEAN DEFAULT FALSE,
     is_archived BOOLEAN DEFAULT FALSE,
-    planned_time DECIMAL(5,2), -- geplante Zeit in Stunden (z. B. 1.5 = 1h30)
+    planned_time DECIMAL(5,2), -- geplante Zeit in Stunden (z. B. 1.5 = 1h30)
     actual_time DECIMAL(5,2),  -- tatsächliche Zeit in Stunden
     milestone_id INT DEFAULT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -27,7 +38,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     FOREIGN KEY (milestone_id) REFERENCES milestones(id) ON DELETE SET NULL
 );
 
--- 4. Tabelle: task_notes (1:n – Notizen pro Aufgabe)
+-- 5. Tabelle: task_notes (1:n – Notizen pro Aufgabe)
 CREATE TABLE IF NOT EXISTS task_notes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     task_id INT NOT NULL,
@@ -37,7 +48,7 @@ CREATE TABLE IF NOT EXISTS task_notes (
     FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE
 );
 
--- 5. Tabelle: files (1:n – Anhänge pro Aufgabe)
+-- 6. Tabelle: files (1:n – Anhänge pro Aufgabe)
 CREATE TABLE IF NOT EXISTS files (
     id INT AUTO_INCREMENT PRIMARY KEY,
     task_id INT NOT NULL,
@@ -47,7 +58,7 @@ CREATE TABLE IF NOT EXISTS files (
     FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE
 );
 
--- 6. Tabelle: labels (optional – z. B. Farb-Tags oder Kategorien)
+-- 7. Tabelle: labels (optional – z. B. Farb-Tags oder Kategorien)
 CREATE TABLE IF NOT EXISTS labels (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE,
@@ -55,23 +66,13 @@ CREATE TABLE IF NOT EXISTS labels (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- 7. Tabelle: task_labels (n:m zwischen tasks und labels)
+-- 8. Tabelle: task_labels (n:m zwischen tasks und labels)
 CREATE TABLE IF NOT EXISTS task_labels (
     task_id INT NOT NULL,
     label_id INT NOT NULL,
     PRIMARY KEY (task_id, label_id),
     FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
     FOREIGN KEY (label_id) REFERENCES labels(id) ON DELETE CASCADE
-);
-
--- 8. Tabelle: milestones (z. B. „Projektstart“, „Abgabe“)
-CREATE TABLE IF NOT EXISTS milestones (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    due_date DATE,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- 9. Tabelle: users (falls Login in Zukunft relevant ist)
