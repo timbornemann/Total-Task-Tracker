@@ -11,6 +11,7 @@
   [✅] Tabelle für Aufgaben mit rekursiver parent_id-Struktur
   [✅] Tabelle für Meilensteine
   [✅] Tabelle für Dateien/Anhänge
+  [✅] Tabelle für Benutzer
 [✅] SQL-Skripte für Tabellenerstellung
 
 
@@ -24,6 +25,7 @@
   [] Dateianhänge hochladen/löschen
   [] Filter- und Sortierfunktionen
   [] Import/Export-Funktionalität
+  [] Benutzerverwaltung CRUD-Operationen
 [] Unit-Tests für Backend-Funktionen
 
 ## Frontend-Grundstruktur
@@ -61,6 +63,15 @@
   [] Vorschau für Bilder
   [] Downloadmöglichkeit
 
+## Benutzerverwaltung
+[] Benutzerregistrierung implementieren
+[] Login-System einrichten
+[] Passwort-Reset-Funktion
+[] Benutzerprofilseite entwickeln
+[] Rechteverwaltung für Aufgabenzugriff
+[] Aufgabenzuweisung an Benutzer
+[] Benutzereinstellungen (Präferenzen)
+
 ## Erweiterte Funktionen
 [] Sortier- und Filterfunktionen
   [] Nach Deadline sortieren
@@ -91,6 +102,7 @@
   [] Zeitabweichungsanalyse (geplant vs. tatsächlich)
   [] Aufgabenverteilung nach Kategorien
   [] Deadline-Übersicht nach Wochen
+  [] Benutzerstatistiken und Aktivitäten
 
 ## Testing
 [] Unit-Tests
