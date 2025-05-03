@@ -55,13 +55,37 @@ class TaskTest extends TestCase
         
         return (int)$this->db->lastInsertId();
     }
+    
+    /**
+     * Helper method to create a test task with given data
+     */
+    private function createTestTask(array $taskData = []): int
+    {
+        $defaultData = [
+            'title' => 'Test Task ' . uniqid(),
+            'description' => 'This is a test task',
+            'due_date' => date('Y-m-d', strtotime('+1 week')),
+            'color' => '#ff0000',
+            'is_completed' => false,
+            'is_pinned' => true,
+            'is_favorite' => true,
+            'planned_time' => 5.5
+        ];
+        
+        $data = array_merge($defaultData, $taskData);
+        
+        $taskId = $this->task->create($data);
+        $this->testTaskIds[] = $taskId;
+        
+        return $taskId;
+    }
 
     public function testCreateTask()
     {
         echo "\nTesting task creation...\n";
         
         $taskData = [
-            'title' => 'Test Task 1',
+            'title' => 'Test Task Creation',
             'description' => 'This is a test task',
             'due_date' => date('Y-m-d', strtotime('+1 week')),
             'color' => '#ff0000',
@@ -91,21 +115,23 @@ class TaskTest extends TestCase
         $this->assertEquals($taskData['planned_time'], $createdTask['planned_time']);
         
         echo "✓ Created task data verified\n";
-        
-        return $taskId;
     }
 
-    /**
-     * @depends testCreateTask
-     */
-    public function testGetTaskById(int $taskId)
+    public function testGetTaskById()
     {
         echo "\nTesting task retrieval by ID...\n";
+        
+        // Create a task to retrieve
+        $taskData = [
+            'title' => 'Test Task GetById',
+            'description' => 'This is a test task for retrieval by ID'
+        ];
+        $taskId = $this->createTestTask($taskData);
         
         $task = $this->task->getById($taskId);
         $this->assertIsArray($task);
         $this->assertEquals($taskId, $task['id']);
-        $this->assertEquals('Test Task 1', $task['title']);
+        $this->assertEquals($taskData['title'], $task['title']);
         
         echo "✓ Task retrieved by ID: {$taskId}\n";
         
@@ -115,19 +141,21 @@ class TaskTest extends TestCase
         $this->assertFalse($nonExistentTask);
         
         echo "✓ Non-existent task returns false\n";
-        
-        return $taskId;
     }
 
-    /**
-     * @depends testGetTaskById
-     */
-    public function testUpdateTask(int $taskId)
+    public function testUpdateTask()
     {
         echo "\nTesting task update...\n";
         
+        // Create a task to update
+        $taskData = [
+            'title' => 'Test Task Update',
+            'description' => 'This is a test task for updating'
+        ];
+        $taskId = $this->createTestTask($taskData);
+        
         $updateData = [
-            'title' => 'Test Task 1 Updated',
+            'title' => 'Test Task Update Modified',
             'description' => 'This is an updated test task',
             'is_completed' => true,
             'actual_time' => 4.5
@@ -147,8 +175,6 @@ class TaskTest extends TestCase
         $this->assertEquals($updateData['actual_time'], $updatedTask['actual_time']);
         
         echo "✓ Updated task data verified\n";
-        
-        return $taskId;
     }
 
     public function testCreateSubtask()
@@ -161,11 +187,7 @@ class TaskTest extends TestCase
             'description' => 'This is a parent test task'
         ];
         
-        $parentTaskId = $this->task->create($parentTaskData);
-        $this->assertIsInt($parentTaskId);
-        $this->assertGreaterThan(0, $parentTaskId);
-        $this->testTaskIds[] = $parentTaskId;
-        
+        $parentTaskId = $this->createTestTask($parentTaskData);
         echo "✓ Parent task created with ID: {$parentTaskId}\n";
         
         // Create a subtask
@@ -188,18 +210,29 @@ class TaskTest extends TestCase
         $this->assertEquals($parentTaskId, $createdSubtask['parent_id']);
         
         echo "✓ Subtask parent_id verified\n";
-        
-        return [$parentTaskId, $subtaskId];
     }
 
-    /**
-     * @depends testCreateSubtask
-     */
-    public function testGetSubtasks(array $taskIds)
+    public function testGetSubtasks()
     {
         echo "\nTesting subtask retrieval...\n";
         
-        [$parentTaskId, $subtaskId] = $taskIds;
+        // Create a parent task first
+        $parentTaskData = [
+            'title' => 'Test Task Parent for Subtasks',
+            'description' => 'This is a parent test task for subtask retrieval'
+        ];
+        
+        $parentTaskId = $this->createTestTask($parentTaskData);
+        
+        // Create a subtask
+        $subtaskData = [
+            'parent_id' => $parentTaskId,
+            'title' => 'Test Task Subtask for Retrieval',
+            'description' => 'This is a subtask for retrieval testing'
+        ];
+        
+        $subtaskId = $this->task->create($subtaskData);
+        $this->testTaskIds[] = $subtaskId;
         
         $subtasks = $this->task->getSubtasks($parentTaskId);
         $this->assertIsArray($subtasks);
@@ -208,18 +241,30 @@ class TaskTest extends TestCase
         $this->assertEquals($subtaskId, $subtasks[0]['id']);
         
         echo "✓ Subtasks retrieved successfully\n";
-        
-        return $taskIds;
     }
 
-    /**
-     * @depends testCreateSubtask
-     */
-    public function testCalculateProgress(array $taskIds)
+    public function testCalculateProgress()
     {
         echo "\nTesting progress calculation...\n";
         
-        [$parentTaskId, $subtaskId] = $taskIds;
+        // Create a parent task first
+        $parentTaskData = [
+            'title' => 'Test Task Parent for Progress',
+            'description' => 'This is a parent test task for progress calculation'
+        ];
+        
+        $parentTaskId = $this->createTestTask($parentTaskData);
+        
+        // Create a subtask (not completed)
+        $subtaskData1 = [
+            'parent_id' => $parentTaskId,
+            'title' => 'Test Task Subtask 1 for Progress',
+            'description' => 'This is a subtask for progress testing',
+            'is_completed' => false
+        ];
+        
+        $subtaskId1 = $this->task->create($subtaskData1);
+        $this->testTaskIds[] = $subtaskId1;
         
         // Initial progress should be 0 (subtask not completed)
         $initialProgress = $this->task->calculateProgress($parentTaskId);
@@ -228,7 +273,7 @@ class TaskTest extends TestCase
         echo "✓ Initial progress is 0 (no completed subtasks)\n";
         
         // Mark subtask as completed
-        $this->task->update($subtaskId, ['is_completed' => true]);
+        $this->task->update($subtaskId1, ['is_completed' => true]);
         
         // Progress should now be 1.0 (100%)
         $updatedProgress = $this->task->calculateProgress($parentTaskId);
@@ -239,8 +284,9 @@ class TaskTest extends TestCase
         // Add another subtask (not completed)
         $subtaskData2 = [
             'parent_id' => $parentTaskId,
-            'title' => 'Test Task Subtask 2',
-            'description' => 'This is another subtask'
+            'title' => 'Test Task Subtask 2 for Progress',
+            'description' => 'This is another subtask for progress testing',
+            'is_completed' => false
         ];
         
         $subtaskId2 = $this->task->create($subtaskData2);
@@ -251,18 +297,29 @@ class TaskTest extends TestCase
         $this->assertEquals(0.5, $finalProgress);
         
         echo "✓ Final progress is 0.5 (1 of 2 subtasks completed)\n";
-        
-        return $taskIds;
     }
 
-    /**
-     * @depends testCreateSubtask
-     */
-    public function testGetTaskTree(array $taskIds)
+    public function testGetTaskTree()
     {
         echo "\nTesting task tree retrieval...\n";
         
-        [$parentTaskId, $subtaskId] = $taskIds;
+        // Create a parent task first
+        $parentTaskData = [
+            'title' => 'Test Task Parent for Tree',
+            'description' => 'This is a parent test task for tree retrieval'
+        ];
+        
+        $parentTaskId = $this->createTestTask($parentTaskData);
+        
+        // Create a subtask
+        $subtaskData = [
+            'parent_id' => $parentTaskId,
+            'title' => 'Test Task Subtask for Tree',
+            'description' => 'This is a subtask for tree testing'
+        ];
+        
+        $subtaskId = $this->task->create($subtaskData);
+        $this->testTaskIds[] = $subtaskId;
         
         $taskTree = $this->task->getTaskTree($parentTaskId);
         $this->assertIsArray($taskTree);
@@ -279,8 +336,6 @@ class TaskTest extends TestCase
         $this->assertIsArray($rootTasks);
         
         echo "✓ All root tasks retrieved successfully\n";
-        
-        return $taskIds;
     }
 
     public function testTaskUserAssignment()
@@ -293,10 +348,7 @@ class TaskTest extends TestCase
             'description' => 'Task for testing user assignment'
         ];
         
-        $taskId = $this->task->create($taskData);
-        $this->assertIsInt($taskId);
-        $this->testTaskIds[] = $taskId;
-        
+        $taskId = $this->createTestTask($taskData);
         echo "✓ Test task created with ID: {$taskId}\n";
         
         // Create or get test user
@@ -344,16 +396,27 @@ class TaskTest extends TestCase
         $this->assertEmpty($assignedUsersAfter);
         
         echo "✓ User unassigned from task successfully\n";
-        
-        return $taskId;
     }
 
-    /**
-     * @depends testCreateTask
-     */
-    public function testGetAllTasks(int $taskId)
+    public function testGetAllTasks()
     {
         echo "\nTesting retrieval of all tasks with filtering and sorting...\n";
+        
+        // Create tasks with different properties for testing filtering
+        $completedTaskData = [
+            'title' => 'Test Task Completed',
+            'description' => 'This is a completed test task',
+            'is_completed' => true
+        ];
+        $completedTaskId = $this->createTestTask($completedTaskData);
+        
+        $favoriteTaskData = [
+            'title' => 'Test Task Favorite',
+            'description' => 'This is a favorite test task',
+            'is_favorite' => true,
+            'is_completed' => false
+        ];
+        $favoriteTaskId = $this->createTestTask($favoriteTaskData);
         
         // Test getting all tasks
         $allTasks = $this->task->getAll();
@@ -365,6 +428,14 @@ class TaskTest extends TestCase
         // Test filtering by is_completed
         $completedTasks = $this->task->getAll(['is_completed' => true]);
         $this->assertIsArray($completedTasks);
+        $foundCompletedTask = false;
+        foreach ($completedTasks as $task) {
+            if ($task['id'] === $completedTaskId) {
+                $foundCompletedTask = true;
+                break;
+            }
+        }
+        $this->assertTrue($foundCompletedTask);
         
         echo "✓ Filtered tasks by completion status successfully\n";
         
@@ -372,6 +443,14 @@ class TaskTest extends TestCase
         $favoriteTasks = $this->task->getAll(['is_favorite' => true]);
         $this->assertIsArray($favoriteTasks);
         $this->assertNotEmpty($favoriteTasks);
+        $foundFavoriteTask = false;
+        foreach ($favoriteTasks as $task) {
+            if ($task['id'] === $favoriteTaskId) {
+                $foundFavoriteTask = true;
+                break;
+            }
+        }
+        $this->assertTrue($foundFavoriteTask);
         
         echo "✓ Filtered tasks by favorite status successfully\n";
         
@@ -381,16 +460,18 @@ class TaskTest extends TestCase
         $this->assertNotEmpty($sortedTasks);
         
         echo "✓ Sorted tasks successfully\n";
-        
-        return $taskId;
     }
 
-    /**
-     * @depends testCreateTask
-     */
-    public function testDeleteTask(int $taskId)
+    public function testDeleteTask()
     {
         echo "\nTesting task deletion...\n";
+        
+        // Create a task to delete
+        $taskData = [
+            'title' => 'Test Task Delete',
+            'description' => 'This is a test task for deletion'
+        ];
+        $taskId = $this->createTestTask($taskData);
         
         // Delete the task
         $deleteResult = $this->task->delete($taskId);
@@ -403,6 +484,12 @@ class TaskTest extends TestCase
         $this->assertFalse($deletedTask);
         
         echo "✓ Task deletion verified\n";
+        
+        // Remove the deleted task ID from tracking array
+        $index = array_search($taskId, $this->testTaskIds);
+        if ($index !== false) {
+            unset($this->testTaskIds[$index]);
+        }
     }
 
     protected function tearDown(): void

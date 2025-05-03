@@ -46,6 +46,24 @@ class UserTest extends TestCase
         
         return $taskId;
     }
+    
+    /**
+     * Create a test user with random username and email
+     * 
+     * @param array $userData Optional user data to override defaults
+     * @return array Array containing [userId, username, email, password]
+     */
+    private function createTestUser(array $userData = []): array
+    {
+        $username = $userData['username'] ?? 'testuser' . uniqid();
+        $email = $userData['email'] ?? 'test' . uniqid() . '@example.com';
+        $password = $userData['password'] ?? 'testpassword123';
+        
+        $userId = $this->user->create($username, $email, $password);
+        $this->testUserIds[] = $userId;
+        
+        return [$userId, $username, $email, $password];
+    }
 
     public function testCreateUser()
     {
@@ -69,18 +87,14 @@ class UserTest extends TestCase
         $this->assertEquals($email, $createdUser['email']);
         
         echo "✓ Created user data verified\n";
-        
-        return [$userId, $username, $email, $password];
     }
 
-    /**
-     * @depends testCreateUser
-     */
-    public function testCreateDuplicateUsername(array $userData)
+    public function testCreateDuplicateUsername()
     {
         echo "\nTesting duplicate username validation...\n";
         
-        [$userId, $username, $email, $password] = $userData;
+        // Create first user
+        [$userId, $username, $email, $password] = $this->createTestUser();
         
         // Try to create a user with the same username but different email
         $newEmail = 'test' . uniqid() . '@example.com';
@@ -88,18 +102,14 @@ class UserTest extends TestCase
         $this->assertFalse($result);
         
         echo "✓ Creating user with duplicate username failed as expected\n";
-        
-        return $userData;
     }
 
-    /**
-     * @depends testCreateUser
-     */
-    public function testCreateDuplicateEmail(array $userData)
+    public function testCreateDuplicateEmail()
     {
         echo "\nTesting duplicate email validation...\n";
         
-        [$userId, $username, $email, $password] = $userData;
+        // Create first user
+        [$userId, $username, $email, $password] = $this->createTestUser();
         
         // Try to create a user with the same email but different username
         $newUsername = 'testuser' . uniqid();
@@ -107,18 +117,14 @@ class UserTest extends TestCase
         $this->assertFalse($result);
         
         echo "✓ Creating user with duplicate email failed as expected\n";
-        
-        return $userData;
     }
 
-    /**
-     * @depends testCreateUser
-     */
-    public function testFindById(array $userData)
+    public function testFindById()
     {
         echo "\nTesting finding user by ID...\n";
         
-        [$userId, $username, $email, $password] = $userData;
+        // Create a user to find
+        [$userId, $username, $email, $password] = $this->createTestUser();
         
         $user = $this->user->findById($userId);
         $this->assertIsArray($user);
@@ -135,18 +141,14 @@ class UserTest extends TestCase
         $this->assertFalse($nonExistentUser);
         
         echo "✓ Non-existent user returns false\n";
-        
-        return $userData;
     }
 
-    /**
-     * @depends testCreateUser
-     */
-    public function testFindByUsername(array $userData)
+    public function testFindByUsername()
     {
         echo "\nTesting finding user by username...\n";
         
-        [$userId, $username, $email, $password] = $userData;
+        // Create a user to find
+        [$userId, $username, $email, $password] = $this->createTestUser();
         
         $user = $this->user->findByUsername($username);
         $this->assertIsArray($user);
@@ -162,18 +164,14 @@ class UserTest extends TestCase
         $this->assertFalse($nonExistentUser);
         
         echo "✓ Non-existent username returns false\n";
-        
-        return $userData;
     }
 
-    /**
-     * @depends testCreateUser
-     */
-    public function testFindByEmail(array $userData)
+    public function testFindByEmail()
     {
         echo "\nTesting finding user by email...\n";
         
-        [$userId, $username, $email, $password] = $userData;
+        // Create a user to find
+        [$userId, $username, $email, $password] = $this->createTestUser();
         
         $user = $this->user->findByEmail($email);
         $this->assertIsArray($user);
@@ -189,18 +187,14 @@ class UserTest extends TestCase
         $this->assertFalse($nonExistentUser);
         
         echo "✓ Non-existent email returns false\n";
-        
-        return $userData;
     }
 
-    /**
-     * @depends testCreateUser
-     */
-    public function testVerifyPassword(array $userData)
+    public function testVerifyPassword()
     {
         echo "\nTesting password verification...\n";
         
-        [$userId, $username, $email, $password] = $userData;
+        // Create a user to verify
+        [$userId, $username, $email, $password] = $this->createTestUser();
         
         // Test verifying with username
         $verifiedUserByUsername = $this->user->verifyPassword($username, $password);
@@ -222,18 +216,14 @@ class UserTest extends TestCase
         $this->assertFalse($invalidVerification);
         
         echo "✓ Verification with wrong password failed as expected\n";
-        
-        return $userData;
     }
 
-    /**
-     * @depends testCreateUser
-     */
-    public function testUpdateUser(array $userData)
+    public function testUpdateUser()
     {
         echo "\nTesting user update...\n";
         
-        [$userId, $username, $email, $password] = $userData;
+        // Create a user to update
+        [$userId, $username, $email, $password] = $this->createTestUser();
         
         $newEmail = 'updated' . uniqid() . '@example.com';
         $updateData = [
@@ -265,18 +255,14 @@ class UserTest extends TestCase
         $this->assertEquals($newUsername, $updatedUser['username']);
         
         echo "✓ Username updated successfully\n";
-        
-        return [$userId, $newUsername, $newEmail, $password];
     }
 
-    /**
-     * @depends testUpdateUser
-     */
-    public function testUpdatePassword(array $userData)
+    public function testUpdatePassword()
     {
         echo "\nTesting password update...\n";
         
-        [$userId, $username, $email, $password] = $userData;
+        // Create a user to update password
+        [$userId, $username, $email, $password] = $this->createTestUser();
         
         $newPassword = 'newPassword123';
         $updateResult = $this->user->updatePassword($userId, $newPassword);
@@ -296,18 +282,14 @@ class UserTest extends TestCase
         $this->assertFalse($invalidVerification);
         
         echo "✓ Old password no longer works\n";
-        
-        return [$userId, $username, $email, $newPassword];
     }
 
-    /**
-     * @depends testCreateUser
-     */
-    public function testTaskAssignment(array $userData)
+    public function testTaskAssignment()
     {
         echo "\nTesting task assignment...\n";
         
-        [$userId, $username, $email, $password] = $userData;
+        // Create a user for task assignment
+        [$userId, $username, $email, $password] = $this->createTestUser();
         
         // Create a test task
         $taskId = $this->createTestTask();
@@ -340,18 +322,14 @@ class UserTest extends TestCase
         $this->assertNotContains($taskId, $assignedTaskIdsAfter);
         
         echo "✓ Unassignment verified\n";
-        
-        return $userData;
     }
 
-    /**
-     * @depends testCreateUser
-     */
-    public function testPasswordResetFunctionality(array $userData)
+    public function testPasswordResetFunctionality()
     {
         echo "\nTesting password reset functionality...\n";
         
-        [$userId, $username, $email, $password] = $userData;
+        // Create a user for password reset
+        [$userId, $username, $email, $password] = $this->createTestUser();
         
         // Create password reset token
         $tokenData = $this->user->createPasswordResetToken($email);
@@ -390,14 +368,9 @@ class UserTest extends TestCase
         $this->assertFalse($invalidToken);
         
         echo "✓ Token deleted after use\n";
-        
-        return $userData;
     }
 
-    /**
-     * @depends testPasswordResetFunctionality
-     */
-    public function testCleanupExpiredTokens(array $userData)
+    public function testCleanupExpiredTokens()
     {
         echo "\nTesting cleanup of expired tokens...\n";
         
@@ -407,18 +380,14 @@ class UserTest extends TestCase
         $this->assertTrue($result);
         
         echo "✓ Expired tokens cleanup executed successfully\n";
-        
-        return $userData;
     }
 
-    /**
-     * @depends testCreateUser
-     */
-    public function testDeleteUser(array $userData)
+    public function testDeleteUser()
     {
         echo "\nTesting user deletion...\n";
         
-        [$userId, $username, $email, $password] = $userData;
+        // Create a user to delete
+        [$userId, $username, $email, $password] = $this->createTestUser();
         
         // Create a task and assign it to the user first to test CASCADE
         $taskId = $this->createTestTask();
