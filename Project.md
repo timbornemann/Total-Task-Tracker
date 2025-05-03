@@ -10,26 +10,34 @@
   - Aufgaben anlegen, bearbeiten und löschen
   - Rekursive Unteraufgaben (beliebige Tiefe)
   - Fortschrittsbalken basierend auf erledigten Unteraufgaben
-  - Farbcode je Aufgabe (z. B. rot = kritisch)
+  - Farbcode je Aufgabe (z. B. rot = kritisch)
   - Deadline-Anzeige mit Hervorhebung bei Überfälligkeit
 
 - **Navigation & Darstellung**
   - Treeview-Navigation zur schnellen Orientierung
   - Responsive Design mit TailwindCSS für PC & Mobilgeräte
   - Modale Dialoge für alle Bearbeitungen
-  - Kalenderansicht (z. B. Monatsansicht) für Aufgaben mit Deadline
+  - Kalenderansicht (z. B. Monatsansicht) für Aufgaben mit Deadline
   - Pinned/Favorisierte Aufgaben oben anzeigen
   - Notizfeld pro Aufgabe für spontane Gedanken oder Zusatzinfos
 
 - **Dateien & Anhänge**
-  - Kleine Dateien oder Bilder an Aufgaben anhängen (z. B. Screenshots, PDFs)
+  - Kleine Dateien oder Bilder an Aufgaben anhängen (z. B. Screenshots, PDFs)
+
+- **Benutzerverwaltung**
+  - Benutzerregistrierung und Login-System
+  - Persönliche Aufgabenzuweisung und Verantwortlichkeiten
+  - Benutzerprofile mit individuellen Einstellungen
+  - Rechteverwaltung für Aufgaben und Projekte
+  - Passwort-Reset-Funktionalität für vergessene Passwörter
 
 - **Sortieren & Filtern**
   - Sortierung nach Deadline, Priorität oder Fortschritt
   - Filter nach Farbe, Status, Fälligkeit, Kategorie oder Freitext
+  - Filter nach zugewiesenen Benutzern
 
 - **Zeitmanagement**
-  - Feld für geplanten Aufwand (z. B. 2 Stunden)
+  - Feld für geplanten Aufwand (z. B. 2 Stunden)
   - Tatsächlicher Aufwand via Stoppuhr oder manuelle Eingabe
   - Gegenüberstellung von geplant vs. tatsächlich in der Statistik
 
@@ -43,7 +51,7 @@
   - Archivierte Aufgaben sind wiederherstellbar und einsehbar
 
 - **Meilensteine & Ziele**
-  - Meilensteine definierbar (z. B. „Projektstart“, „Beta-Release“)
+  - Meilensteine definierbar (z. B. „Projektstart", „Beta-Release")
   - Aufgaben lassen sich Meilensteinen zuordnen
   - Fortschrittsanzeige pro Meilenstein
 
@@ -52,6 +60,7 @@
   - Erledigungsquote
   - Zeitabweichung (geplant vs. benötigt)
   - Aufgabenanzahl pro Kategorie, Status oder Deadline-Woche
+  - Benutzeraktivitäten und Arbeitsanalyse
 
 ---
 
