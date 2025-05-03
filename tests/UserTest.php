@@ -1,6 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
+require_once dirname(__DIR__, 1) . '/src/database/Database.php';
 require_once dirname(__DIR__, 1) . '/src/models/User.php';
 
 class UserTest extends TestCase
