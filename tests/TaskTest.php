@@ -321,19 +321,38 @@ class TaskTest extends TestCase
         $subtaskId = $this->task->create($subtaskData);
         $this->testTaskIds[] = $subtaskId;
         
+        // When we call getTaskTree with a parentId, it returns the children of that parent
         $taskTree = $this->task->getTaskTree($parentTaskId);
         $this->assertIsArray($taskTree);
         $this->assertNotEmpty($taskTree);
-        $this->assertEquals(1, count($taskTree));
-        $this->assertEquals($parentTaskId, $taskTree[0]['id']);
-        $this->assertArrayHasKey('children', $taskTree[0]);
-        $this->assertNotEmpty($taskTree[0]['children']);
         
-        echo "✓ Task tree retrieved successfully\n";
+        // The returned array should contain the subtask, not the parent
+        $foundSubtask = false;
+        foreach ($taskTree as $task) {
+            if ($task['id'] === $subtaskId) {
+                $foundSubtask = true;
+                break;
+            }
+        }
+        $this->assertTrue($foundSubtask, "Subtask was not found in the task tree");
         
-        // Get all root tasks
+        echo "✓ Task tree children retrieved successfully\n";
+        
+        // Get all root tasks (where parent_id is NULL)
         $rootTasks = $this->task->getTaskTree(null);
         $this->assertIsArray($rootTasks);
+        
+        // Our parent task should be in the root tasks
+        $foundParentInRoot = false;
+        foreach ($rootTasks as $task) {
+            if ($task['id'] === $parentTaskId) {
+                $foundParentInRoot = true;
+                $this->assertArrayHasKey('children', $task);
+                $this->assertNotEmpty($task['children']);
+                break;
+            }
+        }
+        $this->assertTrue($foundParentInRoot, "Parent task was not found in root tasks");
         
         echo "✓ All root tasks retrieved successfully\n";
     }
