@@ -322,6 +322,161 @@ class Task
         return $task;
     }
 
+    // --- User-Task Beziehung ---
+
+    /**
+     * Holt alle Benutzer, die einem Task zugeordnet sind.
+     * 
+     * @param int $taskId Die ID des Tasks.
+     * @return array Ein Array von Benutzer-Arrays oder leeres Array bei Fehler.
+     */
+    public function getAssignedUsers(int $taskId): array
+    {
+        $sql = "SELECT u.id, u.username, u.email, u.created_at 
+                FROM users u
+                JOIN user_tasks ut ON u.id = ut.user_id
+                WHERE ut.task_id = :task_id";
+        
+        try {
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':task_id', $taskId, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Datenbankfehler beim Holen der zugewiesenen Benutzer für Task {$taskId}: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Weist einen Benutzer einem Task zu.
+     * 
+     * @param int $taskId Die ID des Tasks.
+     * @param int $userId Die ID des Benutzers.
+     * @return bool True bei Erfolg, false bei Fehler.
+     */
+    public function assignUser(int $taskId, int $userId): bool
+    {
+        // Überprüfen, ob der Task existiert
+        if (!$this->getById($taskId)) {
+            error_log("Zuweisung fehlgeschlagen: Task mit ID {$taskId} nicht gefunden.");
+            return false;
+        }
+
+        $sql = "INSERT INTO user_tasks (task_id, user_id) VALUES (:task_id, :user_id)";
+        try {
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':task_id', $taskId, PDO::PARAM_INT);
+            $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            // Fehlercode 23000 deutet auf Duplicate Entry hin (PK Constraint)
+            if ($e->getCode() == 23000) {
+                error_log("Benutzer {$userId} ist bereits dem Task {$taskId} zugewiesen.");
+            } else {
+                error_log("DB Fehler beim Zuweisen von Benutzer {$userId} zu Task {$taskId}: " . $e->getMessage());
+            }
+            return false;
+        }
+    }
+
+    /**
+     * Entfernt die Zuweisung eines Benutzers von einem Task.
+     * 
+     * @param int $taskId Die ID des Tasks.
+     * @param int $userId Die ID des Benutzers.
+     * @return bool True bei Erfolg, false bei Fehler.
+     */
+    public function unassignUser(int $taskId, int $userId): bool
+    {
+        $sql = "DELETE FROM user_tasks WHERE task_id = :task_id AND user_id = :user_id";
+        try {
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':task_id', $taskId, PDO::PARAM_INT);
+            $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("DB Fehler beim Entfernen der Zuweisung von Benutzer {$userId} von Task {$taskId}: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Holt alle Tasks, die einem bestimmten Benutzer zugewiesen sind.
+     * 
+     * @param int $userId Die ID des Benutzers.
+     * @param array $options Zusätzliche Filteroptionen (siehe getAll).
+     * @return array Ein Array von Task-Arrays.
+     */
+    public function getTasksByUserId(int $userId, array $options = []): array
+    {
+        $sql = "SELECT t.* FROM tasks t
+                JOIN user_tasks ut ON t.id = ut.task_id
+                WHERE ut.user_id = :user_id";
+        
+        $params = [':user_id' => $userId];
+        $whereClauses = [];
+
+        // Filter für Archivierungsstatus
+        if (isset($options['is_archived'])) {
+            $whereClauses[] = "t.is_archived = :is_archived";
+            $params[':is_archived'] = (bool)$options['is_archived'];
+        }
+        
+        // Filter für Abschlussstatus
+        if (isset($options['is_completed'])) {
+            $whereClauses[] = "t.is_completed = :is_completed";
+            $params[':is_completed'] = (bool)$options['is_completed'];
+        }
+        
+        // Weitere Filter hier...
+        
+        // WHERE-Klauseln hinzufügen
+        if (!empty($whereClauses)) {
+            $sql .= " AND " . implode(" AND ", $whereClauses);
+        }
+        
+        // Sortierung
+        if (isset($options['orderBy'])) {
+            $allowedSortColumns = ['id', 'title', 'due_date', 'created_at', 'updated_at', 'is_pinned', 'is_favorite', 'is_completed'];
+            $sortParts = explode(' ', $options['orderBy']);
+            $sortColumn = $sortParts[0];
+            $sortDirection = isset($sortParts[1]) && strtoupper($sortParts[1]) === 'DESC' ? 'DESC' : 'ASC';
+            
+            if (in_array($sortColumn, $allowedSortColumns)) {
+                $sql .= " ORDER BY t." . $sortColumn . " " . $sortDirection;
+            } else {
+                $sql .= " ORDER BY t.created_at DESC"; // Fallback
+                error_log("Ungültige Sortierspalte angefordert: " . $options['orderBy']);
+            }
+        } else {
+            $sql .= " ORDER BY t.created_at DESC";
+        }
+        
+        try {
+            $stmt = $this->db->prepare($sql);
+            
+            // Parameter binden
+            foreach ($params as $key => $value) {
+                $pdoType = is_bool($value) ? PDO::PARAM_BOOL : PDO::PARAM_STR;
+                if ($key === ':user_id') {
+                    $pdoType = PDO::PARAM_INT;
+                }
+                $stmt->bindValue($key, $value, $pdoType);
+            }
+            
+            $stmt->execute();
+            $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Boolean-Werte konvertieren
+            return array_map([$this, 'convertBooleans'], $tasks);
+            
+        } catch (PDOException $e) {
+            error_log("Datenbankfehler beim Holen der Tasks für Benutzer {$userId}: " . $e->getMessage());
+            return [];
+        }
+    }
+
     // --- Zusätzliche Methoden (Beispiele) ---
 
     /**
