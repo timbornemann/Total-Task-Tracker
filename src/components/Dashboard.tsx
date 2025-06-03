@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Search, LayoutGrid, List } from 'lucide-react';
+import { Plus, Search, LayoutGrid, List, BarChart3 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import CategoryCard from './CategoryCard';
 import TaskCard from './TaskCard';
 import TaskModal from './TaskModal';
@@ -69,7 +70,10 @@ const Dashboard: React.FC = () => {
 
   // Handlers
   const handleCreateTask = (taskData: TaskFormData) => {
-    addTask(taskData);
+    addTask({
+      ...taskData,
+      completed: false
+    });
     toast({
       title: 'Task erstellt',
       description: `"${taskData.title}" wurde erfolgreich erstellt.`
@@ -79,7 +83,10 @@ const Dashboard: React.FC = () => {
 
   const handleUpdateTask = (taskData: TaskFormData) => {
     if (editingTask) {
-      updateTask(editingTask.id, taskData);
+      updateTask(editingTask.id, {
+        ...taskData,
+        completed: editingTask.completed
+      });
       toast({
         title: 'Task aktualisiert',
         description: `"${taskData.title}" wurde erfolgreich aktualisiert.`
@@ -199,6 +206,14 @@ const Dashboard: React.FC = () => {
                   className="pl-10 w-64"
                 />
               </div>
+
+              {/* Statistics Button */}
+              <Link to="/statistics">
+                <Button variant="outline">
+                  <BarChart3 className="h-4 w-4 mr-2" />
+                  Statistiken
+                </Button>
+              </Link>
 
               {/* Action Buttons */}
               {viewMode === 'categories' ? (

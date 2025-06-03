@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Task, Category } from '@/types';
 
@@ -22,7 +21,9 @@ export const useTaskStore = () => {
         setTasks(parsedTasks.map((task: any) => ({
           ...task,
           createdAt: new Date(task.createdAt),
-          updatedAt: new Date(task.updatedAt)
+          updatedAt: new Date(task.updatedAt),
+          lastCompleted: task.lastCompleted ? new Date(task.lastCompleted) : undefined,
+          nextDue: task.nextDue ? new Date(task.nextDue) : undefined,
         })));
       }
       
@@ -73,7 +74,9 @@ export const useTaskStore = () => {
       id: Date.now().toString(),
       subtasks: [],
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
+      nextDue: taskData.isRecurring ? calculateNextDue(taskData.recurrencePattern) : undefined,
+      lastCompleted: undefined,
     };
     
     if (taskData.parentId) {
@@ -103,10 +106,44 @@ export const useTaskStore = () => {
     }
   };
 
+  const calculateNextDue = (pattern?: 'daily' | 'weekly' | 'monthly' | 'yearly'): Date | undefined => {
+    if (!pattern) return undefined;
+    
+    const now = new Date();
+    const nextDue = new Date(now);
+    
+    switch (pattern) {
+      case 'daily':
+        nextDue.setDate(now.getDate() + 1);
+        break;
+      case 'weekly':
+        nextDue.setDate(now.getDate() + 7);
+        break;
+      case 'monthly':
+        nextDue.setMonth(now.getMonth() + 1);
+        break;
+      case 'yearly':
+        nextDue.setFullYear(now.getFullYear() + 1);
+        break;
+    }
+    
+    return nextDue;
+  };
+
   const updateTask = (taskId: string, updates: Partial<Task>) => {
     const updateTaskRecursively = (tasks: Task[]): Task[] => {
       return tasks.map(task => {
         if (task.id === taskId) {
+          // If task is being marked as complete and is recurring, update lastCompleted and nextDue
+          if (updates.completed && task.isRecurring) {
+            return {
+              ...task,
+              ...updates,
+              updatedAt: new Date(),
+              lastCompleted: new Date(),
+              nextDue: calculateNextDue(task.recurrencePattern),
+            };
+          }
           return {
             ...task,
             ...updates,

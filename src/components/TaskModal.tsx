@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { getPriorityColor } from '@/utils/taskUtils';
 
 interface TaskModalProps {
   isOpen: boolean;
@@ -30,15 +32,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
     description: '',
     priority: 'medium',
     color: '#3B82F6',
-    categoryId: categories[0]?.id || 'default',
-    parentId: parentTask?.id
+    categoryId: '',
+    parentId: parentTask?.id,
+    isRecurring: false,
+    recurrencePattern: undefined
   });
-
-  const priorityOptions = [
-    { value: 'low', label: 'Niedrig', icon: '🟢' },
-    { value: 'medium', label: 'Mittel', icon: '🟡' },
-    { value: 'high', label: 'Hoch', icon: '🔴' }
-  ];
 
   const colorOptions = [
     '#3B82F6', '#EF4444', '#10B981', '#F59E0B', 
@@ -53,7 +51,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
         priority: task.priority,
         color: task.color,
         categoryId: task.categoryId,
-        parentId: task.parentId
+        parentId: task.parentId,
+        isRecurring: task.isRecurring,
+        recurrencePattern: task.recurrencePattern
       });
     } else {
       setFormData({
@@ -61,21 +61,23 @@ const TaskModal: React.FC<TaskModalProps> = ({
         description: '',
         priority: 'medium',
         color: '#3B82F6',
-        categoryId: parentTask?.categoryId || categories[0]?.id || 'default',
-        parentId: parentTask?.id
+        categoryId: categories[0]?.id || '',
+        parentId: parentTask?.id,
+        isRecurring: false,
+        recurrencePattern: undefined
       });
     }
-  }, [task, parentTask, categories]);
+  }, [task, categories, parentTask]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.title.trim()) {
+    if (formData.title.trim() && formData.categoryId) {
       onSave(formData);
       onClose();
     }
   };
 
-  const handleChange = (field: keyof TaskFormData, value: string) => {
+  const handleChange = (field: keyof TaskFormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -84,7 +86,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            {task ? 'Task bearbeiten' : parentTask ? 'Unteraufgabe hinzufügen' : 'Neue Task erstellen'}
+            {task ? 'Task bearbeiten' : parentTask ? 'Unteraufgabe erstellen' : 'Neue Task erstellen'}
           </DialogTitle>
         </DialogHeader>
         
@@ -120,41 +122,46 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {priorityOptions.map(option => (
-                    <SelectItem key={option.value} value={option.value}>
+                  <SelectItem value="low">
+                    <span className={`px-2 py-1 rounded text-sm ${getPriorityColor('low')}`}>
+                      🟢 Niedrig
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="medium">
+                    <span className={`px-2 py-1 rounded text-sm ${getPriorityColor('medium')}`}>
+                      🟡 Mittel
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="high">
+                    <span className={`px-2 py-1 rounded text-sm ${getPriorityColor('high')}`}>
+                      🔴 Hoch
+                    </span>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="category">Kategorie</Label>
+              <Select value={formData.categoryId} onValueChange={(value) => handleChange('categoryId', value)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map(category => (
+                    <SelectItem key={category.id} value={category.id}>
                       <div className="flex items-center space-x-2">
-                        <span>{option.icon}</span>
-                        <span>{option.label}</span>
+                        <div 
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: category.color }}
+                        />
+                        <span>{category.name}</span>
                       </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-
-            {!parentTask && (
-              <div>
-                <Label htmlFor="category">Kategorie</Label>
-                <Select value={formData.categoryId} onValueChange={(value) => handleChange('categoryId', value)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map(category => (
-                      <SelectItem key={category.id} value={category.id}>
-                        <div className="flex items-center space-x-2">
-                          <div 
-                            className="w-3 h-3 rounded-full"
-                            style={{ backgroundColor: category.color }}
-                          />
-                          <span>{category.name}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
           </div>
 
           <div>
@@ -174,13 +181,36 @@ const TaskModal: React.FC<TaskModalProps> = ({
             </div>
           </div>
 
-          {parentTask && (
-            <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-              <p className="text-sm text-blue-800">
-                <strong>Übergeordnete Task:</strong> {parentTask.title}
-              </p>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="recurring">Wiederkehrende Aufgabe</Label>
+              <Switch
+                id="recurring"
+                checked={formData.isRecurring}
+                onCheckedChange={(checked) => handleChange('isRecurring', checked)}
+              />
             </div>
-          )}
+
+            {formData.isRecurring && (
+              <div>
+                <Label htmlFor="recurrence">Wiederholung</Label>
+                <Select 
+                  value={formData.recurrencePattern} 
+                  onValueChange={(value) => handleChange('recurrencePattern', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Wiederholung auswählen..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="daily">Täglich</SelectItem>
+                    <SelectItem value="weekly">Wöchentlich</SelectItem>
+                    <SelectItem value="monthly">Monatlich</SelectItem>
+                    <SelectItem value="yearly">Jährlich</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </div>
 
           <div className="flex justify-end space-x-2 pt-4">
             <Button type="button" variant="outline" onClick={onClose}>

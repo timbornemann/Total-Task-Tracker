@@ -1,0 +1,12 @@
+
+version: '3.8'
+
+services:
+  task-tracker:
+    build: .
+    ports:
+      - "3002:3002"
+    restart: unless-stopped
+    container_name: task-tracker-app
+    environment:
+      - NODE_ENV=production
