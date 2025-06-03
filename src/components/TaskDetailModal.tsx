@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Edit, Plus, Trash2 } from 'lucide-react';
+import { Edit, Plus, Trash2, ArrowLeft } from 'lucide-react';
 import { calculateTaskCompletion, getTaskProgress, getPriorityColor, getPriorityIcon } from '@/utils/taskUtils';
 import TaskCard from './TaskCard';
 
@@ -20,6 +20,9 @@ interface TaskDetailModalProps {
   onAddSubtask: (parentTask: Task) => void;
   onToggleComplete: (taskId: string, completed: boolean) => void;
   onViewDetails: (task: Task) => void;
+  /** Display back button when true and trigger onBack on click */
+  canGoBack?: boolean;
+  onBack?: () => void;
 }
 
 const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
@@ -31,7 +34,9 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   onDelete,
   onAddSubtask,
   onToggleComplete,
-  onViewDetails
+  onViewDetails,
+  canGoBack,
+  onBack
 }) => {
   if (!task) return null;
 
@@ -53,6 +58,11 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
         <DialogHeader>
           <div className="flex items-start justify-between">
             <div className="flex items-start space-x-3 flex-1">
+              {canGoBack && (
+                <Button variant="ghost" size="icon" onClick={onBack} className="mt-1">
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+              )}
               {task.subtasks.length === 0 && (
                 <input
                   type="checkbox"
