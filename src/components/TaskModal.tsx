@@ -44,6 +44,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
   ];
 
   useEffect(() => {
+    if (!isOpen) return;
+
     if (task) {
       setFormData({
         title: task.title,
@@ -67,7 +69,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
         recurrencePattern: undefined
       });
     }
-  }, [task, categories, parentTask]);
+  }, [isOpen, task, categories, parentTask]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
