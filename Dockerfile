@@ -17,21 +17,17 @@ COPY . .
 RUN npm run build
 
 # Production stage
-FROM nginx:alpine
+FROM node:18-alpine
+
+WORKDIR /app
 
 # Copy built assets from builder stage
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /app/dist ./dist
+COPY server ./server
+COPY package*.json ./
 
-# Copy custom nginx configuration
-COPY nginx.conf /etc/nginx/nginx.conf
+RUN npm prune --production || true
 
-# Create a symbolic link to verify the config is loaded
-RUN echo "Nginx configuration:" && cat /etc/nginx/nginx.conf && \
-    mkdir -p /usr/share/nginx/html/assets && \
-    touch /usr/share/nginx/html/assets/test.txt
-
-# Expose port 3002
 EXPOSE 3002
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["node", "server/index.js"]

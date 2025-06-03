@@ -18,6 +18,18 @@ Changes made via Lovable will be committed automatically to this repo.
 
 If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
 
+## Docker Usage
+
+The application now runs a small Node server that stores tasks and categories inside the container. When the container is started using `docker-compose`, the data directory is mounted so multiple users share the same state.
+
+To build and start the container run:
+
+```bash
+docker-compose up --build
+```
+
+Data will be persisted in `./server/data` on the host machine.
+
 The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
 Follow these steps:
