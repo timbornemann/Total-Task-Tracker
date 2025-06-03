@@ -17,6 +17,11 @@ interface TaskModalProps {
   task?: Task;
   categories: Category[];
   parentTask?: Task;
+  /**
+   * Default category to use when creating a new task. This will be ignored when
+   * editing an existing task where the category comes from the task itself.
+   */
+  defaultCategoryId?: string;
 }
 
 const TaskModal: React.FC<TaskModalProps> = ({
@@ -25,7 +30,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
   onSave,
   task,
   categories,
-  parentTask
+  parentTask,
+  defaultCategoryId
 }) => {
   const [formData, setFormData] = useState<TaskFormData>({
     title: '',
@@ -63,13 +69,14 @@ const TaskModal: React.FC<TaskModalProps> = ({
         description: '',
         priority: 'medium',
         color: '#3B82F6',
-        categoryId: categories[0]?.id || '',
+        categoryId:
+          defaultCategoryId || parentTask?.categoryId || categories[0]?.id || '',
         parentId: parentTask?.id,
         isRecurring: false,
         recurrencePattern: undefined
       });
     }
-  }, [isOpen, task, categories, parentTask]);
+  }, [isOpen, task, categories, parentTask, defaultCategoryId]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
