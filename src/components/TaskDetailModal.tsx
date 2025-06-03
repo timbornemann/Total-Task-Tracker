@@ -184,6 +184,12 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                   <span className="font-medium">Zuletzt geändert:</span>{' '}
                   {new Date(task.updatedAt).toLocaleDateString('de-DE')}
                 </div>
+                {task.dueDate && (
+                  <div>
+                    <span className="font-medium">Fällig am:</span>{' '}
+                    {new Date(task.dueDate).toLocaleDateString('de-DE')}
+                  </div>
+                )}
               </div>
             </div>
           </div>

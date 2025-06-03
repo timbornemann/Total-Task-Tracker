@@ -17,6 +17,7 @@ export interface Task {
   recurrencePattern?: 'daily' | 'weekly' | 'monthly' | 'yearly';
   lastCompleted?: Date;
   nextDue?: Date;
+  dueDate?: Date;
 }
 
 export interface Category {
@@ -35,7 +36,9 @@ export interface TaskFormData {
   color: string;
   categoryId: string;
   parentId?: string;
+
   /** Optional due date when creating/editing a task */
+
   dueDate?: Date;
   isRecurring: boolean;
   recurrencePattern?: 'daily' | 'weekly' | 'monthly' | 'yearly';

@@ -40,6 +40,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     color: '#3B82F6',
     categoryId: '',
     parentId: parentTask?.id,
+    dueDate: undefined,
     isRecurring: false,
     recurrencePattern: undefined
   });
@@ -60,6 +61,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
         color: task.color,
         categoryId: task.categoryId,
         parentId: task.parentId,
+        dueDate: task.dueDate,
         isRecurring: task.isRecurring,
         recurrencePattern: task.recurrencePattern
       });
@@ -72,6 +74,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
         categoryId:
           defaultCategoryId || parentTask?.categoryId || categories[0]?.id || '',
         parentId: parentTask?.id,
+        dueDate: undefined,
         isRecurring: false,
         recurrencePattern: undefined
       });
@@ -170,13 +173,23 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   ))}
                 </SelectContent>
               </Select>
-            </div>
           </div>
+        </div>
 
-          <div>
-            <Label>Farbe</Label>
-            <div className="flex space-x-2 mt-2">
-              {colorOptions.map(color => (
+        <div>
+          <Label htmlFor="dueDate">Fällig am</Label>
+          <Input
+            id="dueDate"
+            type="date"
+            value={formData.dueDate ? new Date(formData.dueDate).toISOString().split('T')[0] : ''}
+            onChange={(e) => handleChange('dueDate', e.target.value ? new Date(e.target.value) : undefined)}
+          />
+        </div>
+
+        <div>
+          <Label>Farbe</Label>
+          <div className="flex space-x-2 mt-2">
+            {colorOptions.map(color => (
                 <button
                   key={color}
                   type="button"

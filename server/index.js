@@ -11,10 +11,18 @@ const DATA_DIR = path.join(__dirname, 'data');
 const DATA_FILE = path.join(DATA_DIR, 'data.json');
 const DIST_DIR = path.join(__dirname, '..', 'dist');
 
+function dateReviver(key, value) {
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
+    const d = new Date(value);
+    if (!isNaN(d.getTime())) return d;
+  }
+  return value;
+}
+
 function loadData() {
   try {
     const raw = fs.readFileSync(DATA_FILE, 'utf8');
-    return JSON.parse(raw);
+    return JSON.parse(raw, dateReviver);
   } catch {
     return { tasks: [], categories: [] };
   }
@@ -22,7 +30,14 @@ function loadData() {
 
 function saveData(data) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+  fs.writeFileSync(
+    DATA_FILE,
+    JSON.stringify(
+      data,
+      (key, value) => (value instanceof Date ? value.toISOString() : value),
+      2
+    )
+  );
 }
 
 function serveStatic(filePath, res) {

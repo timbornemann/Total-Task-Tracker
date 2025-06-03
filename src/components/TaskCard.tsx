@@ -72,7 +72,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
                   <span className="hidden sm:inline">{priorityIcon} </span>
                   {task.priority.toUpperCase()}
                 </Badge>
-                <div 
+                <div
                   className="w-4 h-4 rounded-full border-2 border-gray-300 flex-shrink-0"
                   style={{ backgroundColor: task.color }}
                 />
@@ -81,6 +81,13 @@ const TaskCard: React.FC<TaskCardProps> = ({
                     <span className="hidden sm:inline">Wiederholt </span>
                     {task.recurrencePattern}
                   </Badge>
+                )}
+                {task.dueDate && (
+                  <span
+                    className={`text-xs flex-shrink-0 ${new Date(task.dueDate) < new Date() && !task.completed ? 'text-red-600' : 'text-gray-500'}`}
+                  >
+                    Fällig am {new Date(task.dueDate).toLocaleDateString('de-DE')}
+                  </span>
                 )}
               </div>
             </div>
