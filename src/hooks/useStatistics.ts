@@ -25,12 +25,14 @@ export const useStatistics = (): TaskStats => {
     const completedTasks = allTasks.filter(task => task.completed).length;
     const recurringTasks = allTasks.filter(task => task.isRecurring).length;
     
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const overdueTasks = allTasks.filter(task => {
       if (task.completed) return false;
       if (!task.dueDate) return false;
       return new Date(task.dueDate) < today;
+
     }).length;
 
     // Tasks by priority
