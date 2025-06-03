@@ -1,7 +1,11 @@
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
-const url = require('url');
+import http from 'http';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { parse } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const DATA_DIR = path.join(__dirname, 'data');
 const DATA_FILE = path.join(DATA_DIR, 'data.json');
@@ -39,7 +43,7 @@ function serveStatic(filePath, res) {
 }
 
 const server = http.createServer((req, res) => {
-  const parsed = url.parse(req.url, true);
+  const parsed = parse(req.url, true);
 
   if (parsed.pathname === '/api/data') {
     if (req.method === 'GET') {
