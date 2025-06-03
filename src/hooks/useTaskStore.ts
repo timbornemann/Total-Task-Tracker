@@ -1,72 +1,72 @@
 import { useState, useEffect } from 'react';
 import { Task, Category } from '@/types';
 
-const STORAGE_KEYS = {
-  TASKS: 'tasktracker_tasks',
-  CATEGORIES: 'tasktracker_categories'
-};
+const API_URL = '/api/data';
 
 export const useTaskStore = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
 
-  // Load data from localStorage on mount
+  // Load data from the server on mount
   useEffect(() => {
-    try {
-      const savedTasks = localStorage.getItem(STORAGE_KEYS.TASKS);
-      const savedCategories = localStorage.getItem(STORAGE_KEYS.CATEGORIES);
-      
-      if (savedTasks) {
-        const parsedTasks = JSON.parse(savedTasks);
-        setTasks(parsedTasks.map((task: any) => ({
-          ...task,
-          createdAt: new Date(task.createdAt),
-          updatedAt: new Date(task.updatedAt),
-          lastCompleted: task.lastCompleted ? new Date(task.lastCompleted) : undefined,
-          nextDue: task.nextDue ? new Date(task.nextDue) : undefined,
-        })));
+    const loadData = async () => {
+      try {
+        const res = await fetch(API_URL);
+        if (!res.ok) throw new Error('Serverfehler');
+        const { tasks: savedTasks, categories: savedCategories } = await res.json();
+
+        if (savedTasks) {
+          setTasks(savedTasks.map((task: any) => ({
+            ...task,
+            createdAt: new Date(task.createdAt),
+            updatedAt: new Date(task.updatedAt),
+            lastCompleted: task.lastCompleted ? new Date(task.lastCompleted) : undefined,
+            nextDue: task.nextDue ? new Date(task.nextDue) : undefined,
+          })));
+        }
+
+        if (savedCategories && savedCategories.length) {
+          setCategories(savedCategories.map((category: any) => ({
+            ...category,
+            createdAt: new Date(category.createdAt),
+            updatedAt: new Date(category.updatedAt)
+          })));
+        } else {
+          // Create default category if none exist
+          const defaultCategory: Category = {
+            id: 'default',
+            name: 'Allgemein',
+            description: 'Standard Kategorie für alle Tasks',
+            color: '#3B82F6',
+            createdAt: new Date(),
+            updatedAt: new Date()
+          };
+          setCategories([defaultCategory]);
+        }
+      } catch (error) {
+        console.error('Fehler beim Laden der Daten:', error);
       }
-      
-      if (savedCategories) {
-        const parsedCategories = JSON.parse(savedCategories);
-        setCategories(parsedCategories.map((category: any) => ({
-          ...category,
-          createdAt: new Date(category.createdAt),
-          updatedAt: new Date(category.updatedAt)
-        })));
-      } else {
-        // Create default category if none exist
-        const defaultCategory: Category = {
-          id: 'default',
-          name: 'Allgemein',
-          description: 'Standard Kategorie für alle Tasks',
-          color: '#3B82F6',
-          createdAt: new Date(),
-          updatedAt: new Date()
-        };
-        setCategories([defaultCategory]);
-      }
-    } catch (error) {
-      console.error('Fehler beim Laden der Daten:', error);
-    }
+    };
+
+    loadData();
   }, []);
 
-  // Save to localStorage whenever data changes
+  // Save to server whenever data changes
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(tasks));
-    } catch (error) {
-      console.error('Fehler beim Speichern der Tasks:', error);
-    }
-  }, [tasks]);
+    const save = async () => {
+      try {
+        await fetch(API_URL, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tasks, categories })
+        });
+      } catch (error) {
+        console.error('Fehler beim Speichern der Daten:', error);
+      }
+    };
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(categories));
-    } catch (error) {
-      console.error('Fehler beim Speichern der Kategorien:', error);
-    }
-  }, [categories]);
+    save();
+  }, [tasks, categories]);
 
   const addTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'subtasks'>) => {
     const newTask: Task = {
