@@ -22,6 +22,7 @@ export const useTaskStore = () => {
             updatedAt: new Date(task.updatedAt),
             lastCompleted: task.lastCompleted ? new Date(task.lastCompleted) : undefined,
             nextDue: task.nextDue ? new Date(task.nextDue) : undefined,
+            dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
           })));
         }
 
@@ -77,6 +78,7 @@ export const useTaskStore = () => {
       updatedAt: new Date(),
       nextDue: taskData.isRecurring ? calculateNextDue(taskData.recurrencePattern) : undefined,
       lastCompleted: undefined,
+      dueDate: taskData.dueDate ? new Date(taskData.dueDate) : undefined,
     };
     
     if (taskData.parentId) {
@@ -142,12 +144,14 @@ export const useTaskStore = () => {
               updatedAt: new Date(),
               lastCompleted: new Date(),
               nextDue: calculateNextDue(task.recurrencePattern),
+              dueDate: task.dueDate,
             };
           }
           return {
             ...task,
             ...updates,
-            updatedAt: new Date()
+            updatedAt: new Date(),
+            dueDate: updates.dueDate ? new Date(updates.dueDate) : task.dueDate
           };
         }
         if (task.subtasks.length > 0) {

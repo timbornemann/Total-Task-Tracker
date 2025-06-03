@@ -25,8 +25,21 @@ export const useStatistics = (): TaskStats => {
     const completedTasks = allTasks.filter(task => task.completed).length;
     const recurringTasks = allTasks.filter(task => task.isRecurring).length;
     
-    // Calculate overdue tasks (for now, just incomplete tasks)
-    const overdueTasks = allTasks.filter(task => !task.completed).length;
+    // Calculate overdue tasks based on due dates
+    const now = new Date();
+    const overdueTasks = allTasks.filter(task => {
+      if (task.completed) return false;
+
+      if (task.isRecurring) {
+        if (!task.nextDue) return false;
+        const nextDueDate = new Date(task.nextDue);
+        const lastCompleted = task.lastCompleted ? new Date(task.lastCompleted) : undefined;
+        return nextDueDate < now && (!lastCompleted || lastCompleted < nextDueDate);
+      }
+
+      if (!task.dueDate) return false;
+      return new Date(task.dueDate) < now;
+    }).length;
 
     // Tasks by priority
     const tasksByPriority = {
