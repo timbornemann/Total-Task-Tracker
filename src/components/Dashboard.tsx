@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Task, Category, TaskFormData, CategoryFormData } from '@/types';
 import { useTaskStore } from '@/hooks/useTaskStore';
@@ -6,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Search, LayoutGrid, List, BarChart3 } from 'lucide-react';
+import { Plus, Search, LayoutGrid, List, BarChart3, Menu } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import CategoryCard from './CategoryCard';
 import TaskCard from './TaskCard';
@@ -34,6 +33,7 @@ const Dashboard: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [viewMode, setViewMode] = useState<'categories' | 'tasks'>('categories');
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   
   // Modal states
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -176,40 +176,52 @@ const Dashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white shadow-sm border-b sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold text-gray-900">Task Tracker</h1>
+          <div className="flex items-center justify-between h-14 sm:h-16">
+            <div className="flex items-center space-x-2 sm:space-x-4 min-w-0 flex-1">
+              <h1 className="text-lg sm:text-2xl font-bold text-gray-900 truncate">Task Tracker</h1>
               {selectedCategory && (
-                <div className="flex items-center space-x-2">
+                <div className="hidden sm:flex items-center space-x-2">
                   <span className="text-gray-500">/</span>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 min-w-0">
                     <div 
-                      className="w-4 h-4 rounded-full"
+                      className="w-4 h-4 rounded-full flex-shrink-0"
                       style={{ backgroundColor: selectedCategory.color }}
                     />
-                    <span className="font-medium text-gray-700">{selectedCategory.name}</span>
+                    <span className="font-medium text-gray-700 truncate">{selectedCategory.name}</span>
                   </div>
                 </div>
               )}
             </div>
             
-            <div className="flex items-center space-x-4">
+            {/* Mobile Menu Button */}
+            <div className="sm:hidden">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowMobileMenu(!showMobileMenu)}
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+            </div>
+
+            {/* Desktop Actions */}
+            <div className="hidden sm:flex items-center space-x-4">
               {/* Search */}
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
-                  placeholder={viewMode === 'categories' ? 'Kategorien suchen...' : 'Tasks suchen...'}
+                  placeholder={viewMode === 'categories' ? 'Kategorien suchen...' : 'Tasks suchen...''}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 w-64"
+                  className="pl-10 w-48 lg:w-64"
                 />
               </div>
 
               {/* Statistics Button */}
               <Link to="/statistics">
-                <Button variant="outline">
+                <Button variant="outline" size="sm">
                   <BarChart3 className="h-4 w-4 mr-2" />
                   Statistiken
                 </Button>
@@ -217,17 +229,17 @@ const Dashboard: React.FC = () => {
 
               {/* Action Buttons */}
               {viewMode === 'categories' ? (
-                <Button onClick={() => setIsCategoryModalOpen(true)}>
+                <Button onClick={() => setIsCategoryModalOpen(true)} size="sm">
                   <Plus className="h-4 w-4 mr-2" />
                   Kategorie
                 </Button>
               ) : (
                 <>
-                  <Button variant="outline" onClick={handleBackToCategories}>
+                  <Button variant="outline" onClick={handleBackToCategories} size="sm">
                     <LayoutGrid className="h-4 w-4 mr-2" />
                     Kategorien
                   </Button>
-                  <Button onClick={() => setIsTaskModalOpen(true)}>
+                  <Button onClick={() => setIsTaskModalOpen(true)} size="sm">
                     <Plus className="h-4 w-4 mr-2" />
                     Task
                   </Button>
@@ -235,18 +247,76 @@ const Dashboard: React.FC = () => {
               )}
             </div>
           </div>
+
+          {/* Mobile Menu */}
+          {showMobileMenu && (
+            <div className="sm:hidden pb-4 space-y-3">
+              {/* Mobile Search */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder={viewMode === 'categories' ? 'Kategorien suchen...' : 'Tasks suchen...''}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+
+              {/* Mobile Actions */}
+              <div className="flex flex-wrap gap-2">
+                <Link to="/statistics" className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full">
+                    <BarChart3 className="h-4 w-4 mr-2" />
+                    Statistiken
+                  </Button>
+                </Link>
+
+                {viewMode === 'categories' ? (
+                  <Button onClick={() => setIsCategoryModalOpen(true)} size="sm" className="flex-1">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Kategorie
+                  </Button>
+                ) : (
+                  <>
+                    <Button variant="outline" onClick={handleBackToCategories} size="sm" className="flex-1">
+                      <LayoutGrid className="h-4 w-4 mr-2" />
+                      Kategorien
+                    </Button>
+                    <Button onClick={() => setIsTaskModalOpen(true)} size="sm" className="flex-1">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Task
+                    </Button>
+                  </>
+                )}
+              </div>
+
+              {/* Mobile Category Breadcrumb */}
+              {selectedCategory && (
+                <div className="flex items-center space-x-2 text-sm">
+                  <span className="text-gray-500">In:</span>
+                  <div className="flex items-center space-x-2">
+                    <div 
+                      className="w-3 h-3 rounded-full"
+                      style={{ backgroundColor: selectedCategory.color }}
+                    />
+                    <span className="font-medium text-gray-700">{selectedCategory.name}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </header>
 
       {/* Statistics */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-gray-600">Gesamt Tasks</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{totalTasks}</div>
+              <div className="text-xl sm:text-2xl font-bold text-gray-900">{totalTasks}</div>
             </CardContent>
           </Card>
           <Card>
@@ -254,8 +324,8 @@ const Dashboard: React.FC = () => {
               <CardTitle className="text-sm font-medium text-gray-600">Abgeschlossen</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{completedTasks}</div>
-              <div className="text-sm text-gray-500">
+              <div className="text-xl sm:text-2xl font-bold text-green-600">{completedTasks}</div>
+              <div className="text-xs sm:text-sm text-gray-500">
                 {totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0}% erledigt
               </div>
             </CardContent>
@@ -265,7 +335,7 @@ const Dashboard: React.FC = () => {
               <CardTitle className="text-sm font-medium text-gray-600">Kategorien</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-blue-600">{totalCategories}</div>
+              <div className="text-xl sm:text-2xl font-bold text-blue-600">{totalCategories}</div>
             </CardContent>
           </Card>
         </div>
@@ -273,26 +343,26 @@ const Dashboard: React.FC = () => {
         {/* Content */}
         {viewMode === 'categories' ? (
           <div>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-gray-900">Kategorien</h2>
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Kategorien</h2>
               <Badge variant="secondary">{filteredCategories.length} Kategorien</Badge>
             </div>
             
             {filteredCategories.length === 0 ? (
-              <Card className="text-center py-12">
+              <Card className="text-center py-8 sm:py-12">
                 <CardContent>
-                  <LayoutGrid className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  <LayoutGrid className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">
                     {searchTerm ? 'Keine Kategorien gefunden' : 'Keine Kategorien vorhanden'}
                   </h3>
-                  <p className="text-gray-600 mb-4">
+                  <p className="text-sm sm:text-base text-gray-600 mb-4">
                     {searchTerm 
                       ? 'Versuchen Sie einen anderen Suchbegriff.'
                       : 'Erstellen Sie Ihre erste Kategorie, um mit der Organisation Ihrer Tasks zu beginnen.'
                     }
                   </p>
                   {!searchTerm && (
-                    <Button onClick={() => setIsCategoryModalOpen(true)}>
+                    <Button onClick={() => setIsCategoryModalOpen(true)} size="sm">
                       <Plus className="h-4 w-4 mr-2" />
                       Erste Kategorie erstellen
                     </Button>
@@ -300,7 +370,7 @@ const Dashboard: React.FC = () => {
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {filteredCategories.map(category => (
                   <CategoryCard
                     key={category.id}
@@ -319,26 +389,26 @@ const Dashboard: React.FC = () => {
           </div>
         ) : (
           <div>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-gray-900">Tasks</h2>
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Tasks</h2>
               <Badge variant="secondary">{filteredTasks.length} Tasks</Badge>
             </div>
             
             {filteredTasks.length === 0 ? (
-              <Card className="text-center py-12">
+              <Card className="text-center py-8 sm:py-12">
                 <CardContent>
-                  <List className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  <List className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">
                     {searchTerm ? 'Keine Tasks gefunden' : 'Keine Tasks vorhanden'}
                   </h3>
-                  <p className="text-gray-600 mb-4">
+                  <p className="text-sm sm:text-base text-gray-600 mb-4">
                     {searchTerm 
                       ? 'Versuchen Sie einen anderen Suchbegriff.'
                       : `Erstellen Sie Ihre erste Task in der Kategorie "${selectedCategory?.name}".`
                     }
                   </p>
                   {!searchTerm && (
-                    <Button onClick={() => setIsTaskModalOpen(true)}>
+                    <Button onClick={() => setIsTaskModalOpen(true)} size="sm">
                       <Plus className="h-4 w-4 mr-2" />
                       Erste Task erstellen
                     </Button>
@@ -346,7 +416,7 @@ const Dashboard: React.FC = () => {
                 </CardContent>
               </Card>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {filteredTasks.map(task => (
                   <TaskCard
                     key={task.id}

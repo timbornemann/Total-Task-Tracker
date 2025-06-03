@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Edit, Trash2, Plus, FolderOpen } from 'lucide-react';
+import { Edit, Trash2, Plus, FolderOpen, MoreVertical } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 interface TaskCardProps {
   task: Task;
@@ -41,43 +42,52 @@ const TaskCard: React.FC<TaskCardProps> = ({
 
   return (
     <Card 
-      className={`mb-4 transition-all duration-200 hover:shadow-md ${
-        depth > 0 ? 'ml-6 border-l-4' : ''
+      className={`mb-3 sm:mb-4 transition-all duration-200 hover:shadow-md ${
+        depth > 0 ? 'ml-3 sm:ml-6 border-l-4' : ''
       } ${isCompleted ? 'bg-green-50 border-green-200' : ''}`}
       style={{ borderLeftColor: depth > 0 ? task.color : undefined }}
     >
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-2 sm:pb-3">
         <div className="flex items-start justify-between">
-          <div className="flex items-start space-x-3 flex-1">
+          <div className="flex items-start space-x-2 sm:space-x-3 flex-1 min-w-0">
             {task.subtasks.length === 0 && (
               <input
                 type="checkbox"
                 checked={task.completed}
                 onChange={handleToggleComplete}
-                className="mt-1 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                className="mt-1 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 flex-shrink-0"
               />
             )}
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <CardTitle 
-                className={`text-lg font-semibold cursor-pointer hover:text-blue-600 transition-colors ${
+                className={`text-base sm:text-lg font-semibold cursor-pointer hover:text-blue-600 transition-colors ${
                   isCompleted ? 'line-through text-gray-500' : ''
-                }`}
+                } break-words`}
                 onClick={() => onViewDetails(task)}
               >
                 {task.title}
               </CardTitle>
-              <div className="flex items-center space-x-2 mt-2">
-                <Badge className={`text-xs px-2 py-1 border ${priorityClasses}`}>
-                  {priorityIcon} {task.priority.toUpperCase()}
+              <div className="flex items-center space-x-2 mt-2 flex-wrap gap-1">
+                <Badge className={`text-xs px-2 py-1 border ${priorityClasses} flex-shrink-0`}>
+                  <span className="hidden sm:inline">{priorityIcon} </span>
+                  {task.priority.toUpperCase()}
                 </Badge>
                 <div 
-                  className="w-4 h-4 rounded-full border-2 border-gray-300"
+                  className="w-4 h-4 rounded-full border-2 border-gray-300 flex-shrink-0"
                   style={{ backgroundColor: task.color }}
                 />
+                {task.isRecurring && (
+                  <Badge variant="outline" className="text-xs flex-shrink-0">
+                    <span className="hidden sm:inline">Wiederholt </span>
+                    {task.recurrencePattern}
+                  </Badge>
+                )}
               </div>
             </div>
           </div>
-          <div className="flex space-x-1">
+          
+          {/* Desktop Actions */}
+          <div className="hidden sm:flex space-x-1 flex-shrink-0">
             <Button
               variant="ghost"
               size="sm"
@@ -111,22 +121,54 @@ const TaskCard: React.FC<TaskCardProps> = ({
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
+
+          {/* Mobile Actions Dropdown */}
+          <div className="sm:hidden flex-shrink-0">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-white z-50">
+                <DropdownMenuItem onClick={() => onViewDetails(task)}>
+                  <FolderOpen className="h-4 w-4 mr-2" />
+                  Details anzeigen
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onAddSubtask(task)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Unteraufgabe hinzufügen
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onEdit(task)}>
+                  <Edit className="h-4 w-4 mr-2" />
+                  Bearbeiten
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => onDelete(task.id)}
+                  className="text-red-600"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Löschen
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </CardHeader>
       
       {(task.description || task.subtasks.length > 0) && (
-        <CardContent>
+        <CardContent className="pt-0">
           {task.description && (
-            <p className="text-sm text-gray-600 mb-3">{task.description}</p>
+            <p className="text-sm text-gray-600 mb-3 break-words">{task.description}</p>
           )}
           
           {task.subtasks.length > 0 && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-xs sm:text-sm font-medium text-gray-700">
                   Fortschritt: {progress.completed}/{progress.total} Unteraufgaben
                 </span>
-                <span className="text-sm text-gray-500">
+                <span className="text-xs sm:text-sm text-gray-500">
                   {Math.round(progressPercentage)}%
                 </span>
               </div>
