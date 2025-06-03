@@ -63,6 +63,7 @@ const Dashboard: React.FC = () => {
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [parentTask, setParentTask] = useState<Task | null>(null);
+  const [taskDetailStack, setTaskDetailStack] = useState<Task[]>([]);
 
   // Filter categories and tasks based on search
   const filteredCategories = categories.filter(category =>
@@ -219,8 +220,23 @@ const Dashboard: React.FC = () => {
   };
 
   const handleViewTaskDetails = (task: Task) => {
+    setTaskDetailStack(prev => (selectedTask ? [...prev, selectedTask] : prev));
     setSelectedTask(task);
     setIsTaskDetailModalOpen(true);
+  };
+
+  const handleTaskDetailBack = () => {
+    setTaskDetailStack(prev => {
+      const stack = [...prev];
+      const parent = stack.pop();
+      if (parent) {
+        setSelectedTask(parent);
+      } else {
+        setIsTaskDetailModalOpen(false);
+        setSelectedTask(null);
+      }
+      return stack;
+    });
   };
 
   const handleBackToCategories = () => {
@@ -550,6 +566,7 @@ const Dashboard: React.FC = () => {
         onClose={() => {
           setIsTaskDetailModalOpen(false);
           setSelectedTask(null);
+          setTaskDetailStack([]);
         }}
         task={selectedTask}
         category={selectedTask ? categories.find(c => c.id === selectedTask.categoryId) || null : null}
@@ -558,6 +575,8 @@ const Dashboard: React.FC = () => {
         onAddSubtask={handleAddSubtask}
         onToggleComplete={handleToggleTaskComplete}
         onViewDetails={handleViewTaskDetails}
+        canGoBack={taskDetailStack.length > 0}
+        onBack={handleTaskDetailBack}
       />
     </div>
   );
