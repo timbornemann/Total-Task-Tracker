@@ -32,6 +32,8 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
   ];
 
   useEffect(() => {
+    if (!isOpen) return;
+
     if (category) {
       setFormData({
         name: category.name,
@@ -45,7 +47,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
         color: '#3B82F6'
       });
     }
-  }, [category]);
+  }, [category, isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
