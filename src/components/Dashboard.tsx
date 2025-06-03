@@ -282,16 +282,6 @@ const Dashboard: React.FC = () => {
 
             {/* Desktop Actions */}
             <div className="hidden sm:flex items-center space-x-4">
-              {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder={viewMode === 'categories' ? 'Kategorien suchen...' : 'Tasks suchen...'}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 w-48 lg:w-64"
-                />
-              </div>
 
               {/* Statistics Button */}
               <Link to="/statistics">
@@ -337,16 +327,7 @@ const Dashboard: React.FC = () => {
           {/* Mobile Menu */}
           {showMobileMenu && (
             <div className="sm:hidden pb-4 space-y-3">
-              {/* Mobile Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder={viewMode === 'categories' ? 'Kategorien suchen...' : 'Tasks suchen...'}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
+
 
               {/* Mobile Actions */}
               <div className="flex flex-wrap gap-2">
@@ -449,6 +430,15 @@ const Dashboard: React.FC = () => {
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Kategorien</h2>
               <Badge variant="secondary">{filteredCategories.length} Kategorien</Badge>
             </div>
+            <div className="relative mb-4 sm:mb-6">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Kategorien suchen..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 w-full sm:max-w-xs"
+              />
+            </div>
             
             {filteredCategories.length === 0 ? (
               <Card className="text-center py-8 sm:py-12">
@@ -494,6 +484,15 @@ const Dashboard: React.FC = () => {
             <div className="flex items-center justify-between mb-4 sm:mb-6">
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Tasks</h2>
               <Badge variant="secondary">{filteredTasks.length} Tasks</Badge>
+            </div>
+            <div className="relative mb-4 sm:mb-6">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                placeholder="Tasks suchen..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 w-full sm:max-w-xs"
+              />
             </div>
             
             {filteredTasks.length === 0 ? (
