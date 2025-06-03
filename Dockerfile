@@ -1,4 +1,3 @@
-
 # Use Node.js 18 Alpine as base image
 FROM node:18-alpine AS builder
 
@@ -9,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci --only=production
+RUN npm ci
 
 # Copy source code
 COPY . .
@@ -25,6 +24,11 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
+
+# Create a symbolic link to verify the config is loaded
+RUN echo "Nginx configuration:" && cat /etc/nginx/nginx.conf && \
+    mkdir -p /usr/share/nginx/html/assets && \
+    touch /usr/share/nginx/html/assets/test.txt
 
 # Expose port 3002
 EXPOSE 3002
