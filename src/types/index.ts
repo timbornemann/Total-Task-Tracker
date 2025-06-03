@@ -11,6 +11,8 @@ export interface Task {
   subtasks: Task[];
   createdAt: Date;
   updatedAt: Date;
+  /** Optional due date for one-time tasks */
+  dueDate?: Date;
   isRecurring: boolean;
   recurrencePattern?: 'daily' | 'weekly' | 'monthly' | 'yearly';
   lastCompleted?: Date;
@@ -33,6 +35,8 @@ export interface TaskFormData {
   color: string;
   categoryId: string;
   parentId?: string;
+  /** Optional due date when creating/editing a task */
+  dueDate?: Date;
   isRecurring: boolean;
   recurrencePattern?: 'daily' | 'weekly' | 'monthly' | 'yearly';
 }
