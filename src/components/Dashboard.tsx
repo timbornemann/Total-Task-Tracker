@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Task, Category, TaskFormData, CategoryFormData } from '@/types';
 import { useTaskStore } from '@/hooks/useTaskStore';
 import { Button } from '@/components/ui/button';
@@ -7,7 +7,14 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Search, LayoutGrid, List, BarChart3, Menu } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem
+} from '@/components/ui/select';
 import CategoryCard from './CategoryCard';
 import TaskCard from './TaskCard';
 import TaskModal from './TaskModal';
@@ -35,6 +42,18 @@ const Dashboard: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [viewMode, setViewMode] = useState<'categories' | 'tasks'>('categories');
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [sortCriteria, setSortCriteria] = useState<string>(
+    searchParams.get('sort') || 'created-desc'
+  );
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    if (params.get('sort') !== sortCriteria) {
+      params.set('sort', sortCriteria);
+      setSearchParams(params, { replace: true });
+    }
+  }, [sortCriteria]);
   
   // Modal states
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -51,12 +70,48 @@ const Dashboard: React.FC = () => {
     category.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const filteredTasks = selectedCategory 
+  const filteredTasks = selectedCategory
     ? getTasksByCategory(selectedCategory.id).filter(task =>
         task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         task.description.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : [];
+
+  const priorityValue = (p: string) =>
+    p === 'high' ? 3 : p === 'medium' ? 2 : 1;
+
+  const sortedTasks = useMemo(() => {
+    const tasksToSort = [...filteredTasks];
+    tasksToSort.sort((a, b) => {
+      switch (sortCriteria) {
+        case 'title-asc':
+          return a.title.localeCompare(b.title);
+        case 'title-desc':
+          return b.title.localeCompare(a.title);
+        case 'created-asc':
+          return a.createdAt.getTime() - b.createdAt.getTime();
+        case 'created-desc':
+          return b.createdAt.getTime() - a.createdAt.getTime();
+        case 'priority-asc':
+          return priorityValue(a.priority) - priorityValue(b.priority);
+        case 'priority-desc':
+          return priorityValue(b.priority) - priorityValue(a.priority);
+        case 'due-asc':
+          return (
+            (a.nextDue ? a.nextDue.getTime() : Infinity) -
+            (b.nextDue ? b.nextDue.getTime() : Infinity)
+          );
+        case 'due-desc':
+          return (
+            (b.nextDue ? b.nextDue.getTime() : -Infinity) -
+            (a.nextDue ? a.nextDue.getTime() : -Infinity)
+          );
+        default:
+          return 0;
+      }
+    });
+    return tasksToSort;
+  }, [filteredTasks, sortCriteria]);
 
   // Statistics
   const totalTasks = tasks.length;
@@ -230,6 +285,18 @@ const Dashboard: React.FC = () => {
                 </Button>
               </Link>
 
+              <Select value={sortCriteria} onValueChange={setSortCriteria}>
+                <SelectTrigger className="w-32">
+                  <SelectValue placeholder="Sortierung" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="created-desc">Neueste zuerst</SelectItem>
+                  <SelectItem value="created-asc">Älteste zuerst</SelectItem>
+                  <SelectItem value="title-asc">Titel A-Z</SelectItem>
+                  <SelectItem value="title-desc">Titel Z-A</SelectItem>
+                </SelectContent>
+              </Select>
+
               {/* Action Buttons */}
               {viewMode === 'categories' ? (
                 <Button onClick={() => setIsCategoryModalOpen(true)} size="sm">
@@ -267,12 +334,28 @@ const Dashboard: React.FC = () => {
 
               {/* Mobile Actions */}
               <div className="flex flex-wrap gap-2">
-                <Link to="/statistics" className="flex-1">
-                  <Button variant="outline" size="sm" className="w-full">
-                    <BarChart3 className="h-4 w-4 mr-2" />
-                    Statistiken
-                  </Button>
-                </Link>
+              <Link to="/statistics" className="flex-1">
+                <Button variant="outline" size="sm" className="w-full">
+                  <BarChart3 className="h-4 w-4 mr-2" />
+                  Statistiken
+                </Button>
+              </Link>
+
+              <Select
+                value={sortCriteria}
+                onValueChange={setSortCriteria}
+                className="flex-1"
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Sortierung" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="created-desc">Neueste zuerst</SelectItem>
+                  <SelectItem value="created-asc">Älteste zuerst</SelectItem>
+                  <SelectItem value="title-asc">Titel A-Z</SelectItem>
+                  <SelectItem value="title-desc">Titel Z-A</SelectItem>
+                </SelectContent>
+              </Select>
 
                 {viewMode === 'categories' ? (
                   <Button onClick={() => setIsCategoryModalOpen(true)} size="sm" className="flex-1">
@@ -420,7 +503,7 @@ const Dashboard: React.FC = () => {
               </Card>
             ) : (
               <div className="space-y-3 sm:space-y-4">
-                {filteredTasks.map(task => (
+                {sortedTasks.map(task => (
                   <TaskCard
                     key={task.id}
                     task={task}
