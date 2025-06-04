@@ -46,6 +46,8 @@ const Dashboard: React.FC = () => {
   const [sortCriteria, setSortCriteria] = useState<string>(
     searchParams.get('sort') || 'created-desc'
   );
+  const [filterPriority, setFilterPriority] = useState<string>('all');
+  const [filterColor, setFilterColor] = useState<string>('all');
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
@@ -65,6 +67,15 @@ const Dashboard: React.FC = () => {
   const [parentTask, setParentTask] = useState<Task | null>(null);
   const [taskDetailStack, setTaskDetailStack] = useState<Task[]>([]);
 
+  const colorOptions = useMemo(() => {
+    const tasksForColors = selectedCategory
+      ? getTasksByCategory(selectedCategory.id)
+      : tasks;
+    const colors = new Set<string>();
+    tasksForColors.forEach(task => colors.add(task.color));
+    return Array.from(colors);
+  }, [selectedCategory, tasks]);
+
   // Filter categories and tasks based on search
   const filteredCategories = categories.filter(category =>
     category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -72,10 +83,16 @@ const Dashboard: React.FC = () => {
   );
 
   const filteredTasks = selectedCategory
-    ? getTasksByCategory(selectedCategory.id).filter(task =>
-        task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        task.description.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+    ? getTasksByCategory(selectedCategory.id).filter(task => {
+        const matchesSearch =
+          task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          task.description.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesPriority =
+          filterPriority === 'all' || task.priority === filterPriority;
+        const matchesColor =
+          filterColor === 'all' || task.color === filterColor;
+        return matchesSearch && matchesPriority && matchesColor;
+      })
     : [];
 
   const priorityValue = (p: string) =>
@@ -500,7 +517,7 @@ const Dashboard: React.FC = () => {
                 />
               </div>
               <Select value={sortCriteria} onValueChange={setSortCriteria}>
-                <SelectTrigger className="w-32">
+                <SelectTrigger className="w-36">
                   <SelectValue placeholder="Sortierung" />
                 </SelectTrigger>
                 <SelectContent>
@@ -508,6 +525,40 @@ const Dashboard: React.FC = () => {
                   <SelectItem value="created-asc">Älteste zuerst</SelectItem>
                   <SelectItem value="title-asc">Titel A-Z</SelectItem>
                   <SelectItem value="title-desc">Titel Z-A</SelectItem>
+                  <SelectItem value="priority-asc">Priorität ↑</SelectItem>
+                  <SelectItem value="priority-desc">Priorität ↓</SelectItem>
+                  <SelectItem value="due-asc">Fälligkeitsdatum ↑</SelectItem>
+                  <SelectItem value="due-desc">Fälligkeitsdatum ↓</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={filterPriority} onValueChange={setFilterPriority}>
+                <SelectTrigger className="w-32">
+                  <SelectValue placeholder="Priorität" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Alle</SelectItem>
+                  <SelectItem value="high">Hoch</SelectItem>
+                  <SelectItem value="medium">Mittel</SelectItem>
+                  <SelectItem value="low">Niedrig</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={filterColor} onValueChange={setFilterColor}>
+                <SelectTrigger className="w-32">
+                  <SelectValue placeholder="Farbe" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Alle</SelectItem>
+                  {colorOptions.map(color => (
+                    <SelectItem key={color} value={color}>
+                      <div className="flex items-center space-x-2">
+                        <span
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: color }}
+                        />
+                        <span>{color}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
