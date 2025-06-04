@@ -115,9 +115,16 @@ const Dashboard: React.FC = () => {
   }, [filteredTasks, sortCriteria]);
 
   // Statistics
-  const totalTasks = tasks.length;
-  const totalCategories = categories.length;
-  const completedTasks = tasks.filter(task => {
+  const totalTasks = selectedCategory
+    ? getTasksByCategory(selectedCategory.id).length
+    : tasks.length;
+
+  const totalCategories = selectedCategory ? 1 : categories.length;
+
+  const completedTasks = (selectedCategory
+    ? getTasksByCategory(selectedCategory.id)
+    : tasks
+  ).filter(task => {
     const hasSubtasks = task.subtasks.length > 0;
     if (hasSubtasks) {
       return task.subtasks.every(subtask => subtask.completed);
