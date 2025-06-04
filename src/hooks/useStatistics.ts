@@ -23,7 +23,17 @@ export const useStatistics = (): TaskStats => {
 
     const totalTasks = allTasks.length;
     const completedTasks = allTasks.filter(task => task.completed).length;
+    const pendingTasks = allTasks.filter(task => !task.completed).length;
     const recurringTasks = allTasks.filter(task => task.isRecurring).length;
+
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    const tasksCompletedLast7Days = allTasks.filter(task => {
+      if (!task.completed) return false;
+      const updated = task.lastCompleted || task.updatedAt;
+      return new Date(updated) >= weekAgo;
+    }).length;
+    const tasksCreatedLast7Days = allTasks.filter(task => new Date(task.createdAt) >= weekAgo).length;
     
 
     const today = new Date();
@@ -76,6 +86,9 @@ export const useStatistics = (): TaskStats => {
     return {
       totalTasks,
       completedTasks,
+      pendingTasks,
+      tasksCompletedLast7Days,
+      tasksCreatedLast7Days,
       overdueTasks,
       tasksByPriority,
       tasksByCategory,

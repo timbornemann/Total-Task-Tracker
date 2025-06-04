@@ -132,6 +132,8 @@ const Dashboard: React.FC = () => {
     return task.completed;
   }).length;
 
+  const pendingTasks = totalTasks - completedTasks;
+
   // Handlers
   const handleCreateTask = (taskData: TaskFormData) => {
     addTask({
@@ -400,7 +402,7 @@ const Dashboard: React.FC = () => {
 
       {/* Statistics */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-gray-600">Gesamt Tasks</CardTitle>
@@ -418,6 +420,14 @@ const Dashboard: React.FC = () => {
               <div className="text-xs sm:text-sm text-gray-500">
                 {totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0}% erledigt
               </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">Offen</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-xl sm:text-2xl font-bold text-yellow-600">{pendingTasks}</div>
             </CardContent>
           </Card>
           <Card>
