@@ -298,17 +298,6 @@ const Dashboard: React.FC = () => {
                 </Button>
               </Link>
 
-              <Select value={sortCriteria} onValueChange={setSortCriteria}>
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Sortierung" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="created-desc">Neueste zuerst</SelectItem>
-                  <SelectItem value="created-asc">Älteste zuerst</SelectItem>
-                  <SelectItem value="title-asc">Titel A-Z</SelectItem>
-                  <SelectItem value="title-desc">Titel Z-A</SelectItem>
-                </SelectContent>
-              </Select>
 
               {/* Action Buttons */}
               {viewMode === 'categories' ? (
@@ -345,21 +334,6 @@ const Dashboard: React.FC = () => {
                 </Button>
               </Link>
 
-              <Select
-                value={sortCriteria}
-                onValueChange={setSortCriteria}
-                className="flex-1"
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Sortierung" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="created-desc">Neueste zuerst</SelectItem>
-                  <SelectItem value="created-asc">Älteste zuerst</SelectItem>
-                  <SelectItem value="title-asc">Titel A-Z</SelectItem>
-                  <SelectItem value="title-desc">Titel Z-A</SelectItem>
-                </SelectContent>
-              </Select>
 
                 {viewMode === 'categories' ? (
                   <Button onClick={() => setIsCategoryModalOpen(true)} size="sm" className="flex-1">
@@ -437,14 +411,27 @@ const Dashboard: React.FC = () => {
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Kategorien</h2>
               <Badge variant="secondary">{filteredCategories.length} Kategorien</Badge>
             </div>
-            <div className="relative mb-4 sm:mb-6">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Kategorien suchen..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 w-full sm:max-w-xs"
-              />
+            <div className="flex items-center gap-2 mb-4 sm:mb-6">
+              <div className="relative flex-1 sm:max-w-xs">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Kategorien suchen..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 w-full"
+                />
+              </div>
+              <Select value={sortCriteria} onValueChange={setSortCriteria}>
+                <SelectTrigger className="w-32">
+                  <SelectValue placeholder="Sortierung" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="created-desc">Neueste zuerst</SelectItem>
+                  <SelectItem value="created-asc">Älteste zuerst</SelectItem>
+                  <SelectItem value="title-asc">Titel A-Z</SelectItem>
+                  <SelectItem value="title-desc">Titel Z-A</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             
             {filteredCategories.length === 0 ? (
@@ -492,14 +479,27 @@ const Dashboard: React.FC = () => {
               <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Tasks</h2>
               <Badge variant="secondary">{filteredTasks.length} Tasks</Badge>
             </div>
-            <div className="relative mb-4 sm:mb-6">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Tasks suchen..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 w-full sm:max-w-xs"
-              />
+            <div className="flex items-center gap-2 mb-4 sm:mb-6">
+              <div className="relative flex-1 sm:max-w-xs">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Tasks suchen..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 w-full"
+                />
+              </div>
+              <Select value={sortCriteria} onValueChange={setSortCriteria}>
+                <SelectTrigger className="w-32">
+                  <SelectValue placeholder="Sortierung" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="created-desc">Neueste zuerst</SelectItem>
+                  <SelectItem value="created-asc">Älteste zuerst</SelectItem>
+                  <SelectItem value="title-asc">Titel A-Z</SelectItem>
+                  <SelectItem value="title-desc">Titel Z-A</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             
             {filteredTasks.length === 0 ? (
