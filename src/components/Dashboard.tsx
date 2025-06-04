@@ -46,8 +46,10 @@ const Dashboard: React.FC = () => {
   const [sortCriteria, setSortCriteria] = useState<string>(
     searchParams.get('sort') || 'created-desc'
   );
+
   const [filterPriority, setFilterPriority] = useState<string>('all');
   const [filterColor, setFilterColor] = useState<string>('all');
+
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
