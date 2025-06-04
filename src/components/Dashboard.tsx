@@ -46,8 +46,10 @@ const Dashboard: React.FC = () => {
   const [sortCriteria, setSortCriteria] = useState<string>(
     searchParams.get('sort') || 'created-desc'
   );
-  const [filterPriority, setFilterPriority] = useState<string>('');
-  const [filterColor, setFilterColor] = useState<string>('');
+
+  const [filterPriority, setFilterPriority] = useState<string>('all');
+  const [filterColor, setFilterColor] = useState<string>('all');
+
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
@@ -88,9 +90,9 @@ const Dashboard: React.FC = () => {
           task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
           task.description.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesPriority =
-          filterPriority === '' || task.priority === filterPriority;
+          filterPriority === 'all' || task.priority === filterPriority;
         const matchesColor =
-          filterColor === '' || task.color === filterColor;
+          filterColor === 'all' || task.color === filterColor;
         return matchesSearch && matchesPriority && matchesColor;
       })
     : [];
@@ -536,7 +538,7 @@ const Dashboard: React.FC = () => {
                   <SelectValue placeholder="Priorität" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Alle</SelectItem>
+                  <SelectItem value="all">Alle</SelectItem>
                   <SelectItem value="high">Hoch</SelectItem>
                   <SelectItem value="medium">Mittel</SelectItem>
                   <SelectItem value="low">Niedrig</SelectItem>
@@ -547,7 +549,7 @@ const Dashboard: React.FC = () => {
                   <SelectValue placeholder="Farbe" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Alle</SelectItem>
+                  <SelectItem value="all">Alle</SelectItem>
                   {colorOptions.map(color => (
                     <SelectItem key={color} value={color}>
                       <div className="flex items-center space-x-2">
