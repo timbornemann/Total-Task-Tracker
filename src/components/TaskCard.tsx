@@ -77,9 +77,16 @@ const TaskCard: React.FC<TaskCardProps> = ({
                   style={{ backgroundColor: task.color }}
                 />
                 {task.isRecurring && (
-                  <Badge variant="outline" className="text-xs flex-shrink-0">
-                    <span className="hidden sm:inline">Wiederholt </span>
-                    {task.recurrencePattern}
+                  <Badge
+                    variant="outline"
+                    className="text-xs flex-shrink-0 text-center leading-snug"
+                  >
+                    <span className="hidden sm:block">
+                      Wiederholt
+                      <br />
+                      {task.recurrencePattern}
+                    </span>
+                    <span className="sm:hidden">{task.recurrencePattern}</span>
                   </Badge>
                 )}
                 {task.dueDate && (
