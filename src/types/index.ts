@@ -53,6 +53,9 @@ export interface CategoryFormData {
 export interface TaskStats {
   totalTasks: number;
   completedTasks: number;
+  pendingTasks: number;
+  tasksCompletedLast7Days: number;
+  tasksCreatedLast7Days: number;
   overdueTasks: number;
   tasksByPriority: {
     high: number;

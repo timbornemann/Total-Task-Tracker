@@ -46,7 +46,7 @@ const Statistics = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Overview Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-6 mb-6 sm:mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs sm:text-sm font-medium">Gesamt Tasks</CardTitle>
@@ -56,7 +56,7 @@ const Statistics = () => {
               <div className="text-lg sm:text-2xl font-bold">{stats.totalTasks}</div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs sm:text-sm font-medium">Abgeschlossen</CardTitle>
@@ -67,7 +67,17 @@ const Statistics = () => {
               <p className="text-xs text-muted-foreground">{completionRate}% der Tasks</p>
             </CardContent>
           </Card>
-          
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-xs sm:text-sm font-medium">Offen</CardTitle>
+              <Clock className="h-4 w-4 text-yellow-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-lg sm:text-2xl font-bold text-yellow-600">{stats.pendingTasks}</div>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs sm:text-sm font-medium">Überfällig</CardTitle>
@@ -77,7 +87,17 @@ const Statistics = () => {
               <div className="text-lg sm:text-2xl font-bold text-red-600">{stats.overdueTasks}</div>
             </CardContent>
           </Card>
-          
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-xs sm:text-sm font-medium">Erledigt 7 Tage</CardTitle>
+              <CheckCircle className="h-4 w-4 text-green-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-lg sm:text-2xl font-bold">{stats.tasksCompletedLast7Days}</div>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs sm:text-sm font-medium">Wiederkehrend</CardTitle>
@@ -85,6 +105,16 @@ const Statistics = () => {
             </CardHeader>
             <CardContent>
               <div className="text-lg sm:text-2xl font-bold text-blue-600">{stats.recurringTasks}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-xs sm:text-sm font-medium">Erstellt 7 Tage</CardTitle>
+              <Target className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-lg sm:text-2xl font-bold">{stats.tasksCreatedLast7Days}</div>
             </CardContent>
           </Card>
         </div>
