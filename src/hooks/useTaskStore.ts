@@ -25,19 +25,19 @@ export const useTaskStore = () => {
               dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
               lastCompleted: task.lastCompleted ? new Date(task.lastCompleted) : undefined,
               nextDue: task.nextDue ? new Date(task.nextDue) : undefined,
-              order: typeof task.order === 'number' ? task.order : idx,
-              dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
+              order: typeof task.order === "number" ? task.order : idx,
+            }))
           );
         }
 
         if (savedCategories && savedCategories.length) {
           setCategories(
-          savedCategories.map((category: any, idx: number) => ({
-            ...category,
-            createdAt: new Date(category.createdAt),
-            updatedAt: new Date(category.updatedAt),
-            order: typeof category.order === 'number' ? category.order : idx,
-          }))
+            savedCategories.map((category: any, idx: number) => ({
+              ...category,
+              createdAt: new Date(category.createdAt),
+              updatedAt: new Date(category.updatedAt),
+              order: typeof category.order === "number" ? category.order : idx,
+            }))
           );
         } else {
           // Create default category if none exist
@@ -85,13 +85,12 @@ export const useTaskStore = () => {
       subtasks: [],
       createdAt: new Date(),
       updatedAt: new Date(),
-      dueDate: taskData.dueDate,
       nextDue: taskData.isRecurring
         ? calculateNextDue(taskData.recurrencePattern)
         : undefined,
       lastCompleted: undefined,
       dueDate: taskData.dueDate ? new Date(taskData.dueDate) : undefined,
-      order: 0
+      order: 0,
     };
 
     if (taskData.parentId) {
@@ -220,10 +219,17 @@ export const useTaskStore = () => {
       id: Date.now().toString(),
       createdAt: new Date(),
       updatedAt: new Date(),
-      setCategories(prev => [
-        ...prev,
-        { ...newCategory, order: typeof newCategory.order === 'number' ? newCategory.order : prev.length }
-      ]);
+    };
+    setCategories(prev => [
+      ...prev,
+      {
+        ...newCategory,
+        order:
+          typeof newCategory.order === "number"
+            ? newCategory.order
+            : prev.length,
+      },
+    ]);
   };
 
   const updateCategory = (categoryId: string, updates: Partial<Category>) => {
@@ -282,7 +288,6 @@ const getTasksByCategory = (categoryId: string): Task[] => {
     .filter(task => task.categoryId === categoryId && !task.parentId)
     .sort((a, b) => a.order - b.order);
 };
-  };
 
   const findTaskById = (
     taskId: string,
