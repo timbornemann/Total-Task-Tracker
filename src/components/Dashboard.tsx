@@ -1,26 +1,26 @@
-
-import React, { useState, useMemo, useEffect } from 'react';
-import { Task, Category, TaskFormData, CategoryFormData } from '@/types';
-import { useTaskStore } from '@/hooks/useTaskStore';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Plus, Search, LayoutGrid, List, BarChart3, Menu } from 'lucide-react';
-import { Link, useSearchParams } from 'react-router-dom';
+import React, { useState, useMemo, useEffect } from "react";
+import { Task, Category, TaskFormData, CategoryFormData } from "@/types";
+import { useTaskStore } from "@/hooks/useTaskStore";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Search, LayoutGrid, List, BarChart3, Menu } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   Select,
   SelectTrigger,
   SelectValue,
   SelectContent,
-  SelectItem
-} from '@/components/ui/select';
-import CategoryCard from './CategoryCard';
-import TaskCard from './TaskCard';
-import TaskModal from './TaskModal';
-import CategoryModal from './CategoryModal';
-import TaskDetailModal from './TaskDetailModal';
-import { useToast } from '@/hooks/use-toast';
+  SelectItem,
+} from "@/components/ui/select";
+import CategoryCard from "./CategoryCard";
+import TaskCard from "./TaskCard";
+import TaskModal from "./TaskModal";
+import CategoryModal from "./CategoryModal";
+import TaskDetailModal from "./TaskDetailModal";
+import { useToast } from "@/hooks/use-toast";
+import SearchBar from "./SearchBar";
 
 const Dashboard: React.FC = () => {
   const {
@@ -33,32 +33,35 @@ const Dashboard: React.FC = () => {
     updateCategory,
     deleteCategory,
     getTasksByCategory,
-    findTaskById
+    findTaskById,
   } = useTaskStore();
 
   const { toast } = useToast();
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
-  const [viewMode, setViewMode] = useState<'categories' | 'tasks'>('categories');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null,
+  );
+  const [viewMode, setViewMode] = useState<"categories" | "tasks">(
+    "categories",
+  );
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [sortCriteria, setSortCriteria] = useState<string>(
-    searchParams.get('sort') || 'created-desc'
+    searchParams.get("sort") || "created-desc",
   );
 
-  const [filterPriority, setFilterPriority] = useState<string>('all');
-  const [filterColor, setFilterColor] = useState<string>('all');
-
+  const [filterPriority, setFilterPriority] = useState<string>("all");
+  const [filterColor, setFilterColor] = useState<string>("all");
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
-    if (params.get('sort') !== sortCriteria) {
-      params.set('sort', sortCriteria);
+    if (params.get("sort") !== sortCriteria) {
+      params.set("sort", sortCriteria);
       setSearchParams(params, { replace: true });
     }
   }, [sortCriteria]);
-  
+
   // Modal states
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
@@ -74,54 +77,55 @@ const Dashboard: React.FC = () => {
       ? getTasksByCategory(selectedCategory.id)
       : tasks;
     const colors = new Set<string>();
-    tasksForColors.forEach(task => colors.add(task.color));
+    tasksForColors.forEach((task) => colors.add(task.color));
     return Array.from(colors);
   }, [selectedCategory, tasks]);
 
   // Filter categories and tasks based on search
-  const filteredCategories = categories.filter(category =>
-    category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    category.description.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCategories = categories.filter(
+    (category) =>
+      category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      category.description.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const filteredTasks = selectedCategory
-    ? getTasksByCategory(selectedCategory.id).filter(task => {
+    ? getTasksByCategory(selectedCategory.id).filter((task) => {
         const matchesSearch =
           task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
           task.description.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesPriority =
-          filterPriority === 'all' || task.priority === filterPriority;
+          filterPriority === "all" || task.priority === filterPriority;
         const matchesColor =
-          filterColor === 'all' || task.color === filterColor;
+          filterColor === "all" || task.color === filterColor;
         return matchesSearch && matchesPriority && matchesColor;
       })
     : [];
 
   const priorityValue = (p: string) =>
-    p === 'high' ? 3 : p === 'medium' ? 2 : 1;
+    p === "high" ? 3 : p === "medium" ? 2 : 1;
 
   const sortedTasks = useMemo(() => {
     const tasksToSort = [...filteredTasks];
     tasksToSort.sort((a, b) => {
       switch (sortCriteria) {
-        case 'title-asc':
+        case "title-asc":
           return a.title.localeCompare(b.title);
-        case 'title-desc':
+        case "title-desc":
           return b.title.localeCompare(a.title);
-        case 'created-asc':
+        case "created-asc":
           return a.createdAt.getTime() - b.createdAt.getTime();
-        case 'created-desc':
+        case "created-desc":
           return b.createdAt.getTime() - a.createdAt.getTime();
-        case 'priority-asc':
+        case "priority-asc":
           return priorityValue(a.priority) - priorityValue(b.priority);
-        case 'priority-desc':
+        case "priority-desc":
           return priorityValue(b.priority) - priorityValue(a.priority);
-        case 'due-asc':
+        case "due-asc":
           return (
             (a.nextDue ? a.nextDue.getTime() : Infinity) -
             (b.nextDue ? b.nextDue.getTime() : Infinity)
           );
-        case 'due-desc':
+        case "due-desc":
           return (
             (b.nextDue ? b.nextDue.getTime() : -Infinity) -
             (a.nextDue ? a.nextDue.getTime() : -Infinity)
@@ -140,13 +144,12 @@ const Dashboard: React.FC = () => {
 
   const totalCategories = selectedCategory ? 1 : categories.length;
 
-  const completedTasks = (selectedCategory
-    ? getTasksByCategory(selectedCategory.id)
-    : tasks
-  ).filter(task => {
+  const completedTasks = (
+    selectedCategory ? getTasksByCategory(selectedCategory.id) : tasks
+  ).filter((task) => {
     const hasSubtasks = task.subtasks.length > 0;
     if (hasSubtasks) {
-      return task.subtasks.every(subtask => subtask.completed);
+      return task.subtasks.every((subtask) => subtask.completed);
     }
     return task.completed;
   }).length;
@@ -157,11 +160,11 @@ const Dashboard: React.FC = () => {
   const handleCreateTask = (taskData: TaskFormData) => {
     addTask({
       ...taskData,
-      completed: false
+      completed: false,
     });
     toast({
-      title: 'Task erstellt',
-      description: `"${taskData.title}" wurde erfolgreich erstellt.`
+      title: "Task erstellt",
+      description: `"${taskData.title}" wurde erfolgreich erstellt.`,
     });
     setParentTask(null);
   };
@@ -170,11 +173,11 @@ const Dashboard: React.FC = () => {
     if (editingTask) {
       updateTask(editingTask.id, {
         ...taskData,
-        completed: editingTask.completed
+        completed: editingTask.completed,
       });
       toast({
-        title: 'Task aktualisiert',
-        description: `"${taskData.title}" wurde erfolgreich aktualisiert.`
+        title: "Task aktualisiert",
+        description: `"${taskData.title}" wurde erfolgreich aktualisiert.`,
       });
       setEditingTask(null);
     }
@@ -182,11 +185,16 @@ const Dashboard: React.FC = () => {
 
   const handleDeleteTask = (taskId: string) => {
     const task = findTaskById(taskId);
-    if (task && window.confirm(`Sind Sie sicher, dass Sie "${task.title}" löschen möchten?`)) {
+    if (
+      task &&
+      window.confirm(
+        `Sind Sie sicher, dass Sie "${task.title}" löschen möchten?`,
+      )
+    ) {
       deleteTask(taskId);
       toast({
-        title: 'Task gelöscht',
-        description: 'Die Task wurde erfolgreich gelöscht.'
+        title: "Task gelöscht",
+        description: "Die Task wurde erfolgreich gelöscht.",
       });
     }
   };
@@ -195,16 +203,16 @@ const Dashboard: React.FC = () => {
     updateTask(taskId, { completed });
     const task = findTaskById(taskId);
     toast({
-      title: completed ? 'Task abgeschlossen' : 'Task reaktiviert',
-      description: `"${task?.title}" wurde ${completed ? 'als erledigt markiert' : 'reaktiviert'}.`
+      title: completed ? "Task abgeschlossen" : "Task reaktiviert",
+      description: `"${task?.title}" wurde ${completed ? "als erledigt markiert" : "reaktiviert"}.`,
     });
   };
 
   const handleCreateCategory = (categoryData: CategoryFormData) => {
     addCategory(categoryData);
     toast({
-      title: 'Kategorie erstellt',
-      description: `"${categoryData.name}" wurde erfolgreich erstellt.`
+      title: "Kategorie erstellt",
+      description: `"${categoryData.name}" wurde erfolgreich erstellt.`,
     });
   };
 
@@ -212,27 +220,32 @@ const Dashboard: React.FC = () => {
     if (editingCategory) {
       updateCategory(editingCategory.id, categoryData);
       toast({
-        title: 'Kategorie aktualisiert',
-        description: `"${categoryData.name}" wurde erfolgreich aktualisiert.`
+        title: "Kategorie aktualisiert",
+        description: `"${categoryData.name}" wurde erfolgreich aktualisiert.`,
       });
       setEditingCategory(null);
     }
   };
 
   const handleDeleteCategory = (categoryId: string) => {
-    const category = categories.find(c => c.id === categoryId);
-    if (category && window.confirm(`Sind Sie sicher, dass Sie "${category.name}" löschen möchten?`)) {
+    const category = categories.find((c) => c.id === categoryId);
+    if (
+      category &&
+      window.confirm(
+        `Sind Sie sicher, dass Sie "${category.name}" löschen möchten?`,
+      )
+    ) {
       deleteCategory(categoryId);
       toast({
-        title: 'Kategorie gelöscht',
-        description: 'Die Kategorie wurde erfolgreich gelöscht.'
+        title: "Kategorie gelöscht",
+        description: "Die Kategorie wurde erfolgreich gelöscht.",
       });
     }
   };
 
   const handleViewCategoryTasks = (category: Category) => {
     setSelectedCategory(category);
-    setViewMode('tasks');
+    setViewMode("tasks");
   };
 
   const handleAddSubtask = (parent: Task) => {
@@ -248,13 +261,15 @@ const Dashboard: React.FC = () => {
   };
 
   const handleViewTaskDetails = (task: Task) => {
-    setTaskDetailStack(prev => (selectedTask ? [...prev, selectedTask] : prev));
+    setTaskDetailStack((prev) =>
+      selectedTask ? [...prev, selectedTask] : prev,
+    );
     setSelectedTask(task);
     setIsTaskDetailModalOpen(true);
   };
 
   const handleTaskDetailBack = () => {
-    setTaskDetailStack(prev => {
+    setTaskDetailStack((prev) => {
       const stack = [...prev];
       const parent = stack.pop();
       if (parent) {
@@ -269,8 +284,8 @@ const Dashboard: React.FC = () => {
 
   const handleBackToCategories = () => {
     setSelectedCategory(null);
-    setViewMode('categories');
-    setSearchTerm('');
+    setViewMode("categories");
+    setSearchTerm("");
   };
 
   return (
@@ -280,23 +295,29 @@ const Dashboard: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 sm:h-16">
             <div className="flex items-center space-x-2 sm:space-x-4 min-w-0 flex-1">
-              <Link to="/" onClick={handleBackToCategories} className="text-lg sm:text-2xl font-bold text-gray-900 truncate">
+              <Link
+                to="/"
+                onClick={handleBackToCategories}
+                className="text-lg sm:text-2xl font-bold text-gray-900 truncate"
+              >
                 Task Tracker
               </Link>
               {selectedCategory && (
                 <div className="hidden sm:flex items-center space-x-2">
                   <span className="text-gray-500">/</span>
                   <div className="flex items-center space-x-2 min-w-0">
-                    <div 
+                    <div
                       className="w-4 h-4 rounded-full flex-shrink-0"
                       style={{ backgroundColor: selectedCategory.color }}
                     />
-                    <span className="font-medium text-gray-700 truncate">{selectedCategory.name}</span>
+                    <span className="font-medium text-gray-700 truncate">
+                      {selectedCategory.name}
+                    </span>
                   </div>
                 </div>
               )}
             </div>
-            
+
             {/* Mobile Menu Button */}
             <div className="sm:hidden">
               <Button
@@ -310,7 +331,6 @@ const Dashboard: React.FC = () => {
 
             {/* Desktop Actions */}
             <div className="hidden sm:flex items-center space-x-4">
-
               {/* Statistics Button */}
               <Link to="/statistics">
                 <Button variant="outline" size="sm">
@@ -319,16 +339,21 @@ const Dashboard: React.FC = () => {
                 </Button>
               </Link>
 
+              <SearchBar />
 
               {/* Action Buttons */}
-              {viewMode === 'categories' ? (
+              {viewMode === "categories" ? (
                 <Button onClick={() => setIsCategoryModalOpen(true)} size="sm">
                   <Plus className="h-4 w-4 mr-2" />
                   Kategorie
                 </Button>
               ) : (
                 <>
-                  <Button variant="outline" onClick={handleBackToCategories} size="sm">
+                  <Button
+                    variant="outline"
+                    onClick={handleBackToCategories}
+                    size="sm"
+                  >
                     <LayoutGrid className="h-4 w-4 mr-2" />
                     Kategorien
                   </Button>
@@ -344,30 +369,41 @@ const Dashboard: React.FC = () => {
           {/* Mobile Menu */}
           {showMobileMenu && (
             <div className="sm:hidden pb-4 space-y-3">
-
-
               {/* Mobile Actions */}
               <div className="flex flex-wrap gap-2">
-              <Link to="/statistics" className="flex-1">
-                <Button variant="outline" size="sm" className="w-full">
-                  <BarChart3 className="h-4 w-4 mr-2" />
-                  Statistiken
-                </Button>
-              </Link>
+                <Link to="/statistics" className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full">
+                    <BarChart3 className="h-4 w-4 mr-2" />
+                    Statistiken
+                  </Button>
+                </Link>
+                <SearchBar />
 
-
-                {viewMode === 'categories' ? (
-                  <Button onClick={() => setIsCategoryModalOpen(true)} size="sm" className="flex-1">
+                {viewMode === "categories" ? (
+                  <Button
+                    onClick={() => setIsCategoryModalOpen(true)}
+                    size="sm"
+                    className="flex-1"
+                  >
                     <Plus className="h-4 w-4 mr-2" />
                     Kategorie
                   </Button>
                 ) : (
                   <>
-                    <Button variant="outline" onClick={handleBackToCategories} size="sm" className="flex-1">
+                    <Button
+                      variant="outline"
+                      onClick={handleBackToCategories}
+                      size="sm"
+                      className="flex-1"
+                    >
                       <LayoutGrid className="h-4 w-4 mr-2" />
                       Kategorien
                     </Button>
-                    <Button onClick={() => setIsTaskModalOpen(true)} size="sm" className="flex-1">
+                    <Button
+                      onClick={() => setIsTaskModalOpen(true)}
+                      size="sm"
+                      className="flex-1"
+                    >
                       <Plus className="h-4 w-4 mr-2" />
                       Task
                     </Button>
@@ -380,11 +416,13 @@ const Dashboard: React.FC = () => {
                 <div className="flex items-center space-x-2 text-sm">
                   <span className="text-gray-500">In:</span>
                   <div className="flex items-center space-x-2">
-                    <div 
+                    <div
                       className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: selectedCategory.color }}
                     />
-                    <span className="font-medium text-gray-700">{selectedCategory.name}</span>
+                    <span className="font-medium text-gray-700">
+                      {selectedCategory.name}
+                    </span>
                   </div>
                 </div>
               )}
@@ -398,47 +436,70 @@ const Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Gesamt Tasks</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-600">
+                Gesamt Tasks
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-xl sm:text-2xl font-bold text-gray-900">{totalTasks}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Abgeschlossen</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-xl sm:text-2xl font-bold text-green-600">{completedTasks}</div>
-              <div className="text-xs sm:text-sm text-gray-500">
-                {totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0}% erledigt
+              <div className="text-xl sm:text-2xl font-bold text-gray-900">
+                {totalTasks}
               </div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Offen</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-600">
+                Abgeschlossen
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-xl sm:text-2xl font-bold text-yellow-600">{pendingTasks}</div>
+              <div className="text-xl sm:text-2xl font-bold text-green-600">
+                {completedTasks}
+              </div>
+              <div className="text-xs sm:text-sm text-gray-500">
+                {totalTasks > 0
+                  ? Math.round((completedTasks / totalTasks) * 100)
+                  : 0}
+                % erledigt
+              </div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Kategorien</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-600">
+                Offen
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-xl sm:text-2xl font-bold text-blue-600">{totalCategories}</div>
+              <div className="text-xl sm:text-2xl font-bold text-yellow-600">
+                {pendingTasks}
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">
+                Kategorien
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-xl sm:text-2xl font-bold text-blue-600">
+                {totalCategories}
+              </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Content */}
-        {viewMode === 'categories' ? (
+        {viewMode === "categories" ? (
           <div>
             <div className="flex items-center justify-between mb-4 sm:mb-6">
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Kategorien</h2>
-              <Badge variant="secondary">{filteredCategories.length} Kategorien</Badge>
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+                Kategorien
+              </h2>
+              <Badge variant="secondary">
+                {filteredCategories.length} Kategorien
+              </Badge>
             </div>
             <div className="flex items-center gap-2 mb-4 sm:mb-6">
               <div className="relative flex-1 sm:max-w-xs">
@@ -462,22 +523,26 @@ const Dashboard: React.FC = () => {
                 </SelectContent>
               </Select>
             </div>
-            
+
             {filteredCategories.length === 0 ? (
               <Card className="text-center py-8 sm:py-12">
                 <CardContent>
                   <LayoutGrid className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">
-                    {searchTerm ? 'Keine Kategorien gefunden' : 'Keine Kategorien vorhanden'}
+                    {searchTerm
+                      ? "Keine Kategorien gefunden"
+                      : "Keine Kategorien vorhanden"}
                   </h3>
                   <p className="text-sm sm:text-base text-gray-600 mb-4">
-                    {searchTerm 
-                      ? 'Versuchen Sie einen anderen Suchbegriff.'
-                      : 'Erstellen Sie Ihre erste Kategorie, um mit der Organisation Ihrer Tasks zu beginnen.'
-                    }
+                    {searchTerm
+                      ? "Versuchen Sie einen anderen Suchbegriff."
+                      : "Erstellen Sie Ihre erste Kategorie, um mit der Organisation Ihrer Tasks zu beginnen."}
                   </p>
                   {!searchTerm && (
-                    <Button onClick={() => setIsCategoryModalOpen(true)} size="sm">
+                    <Button
+                      onClick={() => setIsCategoryModalOpen(true)}
+                      size="sm"
+                    >
                       <Plus className="h-4 w-4 mr-2" />
                       Erste Kategorie erstellen
                     </Button>
@@ -486,12 +551,12 @@ const Dashboard: React.FC = () => {
               </Card>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                {filteredCategories.map(category => (
+                {filteredCategories.map((category) => (
                   <CategoryCard
                     key={category.id}
                     category={category}
                     tasks={getTasksByCategory(category.id)}
-                    onEdit={category => {
+                    onEdit={(category) => {
                       setEditingCategory(category);
                       setIsCategoryModalOpen(true);
                     }}
@@ -505,7 +570,9 @@ const Dashboard: React.FC = () => {
         ) : (
           <div>
             <div className="flex items-center justify-between mb-4 sm:mb-6">
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Tasks</h2>
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+                Tasks
+              </h2>
               <Badge variant="secondary">{filteredTasks.length} Tasks</Badge>
             </div>
             <div className="flex items-center gap-2 mb-4 sm:mb-6">
@@ -550,7 +617,7 @@ const Dashboard: React.FC = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Alle</SelectItem>
-                  {colorOptions.map(color => (
+                  {colorOptions.map((color) => (
                     <SelectItem key={color} value={color}>
                       <div className="flex items-center space-x-2">
                         <span
@@ -564,19 +631,20 @@ const Dashboard: React.FC = () => {
                 </SelectContent>
               </Select>
             </div>
-            
+
             {filteredTasks.length === 0 ? (
               <Card className="text-center py-8 sm:py-12">
                 <CardContent>
                   <List className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">
-                    {searchTerm ? 'Keine Tasks gefunden' : 'Keine Tasks vorhanden'}
+                    {searchTerm
+                      ? "Keine Tasks gefunden"
+                      : "Keine Tasks vorhanden"}
                   </h3>
                   <p className="text-sm sm:text-base text-gray-600 mb-4">
-                    {searchTerm 
-                      ? 'Versuchen Sie einen anderen Suchbegriff.'
-                      : `Erstellen Sie Ihre erste Task in der Kategorie "${selectedCategory?.name}".`
-                    }
+                    {searchTerm
+                      ? "Versuchen Sie einen anderen Suchbegriff."
+                      : `Erstellen Sie Ihre erste Task in der Kategorie "${selectedCategory?.name}".`}
                   </p>
                   {!searchTerm && (
                     <Button onClick={() => setIsTaskModalOpen(true)} size="sm">
@@ -588,7 +656,7 @@ const Dashboard: React.FC = () => {
               </Card>
             ) : (
               <div className="space-y-3 sm:space-y-4">
-                {sortedTasks.map(task => (
+                {sortedTasks.map((task) => (
                   <TaskCard
                     key={task.id}
                     task={task}
@@ -638,7 +706,11 @@ const Dashboard: React.FC = () => {
           setTaskDetailStack([]);
         }}
         task={selectedTask}
-        category={selectedTask ? categories.find(c => c.id === selectedTask.categoryId) || null : null}
+        category={
+          selectedTask
+            ? categories.find((c) => c.id === selectedTask.categoryId) || null
+            : null
+        }
         onEdit={handleEditTask}
         onDelete={handleDeleteTask}
         onAddSubtask={handleAddSubtask}
