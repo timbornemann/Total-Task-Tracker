@@ -1,46 +1,89 @@
 import { useState, useEffect } from 'react';
 import { Task, Category } from '@/types';
 
+const LOCAL_KEY = 'task-data';
+
+function dateReviver(key: string, value: any) {
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
+    const d = new Date(value);
+    if (!isNaN(d.getTime())) return d;
+  }
+  return value;
+}
+
+function serialize(data: any) {
+  return JSON.stringify(data, (k, v) =>
+    v instanceof Date ? v.toISOString() : v
+  );
+}
+
 const API_URL = '/api/data';
 
 export const useTaskStore = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [pendingSync, setPendingSync] = useState(false);
 
-  // Load data from the server on mount
+  // Load data from localStorage and server on mount
   useEffect(() => {
     const loadData = async () => {
+      // first load from localStorage if available
+      const local = localStorage.getItem(LOCAL_KEY);
+      if (local) {
+        try {
+          const { tasks: savedTasks, categories: savedCategories } = JSON.parse(local, dateReviver);
+          if (savedTasks) setTasks(savedTasks);
+          if (savedCategories) setCategories(savedCategories);
+        } catch (e) {
+          console.error('Fehler beim Laden lokaler Daten:', e);
+        }
+      }
+
       try {
         const res = await fetch(API_URL);
         if (!res.ok) throw new Error('Serverfehler');
         const { tasks: savedTasks, categories: savedCategories } = await res.json();
 
+        let loadedTasks: Task[] = [];
         if (savedTasks) {
-          setTasks(
-            savedTasks.map((task: any, idx: number) => ({
-              ...task,
-              createdAt: new Date(task.createdAt),
-              updatedAt: new Date(task.updatedAt),
-              dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
-              lastCompleted: task.lastCompleted ? new Date(task.lastCompleted) : undefined,
-              nextDue: task.nextDue ? new Date(task.nextDue) : undefined,
-              order: typeof task.order === 'number' ? task.order : idx,
-              dueDate: task.dueDate ? new Date(task.dueDate) : undefined
-            }))
-          );
+          loadedTasks = savedTasks.map((task: any, idx: number) => ({
+            ...task,
+            createdAt: new Date(task.createdAt),
+            updatedAt: new Date(task.updatedAt),
+            dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
+            lastCompleted: task.lastCompleted ? new Date(task.lastCompleted) : undefined,
+            nextDue: task.nextDue ? new Date(task.nextDue) : undefined,
+            order: typeof task.order === 'number' ? task.order : idx,
+            dueDate: task.dueDate ? new Date(task.dueDate) : undefined
+          }));
+          setTasks(loadedTasks);
         }
 
+        let loadedCategories: Category[] = [];
         if (savedCategories && savedCategories.length) {
-          setCategories(
-            savedCategories.map((category: any, idx: number) => ({
-              ...category,
-              createdAt: new Date(category.createdAt),
-              updatedAt: new Date(category.updatedAt),
-              order: typeof category.order === 'number' ? category.order : idx
-            }))
-          );
+          loadedCategories = savedCategories.map((category: any, idx: number) => ({
+            ...category,
+            createdAt: new Date(category.createdAt),
+            updatedAt: new Date(category.updatedAt),
+            order: typeof category.order === 'number' ? category.order : idx
+          }));
+          setCategories(loadedCategories);
         } else {
-          // Create default category if none exist
+          const defaultCategory: Category = {
+            id: 'default',
+            name: 'Allgemein',
+            description: 'Standard Kategorie für alle Tasks',
+            color: '#3B82F6',
+            createdAt: new Date(),
+            updatedAt: new Date()
+          };
+          loadedCategories = [defaultCategory];
+          setCategories(loadedCategories);
+        }
+        localStorage.setItem(LOCAL_KEY, serialize({ tasks: loadedTasks, categories: loadedCategories }));
+      } catch (error) {
+        console.error('Fehler beim Laden der Daten:', error);
+        if (categories.length === 0) {
           const defaultCategory: Category = {
             id: 'default',
             name: 'Allgemein',
@@ -50,31 +93,63 @@ export const useTaskStore = () => {
             updatedAt: new Date()
           };
           setCategories([defaultCategory]);
+          localStorage.setItem(LOCAL_KEY, serialize({ tasks: [], categories: [defaultCategory] }));
         }
-      } catch (error) {
-        console.error('Fehler beim Laden der Daten:', error);
       }
     };
 
     loadData();
   }, []);
 
-  // Save to server whenever data changes
+  // Save to localStorage and server whenever data changes
   useEffect(() => {
+    const data = { tasks, categories };
+    localStorage.setItem(LOCAL_KEY, serialize(data));
+
     const save = async () => {
       try {
         await fetch(API_URL, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ tasks, categories })
+          body: JSON.stringify(data)
         });
+        setPendingSync(false);
       } catch (error) {
         console.error('Fehler beim Speichern der Daten:', error);
+        setPendingSync(true);
       }
     };
 
-    save();
+    if (navigator.onLine) {
+      save();
+    } else {
+      setPendingSync(true);
+    }
   }, [tasks, categories]);
+
+  // Sync pending changes when connection is restored
+  useEffect(() => {
+    const sync = async () => {
+      if (pendingSync && navigator.onLine) {
+        const local = localStorage.getItem(LOCAL_KEY);
+        if (local) {
+          try {
+            await fetch(API_URL, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: local
+            });
+            setPendingSync(false);
+          } catch (e) {
+            console.error('Fehler beim Synchronisieren:', e);
+          }
+        }
+      }
+    };
+    window.addEventListener('online', sync);
+    sync();
+    return () => window.removeEventListener('online', sync);
+  }, [pendingSync]);
 
   const addTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'subtasks'>) => {
     const newTask: Task = {
