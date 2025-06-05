@@ -21,6 +21,7 @@ import TaskModal from './TaskModal';
 import CategoryModal from './CategoryModal';
 import TaskDetailModal from './TaskDetailModal';
 import { useToast } from '@/hooks/use-toast';
+import ThemeToggle from './ThemeToggle';
 import {
   DragDropContext,
   Droppable,
@@ -334,6 +335,8 @@ const Dashboard: React.FC = () => {
             {/* Desktop Actions */}
             <div className="hidden sm:flex items-center space-x-4">
 
+              <ThemeToggle />
+
               {/* Statistics Button */}
               <Link to="/statistics">
                 <Button variant="outline" size="sm">
@@ -371,6 +374,7 @@ const Dashboard: React.FC = () => {
 
               {/* Mobile Actions */}
               <div className="flex flex-wrap gap-2">
+              <ThemeToggle className="flex-1" />
               <Link to="/statistics" className="flex-1">
                 <Button variant="outline" size="sm" className="w-full">
                   <BarChart3 className="h-4 w-4 mr-2" />
