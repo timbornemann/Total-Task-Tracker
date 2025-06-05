@@ -6,7 +6,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Search, LayoutGrid, List, BarChart3, Menu } from 'lucide-react';
+import {
+  Plus,
+  Search,
+  LayoutGrid,
+  List,
+  BarChart3,
+  Menu,
+  Calendar as CalendarIcon,
+  Columns
+} from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
   Select,
@@ -357,6 +366,22 @@ const Dashboard: React.FC = () => {
                 </Button>
               </Link>
 
+              {/* Calendar Button */}
+              <Link to="/calendar">
+                <Button variant="outline" size="sm">
+                  <CalendarIcon className="h-4 w-4 mr-2" />
+                  Kalender
+                </Button>
+              </Link>
+
+              {/* Kanban Button */}
+              <Link to="/kanban">
+                <Button variant="outline" size="sm">
+                  <Columns className="h-4 w-4 mr-2" />
+                  Kanban
+                </Button>
+              </Link>
+
 
               {/* Action Buttons */}
               {viewMode === 'categories' ? (
@@ -390,6 +415,20 @@ const Dashboard: React.FC = () => {
                 <Button variant="outline" size="sm" className="w-full">
                   <BarChart3 className="h-4 w-4 mr-2" />
                   Statistiken
+                </Button>
+              </Link>
+
+              <Link to="/calendar" className="flex-1">
+                <Button variant="outline" size="sm" className="w-full">
+                  <CalendarIcon className="h-4 w-4 mr-2" />
+                  Kalender
+                </Button>
+              </Link>
+
+              <Link to="/kanban" className="flex-1">
+                <Button variant="outline" size="sm" className="w-full">
+                  <Columns className="h-4 w-4 mr-2" />
+                  Kanban
                 </Button>
               </Link>
 
