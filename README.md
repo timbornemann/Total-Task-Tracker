@@ -1,12 +1,13 @@
 # Task Tree Dashboard
 
-Dieses Projekt ist eine kleine Aufgabenverwaltung auf Basis von React und Node.js. Du kannst Aufgaben in Kategorien organisieren, Unteraufgaben anlegen und deine Termine im Kalender oder in Statistiken betrachten. Die Daten werden serverseitig in einer JSON-Datei gespeichert.
+Kleine Aufgabenverwaltung auf Basis von React und Node.js. Aufgaben lassen sich in Kategorien organisieren und in einem Kalender oder auf einer Statistikseite auswerten. Die Daten werden dabei auf dem Server in einer JSON-Datei persistiert.
 
 ## Voraussetzungen
 
-* Node.js (empfohlen Version 18) und npm
+* Für die lokale Entwicklung: **Node.js** (empfohlen Version 18) und **npm**
+* Für den produktiven Betrieb: **Docker** und **docker-compose**
 
-## Installation
+## Installation (lokale Entwicklung)
 
 ```bash
 # Repository klonen
@@ -31,25 +32,29 @@ npm start
 
 Rufe anschließend im Browser `http://localhost:8080` auf.
 
-## Produktion / Docker
+---
 
-Für einen produktiven Build kannst du die Anwendung bauen und über den Node-Server bereitstellen oder ein Docker-Image verwenden.
+## Bereitstellung mit Docker
 
-```bash
-# Build erstellen
-npm run build
+Die Anwendung kann komplett über einen Docker-Container ausgeführt werden. Dabei wird automatisch ein Produktionsbuild erstellt.
 
-# Server startet die gebaute App auf Port 3002
-npm start
-```
-
-Mit Docker geschieht das Ganze automatisch:
+1. Repository klonen und in das Projektverzeichnis wechseln
+2. Container bauen und starten
 
 ```bash
 docker-compose up --build
 ```
 
-Die Persistenz der Aufgaben erfolgt dabei im Verzeichnis `./server/data` auf dem Host.
+Der Dienst lauscht anschließend auf Port **3002**. Im Browser unter `http://localhost:3002` erreichst du das Dashboard. Die Daten werden dauerhaft im Verzeichnis `./server/data` gespeichert. Mit `docker-compose down` kann der Container gestoppt werden.
+
+## Manuelle Produktion (optional)
+
+Möchtest du ohne Docker deployen, kannst du die Anwendung lokal bauen und den Node-Server direkt nutzen.
+
+```bash
+npm run build
+npm start    # startet die gebaute App auf Port 3002
+```
 
 ## Funktionen
 
@@ -57,5 +62,13 @@ Die Persistenz der Aufgaben erfolgt dabei im Verzeichnis `./server/data` auf dem
 - Unteraufgaben, Prioritäten und Wiederholungen
 - Kalenderansicht und Statistikseite
 - Speicherung der Daten auf dem lokalen Server
+
+## Verwendung
+
+1. Nach dem Start siehst du die vorhandenen **Kategorien**. Mit dem Button `Kategorie` kannst du neue Kategorien erstellen.
+2. Wähle eine Kategorie aus, um ihre **Tasks** zu sehen. Über `Task` legst du neue Aufgaben an. Dort kannst du Titel, Beschreibung, Priorität, Farbe, Fälligkeitsdatum und optionale Wiederholung definieren.
+3. Tasks lassen sich per Drag & Drop umsortieren oder in Unteraufgaben aufteilen.
+4. Über das Suchfeld und die Filter sortierst und findest du Aufgaben nach Priorität oder Farbe.
+5. Die Seiten **Kalender** und **Statistiken** bieten dir einen Überblick über anstehende Termine und erledigte Tasks.
 
 Viel Spaß beim Ausprobieren!
