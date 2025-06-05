@@ -3,6 +3,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Task, Category, TaskFormData, CategoryFormData } from '@/types';
 import { useTaskStore } from '@/hooks/useTaskStore';
 import { Button } from '@/components/ui/button';
+import ThemeToggle from './ThemeToggle';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -375,13 +376,15 @@ const Dashboard: React.FC = () => {
                 </Button>
               </Link>
 
-              {/* Kanban Button */}
-              <Link to="/kanban">
-                <Button variant="outline" size="sm">
-                  <Columns className="h-4 w-4 mr-2" />
-                  Kanban
-                </Button>
-              </Link>
+            {/* Kanban Button */}
+            <Link to="/kanban">
+              <Button variant="outline" size="sm">
+                <Columns className="h-4 w-4 mr-2" />
+                Kanban
+              </Button>
+            </Link>
+
+            <ThemeToggle />
 
 
               {/* Action Buttons */}
@@ -432,6 +435,8 @@ const Dashboard: React.FC = () => {
                   Kanban
                 </Button>
               </Link>
+
+              <ThemeToggle variant="outline" size="sm" className="flex-1" />
 
 
                 {viewMode === 'categories' ? (
