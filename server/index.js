@@ -61,8 +61,20 @@ const server = http.createServer((req, res) => {
   const parsed = parse(req.url, true);
 
   if (parsed.pathname === '/api/data') {
+    if (req.method === 'OPTIONS') {
+      res.writeHead(204, {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET,PUT,OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      });
+      res.end();
+      return;
+    }
     if (req.method === 'GET') {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.writeHead(200, {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      });
       res.end(JSON.stringify(loadData()));
       return;
     }
@@ -73,7 +85,10 @@ const server = http.createServer((req, res) => {
         try {
           const data = JSON.parse(body || '{}');
           saveData(data);
-          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.writeHead(200, {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+          });
           res.end(JSON.stringify({ status: 'ok' }));
         } catch {
           res.writeHead(400);
