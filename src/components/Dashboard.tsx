@@ -12,15 +12,23 @@ import {
   SelectTrigger,
   SelectValue,
   SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
-import CategoryCard from "./CategoryCard";
-import TaskCard from "./TaskCard";
-import TaskModal from "./TaskModal";
-import CategoryModal from "./CategoryModal";
-import TaskDetailModal from "./TaskDetailModal";
-import { useToast } from "@/hooks/use-toast";
+
+  SelectItem
+} from '@/components/ui/select';
+import CategoryCard from './CategoryCard';
+import TaskCard from './TaskCard';
+import TaskModal from './TaskModal';
+import CategoryModal from './CategoryModal';
+import TaskDetailModal from './TaskDetailModal';
+import { useToast } from '@/hooks/use-toast';
 import SearchBar from "./SearchBar";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult
+} from 'react-beautiful-dnd';
+
 
 const Dashboard: React.FC = () => {
   const {
@@ -34,6 +42,9 @@ const Dashboard: React.FC = () => {
     deleteCategory,
     getTasksByCategory,
     findTaskById,
+    reorderCategories,
+    reorderTasks
+
   } = useTaskStore();
 
   const { toast } = useToast();
@@ -49,6 +60,7 @@ const Dashboard: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [sortCriteria, setSortCriteria] = useState<string>(
     searchParams.get("sort") || "created-desc",
+
   );
 
   const [filterPriority, setFilterPriority] = useState<string>("all");
@@ -108,7 +120,10 @@ const Dashboard: React.FC = () => {
     const tasksToSort = [...filteredTasks];
     tasksToSort.sort((a, b) => {
       switch (sortCriteria) {
-        case "title-asc":
+
+        case 'order':
+          return a.order - b.order;
+        case 'title-asc':
           return a.title.localeCompare(b.title);
         case "title-desc":
           return b.title.localeCompare(a.title);
@@ -286,6 +301,16 @@ const Dashboard: React.FC = () => {
     setSelectedCategory(null);
     setViewMode("categories");
     setSearchTerm("");
+  };
+
+  const handleCategoryDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+    reorderCategories(result.source.index, result.destination.index);
+  };
+
+  const handleTaskDragEnd = (result: DropResult) => {
+    if (!result.destination || !selectedCategory) return;
+    reorderTasks(selectedCategory.id, result.source.index, result.destination.index);
   };
 
   return (
@@ -516,6 +541,7 @@ const Dashboard: React.FC = () => {
                   <SelectValue placeholder="Sortierung" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="order">Manuell</SelectItem>
                   <SelectItem value="created-desc">Neueste zuerst</SelectItem>
                   <SelectItem value="created-asc">Älteste zuerst</SelectItem>
                   <SelectItem value="title-asc">Titel A-Z</SelectItem>
@@ -548,25 +574,41 @@ const Dashboard: React.FC = () => {
                     </Button>
                   )}
                 </CardContent>
-              </Card>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                {filteredCategories.map((category) => (
-                  <CategoryCard
-                    key={category.id}
-                    category={category}
-                    tasks={getTasksByCategory(category.id)}
-                    onEdit={(category) => {
-                      setEditingCategory(category);
-                      setIsCategoryModalOpen(true);
-                    }}
-                    onDelete={handleDeleteCategory}
-                    onViewTasks={handleViewCategoryTasks}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
+                           </Card>
+              ) : (
+                <DragDropContext onDragEnd={handleCategoryDragEnd}>
+                  <Droppable droppableId="categories">
+                    {provided => (
+                      <div
+                        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                      >
+                        {filteredCategories.map((category, index) => (
+                          <Draggable key={category.id} draggableId={category.id} index={index}>
+                            {prov => (
+                              <div ref={prov.innerRef} {...prov.draggableProps} {...prov.dragHandleProps}>
+                                <CategoryCard
+                                  category={category}
+                                  tasks={getTasksByCategory(category.id)}
+                                  onEdit={category => {
+                                    setEditingCategory(category);
+                                    setIsCategoryModalOpen(true);
+                                  }}
+                                  onDelete={handleDeleteCategory}
+                                  onViewTasks={handleViewCategoryTasks}
+                                />
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
+                </DragDropContext>
+              )}
+            </div>
         ) : (
           <div>
             <div className="flex items-center justify-between mb-4 sm:mb-6">
@@ -589,7 +631,8 @@ const Dashboard: React.FC = () => {
                 <SelectTrigger className="w-36">
                   <SelectValue placeholder="Sortierung" />
                 </SelectTrigger>
-                <SelectContent>
+              <SelectContent>
+                  <SelectItem value="order">Manuell</SelectItem>
                   <SelectItem value="created-desc">Neueste zuerst</SelectItem>
                   <SelectItem value="created-asc">Älteste zuerst</SelectItem>
                   <SelectItem value="title-asc">Titel A-Z</SelectItem>
@@ -655,19 +698,39 @@ const Dashboard: React.FC = () => {
                 </CardContent>
               </Card>
             ) : (
-              <div className="space-y-3 sm:space-y-4">
-                {sortedTasks.map((task) => (
-                  <TaskCard
-                    key={task.id}
-                    task={task}
-                    onEdit={handleEditTask}
-                    onDelete={handleDeleteTask}
-                    onAddSubtask={handleAddSubtask}
-                    onToggleComplete={handleToggleTaskComplete}
-                    onViewDetails={handleViewTaskDetails}
-                  />
-                ))}
-              </div>
+            <DragDropContext onDragEnd={handleTaskDragEnd}>
+              <Droppable droppableId="tasks">
+                {(provided) => (
+                  <div
+                    className="space-y-3 sm:space-y-4"
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    {sortedTasks.map((task, index) => (
+                      <Draggable key={task.id} draggableId={task.id} index={index}>
+                        {(prov) => (
+                          <div
+                            ref={prov.innerRef}
+                            {...prov.draggableProps}
+                            {...prov.dragHandleProps}
+                          >
+                            <TaskCard
+                              task={task}
+                              onEdit={handleEditTask}
+                              onDelete={handleDeleteTask}
+                              onAddSubtask={handleAddSubtask}
+                              onToggleComplete={handleToggleTaskComplete}
+                              onViewDetails={handleViewTaskDetails}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
             )}
           </div>
         )}

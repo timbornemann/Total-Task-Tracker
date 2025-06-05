@@ -1,85 +1,74 @@
-# Welcome to your Lovable project
+# Task Tree Dashboard
 
-## Project info
+Kleine Aufgabenverwaltung auf Basis von React und Node.js. Aufgaben lassen sich in Kategorien organisieren und in einem Kalender oder auf einer Statistikseite auswerten. Die Daten werden dabei auf dem Server in einer JSON-Datei persistiert.
 
-**URL**: https://lovable.dev/projects/7d731ef9-34e2-4078-9de6-ae3e6071a225
+## Voraussetzungen
 
-## How can I edit this code?
+* Für die lokale Entwicklung: **Node.js** (empfohlen Version 18) und **npm**
+* Für den produktiven Betrieb: **Docker** und **docker-compose**
 
-There are several ways of editing your application.
+## Installation (lokale Entwicklung)
 
-**Use Lovable**
+```bash
+# Repository klonen
+git clone <REPO_URL>
+cd task-tree-dashboard-docked
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/7d731ef9-34e2-4078-9de6-ae3e6071a225) and start prompting.
+# Abhängigkeiten installieren
+npm install
+```
 
-Changes made via Lovable will be committed automatically to this repo.
+## Entwicklung starten
 
-**Use your preferred IDE**
+Im Entwicklungsmodus läuft die React-Anwendung mit Vite auf Port **8080**. Für die Datenspeicherung kann gleichzeitig der Node-Server gestartet werden.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+```bash
+# Frontend mit automatischem Reload
+npm run dev
 
-## Docker Usage
+# In zweitem Terminal: Backend starten
+npm start
+```
 
-The application now runs a small Node server that stores tasks and categories inside the container. When the container is started using `docker-compose`, the data directory is mounted so multiple users share the same state.
+Rufe anschließend im Browser `http://localhost:8080` auf.
 
-To build and start the container run:
+---
+
+## Bereitstellung mit Docker
+
+Die Anwendung kann komplett über einen Docker-Container ausgeführt werden. Dabei wird automatisch ein Produktionsbuild erstellt.
+
+1. Repository klonen und in das Projektverzeichnis wechseln
+2. Container bauen und starten
 
 ```bash
 docker-compose up --build
 ```
 
-Data will be persisted in `./server/data` on the host machine.
+Der Dienst lauscht anschließend auf Port **3002**. Im Browser unter `http://localhost:3002` erreichst du das Dashboard. Die Daten werden dauerhaft im Verzeichnis `./server/data` gespeichert. Mit `docker-compose down` kann der Container gestoppt werden.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Manuelle Produktion (optional)
 
-Follow these steps:
+Möchtest du ohne Docker deployen, kannst du die Anwendung lokal bauen und den Node-Server direkt nutzen.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```bash
+npm run build
+npm start    # startet die gebaute App auf Port 3002
 ```
 
-**Edit a file directly in GitHub**
+## Funktionen
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- Aufgaben anlegen, bearbeiten und in Kategorien sortieren
+- Unteraufgaben, Prioritäten und Wiederholungen
+- Kalenderansicht und Statistikseite
+- Speicherung der Daten auf dem lokalen Server
 
-**Use GitHub Codespaces**
+## Verwendung
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+1. Nach dem Start siehst du die vorhandenen **Kategorien**. Mit dem Button `Kategorie` kannst du neue Kategorien erstellen.
+2. Wähle eine Kategorie aus, um ihre **Tasks** zu sehen. Über `Task` legst du neue Aufgaben an. Dort kannst du Titel, Beschreibung, Priorität, Farbe, Fälligkeitsdatum und optionale Wiederholung definieren.
+3. Tasks lassen sich per Drag & Drop umsortieren oder in Unteraufgaben aufteilen.
+4. Über das Suchfeld und die Filter sortierst und findest du Aufgaben nach Priorität oder Farbe.
+5. Die Seiten **Kalender** und **Statistiken** bieten dir einen Überblick über anstehende Termine und erledigte Tasks.
 
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/7d731ef9-34e2-4078-9de6-ae3e6071a225) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Viel Spaß beim Ausprobieren!

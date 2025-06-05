@@ -18,6 +18,8 @@ export interface Task {
   lastCompleted?: Date;
   nextDue?: Date;
   dueDate?: Date;
+  /** Sort order within its list */
+  order: number;
 }
 
 export interface Category {
@@ -27,6 +29,8 @@ export interface Category {
   color: string;
   createdAt: Date;
   updatedAt: Date;
+  /** Sort order within the category list */
+  order: number;
 }
 
 export interface TaskFormData {
