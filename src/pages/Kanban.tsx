@@ -4,6 +4,7 @@ import { useTaskStore } from '@/hooks/useTaskStore';
 import TaskCard from '@/components/TaskCard';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
+import ThemeToggle from '@/components/ThemeToggle';
 import {
   DragDropContext,
   Droppable,
@@ -65,6 +66,7 @@ const Kanban: React.FC = () => {
               </Link>
               <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Kanban</h1>
             </div>
+            <ThemeToggle />
           </div>
         </div>
       </header>
