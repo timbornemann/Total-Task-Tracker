@@ -6,6 +6,8 @@ export interface Task {
   priority: 'low' | 'medium' | 'high';
   color: string;
   completed: boolean;
+  /** Status for kanban workflow */
+  status: 'todo' | 'inprogress' | 'done';
   categoryId: string;
   parentId?: string;
   subtasks: Task[];

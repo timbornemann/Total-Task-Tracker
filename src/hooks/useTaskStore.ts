@@ -25,7 +25,8 @@ export const useTaskStore = () => {
               lastCompleted: task.lastCompleted ? new Date(task.lastCompleted) : undefined,
               nextDue: task.nextDue ? new Date(task.nextDue) : undefined,
               order: typeof task.order === 'number' ? task.order : idx,
-              dueDate: task.dueDate ? new Date(task.dueDate) : undefined
+              completed: task.completed ?? false,
+              status: task.status ?? (task.completed ? 'done' : 'todo')
             }))
           );
         }
@@ -77,18 +78,19 @@ export const useTaskStore = () => {
   }, [tasks, categories]);
 
   const addTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'subtasks'>) => {
-    const newTask: Task = {
-      ...taskData,
-      id: Date.now().toString(),
-      subtasks: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      dueDate: taskData.dueDate,
-      nextDue: taskData.isRecurring ? calculateNextDue(taskData.recurrencePattern) : undefined,
-      lastCompleted: undefined,
-      dueDate: taskData.dueDate ? new Date(taskData.dueDate) : undefined,
-      order: 0
-    };
+  const newTask: Task = {
+    ...taskData,
+    id: Date.now().toString(),
+    subtasks: [],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    dueDate: taskData.dueDate,
+    nextDue: taskData.isRecurring ? calculateNextDue(taskData.recurrencePattern) : undefined,
+    lastCompleted: undefined,
+    dueDate: taskData.dueDate ? new Date(taskData.dueDate) : undefined,
+    status: 'todo',
+    order: 0
+  };
     
     if (taskData.parentId) {
       // Add as subtask
