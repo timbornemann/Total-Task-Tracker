@@ -16,23 +16,29 @@ export const useTaskStore = () => {
         const { tasks: savedTasks, categories: savedCategories } = await res.json();
 
         if (savedTasks) {
-          setTasks(savedTasks.map((task: any) => ({
-            ...task,
-            createdAt: new Date(task.createdAt),
-            updatedAt: new Date(task.updatedAt),
-            dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
-            lastCompleted: task.lastCompleted ? new Date(task.lastCompleted) : undefined,
-            nextDue: task.nextDue ? new Date(task.nextDue) : undefined,
-            dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
-          })));
+          setTasks(
+            savedTasks.map((task: any, idx: number) => ({
+              ...task,
+              createdAt: new Date(task.createdAt),
+              updatedAt: new Date(task.updatedAt),
+              dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
+              lastCompleted: task.lastCompleted ? new Date(task.lastCompleted) : undefined,
+              nextDue: task.nextDue ? new Date(task.nextDue) : undefined,
+              order: typeof task.order === 'number' ? task.order : idx,
+              dueDate: task.dueDate ? new Date(task.dueDate) : undefined
+            }))
+          );
         }
 
         if (savedCategories && savedCategories.length) {
-          setCategories(savedCategories.map((category: any) => ({
-            ...category,
-            createdAt: new Date(category.createdAt),
-            updatedAt: new Date(category.updatedAt)
-          })));
+          setCategories(
+            savedCategories.map((category: any, idx: number) => ({
+              ...category,
+              createdAt: new Date(category.createdAt),
+              updatedAt: new Date(category.updatedAt),
+              order: typeof category.order === 'number' ? category.order : idx
+            }))
+          );
         } else {
           // Create default category if none exist
           const defaultCategory: Category = {
@@ -81,6 +87,7 @@ export const useTaskStore = () => {
       nextDue: taskData.isRecurring ? calculateNextDue(taskData.recurrencePattern) : undefined,
       lastCompleted: undefined,
       dueDate: taskData.dueDate ? new Date(taskData.dueDate) : undefined,
+      order: 0
     };
     
     if (taskData.parentId) {
@@ -90,7 +97,7 @@ export const useTaskStore = () => {
           if (task.id === taskData.parentId) {
             return {
               ...task,
-              subtasks: [...task.subtasks, newTask],
+              subtasks: [...task.subtasks, { ...newTask, order: task.subtasks.length }],
               updatedAt: new Date()
             };
           }
@@ -106,7 +113,10 @@ export const useTaskStore = () => {
       setTasks(prev => updateTaskRecursively(prev));
     } else {
       // Add as main task
-      setTasks(prev => [...prev, newTask]);
+      setTasks(prev => {
+        const tasksInCategory = prev.filter(t => t.categoryId === taskData.categoryId && !t.parentId);
+        return [...prev, { ...newTask, order: tasksInCategory.length }];
+      });
     }
   };
 
@@ -180,7 +190,20 @@ export const useTaskStore = () => {
         return true;
       });
     };
-    setTasks(prev => deleteTaskRecursively(prev));
+    setTasks(prev => {
+      const without = deleteTaskRecursively(prev);
+      const main = without.filter(t => !t.parentId);
+      const subs = without.filter(t => t.parentId);
+      const grouped: { [key: string]: Task[] } = {};
+      main.forEach(t => {
+        grouped[t.categoryId] = grouped[t.categoryId] || [];
+        grouped[t.categoryId].push(t);
+      });
+      const reorderedMain = Object.values(grouped).flatMap(list =>
+        list.map((t, idx) => ({ ...t, order: idx }))
+      );
+      return [...reorderedMain, ...subs];
+    });
   };
 
   const addCategory = (categoryData: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>) => {
@@ -188,9 +211,10 @@ export const useTaskStore = () => {
       ...categoryData,
       id: Date.now().toString(),
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
+      order: 0
     };
-    setCategories(prev => [...prev, newCategory]);
+    setCategories(prev => [...prev, { ...newCategory, order: prev.length }]);
   };
 
   const updateCategory = (categoryId: string, updates: Partial<Category>) => {
@@ -214,11 +238,38 @@ export const useTaskStore = () => {
     };
     
     setTasks(prev => updateTasksCategory(prev));
-    setCategories(prev => prev.filter(category => category.id !== categoryId));
+    setCategories(prev =>
+      prev
+        .filter(category => category.id !== categoryId)
+        .map((c, idx) => ({ ...c, order: idx }))
+    );
+  };
+
+  const reorderCategories = (startIndex: number, endIndex: number) => {
+    setCategories(prev => {
+      const updated = Array.from(prev);
+      const [removed] = updated.splice(startIndex, 1);
+      updated.splice(endIndex, 0, removed);
+      return updated.map((c, idx) => ({ ...c, order: idx }));
+    });
+  };
+
+  const reorderTasks = (categoryId: string, startIndex: number, endIndex: number) => {
+    setTasks(prev => {
+      const tasksInCategory = prev.filter(t => t.categoryId === categoryId && !t.parentId);
+      const others = prev.filter(t => !(t.categoryId === categoryId && !t.parentId));
+      const ordered = Array.from(tasksInCategory);
+      const [removed] = ordered.splice(startIndex, 1);
+      ordered.splice(endIndex, 0, removed);
+      const orderedWithIndex = ordered.map((t, idx) => ({ ...t, order: idx }));
+      return [...others, ...orderedWithIndex];
+    });
   };
 
   const getTasksByCategory = (categoryId: string): Task[] => {
-    return tasks.filter(task => task.categoryId === categoryId && !task.parentId);
+    return tasks
+      .filter(task => task.categoryId === categoryId && !task.parentId)
+      .sort((a, b) => a.order - b.order);
   };
 
   const findTaskById = (taskId: string, tasksArray: Task[] = tasks): Task | null => {
@@ -244,6 +295,8 @@ export const useTaskStore = () => {
     updateCategory,
     deleteCategory,
     getTasksByCategory,
-    findTaskById
+    findTaskById,
+    reorderCategories,
+    reorderTasks
   };
 };
