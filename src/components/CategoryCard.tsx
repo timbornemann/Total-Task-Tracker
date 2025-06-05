@@ -76,6 +76,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                   e.stopPropagation();
                   onDelete(category.id);
                 }}
+                title="Löschen (rückgängig möglich)"
                 className="h-8 w-8 p-0 text-red-600 hover:text-red-800"
               >
                 <Trash2 className="h-4 w-4" />
@@ -102,12 +103,12 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                   Bearbeiten
                 </DropdownMenuItem>
                 {category.id !== 'default' && (
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     onClick={() => onDelete(category.id)}
                     className="text-red-600"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
-                    Löschen
+                    Löschen (Undo möglich)
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>

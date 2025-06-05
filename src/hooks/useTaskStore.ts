@@ -6,6 +6,8 @@ const API_URL = '/api/data';
 export const useTaskStore = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [recentlyDeletedCategories, setRecentlyDeletedCategories] =
+    useState<{ category: Category; taskIds: string[] }[]>([]);
 
   // Load data from the server on mount
   useEffect(() => {
@@ -227,8 +229,10 @@ export const useTaskStore = () => {
 
   const deleteCategory = (categoryId: string) => {
     if (categoryId === 'default') return; // Prevent deleting default category
-    
-    // Move tasks to default category
+
+    const categoryToDelete = categories.find(c => c.id === categoryId);
+    if (!categoryToDelete) return;
+
     const updateTasksCategory = (tasks: Task[]): Task[] => {
       return tasks.map(task => ({
         ...task,
@@ -236,12 +240,60 @@ export const useTaskStore = () => {
         subtasks: updateTasksCategory(task.subtasks)
       }));
     };
-    
+
+    const affectedTaskIds = tasks
+      .filter(t => t.categoryId === categoryId)
+      .map(t => t.id);
+
     setTasks(prev => updateTasksCategory(prev));
-    setCategories(prev =>
-      prev
+
+    setCategories(prev => {
+      const remaining = prev
         .filter(category => category.id !== categoryId)
-        .map((c, idx) => ({ ...c, order: idx }))
+        .map((c, idx) => ({ ...c, order: idx }));
+
+      // If no categories remain after deletion, recreate a default category
+      if (remaining.length === 0) {
+        const defaultCategory: Category = {
+          id: 'default',
+          name: 'Allgemein',
+          description: 'Standard Kategorie für alle Tasks',
+          color: '#3B82F6',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          order: 0
+        };
+        return [defaultCategory];
+      }
+      return remaining;
+    });
+
+    setRecentlyDeletedCategories(prev => [
+      ...prev,
+      { category: categoryToDelete, taskIds: affectedTaskIds }
+    ]);
+  };
+
+  const undoDeleteCategory = (categoryId: string) => {
+    const deleted = recentlyDeletedCategories.find(r => r.category.id === categoryId);
+    if (!deleted) return;
+
+    setCategories(prev => {
+      const updated = [...prev];
+      updated.splice(deleted.category.order, 0, deleted.category);
+      return updated.map((c, idx) => ({ ...c, order: idx }));
+    });
+
+    setTasks(prev =>
+      prev.map(t =>
+        deleted.taskIds.includes(t.id)
+          ? { ...t, categoryId: deleted.category.id }
+          : t
+      )
+    );
+
+    setRecentlyDeletedCategories(prev =>
+      prev.filter(r => r.category.id !== categoryId)
     );
   };
 
@@ -288,12 +340,14 @@ export const useTaskStore = () => {
   return {
     tasks,
     categories,
+    recentlyDeletedCategories,
     addTask,
     updateTask,
     deleteTask,
     addCategory,
     updateCategory,
     deleteCategory,
+    undoDeleteCategory,
     getTasksByCategory,
     findTaskById,
     reorderCategories,

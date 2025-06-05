@@ -21,6 +21,7 @@ import TaskModal from './TaskModal';
 import CategoryModal from './CategoryModal';
 import TaskDetailModal from './TaskDetailModal';
 import { useToast } from '@/hooks/use-toast';
+import { ToastAction } from '@/components/ui/toast';
 import {
   DragDropContext,
   Droppable,
@@ -41,7 +42,8 @@ const Dashboard: React.FC = () => {
     getTasksByCategory,
     findTaskById,
     reorderCategories,
-    reorderTasks
+    reorderTasks,
+    undoDeleteCategory
   } = useTaskStore();
 
   const { toast } = useToast();
@@ -234,11 +236,24 @@ const Dashboard: React.FC = () => {
 
   const handleDeleteCategory = (categoryId: string) => {
     const category = categories.find(c => c.id === categoryId);
-    if (category && window.confirm(`Sind Sie sicher, dass Sie "${category.name}" löschen möchten?`)) {
+    if (!category) return;
+
+    const nonDefaultCount = categories.filter(c => c.id !== 'default').length;
+    const confirmText =
+      nonDefaultCount === 1 && category.id !== 'default'
+        ? `Sie sind dabei, die letzte verbleibende Kategorie zu löschen. "${category.name}" wirklich löschen?`
+        : `Sind Sie sicher, dass Sie "${category.name}" löschen möchten?`;
+
+    if (window.confirm(confirmText)) {
       deleteCategory(categoryId);
       toast({
         title: 'Kategorie gelöscht',
-        description: 'Die Kategorie wurde erfolgreich gelöscht.'
+        description: 'Die Kategorie wurde erfolgreich gelöscht.',
+        action: (
+          <ToastAction altText="Undo" onClick={() => undoDeleteCategory(categoryId)}>
+            Rückgängig
+          </ToastAction>
+        )
       });
     }
   };
