@@ -76,7 +76,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                   e.stopPropagation();
                   onDelete(category.id);
                 }}
-                title="Löschen (rückgängig möglich)"
+                title="Löschen (Rückgängig über Benachrichtigung)"
                 className="h-8 w-8 p-0 text-red-600 hover:text-red-800"
               >
                 <Trash2 className="h-4 w-4" />
@@ -108,7 +108,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                     className="text-red-600"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
-                    Löschen (Undo möglich)
+                    Löschen (Rückgängig über Benachrichtigung)
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
