@@ -339,6 +339,23 @@ export const useTaskStore = () => {
     return null;
   };
 
+  const searchTasks = (term: string, list: Task[] = tasks): Task[] => {
+    const lower = term.toLowerCase();
+    const result: Task[] = [];
+    for (const task of list) {
+      if (
+        task.title.toLowerCase().includes(lower) ||
+        task.description.toLowerCase().includes(lower)
+      ) {
+        result.push(task);
+      }
+      if (task.subtasks.length > 0) {
+        result.push(...searchTasks(term, task.subtasks));
+      }
+    }
+    return result;
+  };
+
   return {
     tasks,
     categories,
@@ -352,6 +369,7 @@ export const useTaskStore = () => {
     undoDeleteCategory,
     getTasksByCategory,
     findTaskById,
+    searchTasks,
     reorderCategories,
     reorderTasks
   };
