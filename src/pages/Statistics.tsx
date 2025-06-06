@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import { ArrowLeft, TrendingUp, CheckCircle, Clock, Target } from 'lucide-react';
-import ThemeToggle from '@/components/ThemeToggle';
 
 const Statistics = () => {
   const stats = useStatistics();
@@ -41,7 +40,6 @@ const Statistics = () => {
               </Link>
               <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Statistiken</h1>
             </div>
-            <ThemeToggle />
           </div>
         </div>
       </header>
