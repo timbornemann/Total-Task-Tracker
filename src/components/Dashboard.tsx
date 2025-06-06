@@ -257,8 +257,7 @@ const Dashboard: React.FC = () => {
       deleteCategory(categoryId);
       toast({
         title: 'Kategorie gelöscht',
-        description:
-          'Die Kategorie wurde gelöscht. Du kannst dies über die Meldung rückgängig machen.',
+        description: 'Die Kategorie wurde erfolgreich gelöscht.',
         action: (
           <ToastAction altText="Undo" onClick={() => undoDeleteCategory(categoryId)}>
             Rückgängig

@@ -235,11 +235,6 @@ export const useTaskStore = () => {
     const categoryToDelete = categories.find(c => c.id === categoryId);
     if (!categoryToDelete) return;
 
-    const nonDefaultCategories = categories.filter(c => c.id !== 'default');
-    const isLastNonDefault =
-      nonDefaultCategories.length === 1 &&
-      nonDefaultCategories[0].id === categoryId;
-
     const updateTasksCategory = (tasks: Task[]): Task[] => {
       return tasks.map(task => ({
         ...task,
@@ -255,12 +250,12 @@ export const useTaskStore = () => {
     setTasks(prev => updateTasksCategory(prev));
 
     setCategories(prev => {
-      let remaining = prev
+      const remaining = prev
         .filter(category => category.id !== categoryId)
         .map((c, idx) => ({ ...c, order: idx }));
 
-      // If no categories remain or the last non-default was removed, ensure a default exists
-      if (remaining.length === 0 || (isLastNonDefault && !remaining.find(c => c.id === 'default'))) {
+      // If no categories remain after deletion, recreate a default category
+      if (remaining.length === 0) {
         const defaultCategory: Category = {
           id: 'default',
           name: 'Allgemein',
@@ -270,22 +265,15 @@ export const useTaskStore = () => {
           updatedAt: new Date(),
           order: 0
         };
-        remaining = [defaultCategory, ...remaining];
+        return [defaultCategory];
       }
-      return remaining.map((c, idx) => ({ ...c, order: idx }));
+      return remaining;
     });
 
     setRecentlyDeletedCategories(prev => [
       ...prev,
       { category: categoryToDelete, taskIds: affectedTaskIds }
     ]);
-    setTimeout(
-      () =>
-        setRecentlyDeletedCategories(prev =>
-          prev.filter(r => r.category.id !== categoryId)
-        ),
-      10000
-    );
   };
 
   const undoDeleteCategory = (categoryId: string) => {
