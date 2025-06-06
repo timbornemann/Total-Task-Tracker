@@ -6,7 +6,6 @@ import { Task } from '@/types';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import ThemeToggle from '@/components/ThemeToggle';
 
 const CalendarPage = () => {
   const { tasks } = useTaskStore();
@@ -44,7 +43,6 @@ const CalendarPage = () => {
               </Link>
               <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Kalender</h1>
             </div>
-            <ThemeToggle />
           </div>
         </div>
       </header>
