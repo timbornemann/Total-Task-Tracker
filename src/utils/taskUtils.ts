@@ -5,7 +5,11 @@ export const calculateTaskCompletion = (task: Task): boolean => {
   if (task.subtasks.length === 0) {
     return task.completed;
   }
-  
+
+  if (task.completed) {
+    return true;
+  }
+
   return task.subtasks.every(subtask => calculateTaskCompletion(subtask));
 };
 
