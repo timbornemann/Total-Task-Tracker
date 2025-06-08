@@ -2,6 +2,7 @@ import React from 'react';
 import { useTaskStore } from '@/hooks/useTaskStore';
 import TaskCard from '@/components/TaskCard';
 import Navbar from '@/components/Navbar';
+import { flattenTasks, FlattenedTask } from '@/utils/taskUtils';
 import {
   DragDropContext,
   Droppable,
@@ -24,18 +25,18 @@ const Kanban: React.FC = () => {
     }
   };
 
-  const tasksByStatus: Record<'todo' | 'inprogress' | 'done', typeof tasks> = {
+  const flattened = flattenTasks(tasks);
+
+  const tasksByStatus: Record<'todo' | 'inprogress' | 'done', FlattenedTask[]> = {
     todo: [],
     inprogress: [],
     done: []
   };
 
-  tasks
-    .filter(t => !t.parentId)
-    .forEach(t => {
-      const status = t.status as 'todo' | 'inprogress' | 'done';
-      tasksByStatus[status].push(t);
-    });
+  flattened.forEach(item => {
+    const status = item.task.status as 'todo' | 'inprogress' | 'done';
+    tasksByStatus[status].push(item);
+  });
 
   const statuses: Array<'todo' | 'inprogress' | 'done'> = [
     'todo',
@@ -67,10 +68,10 @@ const Kanban: React.FC = () => {
                     <h2 className="text-base font-semibold mb-2">
                       {labels[status]}
                     </h2>
-                    {tasksByStatus[status].map((task, index) => (
+                    {tasksByStatus[status].map((item, index) => (
                       <Draggable
-                        key={task.id}
-                        draggableId={task.id}
+                        key={item.task.id}
+                        draggableId={item.task.id}
                         index={index}
                       >
                         {prov => (
@@ -80,7 +81,9 @@ const Kanban: React.FC = () => {
                             {...prov.dragHandleProps}
                           >
                             <TaskCard
-                              task={task}
+                              task={item.task}
+                              parentPathTitles={item.path.map(p => p.title)}
+                              showSubtasks={false}
                               onEdit={() => {}}
                               onDelete={() => {}}
                               onAddSubtask={() => {}}

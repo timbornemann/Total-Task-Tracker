@@ -17,6 +17,10 @@ interface TaskCardProps {
   onToggleComplete: (taskId: string, completed: boolean) => void;
   onViewDetails: (task: Task) => void;
   depth?: number;
+  /** Titles of all parent tasks from root to immediate parent */
+  parentPathTitles?: string[];
+  /** Whether to render subtasks recursively */
+  showSubtasks?: boolean;
 }
 
 const TaskCard: React.FC<TaskCardProps> = ({
@@ -26,7 +30,9 @@ const TaskCard: React.FC<TaskCardProps> = ({
   onAddSubtask,
   onToggleComplete,
   onViewDetails,
-  depth = 0
+  depth = 0,
+  parentPathTitles = [],
+  showSubtasks = true
 }) => {
   const isCompleted = calculateTaskCompletion(task);
   const progress = getTaskProgress(task);
@@ -59,7 +65,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
               />
             )}
             <div className="flex-1 min-w-0">
-              <CardTitle 
+              <CardTitle
                 className={`text-base sm:text-lg font-semibold cursor-pointer hover:text-blue-600 transition-colors ${
                   isCompleted ? 'line-through text-gray-500' : ''
                 } break-words`}
@@ -67,6 +73,11 @@ const TaskCard: React.FC<TaskCardProps> = ({
               >
                 {task.title}
               </CardTitle>
+              {parentPathTitles.length > 0 && (
+                <div className="text-xs text-gray-500 italic mt-1 break-words">
+                  {parentPathTitles.join(' > ')}
+                </div>
+              )}
               <div className="flex items-center space-x-2 mt-2 flex-wrap gap-1">
                 <Badge className={`text-xs px-2 py-1 border ${priorityClasses} flex-shrink-0`}>
                   <span className="hidden sm:inline">{priorityIcon} </span>
@@ -170,13 +181,13 @@ const TaskCard: React.FC<TaskCardProps> = ({
         </div>
       </CardHeader>
       
-      {(task.description || task.subtasks.length > 0) && (
+      {(task.description || (showSubtasks && task.subtasks.length > 0)) && (
         <CardContent className="pt-0">
           {task.description && (
             <p className="text-sm text-gray-600 mb-3 break-words">{task.description}</p>
           )}
-          
-          {task.subtasks.length > 0 && (
+
+          {showSubtasks && task.subtasks.length > 0 && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs sm:text-sm font-medium text-gray-700">
@@ -199,6 +210,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
                     onToggleComplete={onToggleComplete}
                     onViewDetails={onViewDetails}
                     depth={depth + 1}
+                    showSubtasks={showSubtasks}
                   />
                 ))}
               </div>
