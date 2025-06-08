@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowLeft, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useTaskStore } from '@/hooks/useTaskStore';
 import NoteModal from '@/components/NoteModal';
 import NoteCard from '@/components/NoteCard';
 import { Button } from '@/components/ui/button';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import Navbar from '@/components/Navbar';
 
 const NotesPage = () => {
   const { notes, addNote, updateNote, reorderNotes } = useTaskStore();
@@ -29,25 +29,13 @@ const NotesPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-14 sm:h-16">
-            <div className="flex items-center space-x-2 sm:space-x-4">
-              <Link to="/">
-                <Button variant="ghost" size="sm">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Zurück</span>
-                </Button>
-              </Link>
-              <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Notizen</h1>
-            </div>
-            <Button size="sm" onClick={() => setIsModalOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" /> Neue Notiz
-            </Button>
-          </div>
-        </div>
-      </header>
+      <Navbar title="Notizen" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <div className="flex justify-end mb-4">
+          <Button size="sm" onClick={() => setIsModalOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" /> Neue Notiz
+          </Button>
+        </div>
         {notes.length === 0 ? (
           <p className="text-sm text-muted-foreground">Keine Notizen vorhanden.</p>
         ) : (
