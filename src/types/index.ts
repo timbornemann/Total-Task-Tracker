@@ -56,6 +56,17 @@ export interface CategoryFormData {
   color: string;
 }
 
+export interface Note {
+  id: string;
+  title: string;
+  text: string;
+  color: string;
+  createdAt: Date;
+  updatedAt: Date;
+  /** Sort order within the notes list */
+  order: number;
+}
+
 export interface TaskStats {
   totalTasks: number;
   completedTasks: number;
