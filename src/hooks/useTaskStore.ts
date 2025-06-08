@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Task, Category } from '@/types';
+import { Task, Category, Note } from '@/types';
 
 const API_URL = '/api/data';
 
 export const useTaskStore = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [recentlyDeletedCategories, setRecentlyDeletedCategories] =
     useState<{ category: Category; taskIds: string[] }[]>([]);
 
@@ -15,7 +16,11 @@ export const useTaskStore = () => {
       try {
         const res = await fetch(API_URL);
         if (!res.ok) throw new Error('Serverfehler');
-        const { tasks: savedTasks, categories: savedCategories } = await res.json();
+        const {
+          tasks: savedTasks,
+          categories: savedCategories,
+          notes: savedNotes
+        } = await res.json();
 
         if (savedTasks) {
           setTasks(
@@ -29,6 +34,17 @@ export const useTaskStore = () => {
               order: typeof task.order === 'number' ? task.order : idx,
               completed: task.completed ?? false,
               status: task.status ?? (task.completed ? 'done' : 'todo')
+            }))
+          );
+        }
+
+        if (savedNotes) {
+          setNotes(
+            savedNotes.map((note: any, idx: number) => ({
+              ...note,
+              createdAt: new Date(note.createdAt),
+              updatedAt: new Date(note.updatedAt),
+              order: typeof note.order === 'number' ? note.order : idx
             }))
           );
         }
@@ -69,7 +85,7 @@ export const useTaskStore = () => {
         await fetch(API_URL, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ tasks, categories })
+          body: JSON.stringify({ tasks, categories, notes })
         });
       } catch (error) {
         console.error('Fehler beim Speichern der Daten:', error);
@@ -77,7 +93,7 @@ export const useTaskStore = () => {
     };
 
     save();
-  }, [tasks, categories]);
+  }, [tasks, categories, notes]);
 
   const addTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'subtasks'>) => {
   const newTask: Task = {
@@ -320,6 +336,38 @@ export const useTaskStore = () => {
     });
   };
 
+  const addNote = (data: Omit<Note, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const newNote: Note = {
+      ...data,
+      id: Date.now().toString(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      order: notes.length
+    };
+    setNotes(prev => [...prev, newNote]);
+  };
+
+  const updateNote = (noteId: string, updates: Partial<Note>) => {
+    setNotes(prev =>
+      prev.map(n =>
+        n.id === noteId ? { ...n, ...updates, updatedAt: new Date() } : n
+      )
+    );
+  };
+
+  const deleteNote = (noteId: string) => {
+    setNotes(prev => prev.filter(n => n.id !== noteId).map((n, idx) => ({ ...n, order: idx })));
+  };
+
+  const reorderNotes = (startIndex: number, endIndex: number) => {
+    setNotes(prev => {
+      const ordered = Array.from(prev);
+      const [removed] = ordered.splice(startIndex, 1);
+      ordered.splice(endIndex, 0, removed);
+      return ordered.map((n, idx) => ({ ...n, order: idx }));
+    });
+  };
+
   const getTasksByCategory = (categoryId: string): Task[] => {
     return tasks
       .filter(task => task.categoryId === categoryId && !task.parentId)
@@ -342,6 +390,7 @@ export const useTaskStore = () => {
   return {
     tasks,
     categories,
+    notes,
     recentlyDeletedCategories,
     addTask,
     updateTask,
@@ -353,6 +402,10 @@ export const useTaskStore = () => {
     getTasksByCategory,
     findTaskById,
     reorderCategories,
-    reorderTasks
+    reorderTasks,
+    addNote,
+    updateNote,
+    deleteNote,
+    reorderNotes
   };
 };

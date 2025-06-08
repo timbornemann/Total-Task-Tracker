@@ -382,6 +382,14 @@ const Dashboard: React.FC = () => {
                 </Button>
               </Link>
 
+              {/* Notes Button */}
+              <Link to="/notes">
+                <Button variant="outline" size="sm">
+                  <List className="h-4 w-4 mr-2" />
+                  Notizen
+                </Button>
+              </Link>
+
 
               {/* Action Buttons */}
               {viewMode === 'categories' ? (
@@ -429,6 +437,13 @@ const Dashboard: React.FC = () => {
                 <Button variant="outline" size="sm" className="w-full">
                   <Columns className="h-4 w-4 mr-2" />
                   Kanban
+                </Button>
+              </Link>
+
+              <Link to="/notes" className="flex-1">
+                <Button variant="outline" size="sm" className="w-full">
+                  <List className="h-4 w-4 mr-2" />
+                  Notizen
                 </Button>
               </Link>
 

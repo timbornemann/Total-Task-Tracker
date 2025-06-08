@@ -24,7 +24,7 @@ function loadData() {
     const raw = fs.readFileSync(DATA_FILE, 'utf8');
     return JSON.parse(raw, dateReviver);
   } catch {
-    return { tasks: [], categories: [] };
+    return { tasks: [], categories: [], notes: [] };
   }
 }
 

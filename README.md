@@ -61,6 +61,7 @@ npm start    # startet die gebaute App auf Port 3002
 - Aufgaben anlegen, bearbeiten und in Kategorien sortieren
 - Unteraufgaben, Prioritäten und Wiederholungen
 - Kalenderansicht und Statistikseite
+- Eigene Notizen mit Farbe und Drag & Drop sortierbar
 - Speicherung der Daten auf dem lokalen Server
 
 ## Verwendung
@@ -70,5 +71,6 @@ npm start    # startet die gebaute App auf Port 3002
 3. Tasks lassen sich per Drag & Drop umsortieren oder in Unteraufgaben aufteilen.
 4. Über das Suchfeld und die Filter sortierst und findest du Aufgaben nach Priorität oder Farbe.
 5. Die Seiten **Kalender** und **Statistiken** bieten dir einen Überblick über anstehende Termine und erledigte Tasks.
+6. Unter **Notizen** kannst du unabhängige Notizen verwalten und per Drag & Drop sortieren.
 
 Viel Spaß beim Ausprobieren!
