@@ -1,9 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { useTaskStore } from '@/hooks/useTaskStore';
 import TaskCard from '@/components/TaskCard';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import Navbar from '@/components/Navbar';
 import {
   DragDropContext,
   Droppable,
@@ -53,21 +51,7 @@ const Kanban: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-14 sm:h-16">
-            <div className="flex items-center space-x-2 sm:space-x-4">
-              <Link to="/">
-                <Button variant="ghost" size="sm">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Zurück</span>
-                </Button>
-              </Link>
-              <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Kanban</h1>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Navbar title="Kanban" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         <DragDropContext onDragEnd={onDragEnd}>
