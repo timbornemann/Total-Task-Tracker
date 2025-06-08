@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { Menu, BarChart3, Calendar as CalendarIcon, Columns } from 'lucide-react'
+import { Menu, BarChart3, Calendar as CalendarIcon, Columns, LayoutGrid } from 'lucide-react'
 
 interface NavbarProps {
   title?: string
@@ -31,6 +31,12 @@ const Navbar: React.FC<NavbarProps> = ({ title }) => {
             </Button>
           </div>
           <div className="hidden sm:flex items-center space-x-4">
+            <Link to="/">
+              <Button variant="outline" size="sm">
+                <LayoutGrid className="h-4 w-4 mr-2" />
+                Übersicht
+              </Button>
+            </Link>
             <Link to="/statistics">
               <Button variant="outline" size="sm">
                 <BarChart3 className="h-4 w-4 mr-2" />
@@ -54,6 +60,12 @@ const Navbar: React.FC<NavbarProps> = ({ title }) => {
         {showMobileMenu && (
           <div className="sm:hidden pb-4 space-y-3">
             <div className="flex flex-wrap gap-2">
+              <Link to="/" className="flex-1">
+                <Button variant="outline" size="sm" className="w-full">
+                  <LayoutGrid className="h-4 w-4 mr-2" />
+                  Übersicht
+                </Button>
+              </Link>
               <Link to="/statistics" className="flex-1">
                 <Button variant="outline" size="sm" className="w-full">
                   <BarChart3 className="h-4 w-4 mr-2" />
