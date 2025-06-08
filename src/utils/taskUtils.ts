@@ -55,3 +55,23 @@ export const getPriorityIcon = (priority: string): string => {
       return '⚪';
   }
 };
+
+export interface FlattenedTask {
+  task: Task;
+  /** Array of parent tasks from root to immediate parent */
+  path: Task[];
+}
+
+export const flattenTasks = (
+  tasks: Task[],
+  parentPath: Task[] = []
+): FlattenedTask[] => {
+  const result: FlattenedTask[] = [];
+  tasks.forEach(t => {
+    result.push({ task: t, path: parentPath });
+    if (t.subtasks.length > 0) {
+      result.push(...flattenTasks(t.subtasks, [...parentPath, t]));
+    }
+  });
+  return result;
+};
