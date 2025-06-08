@@ -1,6 +1,6 @@
 # Task Tree Dashboard
 
-Kleine Aufgabenverwaltung auf Basis von React und Node.js. Aufgaben lassen sich in Kategorien organisieren und in einem Kalender oder auf einer Statistikseite auswerten. Die Daten werden dabei auf dem Server in einer JSON-Datei persistiert.
+Kleine Aufgabenverwaltung auf Basis von React und Node.js. Aufgaben lassen sich in Kategorien organisieren und in einem Kalender oder auf einer Statistikseite auswerten. Die Daten werden dabei auf dem Server in einer kleinen SQLite-Datenbank gespeichert.
 
 ## Voraussetzungen
 
@@ -45,7 +45,7 @@ Die Anwendung kann komplett über einen Docker-Container ausgeführt werden. Dab
 docker-compose up --build
 ```
 
-Der Dienst lauscht anschließend auf Port **3002**. Im Browser unter `http://localhost:3002` erreichst du das Dashboard. Die Daten werden dauerhaft im Verzeichnis `./server/data` gespeichert. Mit `docker-compose down` kann der Container gestoppt werden.
+Der Dienst lauscht anschließend auf Port **3002**. Im Browser unter `http://localhost:3002` erreichst du das Dashboard. Die Daten werden dauerhaft im Verzeichnis `./server/data` als SQLite-Datenbank abgelegt. Mit `docker-compose down` kann der Container gestoppt werden.
 
 ## Manuelle Produktion (optional)
 

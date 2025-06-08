@@ -3,13 +3,31 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { parse } from 'url';
+import Database from 'better-sqlite3';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const DATA_DIR = path.join(__dirname, 'data');
-const DATA_FILE = path.join(DATA_DIR, 'data.json');
+const DB_FILE = path.join(DATA_DIR, 'data.db');
 const DIST_DIR = path.join(__dirname, '..', 'dist');
+
+fs.mkdirSync(DATA_DIR, { recursive: true });
+const db = new Database(DB_FILE);
+db.exec(`
+  CREATE TABLE IF NOT EXISTS tasks (
+    id TEXT PRIMARY KEY,
+    data TEXT NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS categories (
+    id TEXT PRIMARY KEY,
+    data TEXT NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS notes (
+    id TEXT PRIMARY KEY,
+    data TEXT NOT NULL
+  );
+`);
 
 function dateReviver(key, value) {
   if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
@@ -21,23 +39,41 @@ function dateReviver(key, value) {
 
 function loadData() {
   try {
-    const raw = fs.readFileSync(DATA_FILE, 'utf8');
-    return JSON.parse(raw, dateReviver);
+    const tasks = db.prepare('SELECT data FROM tasks').all()
+      .map(row => JSON.parse(row.data, dateReviver));
+    const categories = db.prepare('SELECT data FROM categories').all()
+      .map(row => JSON.parse(row.data, dateReviver));
+    const notes = db.prepare('SELECT data FROM notes').all()
+      .map(row => JSON.parse(row.data, dateReviver));
+    return { tasks, categories, notes };
   } catch {
     return { tasks: [], categories: [], notes: [] };
   }
 }
 
 function saveData(data) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-  fs.writeFileSync(
-    DATA_FILE,
-    JSON.stringify(
-      data,
-      (key, value) => (value instanceof Date ? value.toISOString() : value),
-      2
-    )
+  const toJson = (obj) => JSON.stringify(
+    obj,
+    (key, value) => (value instanceof Date ? value.toISOString() : value)
   );
+  const tx = db.transaction(() => {
+    db.exec('DELETE FROM tasks');
+    for (const task of data.tasks || []) {
+      db.prepare('INSERT INTO tasks (id, data) VALUES (?, ?)')
+        .run(task.id, toJson(task));
+    }
+    db.exec('DELETE FROM categories');
+    for (const cat of data.categories || []) {
+      db.prepare('INSERT INTO categories (id, data) VALUES (?, ?)')
+        .run(cat.id, toJson(cat));
+    }
+    db.exec('DELETE FROM notes');
+    for (const note of data.notes || []) {
+      db.prepare('INSERT INTO notes (id, data) VALUES (?, ?)')
+        .run(note.id, toJson(note));
+    }
+  });
+  tx();
 }
 
 function serveStatic(filePath, res) {
