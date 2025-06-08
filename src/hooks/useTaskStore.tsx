@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import { Task, Category, Note } from '@/types';
 
 const API_URL = '/api/data';
 
-export const useTaskStore = () => {
+const useTaskStoreImpl = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [notes, setNotes] = useState<Note[]>([]);
@@ -408,4 +408,23 @@ export const useTaskStore = () => {
     deleteNote,
     reorderNotes
   };
+};
+
+type TaskStore = ReturnType<typeof useTaskStoreImpl>;
+
+const TaskStoreContext = createContext<TaskStore | null>(null);
+
+export const TaskStoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const store = useTaskStoreImpl();
+  return (
+    <TaskStoreContext.Provider value={store}>{children}</TaskStoreContext.Provider>
+  );
+};
+
+export const useTaskStore = () => {
+  const ctx = useContext(TaskStoreContext);
+  if (!ctx) {
+    throw new Error('useTaskStore must be used within TaskStoreProvider');
+  }
+  return ctx;
 };
