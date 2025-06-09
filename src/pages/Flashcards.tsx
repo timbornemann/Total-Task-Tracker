@@ -20,10 +20,15 @@ const FlashcardsPage: React.FC = () => {
   const { flashcards, decks, rateFlashcard } = useFlashcardStore();
   const [selectedDecks, setSelectedDecks] = useState<string[]>([]);
   const [randomMode, setRandomMode] = useState(false);
+  const [trainingMode, setTrainingMode] = useState(false);
   const [index, setIndex] = useState(0);
   const [showBack, setShowBack] = useState(false);
   const [showDone, setShowDone] = useState(false);
   const [shuffleKey, setShuffleKey] = useState(0);
+  const [sessionCards, setSessionCards] = useState<typeof flashcards>([]);
+  const [remainingCards, setRemainingCards] = useState<typeof flashcards>([]);
+  const [summary, setSummary] = useState<Record<string, { easy: number; medium: number; hard: number }>>({});
+  const [showSummary, setShowSummary] = useState(false);
 
   useEffect(() => {
     if (decks.length > 0 && selectedDecks.length === 0) {
@@ -40,6 +45,17 @@ const FlashcardsPage: React.FC = () => {
     [filtered]
   );
 
+  useEffect(() => {
+    if (trainingMode) {
+      const all = shuffleArray(filtered);
+      setSessionCards(all.slice(0, 5));
+      setRemainingCards(all.slice(5));
+      setIndex(0);
+      setSummary({});
+      setShowSummary(false);
+    }
+  }, [filtered, trainingMode]);
+
   const cards = useMemo(() => {
     if (randomMode) {
       return shuffleArray(filtered);
@@ -47,16 +63,34 @@ const FlashcardsPage: React.FC = () => {
     return dueCards;
   }, [filtered, dueCards, randomMode, shuffleKey]);
 
-  const current = cards[index];
+  const current = trainingMode ? sessionCards[index] : cards[index];
 
   useEffect(() => {
-    if (randomMode && index >= cards.length && cards.length > 0) {
+    if (!trainingMode && randomMode && index >= cards.length && cards.length > 0) {
       setShowDone(true);
     }
-  }, [index, randomMode, cards.length]);
+  }, [index, randomMode, cards.length, trainingMode]);
 
   const handleRate = (d: 'easy' | 'medium' | 'hard') => {
     if (!current) return;
+    if (trainingMode) {
+      setSummary(prev => {
+        const entry = prev[current.id] || { easy: 0, medium: 0, hard: 0 };
+        return { ...prev, [current.id]: { ...entry, [d]: entry[d] + 1 } };
+      });
+      const cards = [...sessionCards];
+      cards.splice(index, 1);
+      if (d !== 'easy') cards.push(current);
+      if (cards.length === 0) {
+        setSessionCards([]);
+        setShowSummary(true);
+      } else {
+        setSessionCards(cards);
+        setIndex(i => (i >= cards.length ? 0 : i));
+      }
+      setShowBack(false);
+      return;
+    }
     if (!randomMode) {
       rateFlashcard(current.id, d);
     }
@@ -65,10 +99,20 @@ const FlashcardsPage: React.FC = () => {
   };
 
   const handleRestart = () => {
-    setShowDone(false);
-    setIndex(0);
-    setShowBack(false);
-    setShuffleKey(k => k + 1);
+    if (trainingMode) {
+      const all = shuffleArray(filtered);
+      setSessionCards(all.slice(0, 5));
+      setRemainingCards(all.slice(5));
+      setIndex(0);
+      setShowBack(false);
+      setSummary({});
+      setShowSummary(false);
+    } else {
+      setShowDone(false);
+      setIndex(0);
+      setShowBack(false);
+      setShuffleKey(k => k + 1);
+    }
   };
 
   return (
@@ -79,6 +123,17 @@ const FlashcardsPage: React.FC = () => {
           <div className="flex items-center space-x-2">
             <Switch checked={randomMode} onCheckedChange={v => { setRandomMode(v); setIndex(0); }} />
             <Label>Random Modus</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Switch
+              checked={trainingMode}
+              onCheckedChange={v => {
+                setTrainingMode(v);
+                setRandomMode(false);
+                setIndex(0);
+              }}
+            />
+            <Label>Trainingsmodus</Label>
           </div>
           <div className="space-y-1">
             {decks.map(deck => (
@@ -121,7 +176,7 @@ const FlashcardsPage: React.FC = () => {
               </div>
             </CardContent>
             <CardFooter className="flex justify-between">
-              {randomMode ? (
+              {randomMode && !trainingMode ? (
                 <Button variant="outline" onClick={() => handleRate('easy')}>
                   Nächste Karte
                 </Button>
@@ -142,6 +197,45 @@ const FlashcardsPage: React.FC = () => {
           </Card>
         )}
       </div>
+      <AlertDialog
+        open={showSummary}
+        onOpenChange={open => {
+          if (!open) {
+            if (remainingCards.length === 0) {
+              handleRestart();
+            } else {
+              const next = remainingCards.slice(0, 5);
+              setSessionCards(next);
+              setRemainingCards(remainingCards.slice(5));
+              setIndex(0);
+              setShowBack(false);
+              setShowSummary(false);
+            }
+          }
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Training beendet</AlertDialogTitle>
+          </AlertDialogHeader>
+          <div className="max-h-60 overflow-y-auto space-y-2 my-2 text-sm">
+            {Object.entries(summary).map(([id, counts]) => {
+              const card = flashcards.find(c => c.id === id);
+              return (
+                <div key={id}>
+                  <div className="font-medium">{card?.front}</div>
+                  <div>Leicht: {counts.easy}, Mittel: {counts.medium}, Schwer: {counts.hard}</div>
+                </div>
+              );
+            })}
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setShowSummary(false)}>
+              Weiter
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <AlertDialog
         open={showDone}
         onOpenChange={open => {
