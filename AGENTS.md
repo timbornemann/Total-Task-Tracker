@@ -1,32 +1,89 @@
-# Repository Guidelines for Agents
+# 🧠 AGENTS.md – Leitfaden für KI-Agenten
 
-This project is a task management dashboard built with React + Vite and a small Node.js backend using SQLite. It includes Tailwind CSS and Shadcn UI components.
+Diese Datei dient als Anleitung für automatisierte Agenten (z. B. Codex), wie sie mit diesem Projekt interagieren sollen. Sie beschreibt Konventionen, Arbeitsabläufe und wichtige Anforderungen für eine reibungslose Integration.
 
-## Structure
-- **/src** – React front‑end written in TypeScript.
-- **/server** – Node.js server (`index.js`) with HTTP endpoints and SQLite persistence.
-- **/public** – static assets for the front‑end.
-- **Dockerfile** and **docker-compose.yml** for building and running the app in production.
+---
 
-## Setup
-1. Install Node.js 18 and npm.
-2. Install dependencies with `npm install`.
-3. Start development:
-   - `npm run dev` – Vite dev server on port 8080 with API proxy to the Node server.
-   - `npm start` – run the Node server on port 3002.
-4. Build production assets with `npm run build`.
-5. Lint code with `npm run lint` (uses ESLint with TypeScript config).
+## 1. Projektübersicht
 
-## Docker
-Use `docker-compose up --build` to build and run the application in a container. Data is stored in `./server/data` and mapped as a volume.
+* **Frontend**: React + Vite, TypeScript, Tailwind CSS, Shadcn UI
+* **Backend**: Node.js (ES Modules) mit SQLite
+* **Struktur**:
 
-## Coding Conventions
-- TypeScript for the React codebase (`.tsx`, `.ts`).
-- JavaScript (ES modules) for the server (`.js`).
-- Use two spaces for indentation and end statements with semicolons.
-- Keep code formatting consistent with the existing files and run `npm run lint` before committing.
+  * `/src` → Frontend (React/TS)
+  * `/server` → Backend (Node.js + SQLite)
+  * `/public` → Statische Assets
+  * `Dockerfile`, `docker-compose.yml` → Container Setup
 
-## Commit Guidelines
-- Provide clear commit messages in English describing what was changed and why.
-- Ensure that `npm run lint` and `npm run build` succeed before committing.
+---
 
+## 2. Setup & Entwicklung
+
+```bash
+npm install           # Abhängigkeiten installieren
+npm run dev           # Frontend (Vite) auf Port 8080
+npm start             # Backend (Node.js) auf Port 3002
+npm run build         # Production Build
+npm run lint          # Linting mit ESLint (TypeScript)
+```
+
+---
+
+## 3. Docker-Unterstützung
+
+```bash
+docker-compose up --build
+```
+
+* SQLite-Daten werden unter `./server/data` gespeichert und als Volume gemountet.
+
+---
+
+## 4. Codekonventionen
+
+* **Frontend**: TypeScript (`.tsx`, `.ts`)
+* **Backend**: JavaScript (ES Modules, `.js`)
+* **Formatierung**: 2 Leerzeichen, Semikolons am Ende
+* **Linting**: `npm run lint` muss vor jedem Commit fehlerfrei laufen
+* **Build**: `npm run build` muss erfolgreich abgeschlossen sein
+
+---
+
+## 5. Navigation & Feature-Integration
+
+* Neue Features **müssen** in die **Navigationsleiste** integriert werden.
+* Die Navbar befindet sich unter `src/components/Navbar.tsx`.
+* Links werden über React Router konfiguriert.
+
+---
+
+## 6. Dokumentation & README
+
+* Bei **größeren Änderungen** (z. B. neue Features, API-Struktur, neue Befehle) **README.md aktualisieren**.
+* Neue Umgebungsvariablen, Setup-Anleitungen und Screenshots sollten dokumentiert werden.
+
+---
+
+## 7. CI/CD & Automatisierung
+
+* Vor jedem Commit sicherstellen:
+
+  * `npm run lint` läuft ohne Fehler
+  * `npm run build` ist erfolgreich
+  * Alle vorhandenen Tests (falls vorhanden) bestehen
+
+---
+
+## 8. Commit- & PR-Richtlinien
+
+* Commit-Nachrichten auf **Englisch**, klar und aussagekräftig
+* Beschreiben, **was** geändert wurde und **warum**
+* Pull Requests sollten nachvollziehbare Änderungen enthalten (inkl. Screenshots bei UI-Updates)
+
+---
+
+
+## 9. Pflege & Erweiterung
+
+* Diese Datei darf bei Bedarf erweitert werden
+* Unterverzeichnisse können eigene AGENTS.md verwenden, um spezifische Regeln zu setzen
