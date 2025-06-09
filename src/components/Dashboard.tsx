@@ -630,6 +630,7 @@ const Dashboard: React.FC = () => {
         categories={categories}
         parentTask={parentTask || undefined}
         defaultCategoryId={selectedCategory ? selectedCategory.id : undefined}
+        defaultDueDate={undefined}
       />
 
       <CategoryModal

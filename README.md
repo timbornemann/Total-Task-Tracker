@@ -60,7 +60,7 @@ npm start    # startet die gebaute App auf Port 3002
 
 - Aufgaben anlegen, bearbeiten und in Kategorien sortieren
 - Unteraufgaben, Prioritäten und Wiederholungen
-- Kalenderansicht und Statistikseite
+- Kalenderansicht mit direkter Task-Erstellung und Statistikseite
 - Eigene Notizen mit Farbe und Drag & Drop sortierbar
 - Lernkarten mit Spaced-Repetition-Training und Verwaltung eigener Karten
   - Decks lassen sich beim Lernen ein- oder ausblenden
@@ -75,7 +75,7 @@ npm start    # startet die gebaute App auf Port 3002
 2. Wähle eine Kategorie aus, um ihre **Tasks** zu sehen. Über `Task` legst du neue Aufgaben an. Dort kannst du Titel, Beschreibung, Priorität, Farbe, Fälligkeitsdatum und optionale Wiederholung definieren.
 3. Tasks lassen sich per Drag & Drop umsortieren oder in Unteraufgaben aufteilen.
 4. Über das Suchfeld und die Filter sortierst und findest du Aufgaben nach Priorität oder Farbe.
-5. Die Seiten **Kalender** und **Statistiken** bieten dir einen Überblick über anstehende Termine und erledigte Tasks.
+5. In der **Kalender**-Ansicht klickst du auf ein Datum, um alle bis dahin fälligen Aufgaben zu sehen und neue Aufgaben direkt für diesen Tag anzulegen. Die **Statistiken** geben einen Überblick über erledigte Tasks.
 6. Unter **Notizen** kannst du unabhängige Notizen verwalten und per Drag & Drop sortieren.
 7. Unter **Decks** legst du Kartendecks an und kannst sie bearbeiten. In der Detailansicht eines Decks fügst du einzelne Karten hinzu.
 8. Der Bereich **Karten** zeigt dir fällige Karten zum Lernen an. Dort kannst du

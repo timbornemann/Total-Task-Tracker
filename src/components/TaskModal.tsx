@@ -22,6 +22,10 @@ interface TaskModalProps {
    * editing an existing task where the category comes from the task itself.
    */
   defaultCategoryId?: string;
+  /**
+   * Default due date when creating a new task. Ignored when editing.
+   */
+  defaultDueDate?: Date;
 }
 
 const TaskModal: React.FC<TaskModalProps> = ({
@@ -31,7 +35,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
   task,
   categories,
   parentTask,
-  defaultCategoryId
+  defaultCategoryId,
+  defaultDueDate
 }) => {
   const [formData, setFormData] = useState<TaskFormData>({
     title: '',
@@ -74,12 +79,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
         categoryId:
           defaultCategoryId || parentTask?.categoryId || categories[0]?.id || '',
         parentId: parentTask?.id,
-        dueDate: undefined,
+        dueDate: defaultDueDate,
         isRecurring: false,
         recurrencePattern: undefined
       });
     }
-  }, [isOpen, task, categories, parentTask, defaultCategoryId]);
+  }, [isOpen, task, categories, parentTask, defaultCategoryId, defaultDueDate]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
