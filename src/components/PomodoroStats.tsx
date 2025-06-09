@@ -43,6 +43,29 @@ const PomodoroStats: React.FC = () => {
           <CardTitle className="text-base">Heute</CardTitle>
         </CardHeader>
         <CardContent>
+          <p className="text-sm">Arbeit: {stats.todayTotals.workMinutes} min</p>
+          <p className="text-sm">Pause: {stats.todayTotals.breakMinutes} min</p>
+          <p className="text-sm mb-2">Zyklen: {stats.todayTotals.cycles}</p>
+          <div className="w-full h-3 bg-gray-200 rounded overflow-hidden mb-4">
+            <div
+              className="h-full bg-indigo-500"
+              style={{ width: `${
+                stats.todayTotals.workMinutes + stats.todayTotals.breakMinutes === 0
+                  ? 0
+                  : (stats.todayTotals.workMinutes /
+                      (stats.todayTotals.workMinutes + stats.todayTotals.breakMinutes)) * 100
+              }%` }}
+            />
+            <div
+              className="h-full bg-green-500"
+              style={{ width: `${
+                stats.todayTotals.workMinutes + stats.todayTotals.breakMinutes === 0
+                  ? 0
+                  : (stats.todayTotals.breakMinutes /
+                      (stats.todayTotals.workMinutes + stats.todayTotals.breakMinutes)) * 100
+              }%` }}
+            />
+          </div>
           <div className="h-40">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={stats.today} margin={{ top: 10, right: 20, left: 0, bottom: 20 }}>
@@ -51,6 +74,30 @@ const PomodoroStats: React.FC = () => {
                 <Tooltip />
                 <Bar dataKey="work" stackId="a" fill="#4f46e5" />
                 <Bar dataKey="break" stackId="a" fill="#16a34a" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Tageszeiten (Gesamt)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-40">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={[
+                  { time: 'Morgen', value: stats.timeOfDay.morning },
+                  { time: 'Mittag', value: stats.timeOfDay.afternoon },
+                  { time: 'Abend', value: stats.timeOfDay.evening },
+                  { time: 'Nacht', value: stats.timeOfDay.night }
+                ]}
+                margin={{ top: 10, right: 20, left: 0, bottom: 20 }}>
+                <XAxis dataKey="time" fontSize={12} />
+                <YAxis fontSize={12} />
+                <Tooltip />
+                <Bar dataKey="value" fill="#4f46e5" />
               </BarChart>
             </ResponsiveContainer>
           </div>

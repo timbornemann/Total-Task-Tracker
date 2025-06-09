@@ -68,16 +68,61 @@ export const usePomodoroStats = (): PomodoroStats => {
       return Object.keys(data).map(key => ({ date: key, ...data[key] }));
     };
 
-    const weekData = aggregateBy(week, d => d.toLocaleDateString('de-DE', { weekday: 'short' }), 7, 'day');
+    const weekData = aggregateBy(
+      week,
+      d => d.toLocaleDateString('de-DE', { weekday: 'short' }),
+      7,
+      'day'
+    );
     const daysInMonth = new Date().getDate();
-    const monthData = aggregateBy(month, d => d.getDate().toString(), daysInMonth, 'day');
-    const yearData = aggregateBy(year, d => d.toLocaleDateString('de-DE', { month: 'short' }), 12, 'month');
+    const monthData = aggregateBy(
+      month,
+      d => d.getDate().toString(),
+      daysInMonth,
+      'day'
+    );
+    const yearData = aggregateBy(
+      year,
+      d => d.toLocaleDateString('de-DE', { month: 'short' }),
+      12,
+      'month'
+    );
+
+    const todayTotals = {
+      workMinutes: today.reduce(
+        (sum, s) => sum + minutes(s.start, s.end),
+        0
+      ),
+      breakMinutes: today.reduce(
+        (sum, s) => sum + minutes(s.end, s.breakEnd ?? s.end),
+        0
+      ),
+      cycles: today.length
+    };
+
+    const timeOfDay = {
+      morning: 0,
+      afternoon: 0,
+      evening: 0,
+      night: 0
+    };
+    sessions.forEach(s => {
+      const start = new Date(s.start);
+      const h = start.getHours();
+      const m = minutes(s.start, s.end);
+      if (h >= 6 && h < 12) timeOfDay.morning += m;
+      else if (h >= 12 && h < 18) timeOfDay.afternoon += m;
+      else if (h >= 18 && h < 24) timeOfDay.evening += m;
+      else timeOfDay.night += m;
+    });
 
     return {
       totalWorkMinutes,
       totalBreakMinutes,
       totalCycles,
+      todayTotals,
       today: todayData,
+      timeOfDay,
       week: weekData,
       month: monthData,
       year: yearData

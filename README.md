@@ -69,10 +69,12 @@ npm start    # startet die gebaute App auf Port 3002
   - Eingabemodus zum Tippen der Antworten; nach dem Prüfen bewertest du selbst, ob die Karte leicht, mittel oder schwer war
 - Statistikseite für Lernkarten
 - Speicherung der Daten auf dem lokalen Server
-- Pomodoro-Timer läuft beim Neuladen der Seite weiter
-- Statistikseite auf der Pomodoro-Seite mit Tages-, Wochen-, Monats- und Jahresübersicht
-- Minuten für Arbeit und Pause werden separat gezählt und als gestapelter Balken
-  dargestellt. Beim Pausieren oder Zurücksetzen des Timers werden die Werte
+ - Pomodoro-Timer läuft beim Neuladen der Seite weiter
+ - Statistikseite auf der Pomodoro-Seite mit Tages-, Wochen-, Monats- und Jahresübersicht
+   - Auswertung nach Tageszeiten (Morgen, Mittag, Abend, Nacht)
+   - Zusätzliche Anzeige für den aktuellen Tag
+ - Minuten für Arbeit und Pause werden separat gezählt und als gestapelter Balken
+    dargestellt. Beim Pausieren oder Zurücksetzen des Timers werden die Werte
   sofort aktualisiert.
 - Lern- und Pausendauer frei konfigurierbar (auch direkt im Timer anpassbar)
 
