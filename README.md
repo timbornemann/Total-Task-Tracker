@@ -78,6 +78,7 @@ npm start    # startet die gebaute App auf Port 3002
     dargestellt. Beim Pausieren oder Zurücksetzen des Timers werden die Werte
   sofort aktualisiert.
 - Lern- und Pausendauer frei konfigurierbar (auch direkt im Timer anpassbar)
+- Daten können im Einstellungsbereich exportiert und importiert werden
 
 ## Verwendung
 
