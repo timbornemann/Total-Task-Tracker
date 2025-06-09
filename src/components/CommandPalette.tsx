@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { CommandDialog, CommandInput } from '@/components/ui/command'
+import { CommandDialog, CommandInput, CommandList, CommandEmpty } from '@/components/ui/command'
 import { useTaskStore } from '@/hooks/useTaskStore'
 import { useSettings } from '@/hooks/useSettings'
 import { useToast } from '@/hooks/use-toast'
@@ -82,6 +82,9 @@ const CommandPalette: React.FC = () => {
           }
         }}
       />
+      <CommandList>
+        <CommandEmpty>Keine Ergebnisse</CommandEmpty>
+      </CommandList>
     </CommandDialog>
   )
 }
