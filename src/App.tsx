@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { TaskStoreProvider } from "@/hooks/useTaskStore";
+import { CurrentCategoryProvider } from "@/hooks/useCurrentCategory";
 import { SettingsProvider } from "@/hooks/useSettings";
 import CommandPalette from "@/components/CommandPalette";
 import Index from "./pages/Index";
@@ -22,11 +23,12 @@ const App = () => (
     <TooltipProvider>
       <SettingsProvider>
         <TaskStoreProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <CommandPalette />
-            <Routes>
+          <CurrentCategoryProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <CommandPalette />
+              <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/statistics" element={<Statistics />} />
               <Route path="/calendar" element={<CalendarPage />} />
@@ -35,8 +37,9 @@ const App = () => (
               <Route path="/settings" element={<SettingsPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
+              </Routes>
+            </BrowserRouter>
+          </CurrentCategoryProvider>
         </TaskStoreProvider>
       </SettingsProvider>
     </TooltipProvider>
