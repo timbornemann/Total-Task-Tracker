@@ -67,6 +67,7 @@ npm start    # startet die gebaute App auf Port 3002
   - Optionaler Zufallsmodus ohne Bewertung
 - Statistikseite für Lernkarten
 - Speicherung der Daten auf dem lokalen Server
+- Pomodoro-Timer läuft beim Neuladen der Seite weiter
 
 ## Verwendung
 

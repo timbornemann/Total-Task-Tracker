@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 interface PomodoroState {
   isRunning: boolean;
@@ -18,43 +19,48 @@ interface PomodoroState {
 const WORK_DURATION = 25 * 60; // 25 Minuten
 const BREAK_DURATION = 5 * 60; // 5 Minuten
 
-export const usePomodoroStore = create<PomodoroState>(set => ({
-  isRunning: false,
-  isPaused: false,
-  remainingTime: WORK_DURATION,
-  mode: 'work',
-  currentTaskId: undefined,
-  start: (taskId?: string) =>
-    set(() => ({
-      isRunning: true,
-      isPaused: false,
-      remainingTime: WORK_DURATION,
-      mode: 'work',
-      currentTaskId: taskId
-    })),
-  pause: () => set({ isPaused: true }),
-  resume: () => set({ isPaused: false }),
-  reset: () =>
-    set(() => ({
+export const usePomodoroStore = create<PomodoroState>()(
+  persist(
+    set => ({
       isRunning: false,
       isPaused: false,
       remainingTime: WORK_DURATION,
       mode: 'work',
-      currentTaskId: undefined
-    })),
-  tick: () =>
-    set(state => {
-      if (!state.isRunning || state.isPaused) return state;
-      if (state.remainingTime > 0) {
-        return { remainingTime: state.remainingTime - 1 };
-      }
-      const nextMode = state.mode === 'work' ? 'break' : 'work';
-      return {
-        mode: nextMode,
-        remainingTime: nextMode === 'work' ? WORK_DURATION : BREAK_DURATION
-      };
-    })
-}));
+      currentTaskId: undefined,
+      start: (taskId?: string) =>
+        set(() => ({
+          isRunning: true,
+          isPaused: false,
+          remainingTime: WORK_DURATION,
+          mode: 'work',
+          currentTaskId: taskId
+        })),
+      pause: () => set({ isPaused: true }),
+      resume: () => set({ isPaused: false }),
+      reset: () =>
+        set(() => ({
+          isRunning: false,
+          isPaused: false,
+          remainingTime: WORK_DURATION,
+          mode: 'work',
+          currentTaskId: undefined
+        })),
+      tick: () =>
+        set(state => {
+          if (!state.isRunning || state.isPaused) return state;
+          if (state.remainingTime > 0) {
+            return { remainingTime: state.remainingTime - 1 };
+          }
+          const nextMode = state.mode === 'work' ? 'break' : 'work';
+          return {
+            mode: nextMode,
+            remainingTime: nextMode === 'work' ? WORK_DURATION : BREAK_DURATION
+          };
+        })
+    }),
+    { name: 'pomodoro' }
+  )
+);
 
 const formatTime = (sec: number) => {
   const m = Math.floor(sec / 60)
