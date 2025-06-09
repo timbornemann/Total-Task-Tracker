@@ -35,9 +35,11 @@ const CalendarPage = () => {
 
   const tasksByDate = useMemo(() => {
     const map: Record<string, FlattenedTask[]> = {};
-    const add = (date: Date | undefined, item: FlattenedTask) => {
+    const add = (date: Date | string | undefined, item: FlattenedTask) => {
       if (!date) return;
-      const key = date.toDateString();
+      const d = date instanceof Date ? date : new Date(date);
+      if (isNaN(d.getTime())) return;
+      const key = d.toDateString();
       if (!map[key]) map[key] = [];
       map[key].push(item);
     };
