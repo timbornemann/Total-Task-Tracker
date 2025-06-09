@@ -7,6 +7,14 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useFlashcardStore } from '@/hooks/useFlashcardStore';
 import { shuffleArray } from '@/utils/shuffle';
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogAction
+} from '@/components/ui/alert-dialog';
 
 const FlashcardsPage: React.FC = () => {
   const { flashcards, decks, rateFlashcard } = useFlashcardStore();
@@ -14,6 +22,8 @@ const FlashcardsPage: React.FC = () => {
   const [randomMode, setRandomMode] = useState(false);
   const [index, setIndex] = useState(0);
   const [showBack, setShowBack] = useState(false);
+  const [showDone, setShowDone] = useState(false);
+  const [shuffleKey, setShuffleKey] = useState(0);
 
   useEffect(() => {
     if (decks.length > 0 && selectedDecks.length === 0) {
@@ -35,9 +45,15 @@ const FlashcardsPage: React.FC = () => {
       return shuffleArray(filtered);
     }
     return dueCards;
-  }, [filtered, dueCards, randomMode]);
+  }, [filtered, dueCards, randomMode, shuffleKey]);
 
   const current = cards[index];
+
+  useEffect(() => {
+    if (randomMode && index >= cards.length && cards.length > 0) {
+      setShowDone(true);
+    }
+  }, [index, randomMode, cards.length]);
 
   const handleRate = (d: 'easy' | 'medium' | 'hard') => {
     if (!current) return;
@@ -46,6 +62,13 @@ const FlashcardsPage: React.FC = () => {
     }
     setShowBack(false);
     setIndex(i => i + 1);
+  };
+
+  const handleRestart = () => {
+    setShowDone(false);
+    setIndex(0);
+    setShowBack(false);
+    setShuffleKey(k => k + 1);
   };
 
   return (
@@ -119,6 +142,21 @@ const FlashcardsPage: React.FC = () => {
           </Card>
         )}
       </div>
+      <AlertDialog
+        open={showDone}
+        onOpenChange={open => {
+          if (!open) handleRestart();
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Alle Karten durch</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={handleRestart}>Weiter</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
