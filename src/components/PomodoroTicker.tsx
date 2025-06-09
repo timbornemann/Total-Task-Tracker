@@ -25,7 +25,7 @@ const PomodoroTicker = () => {
       setLastTick(Date.now())
     }, 1000)
     return () => clearInterval(interval)
-  }, [tick, lastTick, setLastTick])
+  }, [tick, setLastTick])
 
   useEffect(() => {
     if (prevMode.current === 'work' && mode === 'break' && startTime) {
