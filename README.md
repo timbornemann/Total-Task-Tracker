@@ -63,6 +63,7 @@ npm start    # startet die gebaute App auf Port 3002
 - Kalenderansicht und Statistikseite
 - Eigene Notizen mit Farbe und Drag & Drop sortierbar
 - Lernkarten mit Spaced-Repetition-Training und Verwaltung eigener Karten
+- Statistikseite für Lernkarten
 - Speicherung der Daten auf dem lokalen Server
 
 ## Verwendung
@@ -77,3 +78,19 @@ npm start    # startet die gebaute App auf Port 3002
 8. Der Bereich **Karten** zeigt dir fällige Karten zum Lernen an.
 
 Viel Spaß beim Ausprobieren!
+
+## Lernkarten-Algorithmus
+
+Beim Bewerten einer Karte merkt sich das System, wie oft sie als **leicht**, **mittel** oder **schwer** eingestuft wurde. Aus diesen Zählen berechnet sich eine Erfolgsquote:
+
+```
+successRate = (easyCount + 0.5 * mediumCount) / (easyCount + mediumCount + hardCount)
+```
+
+Die nächste Wiederholungszeit wird dann wie folgt bestimmt:
+
+1. Basisfaktor je nach aktueller Bewertung (`leicht` = 1.5, `mittel` = 1.2, `schwer` = 0.8)
+2. Der Faktor wird mit `1 + successRate` multipliziert
+3. Das Intervall erhöht sich um `interval * Faktor`
+
+Dadurch fließt sowohl die bisherige Leistung als auch die aktuelle Bewertung in das nächste Fälligkeitsdatum ein.

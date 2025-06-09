@@ -17,7 +17,10 @@ const useFlashcardStoreImpl = () => {
           setFlashcards(
             (data || []).map((c: any) => ({
               ...c,
-              dueDate: new Date(c.dueDate)
+              dueDate: new Date(c.dueDate),
+              easyCount: c.easyCount ?? 0,
+              mediumCount: c.mediumCount ?? 0,
+              hardCount: c.hardCount ?? 0
             }))
           );
         }
@@ -82,7 +85,10 @@ const useFlashcardStoreImpl = () => {
       ...data,
       id: Date.now().toString(),
       interval: 1,
-      dueDate: new Date()
+      dueDate: new Date(),
+      easyCount: 0,
+      mediumCount: 0,
+      hardCount: 0
     };
     setFlashcards(prev => [...prev, newCard]);
   };
@@ -119,13 +125,26 @@ const useFlashcardStoreImpl = () => {
     setFlashcards(prev => {
       return prev.map(card => {
         if (card.id !== id) return card;
-        let factor = 1;
-        if (difficulty === 'easy') factor = 2;
-        else if (difficulty === 'medium') factor = 1.5;
+        const total = card.easyCount + card.mediumCount + card.hardCount;
+        const successRate =
+          total > 0
+            ? (card.easyCount + 0.5 * card.mediumCount) / total
+            : 0.5;
+        let base = 0.8;
+        if (difficulty === 'easy') base = 1.5;
+        else if (difficulty === 'medium') base = 1.2;
+        const factor = base * (1 + successRate);
         const interval = Math.max(1, Math.round(card.interval * factor));
         const dueDate = new Date();
         dueDate.setDate(dueDate.getDate() + interval);
-        return { ...card, interval, dueDate };
+        return {
+          ...card,
+          interval,
+          dueDate,
+          easyCount: card.easyCount + (difficulty === 'easy' ? 1 : 0),
+          mediumCount: card.mediumCount + (difficulty === 'medium' ? 1 : 0),
+          hardCount: card.hardCount + (difficulty === 'hard' ? 1 : 0)
+        };
       });
     });
   };

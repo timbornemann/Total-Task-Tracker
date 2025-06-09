@@ -74,6 +74,9 @@ export interface Flashcard {
   deckId: string;
   interval: number;
   dueDate: Date;
+  easyCount: number;
+  mediumCount: number;
+  hardCount: number;
 }
 
 export interface Deck {
