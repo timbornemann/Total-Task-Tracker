@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { usePomodoroHistory } from './usePomodoroHistory';
+import { usePomodoroHistory } from './usePomodoroHistory.tsx';
 import { PomodoroStats } from '@/types';
 
 export const usePomodoroStats = (): PomodoroStats => {

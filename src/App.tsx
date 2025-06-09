@@ -23,7 +23,7 @@ import NotFound from "./pages/NotFound";
 import PomodoroPage from "./pages/Pomodoro";
 import PomodoroTimer from "@/components/PomodoroTimer";
 import PomodoroTicker from "@/components/PomodoroTicker";
-import { PomodoroHistoryProvider } from "@/hooks/usePomodoroHistory";
+import { PomodoroHistoryProvider } from "@/hooks/usePomodoroHistory.tsx";
 
 const queryClient = new QueryClient();
 
