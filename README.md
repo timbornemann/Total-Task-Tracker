@@ -62,6 +62,7 @@ npm start    # startet die gebaute App auf Port 3002
 - Unteraufgaben, Prioritäten und Wiederholungen
 - Kalenderansicht und Statistikseite
 - Eigene Notizen mit Farbe und Drag & Drop sortierbar
+- Lernkarten mit Spaced-Repetition-Training
 - Speicherung der Daten auf dem lokalen Server
 
 ## Verwendung

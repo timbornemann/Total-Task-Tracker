@@ -67,6 +67,15 @@ export interface Note {
   order: number;
 }
 
+export interface Flashcard {
+  id: string;
+  front: string;
+  back: string;
+  deck: string;
+  interval: number;
+  dueDate: Date;
+}
+
 export interface TaskStats {
   totalTasks: number;
   completedTasks: number;
