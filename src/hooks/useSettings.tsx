@@ -24,22 +24,44 @@ interface SettingsContextValue {
 const SettingsContext = createContext<SettingsContextValue | undefined>(undefined)
 
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [shortcuts, setShortcuts] = useState<ShortcutKeys>(() => {
-    const stored = localStorage.getItem('shortcuts')
-    return stored ? { ...defaultShortcuts, ...JSON.parse(stored) } : defaultShortcuts
-  })
-  const [pomodoro, setPomodoro] = useState(() => {
-    const stored = localStorage.getItem('pomodoro')
-    return stored ? { ...defaultPomodoro, ...JSON.parse(stored) } : defaultPomodoro
-  })
+  const [shortcuts, setShortcuts] = useState<ShortcutKeys>(defaultShortcuts)
+  const [pomodoro, setPomodoro] = useState(defaultPomodoro)
 
   useEffect(() => {
-    localStorage.setItem('shortcuts', JSON.stringify(shortcuts))
-  }, [shortcuts])
+    const load = async () => {
+      try {
+        const res = await fetch('/api/settings')
+        if (res.ok) {
+          const data = await res.json()
+          if (data.shortcuts) {
+            setShortcuts({ ...defaultShortcuts, ...data.shortcuts })
+          }
+          if (data.pomodoro) {
+            setPomodoro({ ...defaultPomodoro, ...data.pomodoro })
+          }
+        }
+      } catch (err) {
+        console.error('Fehler beim Laden der Einstellungen', err)
+      }
+    }
+    load()
+  }, [])
 
   useEffect(() => {
-    localStorage.setItem('pomodoro', JSON.stringify(pomodoro))
-  }, [pomodoro])
+    const save = async () => {
+      try {
+        await fetch('/api/settings', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ shortcuts, pomodoro })
+        })
+      } catch (err) {
+        console.error('Fehler beim Speichern der Einstellungen', err)
+      }
+    }
+
+    save()
+  }, [shortcuts, pomodoro])
 
   const updateShortcut = (key: keyof ShortcutKeys, value: string) => {
     setShortcuts(prev => ({ ...prev, [key]: value.toLowerCase() }))

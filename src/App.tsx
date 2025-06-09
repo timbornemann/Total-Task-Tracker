@@ -22,6 +22,8 @@ import SettingsPage from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import PomodoroPage from "./pages/Pomodoro";
 import PomodoroTimer from "@/components/PomodoroTimer";
+import PomodoroTicker from "@/components/PomodoroTicker";
+import { PomodoroHistoryProvider } from "@/hooks/usePomodoroHistory";
 
 const queryClient = new QueryClient();
 
@@ -29,9 +31,10 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <SettingsProvider>
-        <TaskStoreProvider>
-          <FlashcardStoreProvider>
-            <CurrentCategoryProvider>
+        <PomodoroHistoryProvider>
+          <TaskStoreProvider>
+            <FlashcardStoreProvider>
+              <CurrentCategoryProvider>
             <Toaster />
             <Sonner />
             <BrowserRouter>
@@ -53,9 +56,11 @@ const App = () => (
               </Routes>
             </BrowserRouter>
             <PomodoroTimer compact />
+            <PomodoroTicker />
             </CurrentCategoryProvider>
           </FlashcardStoreProvider>
         </TaskStoreProvider>
+        </PomodoroHistoryProvider>
       </SettingsProvider>
     </TooltipProvider>
   </QueryClientProvider>

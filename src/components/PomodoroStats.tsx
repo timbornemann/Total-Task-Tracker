@@ -6,7 +6,7 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recha
 const PomodoroStats: React.FC = () => {
   const stats = usePomodoroStats();
   return (
-    <div className="space-y-4">
+    <div className="w-full grid gap-4 md:grid-cols-2">
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Gesamt</CardTitle>

@@ -3,7 +3,7 @@ import { usePomodoroHistory } from './usePomodoroHistory';
 import { PomodoroStats } from '@/types';
 
 export const usePomodoroStats = (): PomodoroStats => {
-  const sessions = usePomodoroHistory(state => state.sessions);
+  const { sessions } = usePomodoroHistory();
 
   return useMemo(() => {
     const minutes = (start: number, end: number) => Math.round((end - start) / 60000);
