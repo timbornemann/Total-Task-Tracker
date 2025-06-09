@@ -71,8 +71,17 @@ interface PomodoroTimerProps {
 }
 
 const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact }) => {
-  const { isRunning, isPaused, remainingTime, start, pause, resume, reset, tick } =
-    usePomodoroStore();
+  const {
+    isRunning,
+    isPaused,
+    remainingTime,
+    mode,
+    start,
+    pause,
+    resume,
+    reset,
+    tick
+  } = usePomodoroStore();
 
   useEffect(() => {
     const interval = setInterval(() => tick(), 1000);
