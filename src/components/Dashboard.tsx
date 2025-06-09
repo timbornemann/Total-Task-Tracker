@@ -34,7 +34,7 @@ import {
   Droppable,
   Draggable,
   DropResult
-} from 'react-beautiful-dnd';
+} from '@hello-pangea/dnd';
 import Navbar from './Navbar';
 import { usePomodoroStore } from './PomodoroTimer';
 

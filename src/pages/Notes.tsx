@@ -4,7 +4,7 @@ import { useTaskStore } from '@/hooks/useTaskStore';
 import NoteModal from '@/components/NoteModal';
 import NoteCard from '@/components/NoteCard';
 import { Button } from '@/components/ui/button';
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import Navbar from '@/components/Navbar';
 
 const NotesPage = () => {
