@@ -27,6 +27,10 @@ db.exec(`
     id TEXT PRIMARY KEY,
     data TEXT NOT NULL
   );
+  CREATE TABLE IF NOT EXISTS flashcards (
+    id TEXT PRIMARY KEY,
+    data TEXT NOT NULL
+  );
 `);
 
 function dateReviver(key, value) {
@@ -76,6 +80,30 @@ function saveData(data) {
   tx();
 }
 
+function loadFlashcards() {
+  try {
+    return db.prepare('SELECT data FROM flashcards').all()
+      .map(row => JSON.parse(row.data, dateReviver));
+  } catch {
+    return [];
+  }
+}
+
+function saveFlashcards(cards) {
+  const toJson = (obj) => JSON.stringify(
+    obj,
+    (key, value) => (value instanceof Date ? value.toISOString() : value)
+  );
+  const tx = db.transaction(() => {
+    db.exec('DELETE FROM flashcards');
+    for (const card of cards || []) {
+      db.prepare('INSERT INTO flashcards (id, data) VALUES (?, ?)')
+        .run(card.id, toJson(card));
+    }
+  });
+  tx();
+}
+
 function serveStatic(filePath, res) {
   fs.readFile(filePath, (err, data) => {
     if (err) {
@@ -109,6 +137,30 @@ const server = http.createServer((req, res) => {
         try {
           const data = JSON.parse(body || '{}');
           saveData(data);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ status: 'ok' }));
+        } catch {
+          res.writeHead(400);
+          res.end();
+        }
+      });
+      return;
+    }
+  }
+
+  if (parsed.pathname === '/api/flashcards') {
+    if (req.method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(loadFlashcards()));
+      return;
+    }
+    if (req.method === 'PUT') {
+      let body = '';
+      req.on('data', chunk => { body += chunk; });
+      req.on('end', () => {
+        try {
+          const cards = JSON.parse(body || '[]');
+          saveFlashcards(cards);
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ status: 'ok' }));
         } catch {
