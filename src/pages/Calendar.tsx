@@ -1,13 +1,18 @@
 import React, { useMemo, useState } from 'react';
 import { useTaskStore } from '@/hooks/useTaskStore';
-import { Task } from '@/types';
+import { Task, TaskFormData } from '@/types';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import Navbar from '@/components/Navbar';
+import TaskModal from '@/components/TaskModal';
+import { useToast } from '@/hooks/use-toast';
 
 const CalendarPage = () => {
-  const { tasks } = useTaskStore();
+  const { tasks, categories, addTask } = useTaskStore();
+  const { toast } = useToast();
   const [selected, setSelected] = useState<Date | undefined>();
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
 
   const tasksByDate = useMemo(() => {
     const map: Record<string, Task[]> = {};
@@ -27,6 +32,17 @@ const CalendarPage = () => {
   const eventDays = useMemo(() => Object.keys(tasksByDate).map(d => new Date(d)), [tasksByDate]);
   const dayTasks = selected ? tasksByDate[selected.toDateString()] || [] : [];
 
+  const handleCreateTask = (taskData: TaskFormData) => {
+    addTask({
+      ...taskData,
+      completed: false
+    });
+    toast({
+      title: 'Task erstellt',
+      description: `"${taskData.title}" wurde erfolgreich erstellt.`
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar title="Kalender" />
@@ -44,6 +60,13 @@ const CalendarPage = () => {
               <CardTitle>
                 Aufgaben am {selected.toLocaleDateString('de-DE')}
               </CardTitle>
+              <Button
+                size="sm"
+                className="mt-2"
+                onClick={() => setIsTaskModalOpen(true)}
+              >
+                Neue Task
+              </Button>
             </CardHeader>
             <CardContent>
               {dayTasks.length === 0 ? (
@@ -65,6 +88,14 @@ const CalendarPage = () => {
           </Card>
         )}
       </div>
+      <TaskModal
+        isOpen={isTaskModalOpen}
+        onClose={() => setIsTaskModalOpen(false)}
+        onSave={handleCreateTask}
+        categories={categories}
+        defaultCategoryId={categories[0]?.id}
+        defaultDueDate={selected}
+      />
     </div>
   );
 };

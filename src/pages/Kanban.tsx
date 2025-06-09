@@ -213,6 +213,7 @@ const Kanban: React.FC = () => {
         task={editingTask || undefined}
         categories={categories}
         parentTask={parentTask || undefined}
+        defaultDueDate={undefined}
       />
 
       <TaskDetailModal
