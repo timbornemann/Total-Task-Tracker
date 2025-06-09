@@ -35,6 +35,14 @@ db.exec(`
     id TEXT PRIMARY KEY,
     data TEXT NOT NULL
   );
+  CREATE TABLE IF NOT EXISTS settings (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS pomodoro_sessions (
+    start INTEGER NOT NULL,
+    end INTEGER NOT NULL
+  );
 `);
 
 function dateReviver(key, value) {
@@ -100,6 +108,42 @@ function loadDecks() {
   } catch {
     return [];
   }
+}
+
+function loadSettings() {
+  try {
+    const row = db.prepare('SELECT value FROM settings WHERE key = ?').get('default');
+    return row ? JSON.parse(row.value, dateReviver) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveSettings(settings) {
+  const value = JSON.stringify(settings, (key, value) =>
+    value instanceof Date ? value.toISOString() : value
+  );
+  db.prepare('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)')
+    .run('default', value);
+}
+
+function loadPomodoroSessions() {
+  try {
+    return db.prepare('SELECT start, end FROM pomodoro_sessions').all();
+  } catch {
+    return [];
+  }
+}
+
+function savePomodoroSessions(sessions) {
+  const tx = db.transaction(() => {
+    db.exec('DELETE FROM pomodoro_sessions');
+    for (const s of sessions || []) {
+      db.prepare('INSERT INTO pomodoro_sessions (start, end) VALUES (?, ?)')
+        .run(s.start, s.end);
+    }
+  });
+  tx();
 }
 
 function saveFlashcards(cards) {
@@ -214,6 +258,54 @@ const server = http.createServer((req, res) => {
         try {
           const decks = JSON.parse(body || '[]');
           saveDecks(decks);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ status: 'ok' }));
+        } catch {
+          res.writeHead(400);
+          res.end();
+        }
+      });
+      return;
+    }
+  }
+
+  if (parsed.pathname === '/api/settings') {
+    if (req.method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(loadSettings()));
+      return;
+    }
+    if (req.method === 'PUT') {
+      let body = '';
+      req.on('data', chunk => { body += chunk; });
+      req.on('end', () => {
+        try {
+          const settings = JSON.parse(body || '{}');
+          saveSettings(settings);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ status: 'ok' }));
+        } catch {
+          res.writeHead(400);
+          res.end();
+        }
+      });
+      return;
+    }
+  }
+
+  if (parsed.pathname === '/api/pomodoro-sessions') {
+    if (req.method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(loadPomodoroSessions()));
+      return;
+    }
+    if (req.method === 'PUT') {
+      let body = '';
+      req.on('data', chunk => { body += chunk; });
+      req.on('end', () => {
+        try {
+          const sessions = JSON.parse(body || '[]');
+          savePomodoroSessions(sessions);
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ status: 'ok' }));
         } catch {

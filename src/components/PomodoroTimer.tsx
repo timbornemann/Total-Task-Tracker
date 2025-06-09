@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { usePomodoroHistory } from '@/hooks/usePomodoroHistory';
 import { useSettings } from '@/hooks/useSettings';
 
 interface PomodoroState {
@@ -19,6 +18,7 @@ interface PomodoroState {
   resume: () => void;
   reset: () => void;
   tick: () => void;
+  setStartTime: (time?: number) => void;
   setDurations: (work: number, brk: number) => void;
 }
 
@@ -63,22 +63,13 @@ export const usePomodoroStore = create<PomodoroState>()(
             return { remainingTime: state.remainingTime - 1 };
           }
           const nextMode = state.mode === 'work' ? 'break' : 'work';
-          const updates: Partial<PomodoroState> = {
+          return {
             mode: nextMode,
             remainingTime:
               nextMode === 'work' ? state.workDuration : state.breakDuration
-          };
-          if (state.mode === 'work' && state.startTime) {
-            usePomodoroHistory
-              .getState()
-              .addSession(state.startTime, Date.now());
-            updates.startTime = undefined;
-          }
-          if (nextMode === 'work') {
-            updates.startTime = Date.now();
-          }
-          return updates as PomodoroState;
+          } as PomodoroState;
         }),
+      setStartTime: time => set({ startTime: time }),
       setDurations: (work, brk) =>
         set(state => ({
           workDuration: work,
@@ -119,7 +110,6 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80 }) => 
     pause,
     resume,
     reset,
-    tick,
     workDuration,
     breakDuration,
     setDurations
@@ -130,10 +120,6 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80 }) => 
     setDurations(pomodoro.workMinutes * 60, pomodoro.breakMinutes * 60);
   }, [pomodoro, setDurations]);
 
-  useEffect(() => {
-    const interval = setInterval(() => tick(), 1000);
-    return () => clearInterval(interval);
-  }, [tick]);
 
   if (compact && !isRunning) return null;
 

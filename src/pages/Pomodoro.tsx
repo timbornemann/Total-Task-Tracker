@@ -9,7 +9,7 @@ const PomodoroPage: React.FC = () => {
       <Navbar title="Pomodoro" />
       <div className="flex-grow p-4 space-y-6 flex flex-col items-center">
         <PomodoroTimer size={150} />
-        <PomodoroStats />
+        <div className="w-full max-w-4xl"><PomodoroStats /></div>
       </div>
     </div>
   );
