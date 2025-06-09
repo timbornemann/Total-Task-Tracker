@@ -29,6 +29,9 @@ const FlashcardsPage: React.FC = () => {
   const [randomMode, setRandomMode] = useState(false);
   const [trainingMode, setTrainingMode] = useState(false);
   const [typingMode, setTypingMode] = useState(false);
+  const [timedMode, setTimedMode] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(0);
+  const TIMER_DURATION = 10;
   const [index, setIndex] = useState(0);
   const [showBack, setShowBack] = useState(false);
   const [showDone, setShowDone] = useState(false);
@@ -47,13 +50,16 @@ const FlashcardsPage: React.FC = () => {
     ? 'training'
     : randomMode
     ? 'random'
+    : timedMode
+    ? 'timed'
     : 'spaced';
   const handleModeChange = (
-    value: 'spaced' | 'training' | 'random' | 'typing'
+    value: 'spaced' | 'training' | 'random' | 'typing' | 'timed'
   ) => {
     setRandomMode(value === 'random');
     setTrainingMode(value === 'training');
     setTypingMode(value === 'typing');
+    setTimedMode(value === 'timed');
     setIndex(0);
     setShowBack(false);
     setAnswer('');
@@ -94,6 +100,29 @@ const FlashcardsPage: React.FC = () => {
   }, [filtered, dueCards, randomMode, shuffleKey]);
 
   const current = trainingMode ? sessionCards[index] : cards[index];
+
+  useEffect(() => {
+    if (timedMode && current) {
+      setTimeLeft(TIMER_DURATION);
+    } else if (!current) {
+      setTimeLeft(0);
+    }
+  }, [current, timedMode]);
+
+  useEffect(() => {
+    if (!timedMode || timeLeft <= 0) return;
+    const id = setInterval(() => {
+      setTimeLeft(t => (t > 0 ? t - 1 : 0));
+    }, 1000);
+    return () => clearInterval(id);
+  }, [timeLeft, timedMode]);
+
+  useEffect(() => {
+    if (timedMode && timeLeft === 0) {
+      handleRate('hard');
+      setTimeLeft(-1);
+    }
+  }, [timeLeft, timedMode]);
 
   useEffect(() => {
     if (!trainingMode && randomMode && index >= cards.length && cards.length > 0) {
@@ -167,6 +196,7 @@ const FlashcardsPage: React.FC = () => {
                 <SelectItem value="training">Training</SelectItem>
                 <SelectItem value="random">Random</SelectItem>
                 <SelectItem value="typing">Eingabe</SelectItem>
+                <SelectItem value="timed">Timed</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -196,6 +226,11 @@ const FlashcardsPage: React.FC = () => {
               <CardTitle>{decks.find(d => d.id === current.deckId)?.name}</CardTitle>
             </CardHeader>
             <CardContent>
+              {timedMode && (
+                <div className="text-center text-2xl font-bold text-red-600 mb-4">
+                  {Math.max(timeLeft, 0)}
+                </div>
+              )}
               {typingMode ? (
                 <div className="space-y-4 py-8">
                   <div className="text-center text-lg">{current.front}</div>
