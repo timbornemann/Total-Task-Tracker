@@ -81,7 +81,14 @@ const FlashcardsPage: React.FC = () => {
                 className="text-center text-lg cursor-pointer py-12"
                 onClick={() => setShowBack(b => !b)}
               >
-                {showBack ? current.back : current.front}
+                {showBack ? (
+                  <div className="space-y-2">
+                    <div>{current.front}</div>
+                    <div>{current.back}</div>
+                  </div>
+                ) : (
+                  current.front
+                )}
               </div>
             </CardContent>
             <CardFooter className="flex justify-between">
