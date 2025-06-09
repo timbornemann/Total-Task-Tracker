@@ -2,6 +2,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Task, Category, TaskFormData, CategoryFormData } from '@/types';
 import { useTaskStore } from '@/hooks/useTaskStore';
+import { useCurrentCategory } from '@/hooks/useCurrentCategory';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -54,6 +55,7 @@ const Dashboard: React.FC = () => {
   } = useTaskStore();
 
   const { toast } = useToast();
+  const { setCurrentCategoryId } = useCurrentCategory();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
@@ -266,6 +268,7 @@ const Dashboard: React.FC = () => {
 
   const handleViewCategoryTasks = (category: Category) => {
     setSelectedCategory(category);
+    setCurrentCategoryId(category.id);
     setViewMode('tasks');
   };
 
@@ -303,6 +306,7 @@ const Dashboard: React.FC = () => {
 
   const handleBackToCategories = () => {
     setSelectedCategory(null);
+    setCurrentCategoryId(null);
     setViewMode('categories');
     setSearchTerm('');
   };

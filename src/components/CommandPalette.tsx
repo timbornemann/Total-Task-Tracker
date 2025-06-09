@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react'
-import { CommandDialog, CommandInput, CommandList, CommandEmpty } from '@/components/ui/command'
+import React, { useEffect, useState, useMemo } from 'react'
+import { CommandDialog, CommandInput, CommandList, CommandEmpty, CommandItem } from '@/components/ui/command'
 import { useTaskStore } from '@/hooks/useTaskStore'
 import { useSettings } from '@/hooks/useSettings'
 import { useToast } from '@/hooks/use-toast'
+import { useCurrentCategory } from '@/hooks/useCurrentCategory'
 
 const isMatching = (e: KeyboardEvent, shortcut: string) => {
   const keys = shortcut.toLowerCase().split('+')
@@ -21,12 +22,23 @@ const isMatching = (e: KeyboardEvent, shortcut: string) => {
 }
 
 const CommandPalette: React.FC = () => {
-  const { addTask, addNote } = useTaskStore()
+  const { addTask, addNote, tasks } = useTaskStore()
   const { shortcuts } = useSettings()
   const { toast } = useToast()
+  const { currentCategoryId } = useCurrentCategory()
   const [open, setOpen] = useState(false)
   const [mode, setMode] = useState<'task' | 'note'>('task')
   const [value, setValue] = useState('')
+
+  const filteredTasks = useMemo(() => {
+    const q = value.trim().toLowerCase()
+    if (!q) return []
+    return tasks.filter(
+      t =>
+        t.title.toLowerCase().includes(q) ||
+        t.description.toLowerCase().includes(q)
+    )
+  }, [value, tasks])
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -57,7 +69,7 @@ const CommandPalette: React.FC = () => {
         description: '',
         priority: 'medium',
         color: '#3B82F6',
-        categoryId: 'default',
+        categoryId: currentCategoryId || 'default',
         isRecurring: false
       })
       toast({ description: 'Task erstellt' })
@@ -83,6 +95,9 @@ const CommandPalette: React.FC = () => {
         }}
       />
       <CommandList>
+        {filteredTasks.map(task => (
+          <CommandItem key={task.id}>{task.title}</CommandItem>
+        ))}
         <CommandEmpty>Keine Ergebnisse</CommandEmpty>
       </CommandList>
     </CommandDialog>
