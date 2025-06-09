@@ -76,6 +76,23 @@ const Dashboard: React.FC = () => {
       setSearchParams(params, { replace: true });
     }
   }, [sortCriteria]);
+
+  useEffect(() => {
+    const id = searchParams.get('taskId');
+    if (id) {
+      const task = findTaskById(id);
+      if (task) {
+        const category = categories.find(c => c.id === task.categoryId) || null;
+        if (category) {
+          setSelectedCategory(category);
+          setCurrentCategoryId(category.id);
+          setViewMode('tasks');
+        }
+        setSelectedTask(task);
+        setIsTaskDetailModalOpen(true);
+      }
+    }
+  }, [searchParams, categories, findTaskById]);
   
   // Modal states
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -629,6 +646,11 @@ const Dashboard: React.FC = () => {
           setIsTaskDetailModalOpen(false);
           setSelectedTask(null);
           setTaskDetailStack([]);
+          const params = new URLSearchParams(searchParams)
+          if (params.has('taskId')) {
+            params.delete('taskId')
+            setSearchParams(params, { replace: true })
+          }
         }}
         task={selectedTask}
         category={selectedTask ? categories.find(c => c.id === selectedTask.categoryId) || null : null}

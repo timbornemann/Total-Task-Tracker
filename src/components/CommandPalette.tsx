@@ -4,6 +4,8 @@ import { useTaskStore } from '@/hooks/useTaskStore'
 import { useSettings } from '@/hooks/useSettings'
 import { useToast } from '@/hooks/use-toast'
 import { useCurrentCategory } from '@/hooks/useCurrentCategory'
+import { flattenTasks, FlattenedTask } from '@/utils/taskUtils'
+import { useNavigate } from 'react-router-dom'
 
 const isMatching = (e: KeyboardEvent, shortcut: string) => {
   const keys = shortcut.toLowerCase().split('+')
@@ -25,20 +27,23 @@ const CommandPalette: React.FC = () => {
   const { addTask, addNote, tasks } = useTaskStore()
   const { shortcuts } = useSettings()
   const { toast } = useToast()
-  const { currentCategoryId } = useCurrentCategory()
+  const { currentCategoryId, setCurrentCategoryId } = useCurrentCategory()
+  const navigate = useNavigate()
   const [open, setOpen] = useState(false)
   const [mode, setMode] = useState<'task' | 'note'>('task')
   const [value, setValue] = useState('')
 
+  const flattened = useMemo(() => flattenTasks(tasks), [tasks])
+
   const filteredTasks = useMemo(() => {
     const q = value.trim().toLowerCase()
     if (!q) return []
-    return tasks.filter(
+    return flattened.filter(
       t =>
-        t.title.toLowerCase().includes(q) ||
-        t.description.toLowerCase().includes(q)
+        t.task.title.toLowerCase().includes(q) ||
+        t.task.description.toLowerCase().includes(q)
     )
-  }, [value, tasks])
+  }, [value, flattened])
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -95,8 +100,20 @@ const CommandPalette: React.FC = () => {
         }}
       />
       <CommandList>
-        {filteredTasks.map(task => (
-          <CommandItem key={task.id}>{task.title}</CommandItem>
+        {filteredTasks.map(item => (
+          <CommandItem
+            key={item.task.id}
+            onSelect={() => {
+              setCurrentCategoryId(item.task.categoryId)
+              setOpen(false)
+              setValue('')
+              navigate(`/?taskId=${item.task.id}`)
+            }}
+          >
+            {item.path.length > 0
+              ? `${item.path.map(p => p.title).join(' › ')} › ${item.task.title}`
+              : item.task.title}
+          </CommandItem>
         ))}
         <CommandEmpty>Keine Ergebnisse</CommandEmpty>
       </CommandList>
