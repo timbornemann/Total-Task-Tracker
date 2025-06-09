@@ -1,7 +1,24 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { Menu, BarChart3, Calendar as CalendarIcon, Columns, LayoutGrid, List, Cog, Timer, BookOpen, Pencil } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {
+  Menu,
+  BarChart3,
+  Calendar as CalendarIcon,
+  Columns,
+  LayoutGrid,
+  List,
+  Cog,
+  Timer,
+  BookOpen,
+  Pencil,
+} from 'lucide-react'
 
 interface NavbarProps {
   title?: string;
@@ -11,6 +28,7 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
   const [showMobileMenu, setShowMobileMenu] = React.useState(false)
+  const [openMenu, setOpenMenu] = React.useState<string | null>(null)
   return (
     <header className="bg-white shadow-sm border-b sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -51,119 +69,215 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
             </Button>
           </div>
           <div className="hidden sm:flex items-center space-x-4">
-            <Link to="/">
-              <Button variant="outline" size="sm">
-                <LayoutGrid className="h-4 w-4 mr-2" />
-                Übersicht
-              </Button>
-            </Link>
-            <Link to="/statistics">
-              <Button variant="outline" size="sm">
-                <BarChart3 className="h-4 w-4 mr-2" />
-                Statistiken
-              </Button>
-            </Link>
-            <Link to="/calendar">
-              <Button variant="outline" size="sm">
-                <CalendarIcon className="h-4 w-4 mr-2" />
-                Kalender
-              </Button>
-            </Link>
-            <Link to="/pomodoro">
-              <Button variant="outline" size="sm">
-                <Timer className="h-4 w-4 mr-2" />
-                Pomodoro
-              </Button>
-            </Link>
-            <Link to="/kanban">
-              <Button variant="outline" size="sm">
-                <Columns className="h-4 w-4 mr-2" />
-                Kanban
-              </Button>
-            </Link>
-            <Link to="/flashcards">
-              <Button variant="outline" size="sm">
-                <BookOpen className="h-4 w-4 mr-2" />
-                Karten
-              </Button>
-            </Link>
-              <Link to="/flashcards/manage">
-                <Button variant="outline" size="sm">
-                  <Pencil className="h-4 w-4 mr-2" />
-                  Decks
+            <DropdownMenu
+              open={openMenu === 'dashboard'}
+              onOpenChange={(open) => setOpenMenu(open ? 'dashboard' : null)}
+            >
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onMouseEnter={() => setOpenMenu('dashboard')}
+                  onMouseLeave={() => setOpenMenu(null)}
+                >
+                  Dashboard
                 </Button>
-              </Link>
-            <Link to="/notes">
-              <Button variant="outline" size="sm">
-                <List className="h-4 w-4 mr-2" />
-                Notizen
-              </Button>
-            </Link>
-            <Link to="/settings">
-              <Button variant="outline" size="sm">
-                <Cog className="h-4 w-4 mr-2" />
-                Einstellungen
-              </Button>
-            </Link>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="bg-white z-50"
+                onMouseEnter={() => setOpenMenu('dashboard')}
+                onMouseLeave={() => setOpenMenu(null)}
+              >
+                <DropdownMenuItem asChild>
+                  <Link to="/" className="flex items-center">
+                    <LayoutGrid className="h-4 w-4 mr-2" /> Übersicht
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/statistics" className="flex items-center">
+                    <BarChart3 className="h-4 w-4 mr-2" /> Statistiken
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DropdownMenu
+              open={openMenu === 'planning'}
+              onOpenChange={(open) => setOpenMenu(open ? 'planning' : null)}
+            >
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onMouseEnter={() => setOpenMenu('planning')}
+                  onMouseLeave={() => setOpenMenu(null)}
+                >
+                  Planung
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="bg-white z-50"
+                onMouseEnter={() => setOpenMenu('planning')}
+                onMouseLeave={() => setOpenMenu(null)}
+              >
+                <DropdownMenuItem asChild>
+                  <Link to="/calendar" className="flex items-center">
+                    <CalendarIcon className="h-4 w-4 mr-2" /> Kalender
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/pomodoro" className="flex items-center">
+                    <Timer className="h-4 w-4 mr-2" /> Pomodoro
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/kanban" className="flex items-center">
+                    <Columns className="h-4 w-4 mr-2" /> Kanban
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DropdownMenu
+              open={openMenu === 'learning'}
+              onOpenChange={(open) => setOpenMenu(open ? 'learning' : null)}
+            >
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onMouseEnter={() => setOpenMenu('learning')}
+                  onMouseLeave={() => setOpenMenu(null)}
+                >
+                  Lernen
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="bg-white z-50"
+                onMouseEnter={() => setOpenMenu('learning')}
+                onMouseLeave={() => setOpenMenu(null)}
+              >
+                <DropdownMenuItem asChild>
+                  <Link to="/flashcards" className="flex items-center">
+                    <BookOpen className="h-4 w-4 mr-2" /> Karten
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/flashcards/manage" className="flex items-center">
+                    <Pencil className="h-4 w-4 mr-2" /> Decks
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DropdownMenu
+              open={openMenu === 'more'}
+              onOpenChange={(open) => setOpenMenu(open ? 'more' : null)}
+            >
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onMouseEnter={() => setOpenMenu('more')}
+                  onMouseLeave={() => setOpenMenu(null)}
+                >
+                  Mehr
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="bg-white z-50"
+                onMouseEnter={() => setOpenMenu('more')}
+                onMouseLeave={() => setOpenMenu(null)}
+              >
+                <DropdownMenuItem asChild>
+                  <Link to="/notes" className="flex items-center">
+                    <List className="h-4 w-4 mr-2" /> Notizen
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/settings" className="flex items-center">
+                    <Cog className="h-4 w-4 mr-2" /> Einstellungen
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
         {showMobileMenu && (
-          <div className="sm:hidden pb-4 space-y-3">
-            <div className="flex flex-wrap gap-2">
-              <Link to="/" className="flex-1">
-                <Button variant="outline" size="sm" className="w-full">
-                  <LayoutGrid className="h-4 w-4 mr-2" />
-                  Übersicht
-                </Button>
-              </Link>
-              <Link to="/statistics" className="flex-1">
-                <Button variant="outline" size="sm" className="w-full">
-                  <BarChart3 className="h-4 w-4 mr-2" />
-                  Statistiken
-                </Button>
-              </Link>
-              <Link to="/calendar" className="flex-1">
-                <Button variant="outline" size="sm" className="w-full">
-                  <CalendarIcon className="h-4 w-4 mr-2" />
-                  Kalender
-                </Button>
-              </Link>
-              <Link to="/pomodoro" className="flex-1">
-                <Button variant="outline" size="sm" className="w-full">
-                  <Timer className="h-4 w-4 mr-2" />
-                  Pomodoro
-                </Button>
-              </Link>
-              <Link to="/kanban" className="flex-1">
-                <Button variant="outline" size="sm" className="w-full">
-                  <Columns className="h-4 w-4 mr-2" />
-                  Kanban
-                </Button>
-              </Link>
-              <Link to="/flashcards" className="flex-1">
-                <Button variant="outline" size="sm" className="w-full">
-                  <BookOpen className="h-4 w-4 mr-2" />
-                  Karten
-                </Button>
-              </Link>
-              <Link to="/flashcards/manage" className="flex-1">
-                <Button variant="outline" size="sm" className="w-full">
-                  <Pencil className="h-4 w-4 mr-2" />
-                  Decks
-                </Button>
-              </Link>
-              <Link to="/notes" className="flex-1">
-                <Button variant="outline" size="sm" className="w-full">
-                  <List className="h-4 w-4 mr-2" />
-                  Notizen
-                </Button>
-              </Link>
-              <Link to="/settings" className="flex-1">
-                <Button variant="outline" size="sm" className="w-full">
-                  <Cog className="h-4 w-4 mr-2" />
-                  Einstellungen
-                </Button>
-              </Link>
+          <div className="sm:hidden pb-4 space-y-4">
+            <div className="space-y-2">
+              <p className="text-xs font-semibold text-gray-500">Dashboard</p>
+              <div className="flex flex-wrap gap-2">
+                <Link to="/" className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full">
+                    <LayoutGrid className="h-4 w-4 mr-2" />
+                    Übersicht
+                  </Button>
+                </Link>
+                <Link to="/statistics" className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full">
+                    <BarChart3 className="h-4 w-4 mr-2" />
+                    Statistiken
+                  </Button>
+                </Link>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <p className="text-xs font-semibold text-gray-500">Planung</p>
+              <div className="flex flex-wrap gap-2">
+                <Link to="/calendar" className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full">
+                    <CalendarIcon className="h-4 w-4 mr-2" />
+                    Kalender
+                  </Button>
+                </Link>
+                <Link to="/pomodoro" className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full">
+                    <Timer className="h-4 w-4 mr-2" />
+                    Pomodoro
+                  </Button>
+                </Link>
+                <Link to="/kanban" className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full">
+                    <Columns className="h-4 w-4 mr-2" />
+                    Kanban
+                  </Button>
+                </Link>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <p className="text-xs font-semibold text-gray-500">Lernen</p>
+              <div className="flex flex-wrap gap-2">
+                <Link to="/flashcards" className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full">
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    Karten
+                  </Button>
+                </Link>
+                <Link to="/flashcards/manage" className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full">
+                    <Pencil className="h-4 w-4 mr-2" />
+                    Decks
+                  </Button>
+                </Link>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <p className="text-xs font-semibold text-gray-500">Mehr</p>
+              <div className="flex flex-wrap gap-2">
+                <Link to="/notes" className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full">
+                    <List className="h-4 w-4 mr-2" />
+                    Notizen
+                  </Button>
+                </Link>
+                <Link to="/settings" className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full">
+                    <Cog className="h-4 w-4 mr-2" />
+                    Einstellungen
+                  </Button>
+                </Link>
+              </div>
             </div>
             {category && (
               <div className="flex items-center space-x-2 text-sm">
