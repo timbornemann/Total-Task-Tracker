@@ -41,9 +41,13 @@ db.exec(`
   );
   CREATE TABLE IF NOT EXISTS pomodoro_sessions (
     start INTEGER NOT NULL,
-    end INTEGER NOT NULL
+    end INTEGER NOT NULL,
+    breakEnd INTEGER
   );
 `);
+try {
+  db.prepare('ALTER TABLE pomodoro_sessions ADD COLUMN breakEnd INTEGER').run();
+} catch {}
 
 function dateReviver(key, value) {
   if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
@@ -129,7 +133,7 @@ function saveSettings(settings) {
 
 function loadPomodoroSessions() {
   try {
-    return db.prepare('SELECT start, end FROM pomodoro_sessions').all();
+    return db.prepare('SELECT start, end, breakEnd FROM pomodoro_sessions').all();
   } catch {
     return [];
   }
@@ -139,8 +143,9 @@ function savePomodoroSessions(sessions) {
   const tx = db.transaction(() => {
     db.exec('DELETE FROM pomodoro_sessions');
     for (const s of sessions || []) {
-      db.prepare('INSERT INTO pomodoro_sessions (start, end) VALUES (?, ?)')
-        .run(s.start, s.end);
+      db.prepare(
+        'INSERT INTO pomodoro_sessions (start, end, breakEnd) VALUES (?, ?, ?)'
+      ).run(s.start, s.end, s.breakEnd ?? null);
     }
   });
   tx();

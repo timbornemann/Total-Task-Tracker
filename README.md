@@ -70,6 +70,9 @@ npm start    # startet die gebaute App auf Port 3002
 - Speicherung der Daten auf dem lokalen Server
 - Pomodoro-Timer läuft beim Neuladen der Seite weiter
 - Statistikseite auf der Pomodoro-Seite mit Tages-, Wochen-, Monats- und Jahresübersicht
+- Minuten für Arbeit und Pause werden separat gezählt und als gestapelter Balken
+  dargestellt. Beim Pausieren oder Zurücksetzen des Timers werden die Werte
+  sofort aktualisiert.
 - Lern- und Pausendauer frei konfigurierbar (auch direkt im Timer anpassbar)
 
 ## Verwendung

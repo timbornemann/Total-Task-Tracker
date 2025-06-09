@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { useSettings } from '@/hooks/useSettings';
+import { usePomodoroHistory } from '@/hooks/usePomodoroHistory.tsx';
 
 interface PomodoroState {
   isRunning: boolean;
@@ -109,9 +110,37 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80 }) => 
     reset,
     workDuration,
     breakDuration,
-    setDurations
+    setDurations,
+    setStartTime,
+    startTime
   } = usePomodoroStore();
   const { pomodoro, updatePomodoro } = useSettings();
+  const { addSession, endBreak } = usePomodoroHistory();
+  const handlePause = () => {
+    if (mode === 'work' && startTime) {
+      addSession(startTime, Date.now());
+      setStartTime(undefined);
+    }
+    if (mode === 'break') {
+      endBreak(Date.now());
+    }
+    pause();
+  };
+
+  const handleReset = () => {
+    if (mode === 'work' && startTime) {
+      addSession(startTime, Date.now());
+    }
+    if (mode === 'break') {
+      endBreak(Date.now());
+    }
+    reset();
+  };
+
+  const handleResume = () => {
+    if (mode === 'work') setStartTime(Date.now());
+    resume();
+  };
 
   useEffect(() => {
     setDurations(pomodoro.workMinutes * 60, pomodoro.breakMinutes * 60);
@@ -174,17 +203,17 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80 }) => 
       <div className="flex space-x-2 mt-4">
         {!isRunning && <Button onClick={() => start()}>Start</Button>}
         {isRunning && !isPaused && (
-          <Button onClick={pause} variant="outline">
+          <Button onClick={handlePause} variant="outline">
             Pause
           </Button>
         )}
         {isRunning && isPaused && (
-          <Button onClick={resume} variant="outline">
+          <Button onClick={handleResume} variant="outline">
             Weiter
           </Button>
         )}
         {isRunning && (
-          <Button onClick={reset} variant="outline">
+          <Button onClick={handleReset} variant="outline">
             Reset
           </Button>
         )}
