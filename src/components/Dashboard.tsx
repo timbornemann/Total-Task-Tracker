@@ -11,13 +11,9 @@ import {
   Plus,
   Search,
   LayoutGrid,
-  List,
-  BarChart3,
-  Menu,
-  Calendar as CalendarIcon,
-  Columns
+  List
 } from 'lucide-react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import {
   Select,
   SelectTrigger,
@@ -38,6 +34,7 @@ import {
   Draggable,
   DropResult
 } from 'react-beautiful-dnd';
+import Navbar from './Navbar';
 
 const Dashboard: React.FC = () => {
   const {
@@ -61,7 +58,6 @@ const Dashboard: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [viewMode, setViewMode] = useState<'categories' | 'tasks'>('categories');
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [sortCriteria, setSortCriteria] = useState<string>(
     searchParams.get('sort') || 'order'
@@ -323,132 +319,14 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-14 sm:h-16">
-            <div className="flex items-center space-x-2 sm:space-x-4 min-w-0 flex-1">
-              <Link to="/" onClick={handleBackToCategories} className="text-lg sm:text-2xl font-bold text-gray-900 truncate">
-                Task Tracker
-              </Link>
-              {selectedCategory && (
-                <div className="hidden sm:flex items-center space-x-2">
-                  <span className="text-gray-500">/</span>
-                  <div className="flex items-center space-x-2 min-w-0">
-                    <div 
-                      className="w-4 h-4 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: selectedCategory.color }}
-                    />
-                    <span className="font-medium text-gray-700 truncate">{selectedCategory.name}</span>
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            {/* Mobile Menu Button */}
-            <div className="sm:hidden">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowMobileMenu(!showMobileMenu)}
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
-            </div>
-
-            {/* Desktop Actions */}
-            <div className="hidden sm:flex items-center space-x-4">
-
-              {/* Statistics Button */}
-              <Link to="/statistics">
-                <Button variant="outline" size="sm">
-                  <BarChart3 className="h-4 w-4 mr-2" />
-                  Statistiken
-                </Button>
-              </Link>
-
-              {/* Calendar Button */}
-              <Link to="/calendar">
-                <Button variant="outline" size="sm">
-                  <CalendarIcon className="h-4 w-4 mr-2" />
-                  Kalender
-                </Button>
-              </Link>
-
-              {/* Kanban Button */}
-              <Link to="/kanban">
-                <Button variant="outline" size="sm">
-                  <Columns className="h-4 w-4 mr-2" />
-                  Kanban
-                </Button>
-              </Link>
-
-              {/* Notes Button */}
-              <Link to="/notes">
-                <Button variant="outline" size="sm">
-                  <List className="h-4 w-4 mr-2" />
-                  Notizen
-                </Button>
-              </Link>
-
-
-            </div>
-          </div>
-
-          {/* Mobile Menu */}
-          {showMobileMenu && (
-            <div className="sm:hidden pb-4 space-y-3">
-
-
-              {/* Mobile Actions */}
-              <div className="flex flex-wrap gap-2">
-              <Link to="/statistics" className="flex-1">
-                <Button variant="outline" size="sm" className="w-full">
-                  <BarChart3 className="h-4 w-4 mr-2" />
-                  Statistiken
-                </Button>
-              </Link>
-
-              <Link to="/calendar" className="flex-1">
-                <Button variant="outline" size="sm" className="w-full">
-                  <CalendarIcon className="h-4 w-4 mr-2" />
-                  Kalender
-                </Button>
-              </Link>
-
-              <Link to="/kanban" className="flex-1">
-                <Button variant="outline" size="sm" className="w-full">
-                  <Columns className="h-4 w-4 mr-2" />
-                  Kanban
-                </Button>
-              </Link>
-
-              <Link to="/notes" className="flex-1">
-                <Button variant="outline" size="sm" className="w-full">
-                  <List className="h-4 w-4 mr-2" />
-                  Notizen
-                </Button>
-              </Link>
-
-              </div>
-
-              {/* Mobile Category Breadcrumb */}
-              {selectedCategory && (
-                <div className="flex items-center space-x-2 text-sm">
-                  <span className="text-gray-500">In:</span>
-                  <div className="flex items-center space-x-2">
-                    <div 
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: selectedCategory.color }}
-                    />
-                    <span className="font-medium text-gray-700">{selectedCategory.name}</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </header>
+      <Navbar
+        category={
+          selectedCategory
+            ? { name: selectedCategory.name, color: selectedCategory.color }
+            : undefined
+        }
+        onHomeClick={handleBackToCategories}
+      />
 
       {/* Statistics */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
