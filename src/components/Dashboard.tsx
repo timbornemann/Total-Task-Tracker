@@ -36,6 +36,7 @@ import {
   DropResult
 } from 'react-beautiful-dnd';
 import Navbar from './Navbar';
+import { usePomodoroStore } from './PomodoroTimer';
 
 const Dashboard: React.FC = () => {
   const {
@@ -103,6 +104,7 @@ const Dashboard: React.FC = () => {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [parentTask, setParentTask] = useState<Task | null>(null);
   const [taskDetailStack, setTaskDetailStack] = useState<Task[]>([]);
+  const { start: startPomodoro } = usePomodoroStore();
 
   const colorOptions = useMemo(() => {
     const tasksForColors = selectedCategory
@@ -659,6 +661,7 @@ const Dashboard: React.FC = () => {
         onAddSubtask={handleAddSubtask}
         onToggleComplete={handleToggleTaskComplete}
         onViewDetails={handleViewTaskDetails}
+        onStartPomodoro={task => startPomodoro(task.id)}
         canGoBack={taskDetailStack.length > 0}
         onBack={handleTaskDetailBack}
       />

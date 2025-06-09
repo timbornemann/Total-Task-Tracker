@@ -15,6 +15,8 @@ import Kanban from "./pages/Kanban";
 import NotesPage from "./pages/Notes";
 import SettingsPage from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import PomodoroPage from "./pages/Pomodoro";
+import PomodoroTimer from "@/components/PomodoroTimer";
 
 const queryClient = new QueryClient();
 
@@ -35,10 +37,12 @@ const App = () => (
               <Route path="/kanban" element={<Kanban />} />
               <Route path="/notes" element={<NotesPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/pomodoro" element={<PomodoroPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
+            <PomodoroTimer compact />
           </CurrentCategoryProvider>
         </TaskStoreProvider>
       </SettingsProvider>

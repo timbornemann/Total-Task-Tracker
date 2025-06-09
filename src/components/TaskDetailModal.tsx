@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Edit, Plus, Trash2, ArrowLeft } from 'lucide-react';
+import { Edit, Plus, Trash2, ArrowLeft, Timer } from 'lucide-react';
 import { calculateTaskCompletion, getTaskProgress, getPriorityColor, getPriorityIcon } from '@/utils/taskUtils';
 import TaskCard from './TaskCard';
 
@@ -20,6 +20,7 @@ interface TaskDetailModalProps {
   onAddSubtask: (parentTask: Task) => void;
   onToggleComplete: (taskId: string, completed: boolean) => void;
   onViewDetails: (task: Task) => void;
+  onStartPomodoro: (task: Task) => void;
   /** Display back button when true and trigger onBack on click */
   canGoBack?: boolean;
   onBack?: () => void;
@@ -35,6 +36,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   onAddSubtask,
   onToggleComplete,
   onViewDetails,
+  onStartPomodoro,
   canGoBack,
   onBack
 }) => {
@@ -107,6 +109,14 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
               >
                 <Edit className="h-4 w-4 mr-2" />
                 Bearbeiten
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onStartPomodoro(task)}
+              >
+                <Timer className="h-4 w-4 mr-2" />
+                Pomodoro
               </Button>
               <Button
                 variant="outline"
