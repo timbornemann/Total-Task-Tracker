@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
 import {
   Plus,
   Search,
@@ -391,24 +392,6 @@ const Dashboard: React.FC = () => {
               </Link>
 
 
-              {/* Action Buttons */}
-              {viewMode === 'categories' ? (
-                <Button onClick={() => setIsCategoryModalOpen(true)} size="sm">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Kategorie
-                </Button>
-              ) : (
-                <>
-                  <Button variant="outline" onClick={handleBackToCategories} size="sm">
-                    <LayoutGrid className="h-4 w-4 mr-2" />
-                    Kategorien
-                  </Button>
-                  <Button onClick={() => setIsTaskModalOpen(true)} size="sm">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Task
-                  </Button>
-                </>
-              )}
             </div>
           </div>
 
@@ -447,24 +430,6 @@ const Dashboard: React.FC = () => {
                 </Button>
               </Link>
 
-
-                {viewMode === 'categories' ? (
-                  <Button onClick={() => setIsCategoryModalOpen(true)} size="sm" className="flex-1">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Kategorie
-                  </Button>
-                ) : (
-                  <>
-                    <Button variant="outline" onClick={handleBackToCategories} size="sm" className="flex-1">
-                      <LayoutGrid className="h-4 w-4 mr-2" />
-                      Kategorien
-                    </Button>
-                    <Button onClick={() => setIsTaskModalOpen(true)} size="sm" className="flex-1">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Task
-                    </Button>
-                  </>
-                )}
               </div>
 
               {/* Mobile Category Breadcrumb */}
@@ -542,18 +507,25 @@ const Dashboard: React.FC = () => {
                   className="pl-10 w-full"
                 />
               </div>
-              <Select value={sortCriteria} onValueChange={setSortCriteria}>
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Sortierung" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="order">Manuell</SelectItem>
-                  <SelectItem value="created-desc">Neueste zuerst</SelectItem>
-                  <SelectItem value="created-asc">Älteste zuerst</SelectItem>
-                  <SelectItem value="title-asc">Titel A-Z</SelectItem>
-                  <SelectItem value="title-desc">Titel Z-A</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="flex items-center gap-1">
+                <Label className="text-sm">Sortierung:</Label>
+                <Select value={sortCriteria} onValueChange={setSortCriteria}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue placeholder="Sortierung" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="order">Manuell</SelectItem>
+                    <SelectItem value="created-desc">Neueste zuerst</SelectItem>
+                    <SelectItem value="created-asc">Älteste zuerst</SelectItem>
+                    <SelectItem value="title-asc">Titel A-Z</SelectItem>
+                    <SelectItem value="title-desc">Titel Z-A</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button onClick={() => setIsCategoryModalOpen(true)} size="sm">
+                <Plus className="h-4 w-4 mr-2" />
+                Kategorie
+              </Button>
             </div>
             
             {filteredCategories.length === 0 ? (
@@ -627,52 +599,65 @@ const Dashboard: React.FC = () => {
                   className="pl-10 w-full"
                 />
               </div>
-              <Select value={sortCriteria} onValueChange={setSortCriteria}>
-                <SelectTrigger className="w-36">
-                  <SelectValue placeholder="Sortierung" />
-                </SelectTrigger>
-              <SelectContent>
-                  <SelectItem value="order">Manuell</SelectItem>
-                  <SelectItem value="created-desc">Neueste zuerst</SelectItem>
-                  <SelectItem value="created-asc">Älteste zuerst</SelectItem>
-                  <SelectItem value="title-asc">Titel A-Z</SelectItem>
-                  <SelectItem value="title-desc">Titel Z-A</SelectItem>
-                  <SelectItem value="priority-asc">Priorität ↑</SelectItem>
-                  <SelectItem value="priority-desc">Priorität ↓</SelectItem>
-                  <SelectItem value="due-asc">Fälligkeitsdatum ↑</SelectItem>
-                  <SelectItem value="due-desc">Fälligkeitsdatum ↓</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={filterPriority} onValueChange={setFilterPriority}>
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Priorität" />
-                </SelectTrigger>
+              <div className="flex items-center gap-1">
+                <Label className="text-sm">Sortierung:</Label>
+                <Select value={sortCriteria} onValueChange={setSortCriteria}>
+                  <SelectTrigger className="w-36">
+                    <SelectValue placeholder="Sortierung" />
+                  </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Alle</SelectItem>
-                  <SelectItem value="high">Hoch</SelectItem>
-                  <SelectItem value="medium">Mittel</SelectItem>
-                  <SelectItem value="low">Niedrig</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={filterColor} onValueChange={setFilterColor}>
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Farbe" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Alle</SelectItem>
-                  {colorOptions.map(color => (
-                    <SelectItem key={color} value={color}>
-                      <div className="flex items-center space-x-2">
-                        <span
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: color }}
-                        />
-                        <span>{color}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                    <SelectItem value="order">Manuell</SelectItem>
+                    <SelectItem value="created-desc">Neueste zuerst</SelectItem>
+                    <SelectItem value="created-asc">Älteste zuerst</SelectItem>
+                    <SelectItem value="title-asc">Titel A-Z</SelectItem>
+                    <SelectItem value="title-desc">Titel Z-A</SelectItem>
+                    <SelectItem value="priority-asc">Priorität ↑</SelectItem>
+                    <SelectItem value="priority-desc">Priorität ↓</SelectItem>
+                    <SelectItem value="due-asc">Fälligkeitsdatum ↑</SelectItem>
+                    <SelectItem value="due-desc">Fälligkeitsdatum ↓</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center gap-1">
+                <Label className="text-sm">Priorität:</Label>
+                <Select value={filterPriority} onValueChange={setFilterPriority}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue placeholder="Priorität" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Alle</SelectItem>
+                    <SelectItem value="high">Hoch</SelectItem>
+                    <SelectItem value="medium">Mittel</SelectItem>
+                    <SelectItem value="low">Niedrig</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center gap-1">
+                <Label className="text-sm">Farbe:</Label>
+                <Select value={filterColor} onValueChange={setFilterColor}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue placeholder="Farbe" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Alle</SelectItem>
+                    {colorOptions.map(color => (
+                      <SelectItem key={color} value={color}>
+                        <div className="flex items-center space-x-2">
+                          <span
+                            className="w-3 h-3 rounded-full"
+                            style={{ backgroundColor: color }}
+                          />
+                          <span>{color}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button onClick={() => setIsTaskModalOpen(true)} size="sm">
+                <Plus className="h-4 w-4 mr-2" />
+                Task
+              </Button>
             </div>
             
             {filteredTasks.length === 0 ? (
