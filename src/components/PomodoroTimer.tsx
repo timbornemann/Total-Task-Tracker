@@ -74,10 +74,7 @@ export const usePomodoroStore = create<PomodoroState>()(
         set(state => ({
           workDuration: work,
           breakDuration: brk,
-          remainingTime:
-            !state.isRunning || state.mode === 'work'
-              ? work
-              : state.remainingTime
+          remainingTime: !state.isRunning ? work : state.remainingTime
         }))
     }),
     { name: 'pomodoro' }
