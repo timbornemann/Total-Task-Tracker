@@ -13,7 +13,7 @@ import {
   Droppable,
   Draggable,
   DropResult
-} from 'react-beautiful-dnd';
+} from '@hello-pangea/dnd';
 
 const Kanban: React.FC = () => {
   const {
