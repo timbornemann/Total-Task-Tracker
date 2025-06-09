@@ -59,6 +59,10 @@ const useFlashcardStoreImpl = () => {
     );
   };
 
+  const deleteFlashcard = (id: string) => {
+    setFlashcards(prev => prev.filter(c => c.id !== id));
+  };
+
   const rateFlashcard = (
     id: string,
     difficulty: 'easy' | 'medium' | 'hard'
@@ -77,7 +81,7 @@ const useFlashcardStoreImpl = () => {
     });
   };
 
-  return { flashcards, addFlashcard, updateFlashcard, rateFlashcard };
+  return { flashcards, addFlashcard, updateFlashcard, deleteFlashcard, rateFlashcard };
 };
 
 type FlashcardStore = ReturnType<typeof useFlashcardStoreImpl>;
