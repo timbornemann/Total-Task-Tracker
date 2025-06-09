@@ -20,7 +20,9 @@ const useFlashcardStoreImpl = () => {
               dueDate: new Date(c.dueDate),
               easyCount: c.easyCount ?? 0,
               mediumCount: c.mediumCount ?? 0,
-              hardCount: c.hardCount ?? 0
+              hardCount: c.hardCount ?? 0,
+              typedCorrect: c.typedCorrect ?? 0,
+              typedTotal: c.typedTotal ?? 0
             }))
           );
         }
@@ -88,7 +90,9 @@ const useFlashcardStoreImpl = () => {
       dueDate: new Date(),
       easyCount: 0,
       mediumCount: 0,
-      hardCount: 0
+      hardCount: 0,
+      typedCorrect: 0,
+      typedTotal: 0
     };
     setFlashcards(prev => [...prev, newCard]);
   };
@@ -120,7 +124,8 @@ const useFlashcardStoreImpl = () => {
 
   const rateFlashcard = (
     id: string,
-    difficulty: 'easy' | 'medium' | 'hard'
+    difficulty: 'easy' | 'medium' | 'hard',
+    typedCorrect?: boolean
   ) => {
     setFlashcards(prev => {
       return prev.map(card => {
@@ -143,7 +148,14 @@ const useFlashcardStoreImpl = () => {
           dueDate,
           easyCount: card.easyCount + (difficulty === 'easy' ? 1 : 0),
           mediumCount: card.mediumCount + (difficulty === 'medium' ? 1 : 0),
-          hardCount: card.hardCount + (difficulty === 'hard' ? 1 : 0)
+          hardCount: card.hardCount + (difficulty === 'hard' ? 1 : 0),
+          typedCorrect: typedCorrect !== undefined
+            ? (card.typedCorrect ?? 0) + (typedCorrect ? 1 : 0)
+            : card.typedCorrect,
+          typedTotal:
+            typedCorrect !== undefined
+              ? (card.typedTotal ?? 0) + 1
+              : card.typedTotal
         };
       });
     });
