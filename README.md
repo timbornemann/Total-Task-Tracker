@@ -67,7 +67,7 @@ npm start    # startet die gebaute App auf Port 3002
   - Optionaler Zufallsmodus ohne Bewertung
   - Trainingsmodus direkt auf der Kartenseite mit 5 Karten pro Runde und Fazit
   - Eingabemodus zum Tippen der Antworten; nach dem Prüfen bewertest du selbst, ob die Karte leicht, mittel oder schwer war
-  - Timed-Modus mit 10 Sekunden Countdown pro Karte; bei Ablauf wird automatisch "schwer" gewertet
+  - Timed-Modus mit 10 Sekunden Countdown pro Karte; der Timer wird einmalig gestartet und kann pausiert werden. Bei Ablauf wird automatisch "schwer" gewertet
 - Statistikseite für Lernkarten
 - Speicherung der Daten auf dem lokalen Server
  - Pomodoro-Timer läuft beim Neuladen der Seite weiter
@@ -93,7 +93,7 @@ npm start    # startet die gebaute App auf Port 3002
    gezielt Decks ein- oder ausblenden, einen Zufallsmodus aktivieren und im
    Eingabemodus Antworten eintippen. Nach dem Vergleich der Lösung entscheidest
    du selbst, wie schwer dir die Karte fiel.
-   Im Timed-Modus bleiben dir pro Karte 10 Sekunden; bei 0 wird automatisch "schwer" gewertet.
+   Im Timed-Modus bleiben dir pro Karte 10 Sekunden. Der Timer startet einmalig zu Beginn der Session und kann jederzeit pausiert werden. Bei 0 wird automatisch "schwer" gewertet.
 
 Viel Spaß beim Ausprobieren!
 

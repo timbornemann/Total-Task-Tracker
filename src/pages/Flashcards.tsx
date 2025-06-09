@@ -34,6 +34,8 @@ const FlashcardsPage: React.FC = () => {
   const [useSpaced, setUseSpaced] = useState(true);
   const [timeLeft, setTimeLeft] = useState(0);
   const [timerActive, setTimerActive] = useState(false);
+  const [timerStarted, setTimerStarted] = useState(false);
+  const [timerPaused, setTimerPaused] = useState(false);
   const TIMER_DURATION = 10;
   const [index, setIndex] = useState(0);
   const [showBack, setShowBack] = useState(false);
@@ -63,6 +65,9 @@ const FlashcardsPage: React.FC = () => {
     setTrainingMode(value === 'training');
     setTypingMode(value === 'typing');
     setTimedMode(value === 'timed');
+    setTimerStarted(false);
+    setTimerPaused(false);
+    setTimerActive(false);
     setUseSpaced(true);
     setIndex(0);
     setShowBack(false);
@@ -108,14 +113,24 @@ const FlashcardsPage: React.FC = () => {
   const current = trainingMode ? sessionCards[index] : cards[index];
 
   useEffect(() => {
-    if (timedMode && current) {
-      setTimeLeft(TIMER_DURATION);
-      setTimerActive(false);
-    } else if (!current) {
+    if (!current) {
       setTimeLeft(0);
       setTimerActive(false);
+      return;
     }
-  }, [current, timedMode]);
+    if (timedMode) {
+      setTimeLeft(TIMER_DURATION);
+      setTimerPaused(false);
+      setTimerActive(timerStarted);
+    } else {
+      setTimerActive(false);
+    }
+  }, [current, timedMode, timerStarted]);
+
+  useEffect(() => {
+    if (!timedMode) return;
+    setTimerActive(timerStarted && !timerPaused);
+  }, [timerPaused, timerStarted, timedMode]);
 
   useEffect(() => {
     if (!timedMode || !timerActive || timeLeft <= 0) return;
@@ -174,6 +189,7 @@ const FlashcardsPage: React.FC = () => {
     setChecked(false);
     setIsCorrect(null);
     setTimerActive(false);
+    setTimerPaused(false);
     setIndex(i => i + 1);
   };
 
@@ -200,6 +216,8 @@ const FlashcardsPage: React.FC = () => {
     setChecked(false);
     setIsCorrect(null);
     setTimerActive(false);
+    setTimerPaused(false);
+    setTimerStarted(false);
   };
 
   return (
@@ -258,13 +276,24 @@ const FlashcardsPage: React.FC = () => {
               <CardTitle>{decks.find(d => d.id === current.deckId)?.name}</CardTitle>
             </CardHeader>
             <CardContent>
-              {timedMode && timerActive && (
-                <div className="text-center text-2xl font-bold text-red-600 mb-4">
-                  {Math.max(timeLeft, 0)}
+              {timedMode && timerStarted && (
+                <div className="flex justify-center items-center space-x-2 mb-4">
+                  <div className="text-2xl font-bold text-red-600 text-center">
+                    {Math.max(timeLeft, 0)}
+                  </div>
+                  {timerPaused ? (
+                    <Button size="sm" variant="outline" onClick={() => setTimerPaused(false)}>
+                      Weiter
+                    </Button>
+                  ) : (
+                    <Button size="sm" variant="outline" onClick={() => setTimerPaused(true)}>
+                      Pause
+                    </Button>
+                  )}
                 </div>
               )}
               {typingMode ? (
-                <div className="space-y-4 py-8">
+                <div className={`space-y-4 py-8 ${timedMode && timerPaused ? 'blur-sm select-none' : ''}`}> 
                   <div className="text-center text-lg">{current.front}</div>
                   {showBack ? (
                     <>
@@ -281,8 +310,8 @@ const FlashcardsPage: React.FC = () => {
                 </div>
               ) : (
                 <div
-                  className="text-center text-lg cursor-pointer py-12"
-                  onClick={() => setShowBack(b => !b)}
+                  className={`text-center text-lg cursor-pointer py-12 ${timedMode && timerPaused ? 'blur-sm select-none cursor-default' : ''}`}
+                  onClick={() => !timerPaused && setShowBack(b => !b)}
                 >
                   {showBack ? (
                     <div className="space-y-2">
@@ -355,14 +384,16 @@ const FlashcardsPage: React.FC = () => {
         )}
       </div>
       <AlertDialog
-        open={timedMode && !timerActive && !!current}
+        open={timedMode && !timerStarted && !!current}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Timer starten?</AlertDialogTitle>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogAction onClick={() => setTimerActive(true)}>
+            <AlertDialogAction
+              onClick={() => setTimerStarted(true)}
+            >
               Start
             </AlertDialogAction>
           </AlertDialogFooter>
