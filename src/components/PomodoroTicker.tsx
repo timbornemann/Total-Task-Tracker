@@ -4,6 +4,8 @@ import { usePomodoroHistory } from '@/hooks/usePomodoroHistory.tsx'
 
 const PomodoroTicker = () => {
   const tick = usePomodoroStore(state => state.tick)
+  const lastTick = usePomodoroStore(state => state.lastTick)
+  const setLastTick = usePomodoroStore(state => state.setLastTick)
   const mode = usePomodoroStore(state => state.mode)
   const setStartTime = usePomodoroStore(state => state.setStartTime)
   const startTime = usePomodoroStore(state => state.startTime)
@@ -11,9 +13,19 @@ const PomodoroTicker = () => {
   const prevMode = useRef(mode)
 
   useEffect(() => {
-    const interval = setInterval(() => tick(), 1000)
+    if (lastTick) {
+      const diff = Math.floor((Date.now() - lastTick) / 1000)
+      if (diff > 1) {
+        for (let i = 0; i < diff; i++) tick()
+      }
+    }
+    setLastTick(Date.now())
+    const interval = setInterval(() => {
+      tick()
+      setLastTick(Date.now())
+    }, 1000)
     return () => clearInterval(interval)
-  }, [tick])
+  }, [tick, lastTick, setLastTick])
 
   useEffect(() => {
     if (prevMode.current === 'work' && mode === 'break' && startTime) {
