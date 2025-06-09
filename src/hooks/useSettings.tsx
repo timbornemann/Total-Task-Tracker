@@ -12,9 +12,13 @@ const defaultShortcuts: ShortcutKeys = {
   newNote: 'ctrl+n'
 }
 
+const defaultPomodoro = { workMinutes: 25, breakMinutes: 5 }
+
 interface SettingsContextValue {
   shortcuts: ShortcutKeys
   updateShortcut: (key: keyof ShortcutKeys, value: string) => void
+  pomodoro: { workMinutes: number; breakMinutes: number }
+  updatePomodoro: (key: 'workMinutes' | 'breakMinutes', value: number) => void
 }
 
 const SettingsContext = createContext<SettingsContextValue | undefined>(undefined)
@@ -24,17 +28,31 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const stored = localStorage.getItem('shortcuts')
     return stored ? { ...defaultShortcuts, ...JSON.parse(stored) } : defaultShortcuts
   })
+  const [pomodoro, setPomodoro] = useState(() => {
+    const stored = localStorage.getItem('pomodoro')
+    return stored ? { ...defaultPomodoro, ...JSON.parse(stored) } : defaultPomodoro
+  })
 
   useEffect(() => {
     localStorage.setItem('shortcuts', JSON.stringify(shortcuts))
   }, [shortcuts])
 
+  useEffect(() => {
+    localStorage.setItem('pomodoro', JSON.stringify(pomodoro))
+  }, [pomodoro])
+
   const updateShortcut = (key: keyof ShortcutKeys, value: string) => {
     setShortcuts(prev => ({ ...prev, [key]: value.toLowerCase() }))
   }
 
+  const updatePomodoro = (key: 'workMinutes' | 'breakMinutes', value: number) => {
+    setPomodoro(prev => ({ ...prev, [key]: value }))
+  }
+
   return (
-    <SettingsContext.Provider value={{ shortcuts, updateShortcut }}>
+    <SettingsContext.Provider
+      value={{ shortcuts, updateShortcut, pomodoro, updatePomodoro }}
+    >
       {children}
     </SettingsContext.Provider>
   )
