@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useTaskStore } from '@/hooks/useTaskStore';
 import { Task, TaskFormData } from '@/types';
+import { flattenTasks, FlattenedTask } from '@/utils/taskUtils';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -30,20 +31,22 @@ const CalendarPage = () => {
   const [taskDetailStack, setTaskDetailStack] = useState<Task[]>([]);
   const { start: startPomodoro } = usePomodoroStore();
 
+  const flattened = useMemo(() => flattenTasks(tasks), [tasks]);
+
   const tasksByDate = useMemo(() => {
-    const map: Record<string, Task[]> = {};
-    const add = (date: Date | undefined, task: Task) => {
+    const map: Record<string, FlattenedTask[]> = {};
+    const add = (date: Date | undefined, item: FlattenedTask) => {
       if (!date) return;
       const key = date.toDateString();
       if (!map[key]) map[key] = [];
-      map[key].push(task);
+      map[key].push(item);
     };
-    tasks.forEach(task => {
-      add(task.dueDate, task);
-      if (task.isRecurring && task.nextDue) add(task.nextDue, task);
+    flattened.forEach(item => {
+      add(item.task.dueDate, item);
+      if (item.task.isRecurring && item.task.nextDue) add(item.task.nextDue, item);
     });
     return map;
-  }, [tasks]);
+  }, [flattened]);
 
   const eventDays = useMemo(() => Object.keys(tasksByDate).map(d => new Date(d)), [tasksByDate]);
   const dayTasks = selected ? tasksByDate[selected.toDateString()] || [] : [];
@@ -157,10 +160,11 @@ const CalendarPage = () => {
                   <p className="text-sm text-muted-foreground">Keine Aufgaben.</p>
                 ) : (
                   <div className="space-y-3">
-                    {dayTasks.map(task => (
+                    {dayTasks.map(item => (
                       <TaskCard
-                        key={task.id}
-                        task={task}
+                        key={item.task.id}
+                        task={item.task}
+                        parentPathTitles={item.path.map(p => p.title)}
                         showSubtasks={false}
                         onEdit={handleEditTask}
                         onDelete={handleDeleteTask}
