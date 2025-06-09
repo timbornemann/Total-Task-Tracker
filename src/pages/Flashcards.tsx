@@ -1,20 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Navbar from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { useFlashcardStore } from '@/hooks/useFlashcardStore';
+import { shuffleArray } from '@/utils/shuffle';
 
 const FlashcardsPage: React.FC = () => {
   const { flashcards, decks, rateFlashcard } = useFlashcardStore();
-  const dueCards = flashcards.filter(c => new Date(c.dueDate) <= new Date());
+  const [selectedDecks, setSelectedDecks] = useState<string[]>([]);
+  const [randomMode, setRandomMode] = useState(false);
   const [index, setIndex] = useState(0);
   const [showBack, setShowBack] = useState(false);
 
-  const current = dueCards[index];
+  useEffect(() => {
+    if (decks.length > 0 && selectedDecks.length === 0) {
+      setSelectedDecks(decks.map(d => d.id));
+    }
+  }, [decks, selectedDecks.length]);
+
+  const filtered = flashcards.filter(c => selectedDecks.includes(c.deckId));
+  const dueCards = filtered.filter(c => new Date(c.dueDate) <= new Date());
+
+  const cards = useMemo(() => {
+    if (randomMode) {
+      return shuffleArray(filtered);
+    }
+    return dueCards;
+  }, [filtered, dueCards, randomMode]);
+
+  const current = cards[index];
 
   const handleRate = (d: 'easy' | 'medium' | 'hard') => {
     if (!current) return;
-    rateFlashcard(current.id, d);
+    if (!randomMode) {
+      rateFlashcard(current.id, d);
+    }
     setShowBack(false);
     setIndex(i => i + 1);
   };
@@ -22,7 +45,30 @@ const FlashcardsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar title="Karteikarten" />
-      <div className="max-w-md mx-auto py-8 px-4">
+      <div className="max-w-md mx-auto py-8 px-4 space-y-4">
+        <div className="space-y-2">
+          <div className="flex items-center space-x-2">
+            <Switch checked={randomMode} onCheckedChange={v => { setRandomMode(v); setIndex(0); }} />
+            <Label>Random Modus</Label>
+          </div>
+          <div className="space-y-1">
+            {decks.map(deck => (
+              <div key={deck.id} className="flex items-center space-x-2">
+                <Checkbox
+                  id={deck.id}
+                  checked={selectedDecks.includes(deck.id)}
+                  onCheckedChange={checked => {
+                    setSelectedDecks(prev =>
+                      checked ? [...prev, deck.id] : prev.filter(id => id !== deck.id)
+                    );
+                    setIndex(0);
+                  }}
+                />
+                <Label htmlFor={deck.id}>{deck.name}</Label>
+              </div>
+            ))}
+          </div>
+        </div>
         {!current ? (
           <p className="text-sm text-muted-foreground">Keine fälligen Karten.</p>
         ) : (
@@ -39,15 +85,23 @@ const FlashcardsPage: React.FC = () => {
               </div>
             </CardContent>
             <CardFooter className="flex justify-between">
-              <Button variant="outline" onClick={() => handleRate('hard')}>
-                Schwer
-              </Button>
-              <Button variant="outline" onClick={() => handleRate('medium')}>
-                Mittel
-              </Button>
-              <Button variant="outline" onClick={() => handleRate('easy')}>
-                Leicht
-              </Button>
+              {randomMode ? (
+                <Button variant="outline" onClick={() => handleRate('easy')}>
+                  Nächste Karte
+                </Button>
+              ) : (
+                <>
+                  <Button variant="outline" onClick={() => handleRate('hard')}>
+                    Schwer
+                  </Button>
+                  <Button variant="outline" onClick={() => handleRate('medium')}>
+                    Mittel
+                  </Button>
+                  <Button variant="outline" onClick={() => handleRate('easy')}>
+                    Leicht
+                  </Button>
+                </>
+              )}
             </CardFooter>
           </Card>
         )}
