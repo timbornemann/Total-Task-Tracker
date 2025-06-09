@@ -21,8 +21,14 @@ const FlashcardsPage: React.FC = () => {
     }
   }, [decks, selectedDecks.length]);
 
-  const filtered = flashcards.filter(c => selectedDecks.includes(c.deckId));
-  const dueCards = filtered.filter(c => new Date(c.dueDate) <= new Date());
+  const filtered = useMemo(
+    () => flashcards.filter(c => selectedDecks.includes(c.deckId)),
+    [flashcards, selectedDecks]
+  );
+  const dueCards = useMemo(
+    () => filtered.filter(c => new Date(c.dueDate) <= new Date()),
+    [filtered]
+  );
 
   const cards = useMemo(() => {
     if (randomMode) {
