@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectTrigger,
@@ -30,6 +31,7 @@ const FlashcardsPage: React.FC = () => {
   const [trainingMode, setTrainingMode] = useState(false);
   const [typingMode, setTypingMode] = useState(false);
   const [timedMode, setTimedMode] = useState(false);
+  const [useSpaced, setUseSpaced] = useState(true);
   const [timeLeft, setTimeLeft] = useState(0);
   const TIMER_DURATION = 10;
   const [index, setIndex] = useState(0);
@@ -60,6 +62,7 @@ const FlashcardsPage: React.FC = () => {
     setTrainingMode(value === 'training');
     setTypingMode(value === 'typing');
     setTimedMode(value === 'timed');
+    setUseSpaced(true);
     setIndex(0);
     setShowBack(false);
     setAnswer('');
@@ -81,6 +84,8 @@ const FlashcardsPage: React.FC = () => {
     [filtered]
   );
 
+  const nonSpaced = (!useSpaced) && (typingMode || timedMode);
+
   useEffect(() => {
     if (trainingMode) {
       const all = shuffleArray(filtered);
@@ -93,11 +98,11 @@ const FlashcardsPage: React.FC = () => {
   }, [filtered, trainingMode]);
 
   const cards = useMemo(() => {
-    if (randomMode) {
+    if (randomMode || nonSpaced) {
       return shuffleArray(filtered);
     }
     return dueCards;
-  }, [filtered, dueCards, randomMode, shuffleKey]);
+  }, [filtered, dueCards, randomMode, nonSpaced, shuffleKey]);
 
   const current = trainingMode ? sessionCards[index] : cards[index];
 
@@ -127,8 +132,10 @@ const FlashcardsPage: React.FC = () => {
   useEffect(() => {
     if (!trainingMode && randomMode && index >= cards.length && cards.length > 0) {
       setShowDone(true);
+    } else if (nonSpaced && index >= cards.length && cards.length > 0) {
+      setShowSummary(true);
     }
-  }, [index, randomMode, cards.length, trainingMode]);
+  }, [index, randomMode, cards.length, trainingMode, nonSpaced]);
 
   const handleRate = (d: 'easy' | 'medium' | 'hard') => {
     if (!current) return;
@@ -150,7 +157,12 @@ const FlashcardsPage: React.FC = () => {
       setShowBack(false);
       return;
     }
-    if (!randomMode) {
+    if (nonSpaced) {
+      setSummary(prev => {
+        const entry = prev[current.id] || { easy: 0, medium: 0, hard: 0 };
+        return { ...prev, [current.id]: { ...entry, [d]: entry[d] + 1 } };
+      });
+    } else if (!randomMode) {
       rateFlashcard(current.id, d, typingMode ? isCorrect ?? false : undefined);
     }
     setShowBack(false);
@@ -174,6 +186,10 @@ const FlashcardsPage: React.FC = () => {
       setIndex(0);
       setShowBack(false);
       setShuffleKey(k => k + 1);
+      if (nonSpaced) {
+        setSummary({});
+        setShowSummary(false);
+      }
     }
     setAnswer('');
     setChecked(false);
@@ -217,6 +233,16 @@ const FlashcardsPage: React.FC = () => {
               </div>
             ))}
           </div>
+          {(typingMode || timedMode) && (
+            <div className="flex items-center justify-between pt-2">
+              <Label htmlFor="useSpaced">Spaced Repetition</Label>
+              <Switch
+                id="useSpaced"
+                checked={useSpaced}
+                onCheckedChange={setUseSpaced}
+              />
+            </div>
+          )}
         </div>
         {!current ? (
           <p className="text-sm text-muted-foreground">Keine fälligen Karten.</p>
@@ -326,22 +352,28 @@ const FlashcardsPage: React.FC = () => {
         open={showSummary}
         onOpenChange={open => {
           if (!open) {
-            if (remainingCards.length === 0) {
-              handleRestart();
+            if (trainingMode) {
+              if (remainingCards.length === 0) {
+                handleRestart();
+              } else {
+                const next = remainingCards.slice(0, 5);
+                setSessionCards(next);
+                setRemainingCards(remainingCards.slice(5));
+                setIndex(0);
+                setShowBack(false);
+                setShowSummary(false);
+              }
             } else {
-              const next = remainingCards.slice(0, 5);
-              setSessionCards(next);
-              setRemainingCards(remainingCards.slice(5));
-              setIndex(0);
-              setShowBack(false);
-              setShowSummary(false);
+              handleRestart();
             }
           }
         }}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Training beendet</AlertDialogTitle>
+            <AlertDialogTitle>
+              {trainingMode ? 'Training beendet' : 'Session beendet'}
+            </AlertDialogTitle>
           </AlertDialogHeader>
           <div className="max-h-60 overflow-y-auto space-y-2 my-2 text-sm">
             {Object.entries(summary).map(([id, counts]) => {
