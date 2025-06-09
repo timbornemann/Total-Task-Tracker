@@ -81,6 +81,15 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact }) => {
 
   if (compact && !isRunning) return null;
 
+  const duration = mode === 'work' ? WORK_DURATION : BREAK_DURATION;
+  const progress = remainingTime / duration;
+
+  const radius = 80;
+  const stroke = 8;
+  const normalizedRadius = radius - stroke / 2;
+  const circumference = normalizedRadius * 2 * Math.PI;
+  const strokeDashoffset = circumference - progress * circumference;
+
   return (
     <div
       className={
@@ -89,8 +98,37 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact }) => {
           : 'flex flex-col items-center space-y-4'
       }
     >
-      <div className="text-2xl font-bold">{formatTime(remainingTime)}</div>
-      <div className="flex space-x-2">
+      <div className="relative" style={{ width: radius * 2, height: radius * 2 }}>
+        <svg
+          width={radius * 2}
+          height={radius * 2}
+          className="transform -rotate-90"
+        >
+          <circle
+            stroke="#e5e7eb"
+            fill="transparent"
+            strokeWidth={stroke}
+            r={normalizedRadius}
+            cx={radius}
+            cy={radius}
+          />
+          <circle
+            stroke={mode === 'work' ? '#4f46e5' : '#16a34a'}
+            fill="transparent"
+            strokeWidth={stroke}
+            strokeLinecap="round"
+            strokeDasharray={`${circumference} ${circumference}`}
+            style={{ strokeDashoffset, transition: 'stroke-dashoffset 1s linear' }}
+            r={normalizedRadius}
+            cx={radius}
+            cy={radius}
+          />
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-2xl font-bold">{formatTime(remainingTime)}</div>
+        </div>
+      </div>
+      <div className="flex space-x-2 mt-4">
         {!isRunning && <Button onClick={() => start()}>Start</Button>}
         {isRunning && !isPaused && (
           <Button onClick={pause} variant="outline">
