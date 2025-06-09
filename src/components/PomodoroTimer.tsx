@@ -14,12 +14,15 @@ interface PomodoroState {
   workDuration: number;
   breakDuration: number;
   startTime?: number;
+  lastTick?: number;
   start: (taskId?: string) => void;
   pause: () => void;
   resume: () => void;
   reset: () => void;
+  startBreak: () => void;
   tick: () => void;
   setStartTime: (time?: number) => void;
+  setLastTick: (time: number) => void;
   setDurations: (work: number, brk: number) => void;
 }
 
@@ -37,6 +40,7 @@ export const usePomodoroStore = create<PomodoroState>()(
       workDuration: WORK_DURATION,
       breakDuration: BREAK_DURATION,
       startTime: undefined,
+      lastTick: undefined,
       start: (taskId?: string) =>
         set(state => ({
           isRunning: true,
@@ -44,10 +48,11 @@ export const usePomodoroStore = create<PomodoroState>()(
           remainingTime: state.workDuration,
           mode: 'work',
           currentTaskId: taskId,
-          startTime: Date.now()
+          startTime: Date.now(),
+          lastTick: Date.now()
         })),
       pause: () => set({ isPaused: true }),
-      resume: () => set({ isPaused: false }),
+      resume: () => set({ isPaused: false, lastTick: Date.now() }),
       reset: () =>
         set(state => ({
           isRunning: false,
@@ -55,22 +60,33 @@ export const usePomodoroStore = create<PomodoroState>()(
           remainingTime: state.workDuration,
           mode: 'work',
           currentTaskId: undefined,
-          startTime: undefined
+          startTime: undefined,
+          lastTick: undefined
+        })),
+      startBreak: () =>
+        set(state => ({
+          isRunning: true,
+          isPaused: false,
+          mode: 'break',
+          remainingTime: state.breakDuration,
+          lastTick: Date.now()
         })),
       tick: () =>
         set(state => {
           if (!state.isRunning || state.isPaused) return state;
           if (state.remainingTime > 0) {
-            return { remainingTime: state.remainingTime - 1 };
+            return { remainingTime: state.remainingTime - 1, lastTick: Date.now() };
           }
           const nextMode = state.mode === 'work' ? 'break' : 'work';
           return {
             mode: nextMode,
             remainingTime:
-              nextMode === 'work' ? state.workDuration : state.breakDuration
+              nextMode === 'work' ? state.workDuration : state.breakDuration,
+            lastTick: Date.now()
           } as PomodoroState;
         }),
       setStartTime: time => set({ startTime: time }),
+      setLastTick: time => set({ lastTick: time }),
       setDurations: (work, brk) =>
         set(state => ({
           workDuration: work,
@@ -108,6 +124,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80 }) => 
     pause,
     resume,
     reset,
+    startBreak,
     workDuration,
     breakDuration,
     setDurations,
@@ -140,6 +157,10 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80 }) => 
   const handleResume = () => {
     if (mode === 'work') setStartTime(Date.now());
     resume();
+  };
+
+  const handleStartBreak = () => {
+    startBreak();
   };
 
   useEffect(() => {
@@ -205,6 +226,11 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80 }) => 
         {isRunning && !isPaused && (
           <Button onClick={handlePause} variant="outline">
             Pause
+          </Button>
+        )}
+        {isRunning && !isPaused && mode === 'work' && (
+          <Button onClick={handleStartBreak} variant="outline">
+            Break
           </Button>
         )}
         {isRunning && isPaused && (
