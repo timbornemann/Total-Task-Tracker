@@ -74,9 +74,11 @@ const formatTime = (sec: number) => {
 
 interface PomodoroTimerProps {
   compact?: boolean;
+  /** Radius of the timer circle */
+  size?: number;
 }
 
-const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact }) => {
+const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80 }) => {
   const {
     isRunning,
     isPaused,
@@ -99,7 +101,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact }) => {
   const duration = mode === 'work' ? WORK_DURATION : BREAK_DURATION;
   const progress = remainingTime / duration;
 
-  const radius = 80;
+  const radius = size;
   const stroke = 8;
   const normalizedRadius = radius - stroke / 2;
   const circumference = normalizedRadius * 2 * Math.PI;
@@ -140,7 +142,11 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact }) => {
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-2xl font-bold">{formatTime(remainingTime)}</div>
+          <div
+            className={size > 100 ? 'text-4xl font-bold' : 'text-2xl font-bold'}
+          >
+            {formatTime(remainingTime)}
+          </div>
         </div>
       </div>
       <div className="flex space-x-2 mt-4">
