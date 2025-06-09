@@ -1,10 +1,12 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
-import { Flashcard } from '@/types';
+import { Flashcard, Deck } from '@/types';
 
 const API_URL = '/api/flashcards';
+const DECKS_URL = '/api/decks';
 
 const useFlashcardStoreImpl = () => {
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
+  const [decks, setDecks] = useState<Deck[]>([]);
 
   useEffect(() => {
     const load = async () => {
@@ -28,6 +30,22 @@ const useFlashcardStoreImpl = () => {
   }, []);
 
   useEffect(() => {
+    const loadDecks = async () => {
+      try {
+        const res = await fetch(DECKS_URL);
+        if (res.ok) {
+          const data = await res.json();
+          setDecks(data || []);
+        }
+      } catch (err) {
+        console.error('Fehler beim Laden der Decks', err);
+      }
+    };
+
+    loadDecks();
+  }, []);
+
+  useEffect(() => {
     const save = async () => {
       try {
         await fetch(API_URL, {
@@ -42,6 +60,22 @@ const useFlashcardStoreImpl = () => {
 
     save();
   }, [flashcards]);
+
+  useEffect(() => {
+    const save = async () => {
+      try {
+        await fetch(DECKS_URL, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(decks)
+        });
+      } catch (err) {
+        console.error('Fehler beim Speichern der Decks', err);
+      }
+    };
+
+    save();
+  }, [decks]);
 
   const addFlashcard = (data: Omit<Flashcard, 'id' | 'interval' | 'dueDate'>) => {
     const newCard: Flashcard = {
@@ -63,6 +97,21 @@ const useFlashcardStoreImpl = () => {
     setFlashcards(prev => prev.filter(c => c.id !== id));
   };
 
+  const addDeck = (name: string) => {
+    const newDeck: Deck = { id: Date.now().toString(), name };
+    setDecks(prev => [...prev, newDeck]);
+  };
+
+  const updateDeck = (id: string, name: string) => {
+    setDecks(prev => prev.map(d => (d.id === id ? { ...d, name } : d)));
+    setFlashcards(prev => prev.map(c => (c.deckId === id ? { ...c } : c)));
+  };
+
+  const deleteDeck = (id: string) => {
+    setDecks(prev => prev.filter(d => d.id !== id));
+    setFlashcards(prev => prev.filter(c => c.deckId !== id));
+  };
+
   const rateFlashcard = (
     id: string,
     difficulty: 'easy' | 'medium' | 'hard'
@@ -81,7 +130,17 @@ const useFlashcardStoreImpl = () => {
     });
   };
 
-  return { flashcards, addFlashcard, updateFlashcard, deleteFlashcard, rateFlashcard };
+  return {
+    flashcards,
+    decks,
+    addFlashcard,
+    updateFlashcard,
+    deleteFlashcard,
+    rateFlashcard,
+    addDeck,
+    updateDeck,
+    deleteDeck
+  };
 };
 
 type FlashcardStore = ReturnType<typeof useFlashcardStoreImpl>;

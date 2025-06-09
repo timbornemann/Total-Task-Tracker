@@ -87,12 +87,12 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                 Karten
               </Button>
             </Link>
-            <Link to="/flashcards/manage">
-              <Button variant="outline" size="sm">
-                <Pencil className="h-4 w-4 mr-2" />
-                Verwalten
-              </Button>
-            </Link>
+              <Link to="/flashcards/manage">
+                <Button variant="outline" size="sm">
+                  <Pencil className="h-4 w-4 mr-2" />
+                  Decks
+                </Button>
+              </Link>
             <Link to="/notes">
               <Button variant="outline" size="sm">
                 <List className="h-4 w-4 mr-2" />
@@ -149,7 +149,7 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
               <Link to="/flashcards/manage" className="flex-1">
                 <Button variant="outline" size="sm" className="w-full">
                   <Pencil className="h-4 w-4 mr-2" />
-                  Verwalten
+                  Decks
                 </Button>
               </Link>
               <Link to="/notes" className="flex-1">

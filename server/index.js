@@ -31,6 +31,10 @@ db.exec(`
     id TEXT PRIMARY KEY,
     data TEXT NOT NULL
   );
+  CREATE TABLE IF NOT EXISTS decks (
+    id TEXT PRIMARY KEY,
+    data TEXT NOT NULL
+  );
 `);
 
 function dateReviver(key, value) {
@@ -89,6 +93,15 @@ function loadFlashcards() {
   }
 }
 
+function loadDecks() {
+  try {
+    return db.prepare('SELECT data FROM decks').all()
+      .map(row => JSON.parse(row.data, dateReviver));
+  } catch {
+    return [];
+  }
+}
+
 function saveFlashcards(cards) {
   const toJson = (obj) => JSON.stringify(
     obj,
@@ -99,6 +112,21 @@ function saveFlashcards(cards) {
     for (const card of cards || []) {
       db.prepare('INSERT INTO flashcards (id, data) VALUES (?, ?)')
         .run(card.id, toJson(card));
+    }
+  });
+  tx();
+}
+
+function saveDecks(decks) {
+  const toJson = (obj) => JSON.stringify(
+    obj,
+    (key, value) => (value instanceof Date ? value.toISOString() : value)
+  );
+  const tx = db.transaction(() => {
+    db.exec('DELETE FROM decks');
+    for (const deck of decks || []) {
+      db.prepare('INSERT INTO decks (id, data) VALUES (?, ?)')
+        .run(deck.id, toJson(deck));
     }
   });
   tx();
@@ -162,6 +190,30 @@ const server = http.createServer((req, res) => {
         try {
           const cards = JSON.parse(body || '[]');
           saveFlashcards(cards);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ status: 'ok' }));
+        } catch {
+          res.writeHead(400);
+          res.end();
+        }
+      });
+      return;
+    }
+  }
+
+  if (parsed.pathname === '/api/decks' || parsed.pathname === '/api/decks/') {
+    if (req.method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(loadDecks()));
+      return;
+    }
+    if (req.method === 'PUT') {
+      let body = '';
+      req.on('data', chunk => { body += chunk; });
+      req.on('end', () => {
+        try {
+          const decks = JSON.parse(body || '[]');
+          saveDecks(decks);
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ status: 'ok' }));
         } catch {

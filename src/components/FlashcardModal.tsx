@@ -1,31 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { Flashcard } from '@/types';
+import { Flashcard, Deck } from '@/types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface FlashcardModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (data: Omit<Flashcard, 'id' | 'interval' | 'dueDate'>) => void;
+  decks: Deck[];
   card?: Flashcard;
 }
 
-const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose, onSave, card }) => {
-  const [formData, setFormData] = useState({ front: '', back: '', deck: '' });
+const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose, onSave, decks, card }) => {
+  const [formData, setFormData] = useState({ front: '', back: '', deckId: '' });
 
   useEffect(() => {
     if (!isOpen) return;
     if (card) {
-      setFormData({ front: card.front, back: card.back, deck: card.deck });
+      setFormData({ front: card.front, back: card.back, deckId: card.deckId });
     } else {
-      setFormData({ front: '', back: '', deck: '' });
+      setFormData({ front: '', back: '', deckId: decks[0]?.id || '' });
     }
-  }, [isOpen, card]);
+  }, [isOpen, card, decks]);
 
-  const handleChange = (field: 'front' | 'back' | 'deck', value: string) => {
+  const handleChange = (field: 'front' | 'back' | 'deckId', value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -46,11 +47,16 @@ const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose, onSave
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="deck">Deck</Label>
-            <Input
-              id="deck"
-              value={formData.deck}
-              onChange={e => handleChange('deck', e.target.value)}
-            />
+            <Select value={formData.deckId} onValueChange={v => handleChange('deckId', v)}>
+              <SelectTrigger id="deck">
+                <SelectValue placeholder="Deck wählen" />
+              </SelectTrigger>
+              <SelectContent>
+                {decks.map(d => (
+                  <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div>
             <Label htmlFor="front">Vorderseite *</Label>

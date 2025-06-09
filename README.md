@@ -73,7 +73,7 @@ npm start    # startet die gebaute App auf Port 3002
 4. Über das Suchfeld und die Filter sortierst und findest du Aufgaben nach Priorität oder Farbe.
 5. Die Seiten **Kalender** und **Statistiken** bieten dir einen Überblick über anstehende Termine und erledigte Tasks.
 6. Unter **Notizen** kannst du unabhängige Notizen verwalten und per Drag & Drop sortieren.
-7. In **Karten verwalten** legst du eigene Lernkarten an oder bearbeitest sie.
+7. Unter **Decks** legst du Kartendecks an und kannst sie bearbeiten. In der Detailansicht eines Decks fügst du einzelne Karten hinzu.
 8. Der Bereich **Karten** zeigt dir fällige Karten zum Lernen an.
 
 Viel Spaß beim Ausprobieren!

@@ -71,9 +71,14 @@ export interface Flashcard {
   id: string;
   front: string;
   back: string;
-  deck: string;
+  deckId: string;
   interval: number;
   dueDate: Date;
+}
+
+export interface Deck {
+  id: string;
+  name: string;
 }
 
 export interface TaskStats {
