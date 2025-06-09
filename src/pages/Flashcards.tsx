@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { useFlashcardStore } from '@/hooks/useFlashcardStore';
 
 const FlashcardsPage: React.FC = () => {
-  const { flashcards, rateFlashcard } = useFlashcardStore();
+  const { flashcards, decks, rateFlashcard } = useFlashcardStore();
   const dueCards = flashcards.filter(c => new Date(c.dueDate) <= new Date());
   const [index, setIndex] = useState(0);
   const [showBack, setShowBack] = useState(false);
@@ -28,7 +28,7 @@ const FlashcardsPage: React.FC = () => {
         ) : (
           <Card>
             <CardHeader>
-              <CardTitle>{current.deck}</CardTitle>
+              <CardTitle>{decks.find(d => d.id === current.deckId)?.name}</CardTitle>
             </CardHeader>
             <CardContent>
               <div

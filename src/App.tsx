@@ -16,6 +16,7 @@ import Kanban from "./pages/Kanban";
 import NotesPage from "./pages/Notes";
 import FlashcardsPage from "./pages/Flashcards";
 import FlashcardManagerPage from "./pages/FlashcardManager";
+import DeckDetailPage from "./pages/DeckDetail";
 import SettingsPage from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import PomodoroPage from "./pages/Pomodoro";
@@ -40,6 +41,7 @@ const App = () => (
               <Route path="/calendar" element={<CalendarPage />} />
               <Route path="/kanban" element={<Kanban />} />
               <Route path="/flashcards/manage" element={<FlashcardManagerPage />} />
+              <Route path="/flashcards/deck/:deckId" element={<DeckDetailPage />} />
               <Route path="/flashcards" element={<FlashcardsPage />} />
               <Route path="/notes" element={<NotesPage />} />
               <Route path="/settings" element={<SettingsPage />} />
