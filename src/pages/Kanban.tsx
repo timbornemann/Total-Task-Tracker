@@ -4,6 +4,7 @@ import TaskCard from '@/components/TaskCard';
 import Navbar from '@/components/Navbar';
 import TaskModal from '@/components/TaskModal';
 import TaskDetailModal from '@/components/TaskDetailModal';
+import { usePomodoroStore } from '@/components/PomodoroTimer';
 import { useToast } from '@/hooks/use-toast';
 import { Task, TaskFormData } from '@/types';
 import { flattenTasks, FlattenedTask } from '@/utils/taskUtils';
@@ -31,6 +32,7 @@ const Kanban: React.FC = () => {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [parentTask, setParentTask] = useState<Task | null>(null);
   const [taskDetailStack, setTaskDetailStack] = useState<Task[]>([]);
+  const { start: startPomodoro } = usePomodoroStore();
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
@@ -227,6 +229,7 @@ const Kanban: React.FC = () => {
         onAddSubtask={handleAddSubtask}
         onToggleComplete={handleToggleTaskComplete}
         onViewDetails={handleViewTaskDetails}
+        onStartPomodoro={task => startPomodoro(task.id)}
         canGoBack={taskDetailStack.length > 0}
         onBack={handleTaskDetailBack}
       />
