@@ -47,46 +47,48 @@ const CalendarPage = () => {
     <div className="min-h-screen bg-gray-50">
       <Navbar title="Kalender" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
-        <Calendar
-          mode="single"
-          selected={selected}
-          onSelect={setSelected}
-          modifiers={{ event: eventDays }}
-          modifiersClassNames={{ event: 'bg-blue-200 text-blue-900' }}
-        />
-        {selected && (
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle>
-                Aufgaben am {selected.toLocaleDateString('de-DE')}
-              </CardTitle>
-              <Button
-                size="sm"
-                className="mt-2"
-                onClick={() => setIsTaskModalOpen(true)}
-              >
-                Neue Task
-              </Button>
-            </CardHeader>
-            <CardContent>
-              {dayTasks.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Keine Aufgaben.</p>
-              ) : (
-                <ul className="space-y-2">
-                  {dayTasks.map(task => (
-                    <li key={task.id} className="text-sm">
-                      <span
-                        className="inline-block w-2 h-2 rounded-full mr-2"
-                        style={{ backgroundColor: task.color }}
-                      />
-                      {task.title}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </CardContent>
-          </Card>
-        )}
+        <div className="flex flex-col lg:flex-row items-start gap-6">
+          <Calendar
+            mode="single"
+            selected={selected}
+            onSelect={setSelected}
+            modifiers={{ event: eventDays }}
+            modifiersClassNames={{ event: 'bg-blue-200 text-blue-900' }}
+          />
+          {selected && (
+            <Card className="mt-6 lg:mt-0 lg:w-1/2">
+              <CardHeader>
+                <CardTitle>
+                  Aufgaben am {selected.toLocaleDateString('de-DE')}
+                </CardTitle>
+                <Button
+                  size="sm"
+                  className="mt-2"
+                  onClick={() => setIsTaskModalOpen(true)}
+                >
+                  Neue Task
+                </Button>
+              </CardHeader>
+              <CardContent>
+                {dayTasks.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Keine Aufgaben.</p>
+                ) : (
+                  <ul className="space-y-2">
+                    {dayTasks.map(task => (
+                      <li key={task.id} className="text-sm">
+                        <span
+                          className="inline-block w-2 h-2 rounded-full mr-2"
+                          style={{ backgroundColor: task.color }}
+                        />
+                        {task.title}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
       <TaskModal
         isOpen={isTaskModalOpen}
