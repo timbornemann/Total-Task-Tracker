@@ -77,6 +77,8 @@ export interface Flashcard {
   easyCount: number;
   mediumCount: number;
   hardCount: number;
+  typedCorrect?: number;
+  typedTotal?: number;
 }
 
 export interface Deck {

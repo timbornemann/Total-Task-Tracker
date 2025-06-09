@@ -11,6 +11,7 @@ import {
   SelectContent,
   SelectItem
 } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 import { useFlashcardStore } from '@/hooks/useFlashcardStore';
 import { shuffleArray } from '@/utils/shuffle';
 import {
@@ -27,6 +28,7 @@ const FlashcardsPage: React.FC = () => {
   const [selectedDecks, setSelectedDecks] = useState<string[]>([]);
   const [randomMode, setRandomMode] = useState(false);
   const [trainingMode, setTrainingMode] = useState(false);
+  const [typingMode, setTypingMode] = useState(false);
   const [index, setIndex] = useState(0);
   const [showBack, setShowBack] = useState(false);
   const [showDone, setShowDone] = useState(false);
@@ -35,12 +37,27 @@ const FlashcardsPage: React.FC = () => {
   const [remainingCards, setRemainingCards] = useState<typeof flashcards>([]);
   const [summary, setSummary] = useState<Record<string, { easy: number; medium: number; hard: number }>>({});
   const [showSummary, setShowSummary] = useState(false);
+  const [answer, setAnswer] = useState('');
+  const [checked, setChecked] = useState(false);
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
 
-  const mode = trainingMode ? 'training' : randomMode ? 'random' : 'spaced';
-  const handleModeChange = (value: 'spaced' | 'training' | 'random') => {
+  const mode = typingMode
+    ? 'typing'
+    : trainingMode
+    ? 'training'
+    : randomMode
+    ? 'random'
+    : 'spaced';
+  const handleModeChange = (
+    value: 'spaced' | 'training' | 'random' | 'typing'
+  ) => {
     setRandomMode(value === 'random');
     setTrainingMode(value === 'training');
+    setTypingMode(value === 'typing');
     setIndex(0);
+    setShowBack(false);
+    setAnswer('');
+    setChecked(false);
   };
 
   useEffect(() => {
@@ -105,9 +122,12 @@ const FlashcardsPage: React.FC = () => {
       return;
     }
     if (!randomMode) {
-      rateFlashcard(current.id, d);
+      rateFlashcard(current.id, d, typingMode ? isCorrect ?? false : undefined);
     }
     setShowBack(false);
+    setAnswer('');
+    setChecked(false);
+    setIsCorrect(null);
     setIndex(i => i + 1);
   };
 
@@ -126,6 +146,9 @@ const FlashcardsPage: React.FC = () => {
       setShowBack(false);
       setShuffleKey(k => k + 1);
     }
+    setAnswer('');
+    setChecked(false);
+    setIsCorrect(null);
   };
 
   return (
@@ -143,6 +166,7 @@ const FlashcardsPage: React.FC = () => {
                 <SelectItem value="spaced">Spaced Repetition</SelectItem>
                 <SelectItem value="training">Training</SelectItem>
                 <SelectItem value="random">Random</SelectItem>
+                <SelectItem value="typing">Eingabe</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -172,22 +196,63 @@ const FlashcardsPage: React.FC = () => {
               <CardTitle>{decks.find(d => d.id === current.deckId)?.name}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div
-                className="text-center text-lg cursor-pointer py-12"
-                onClick={() => setShowBack(b => !b)}
-              >
-                {showBack ? (
-                  <div className="space-y-2">
-                    <div>{current.front}</div>
-                    <div>{current.back}</div>
-                  </div>
-                ) : (
-                  current.front
-                )}
-              </div>
+              {typingMode ? (
+                <div className="space-y-4 py-8">
+                  <div className="text-center text-lg">{current.front}</div>
+                  {showBack ? (
+                    <>
+                      <div className="text-center">{current.back}</div>
+                      <div
+                        className={`text-sm text-center ${isCorrect ? 'text-green-600' : 'text-red-600'}`}
+                      >
+                        {isCorrect ? 'Richtig!' : 'Falsch'}
+                      </div>
+                    </>
+                  ) : (
+                    <Input value={answer} onChange={e => setAnswer(e.target.value)} />
+                  )}
+                </div>
+              ) : (
+                <div
+                  className="text-center text-lg cursor-pointer py-12"
+                  onClick={() => setShowBack(b => !b)}
+                >
+                  {showBack ? (
+                    <div className="space-y-2">
+                      <div>{current.front}</div>
+                      <div>{current.back}</div>
+                    </div>
+                  ) : (
+                    current.front
+                  )}
+                </div>
+              )}
             </CardContent>
             <CardFooter className="flex justify-between">
-              {randomMode && !trainingMode ? (
+              {typingMode ? (
+                !checked ? (
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      const correct =
+                        answer.trim().toLowerCase() ===
+                        current.back.trim().toLowerCase();
+                      setIsCorrect(correct);
+                      setChecked(true);
+                      setShowBack(true);
+                    }}
+                  >
+                    Check
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    onClick={() => handleRate(isCorrect ? 'easy' : 'hard')}
+                  >
+                    Next
+                  </Button>
+                )
+              ) : randomMode && !trainingMode ? (
                 <Button variant="outline" onClick={() => handleRate('easy')}>
                   Nächste Karte
                 </Button>
