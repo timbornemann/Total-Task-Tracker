@@ -57,41 +57,92 @@ function dateReviver(key, value) {
   return value;
 }
 
-function loadData() {
-  try {
-    const tasks = db.prepare('SELECT data FROM tasks').all()
-      .map(row => JSON.parse(row.data, dateReviver));
-    const categories = db.prepare('SELECT data FROM categories').all()
-      .map(row => JSON.parse(row.data, dateReviver));
-    const notes = db.prepare('SELECT data FROM notes').all()
-      .map(row => JSON.parse(row.data, dateReviver));
-    return { tasks, categories, notes };
-  } catch {
-    return { tasks: [], categories: [], notes: [] };
-  }
-}
-
-function saveData(data) {
-  const toJson = (obj) => JSON.stringify(
+function toJson(obj) {
+  return JSON.stringify(
     obj,
     (key, value) => (value instanceof Date ? value.toISOString() : value)
   );
+}
+
+function loadTasks() {
+  try {
+    return db
+      .prepare('SELECT data FROM tasks')
+      .all()
+      .map(row => JSON.parse(row.data, dateReviver));
+  } catch {
+    return [];
+  }
+}
+
+function loadCategories() {
+  try {
+    return db
+      .prepare('SELECT data FROM categories')
+      .all()
+      .map(row => JSON.parse(row.data, dateReviver));
+  } catch {
+    return [];
+  }
+}
+
+function loadNotes() {
+  try {
+    return db
+      .prepare('SELECT data FROM notes')
+      .all()
+      .map(row => JSON.parse(row.data, dateReviver));
+  } catch {
+    return [];
+  }
+}
+
+function loadData() {
+  return {
+    tasks: loadTasks(),
+    categories: loadCategories(),
+    notes: loadNotes()
+  };
+}
+
+function saveTasks(tasks) {
   const tx = db.transaction(() => {
     db.exec('DELETE FROM tasks');
-    for (const task of data.tasks || []) {
+    for (const task of tasks || []) {
       db.prepare('INSERT INTO tasks (id, data) VALUES (?, ?)')
         .run(task.id, toJson(task));
     }
+  });
+  tx();
+}
+
+function saveCategories(categories) {
+  const tx = db.transaction(() => {
     db.exec('DELETE FROM categories');
-    for (const cat of data.categories || []) {
+    for (const cat of categories || []) {
       db.prepare('INSERT INTO categories (id, data) VALUES (?, ?)')
         .run(cat.id, toJson(cat));
     }
+  });
+  tx();
+}
+
+function saveNotes(notes) {
+  const tx = db.transaction(() => {
     db.exec('DELETE FROM notes');
-    for (const note of data.notes || []) {
+    for (const note of notes || []) {
       db.prepare('INSERT INTO notes (id, data) VALUES (?, ?)')
         .run(note.id, toJson(note));
     }
+  });
+  tx();
+}
+
+function saveData(data) {
+  const tx = db.transaction(() => {
+    saveTasks(data.tasks || []);
+    saveCategories(data.categories || []);
+    saveNotes(data.notes || []);
   });
   tx();
 }
@@ -152,10 +203,6 @@ function savePomodoroSessions(sessions) {
 }
 
 function saveFlashcards(cards) {
-  const toJson = (obj) => JSON.stringify(
-    obj,
-    (key, value) => (value instanceof Date ? value.toISOString() : value)
-  );
   const tx = db.transaction(() => {
     db.exec('DELETE FROM flashcards');
     for (const card of cards || []) {
@@ -167,10 +214,6 @@ function saveFlashcards(cards) {
 }
 
 function saveDecks(decks) {
-  const toJson = (obj) => JSON.stringify(
-    obj,
-    (key, value) => (value instanceof Date ? value.toISOString() : value)
-  );
   const tx = db.transaction(() => {
     db.exec('DELETE FROM decks');
     for (const deck of decks || []) {
@@ -179,6 +222,22 @@ function saveDecks(decks) {
     }
   });
   tx();
+}
+
+function loadAllData() {
+  return {
+    tasks: loadTasks(),
+    categories: loadCategories(),
+    notes: loadNotes(),
+    flashcards: loadFlashcards(),
+    decks: loadDecks()
+  };
+}
+
+function saveAllData(data) {
+  saveData(data);
+  saveFlashcards(data.flashcards || []);
+  saveDecks(data.decks || []);
 }
 
 function serveStatic(filePath, res) {
@@ -263,6 +322,58 @@ const server = http.createServer((req, res) => {
         try {
           const decks = JSON.parse(body || '[]');
           saveDecks(decks);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ status: 'ok' }));
+        } catch {
+          res.writeHead(400);
+          res.end();
+        }
+      });
+      return;
+    }
+  }
+
+  if (parsed.pathname === '/api/notes') {
+    if (req.method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(loadNotes()));
+      return;
+    }
+    if (req.method === 'PUT') {
+      let body = '';
+      req.on('data', chunk => {
+        body += chunk;
+      });
+      req.on('end', () => {
+        try {
+          const notes = JSON.parse(body || '[]');
+          saveNotes(notes);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ status: 'ok' }));
+        } catch {
+          res.writeHead(400);
+          res.end();
+        }
+      });
+      return;
+    }
+  }
+
+  if (parsed.pathname === '/api/all') {
+    if (req.method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(loadAllData()));
+      return;
+    }
+    if (req.method === 'PUT') {
+      let body = '';
+      req.on('data', chunk => {
+        body += chunk;
+      });
+      req.on('end', () => {
+        try {
+          const data = JSON.parse(body || '{}');
+          saveAllData(data);
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ status: 'ok' }));
         } catch {
