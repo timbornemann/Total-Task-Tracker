@@ -245,12 +245,26 @@ const FlashcardsPage: React.FC = () => {
                     Check
                   </Button>
                 ) : (
-                  <Button
-                    variant="outline"
-                    onClick={() => handleRate(isCorrect ? 'easy' : 'hard')}
-                  >
-                    Next
-                  </Button>
+                  <>
+                    <Button
+                      variant="outline"
+                      onClick={() => handleRate('hard')}
+                    >
+                      Schwer
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => handleRate('medium')}
+                    >
+                      Mittel
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => handleRate('easy')}
+                    >
+                      Leicht
+                    </Button>
+                  </>
                 )
               ) : randomMode && !trainingMode ? (
                 <Button variant="outline" onClick={() => handleRate('easy')}>

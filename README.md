@@ -66,7 +66,7 @@ npm start    # startet die gebaute App auf Port 3002
   - Decks lassen sich beim Lernen ein- oder ausblenden
   - Optionaler Zufallsmodus ohne Bewertung
   - Trainingsmodus direkt auf der Kartenseite mit 5 Karten pro Runde und Fazit
-  - Eingabemodus zum Tippen der Antworten
+  - Eingabemodus zum Tippen der Antworten; nach dem Prüfen bewertest du selbst, ob die Karte leicht, mittel oder schwer war
 - Statistikseite für Lernkarten
 - Speicherung der Daten auf dem lokalen Server
 - Pomodoro-Timer läuft beim Neuladen der Seite weiter
@@ -87,7 +87,8 @@ npm start    # startet die gebaute App auf Port 3002
 7. Unter **Decks** legst du Kartendecks an und kannst sie bearbeiten. In der Detailansicht eines Decks fügst du einzelne Karten hinzu.
 8. Der Bereich **Karten** zeigt dir fällige Karten zum Lernen an. Dort kannst du
    gezielt Decks ein- oder ausblenden, einen Zufallsmodus aktivieren und im
-   Eingabemodus Antworten eintippen.
+   Eingabemodus Antworten eintippen. Nach dem Vergleich der Lösung entscheidest
+   du selbst, wie schwer dir die Karte fiel.
 
 Viel Spaß beim Ausprobieren!
 
