@@ -4,7 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem
+} from '@/components/ui/select';
 import { useFlashcardStore } from '@/hooks/useFlashcardStore';
 import { shuffleArray } from '@/utils/shuffle';
 import {
@@ -29,6 +35,13 @@ const FlashcardsPage: React.FC = () => {
   const [remainingCards, setRemainingCards] = useState<typeof flashcards>([]);
   const [summary, setSummary] = useState<Record<string, { easy: number; medium: number; hard: number }>>({});
   const [showSummary, setShowSummary] = useState(false);
+
+  const mode = trainingMode ? 'training' : randomMode ? 'random' : 'spaced';
+  const handleModeChange = (value: 'spaced' | 'training' | 'random') => {
+    setRandomMode(value === 'random');
+    setTrainingMode(value === 'training');
+    setIndex(0);
+  };
 
   useEffect(() => {
     if (decks.length > 0 && selectedDecks.length === 0) {
@@ -121,19 +134,17 @@ const FlashcardsPage: React.FC = () => {
       <div className="max-w-md mx-auto py-8 px-4 space-y-4">
         <div className="space-y-2">
           <div className="flex items-center space-x-2">
-            <Switch checked={randomMode} onCheckedChange={v => { setRandomMode(v); setIndex(0); }} />
-            <Label>Random Modus</Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Switch
-              checked={trainingMode}
-              onCheckedChange={v => {
-                setTrainingMode(v);
-                setRandomMode(false);
-                setIndex(0);
-              }}
-            />
-            <Label>Trainingsmodus</Label>
+            <Label className="text-sm">Modus:</Label>
+            <Select value={mode} onValueChange={handleModeChange}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Modus" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="spaced">Spaced Repetition</SelectItem>
+                <SelectItem value="training">Training</SelectItem>
+                <SelectItem value="random">Random</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-1">
             {decks.map(deck => (
