@@ -65,6 +65,7 @@ npm start    # startet die gebaute App auf Port 3002
 - Lernkarten mit Spaced-Repetition-Training und Verwaltung eigener Karten
   - Decks lassen sich beim Lernen ein- oder ausblenden
   - Optionaler Zufallsmodus ohne Bewertung
+  - Neuer Trainingsmodus mit 5 Karten pro Runde und Fazit
 - Statistikseite für Lernkarten
 - Speicherung der Daten auf dem lokalen Server
 - Pomodoro-Timer läuft beim Neuladen der Seite weiter

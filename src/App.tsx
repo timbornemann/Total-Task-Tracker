@@ -15,6 +15,7 @@ import CalendarPage from "./pages/Calendar";
 import Kanban from "./pages/Kanban";
 import NotesPage from "./pages/Notes";
 import FlashcardsPage from "./pages/Flashcards";
+import FlashcardTrainingPage from "./pages/FlashcardTraining";
 import FlashcardManagerPage from "./pages/FlashcardManager";
 import DeckDetailPage from "./pages/DeckDetail";
 import FlashcardStatisticsPage from "./pages/FlashcardStatistics";
@@ -44,6 +45,7 @@ const App = () => (
               <Route path="/flashcards/manage" element={<FlashcardManagerPage />} />
               <Route path="/flashcards/deck/:deckId" element={<DeckDetailPage />} />
               <Route path="/flashcards" element={<FlashcardsPage />} />
+              <Route path="/flashcards/training" element={<FlashcardTrainingPage />} />
               <Route path="/flashcards/stats" element={<FlashcardStatisticsPage />} />
               <Route path="/notes" element={<NotesPage />} />
               <Route path="/settings" element={<SettingsPage />} />
