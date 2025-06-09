@@ -62,13 +62,24 @@ const SettingsPage: React.FC = () => {
     const text = await file.text()
     const incoming = JSON.parse(text)
     const res = await fetch('/api/data')
-    const current = res.ok ? await res.json() : { notes: [] }
+    const current = res.ok
+      ? await res.json()
+      : { tasks: [], categories: [], notes: [] }
+
+    const taskMap = new Map<string, any>()
+    for (const t of current.tasks || []) taskMap.set(t.id, t)
+    for (const t of incoming.tasks || []) if (!taskMap.has(t.id)) taskMap.set(t.id, t)
+
+    const catMap = new Map<string, any>()
+    for (const c of current.categories || []) catMap.set(c.id, c)
+    for (const c of incoming.categories || []) if (!catMap.has(c.id)) catMap.set(c.id, c)
+
     await fetch('/api/data', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        tasks: incoming.tasks || [],
-        categories: incoming.categories || [],
+        tasks: Array.from(taskMap.values()),
+        categories: Array.from(catMap.values()),
         notes: current.notes || []
       })
     })
@@ -79,11 +90,18 @@ const SettingsPage: React.FC = () => {
     const file = e.target.files?.[0]
     if (!file) return
     const text = await file.text()
-    const notes = JSON.parse(text)
+    const incoming = JSON.parse(text)
+    const res = await fetch('/api/notes')
+    const current = res.ok ? await res.json() : []
+
+    const noteMap = new Map<string, any>()
+    for (const n of current) noteMap.set(n.id, n)
+    for (const n of incoming || []) if (!noteMap.has(n.id)) noteMap.set(n.id, n)
+
     await fetch('/api/notes', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(notes)
+      body: JSON.stringify(Array.from(noteMap.values()))
     })
     window.location.reload()
   }
@@ -93,15 +111,31 @@ const SettingsPage: React.FC = () => {
     if (!file) return
     const text = await file.text()
     const data = JSON.parse(text)
+
+    const [cardsRes, decksRes] = await Promise.all([
+      fetch('/api/flashcards'),
+      fetch('/api/decks')
+    ])
+    const currentCards = cardsRes.ok ? await cardsRes.json() : []
+    const currentDecks = decksRes.ok ? await decksRes.json() : []
+
+    const cardMap = new Map<string, any>()
+    for (const c of currentCards) cardMap.set(c.id, c)
+    for (const c of data.flashcards || []) if (!cardMap.has(c.id)) cardMap.set(c.id, c)
+
+    const deckMap = new Map<string, any>()
+    for (const d of currentDecks) deckMap.set(d.id, d)
+    for (const d of data.decks || []) if (!deckMap.has(d.id)) deckMap.set(d.id, d)
+
     await fetch('/api/flashcards', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data.flashcards || [])
+      body: JSON.stringify(Array.from(cardMap.values()))
     })
     await fetch('/api/decks', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data.decks || [])
+      body: JSON.stringify(Array.from(deckMap.values()))
     })
     window.location.reload()
   }
@@ -110,11 +144,32 @@ const SettingsPage: React.FC = () => {
     const file = e.target.files?.[0]
     if (!file) return
     const text = await file.text()
-    const data = JSON.parse(text)
+    const incoming = JSON.parse(text)
+
+    const res = await fetch('/api/all')
+    const current = res.ok
+      ? await res.json()
+      : { tasks: [], categories: [], notes: [], flashcards: [], decks: [] }
+
+    const merge = (curr: any[], inc: any[]) => {
+      const map = new Map<string, any>()
+      for (const item of curr || []) map.set(item.id, item)
+      for (const item of inc || []) if (!map.has(item.id)) map.set(item.id, item)
+      return Array.from(map.values())
+    }
+
+    const merged = {
+      tasks: merge(current.tasks, incoming.tasks),
+      categories: merge(current.categories, incoming.categories),
+      notes: merge(current.notes, incoming.notes),
+      flashcards: merge(current.flashcards, incoming.flashcards),
+      decks: merge(current.decks, incoming.decks)
+    }
+
     await fetch('/api/all', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
+      body: JSON.stringify(merged)
     })
     window.location.reload()
   }

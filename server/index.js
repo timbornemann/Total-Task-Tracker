@@ -333,7 +333,7 @@ const server = http.createServer((req, res) => {
     }
   }
 
-  if (parsed.pathname === '/api/notes') {
+  if (parsed.pathname === '/api/notes' || parsed.pathname === '/api/notes/') {
     if (req.method === 'GET') {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(loadNotes()));
