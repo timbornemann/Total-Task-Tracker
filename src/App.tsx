@@ -5,11 +5,14 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { TaskStoreProvider } from "@/hooks/useTaskStore";
+import { SettingsProvider } from "@/hooks/useSettings";
+import CommandPalette from "@/components/CommandPalette";
 import Index from "./pages/Index";
 import Statistics from "./pages/Statistics";
 import CalendarPage from "./pages/Calendar";
 import Kanban from "./pages/Kanban";
 import NotesPage from "./pages/Notes";
+import SettingsPage from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -17,21 +20,25 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <TaskStoreProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/statistics" element={<Statistics />} />
-            <Route path="/calendar" element={<CalendarPage />} />
-            <Route path="/kanban" element={<Kanban />} />
-            <Route path="/notes" element={<NotesPage />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TaskStoreProvider>
+      <SettingsProvider>
+        <TaskStoreProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <CommandPalette />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/statistics" element={<Statistics />} />
+              <Route path="/calendar" element={<CalendarPage />} />
+              <Route path="/kanban" element={<Kanban />} />
+              <Route path="/notes" element={<NotesPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TaskStoreProvider>
+      </SettingsProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
