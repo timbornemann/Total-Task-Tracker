@@ -122,7 +122,18 @@ export interface PomodoroStats {
   totalWorkMinutes: number;
   totalBreakMinutes: number;
   totalCycles: number;
+  todayTotals: {
+    workMinutes: number;
+    breakMinutes: number;
+    cycles: number;
+  };
   today: { time: string; work: number; break: number }[];
+  timeOfDay: {
+    morning: number;
+    afternoon: number;
+    evening: number;
+    night: number;
+  };
   week: { date: string; work: number; break: number }[];
   month: { date: string; work: number; break: number }[];
   year: { month: string; work: number; break: number }[];
