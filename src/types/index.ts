@@ -113,13 +113,15 @@ export interface TaskStats {
 export interface PomodoroSession {
   start: number;
   end: number;
+  breakEnd?: number;
 }
 
 export interface PomodoroStats {
-  totalMinutes: number;
+  totalWorkMinutes: number;
+  totalBreakMinutes: number;
   totalCycles: number;
-  today: { time: string; duration: number }[];
-  week: { date: string; duration: number }[];
-  month: { date: string; duration: number }[];
-  year: { month: string; duration: number }[];
+  today: { time: string; work: number; break: number }[];
+  week: { date: string; work: number; break: number }[];
+  month: { date: string; work: number; break: number }[];
+  year: { month: string; work: number; break: number }[];
 }

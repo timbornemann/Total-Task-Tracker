@@ -7,7 +7,7 @@ const PomodoroTicker = () => {
   const mode = usePomodoroStore(state => state.mode)
   const setStartTime = usePomodoroStore(state => state.setStartTime)
   const startTime = usePomodoroStore(state => state.startTime)
-  const addSession = usePomodoroHistory().addSession
+  const { addSession, endBreak } = usePomodoroHistory()
   const prevMode = useRef(mode)
 
   useEffect(() => {
@@ -21,10 +21,11 @@ const PomodoroTicker = () => {
       setStartTime(undefined)
     }
     if (prevMode.current === 'break' && mode === 'work') {
+      endBreak(Date.now())
       setStartTime(Date.now())
     }
     prevMode.current = mode
-  }, [mode, startTime, addSession, setStartTime])
+  }, [mode, startTime, addSession, endBreak, setStartTime])
 
   return null
 }

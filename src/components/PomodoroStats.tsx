@@ -12,8 +12,29 @@ const PomodoroStats: React.FC = () => {
           <CardTitle className="text-base">Gesamt</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm">Minuten: {stats.totalMinutes}</p>
-          <p className="text-sm">Zyklen: {stats.totalCycles}</p>
+          <p className="text-sm">Arbeit: {stats.totalWorkMinutes} min</p>
+          <p className="text-sm">Pause: {stats.totalBreakMinutes} min</p>
+          <p className="text-sm mb-2">Zyklen: {stats.totalCycles}</p>
+          <div className="w-full h-3 bg-gray-200 rounded overflow-hidden">
+            <div
+              className="h-full bg-indigo-500"
+              style={{ width: `${
+                stats.totalWorkMinutes + stats.totalBreakMinutes === 0
+                  ? 0
+                  : (stats.totalWorkMinutes /
+                      (stats.totalWorkMinutes + stats.totalBreakMinutes)) * 100
+              }%` }}
+            />
+            <div
+              className="h-full bg-green-500"
+              style={{ width: `${
+                stats.totalWorkMinutes + stats.totalBreakMinutes === 0
+                  ? 0
+                  : (stats.totalBreakMinutes /
+                      (stats.totalWorkMinutes + stats.totalBreakMinutes)) * 100
+              }%` }}
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -28,7 +49,8 @@ const PomodoroStats: React.FC = () => {
                 <XAxis dataKey="time" fontSize={12} />
                 <YAxis fontSize={12} />
                 <Tooltip />
-                <Bar dataKey="duration" fill="#4f46e5" />
+                <Bar dataKey="work" stackId="a" fill="#4f46e5" />
+                <Bar dataKey="break" stackId="a" fill="#16a34a" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -46,7 +68,8 @@ const PomodoroStats: React.FC = () => {
                 <XAxis dataKey="date" fontSize={12} />
                 <YAxis fontSize={12} />
                 <Tooltip />
-                <Bar dataKey="duration" fill="#16a34a" />
+                <Bar dataKey="work" stackId="a" fill="#4f46e5" />
+                <Bar dataKey="break" stackId="a" fill="#16a34a" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -64,7 +87,8 @@ const PomodoroStats: React.FC = () => {
                 <XAxis dataKey="date" fontSize={12} />
                 <YAxis fontSize={12} />
                 <Tooltip />
-                <Bar dataKey="duration" fill="#f59e0b" />
+                <Bar dataKey="work" stackId="a" fill="#4f46e5" />
+                <Bar dataKey="break" stackId="a" fill="#16a34a" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -82,7 +106,8 @@ const PomodoroStats: React.FC = () => {
                 <XAxis dataKey="month" fontSize={12} />
                 <YAxis fontSize={12} />
                 <Tooltip />
-                <Bar dataKey="duration" fill="#3b82f6" />
+                <Bar dataKey="work" stackId="a" fill="#4f46e5" />
+                <Bar dataKey="break" stackId="a" fill="#16a34a" />
               </BarChart>
             </ResponsiveContainer>
           </div>
