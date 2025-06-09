@@ -148,7 +148,8 @@ const server = http.createServer((req, res) => {
     }
   }
 
-  if (parsed.pathname === '/api/flashcards') {
+  if (parsed.pathname === '/api/flashcards' ||
+      parsed.pathname === '/api/flashcards/') {
     if (req.method === 'GET') {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(loadFlashcards()));
