@@ -69,6 +69,8 @@ npm start    # startet die gebaute App auf Port 3002
 - Statistikseite für Lernkarten
 - Speicherung der Daten auf dem lokalen Server
 - Pomodoro-Timer läuft beim Neuladen der Seite weiter
+- Statistikseite auf der Pomodoro-Seite mit Tages-, Wochen-, Monats- und Jahresübersicht
+- Lern- und Pausendauer frei konfigurierbar (auch direkt im Timer anpassbar)
 
 ## Verwendung
 

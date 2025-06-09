@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { usePomodoroHistory } from '@/hooks/usePomodoroHistory';
+import { useSettings } from '@/hooks/useSettings';
 
 interface PomodoroState {
   isRunning: boolean;
@@ -9,11 +11,15 @@ interface PomodoroState {
   remainingTime: number;
   mode: 'work' | 'break';
   currentTaskId?: string;
+  workDuration: number;
+  breakDuration: number;
+  startTime?: number;
   start: (taskId?: string) => void;
   pause: () => void;
   resume: () => void;
   reset: () => void;
   tick: () => void;
+  setDurations: (work: number, brk: number) => void;
 }
 
 const WORK_DURATION = 25 * 60; // 25 Minuten
@@ -27,23 +33,28 @@ export const usePomodoroStore = create<PomodoroState>()(
       remainingTime: WORK_DURATION,
       mode: 'work',
       currentTaskId: undefined,
+      workDuration: WORK_DURATION,
+      breakDuration: BREAK_DURATION,
+      startTime: undefined,
       start: (taskId?: string) =>
-        set(() => ({
+        set(state => ({
           isRunning: true,
           isPaused: false,
-          remainingTime: WORK_DURATION,
+          remainingTime: state.workDuration,
           mode: 'work',
-          currentTaskId: taskId
+          currentTaskId: taskId,
+          startTime: Date.now()
         })),
       pause: () => set({ isPaused: true }),
       resume: () => set({ isPaused: false }),
       reset: () =>
-        set(() => ({
+        set(state => ({
           isRunning: false,
           isPaused: false,
-          remainingTime: WORK_DURATION,
+          remainingTime: state.workDuration,
           mode: 'work',
-          currentTaskId: undefined
+          currentTaskId: undefined,
+          startTime: undefined
         })),
       tick: () =>
         set(state => {
@@ -52,11 +63,31 @@ export const usePomodoroStore = create<PomodoroState>()(
             return { remainingTime: state.remainingTime - 1 };
           }
           const nextMode = state.mode === 'work' ? 'break' : 'work';
-          return {
+          const updates: Partial<PomodoroState> = {
             mode: nextMode,
-            remainingTime: nextMode === 'work' ? WORK_DURATION : BREAK_DURATION
+            remainingTime:
+              nextMode === 'work' ? state.workDuration : state.breakDuration
           };
-        })
+          if (state.mode === 'work' && state.startTime) {
+            usePomodoroHistory
+              .getState()
+              .addSession(state.startTime, Date.now());
+            updates.startTime = undefined;
+          }
+          if (nextMode === 'work') {
+            updates.startTime = Date.now();
+          }
+          return updates as PomodoroState;
+        }),
+      setDurations: (work, brk) =>
+        set(state => ({
+          workDuration: work,
+          breakDuration: brk,
+          remainingTime:
+            !state.isRunning || state.mode === 'work'
+              ? work
+              : state.remainingTime
+        }))
     }),
     { name: 'pomodoro' }
   )
@@ -88,8 +119,16 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80 }) => 
     pause,
     resume,
     reset,
-    tick
+    tick,
+    workDuration,
+    breakDuration,
+    setDurations
   } = usePomodoroStore();
+  const { pomodoro, updatePomodoro } = useSettings();
+
+  useEffect(() => {
+    setDurations(pomodoro.workMinutes * 60, pomodoro.breakMinutes * 60);
+  }, [pomodoro, setDurations]);
 
   useEffect(() => {
     const interval = setInterval(() => tick(), 1000);
@@ -98,7 +137,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80 }) => 
 
   if (compact && !isRunning) return null;
 
-  const duration = mode === 'work' ? WORK_DURATION : BREAK_DURATION;
+  const duration = mode === 'work' ? workDuration : breakDuration;
   const progress = remainingTime / duration;
 
   const radius = size;
@@ -166,6 +205,30 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80 }) => 
             Reset
           </Button>
         )}
+      </div>
+      <div className="flex space-x-2 mt-2 text-xs">
+        <div className="flex items-center space-x-1">
+          <span>Arbeit</span>
+          <input
+            type="number"
+            className="w-12 border rounded px-1"
+            value={pomodoro.workMinutes}
+            onChange={e =>
+              updatePomodoro('workMinutes', Number(e.target.value))
+            }
+          />
+        </div>
+        <div className="flex items-center space-x-1">
+          <span>Pause</span>
+          <input
+            type="number"
+            className="w-12 border rounded px-1"
+            value={pomodoro.breakMinutes}
+            onChange={e =>
+              updatePomodoro('breakMinutes', Number(e.target.value))
+            }
+          />
+        </div>
       </div>
     </div>
   );

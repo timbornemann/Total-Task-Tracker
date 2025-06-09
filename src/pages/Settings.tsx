@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 const SettingsPage: React.FC = () => {
-  const { shortcuts, updateShortcut } = useSettings()
+  const { shortcuts, updateShortcut, pomodoro, updatePomodoro } = useSettings()
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -36,6 +36,24 @@ const SettingsPage: React.FC = () => {
             value={shortcuts.newNote}
             onChange={e => updateShortcut('newNote', e.target.value)}
             placeholder="z.B. ctrl+n"
+          />
+        </div>
+        <div>
+          <Label htmlFor="work">Lernzeit (Minuten)</Label>
+          <Input
+            id="work"
+            type="number"
+            value={pomodoro.workMinutes}
+            onChange={e => updatePomodoro('workMinutes', Number(e.target.value))}
+          />
+        </div>
+        <div>
+          <Label htmlFor="break">Pause (Minuten)</Label>
+          <Input
+            id="break"
+            type="number"
+            value={pomodoro.breakMinutes}
+            onChange={e => updatePomodoro('breakMinutes', Number(e.target.value))}
           />
         </div>
       </div>

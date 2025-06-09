@@ -109,3 +109,17 @@ export interface TaskStats {
   }[];
   recurringTasks: number;
 }
+
+export interface PomodoroSession {
+  start: number;
+  end: number;
+}
+
+export interface PomodoroStats {
+  totalMinutes: number;
+  totalCycles: number;
+  today: { time: string; duration: number }[];
+  week: { date: string; duration: number }[];
+  month: { date: string; duration: number }[];
+  year: { month: string; duration: number }[];
+}
