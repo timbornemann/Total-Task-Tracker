@@ -167,6 +167,11 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                     <Pencil className="h-4 w-4 mr-2" /> Decks
                   </Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/flashcards/stats" className="flex items-center">
+                    <BarChart3 className="h-4 w-4 mr-2" /> Statistiken
+                  </Link>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -258,6 +263,12 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                   <Button variant="outline" size="sm" className="w-full">
                     <Pencil className="h-4 w-4 mr-2" />
                     Decks
+                  </Button>
+                </Link>
+                <Link to="/flashcards/stats" className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full">
+                    <BarChart3 className="h-4 w-4 mr-2" />
+                    Statistiken
                   </Button>
                 </Link>
               </div>
