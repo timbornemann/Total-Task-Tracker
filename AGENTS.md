@@ -20,11 +20,8 @@ Diese Datei dient als Anleitung für automatisierte Agenten (z. B. Codex), wie
 ## 2. Setup & Entwicklung
 
 ```bash
-npm install           # Abhängigkeiten installieren
 npm run dev           # Frontend (Vite) auf Port 8080
 npm start             # Backend (Node.js) auf Port 3002
-npm run build         # Production Build
-npm run lint          # Linting mit ESLint (TypeScript)
 ```
 
 ---
@@ -44,8 +41,6 @@ docker-compose up --build
 * **Frontend**: TypeScript (`.tsx`, `.ts`)
 * **Backend**: JavaScript (ES Modules, `.js`)
 * **Formatierung**: 2 Leerzeichen, Semikolons am Ende
-* **Linting**: `npm run lint` muss vor jedem Commit fehlerfrei laufen
-* **Build**: `npm run build` muss erfolgreich abgeschlossen sein
 
 ---
 
@@ -64,17 +59,7 @@ docker-compose up --build
 
 ---
 
-## 7. CI/CD & Automatisierung
-
-* Vor jedem Commit sicherstellen:
-
-  * `npm run lint` läuft ohne Fehler
-  * `npm run build` ist erfolgreich
-  * Alle vorhandenen Tests (falls vorhanden) bestehen
-
----
-
-## 8. Commit- & PR-Richtlinien
+## 7. Commit- & PR-Richtlinien
 
 * Commit-Nachrichten auf **Englisch**, klar und aussagekräftig
 * Beschreiben, **was** geändert wurde und **warum**
@@ -83,7 +68,7 @@ docker-compose up --build
 ---
 
 
-## 9. Pflege & Erweiterung
+## 8. Pflege & Erweiterung
 
 * Diese Datei darf bei Bedarf erweitert werden
 * Unterverzeichnisse können eigene AGENTS.md verwenden, um spezifische Regeln zu setzen
