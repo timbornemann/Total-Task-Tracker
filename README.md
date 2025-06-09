@@ -63,6 +63,8 @@ npm start    # startet die gebaute App auf Port 3002
 - Kalenderansicht und Statistikseite
 - Eigene Notizen mit Farbe und Drag & Drop sortierbar
 - Lernkarten mit Spaced-Repetition-Training und Verwaltung eigener Karten
+  - Decks lassen sich beim Lernen ein- oder ausblenden
+  - Optionaler Zufallsmodus ohne Bewertung
 - Statistikseite für Lernkarten
 - Speicherung der Daten auf dem lokalen Server
 
@@ -75,7 +77,8 @@ npm start    # startet die gebaute App auf Port 3002
 5. Die Seiten **Kalender** und **Statistiken** bieten dir einen Überblick über anstehende Termine und erledigte Tasks.
 6. Unter **Notizen** kannst du unabhängige Notizen verwalten und per Drag & Drop sortieren.
 7. Unter **Decks** legst du Kartendecks an und kannst sie bearbeiten. In der Detailansicht eines Decks fügst du einzelne Karten hinzu.
-8. Der Bereich **Karten** zeigt dir fällige Karten zum Lernen an.
+8. Der Bereich **Karten** zeigt dir fällige Karten zum Lernen an. Dort kannst du
+   gezielt Decks ein- oder ausblenden und einen Zufallsmodus aktivieren.
 
 Viel Spaß beim Ausprobieren!
 
