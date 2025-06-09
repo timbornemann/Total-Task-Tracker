@@ -23,7 +23,7 @@ const FlashcardsPage: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <Navbar title="Karteikarten" />
       <div className="max-w-md mx-auto py-8 px-4">
-        {dueCards.length === 0 ? (
+        {!current ? (
           <p className="text-sm text-muted-foreground">Keine fälligen Karten.</p>
         ) : (
           <Card>
