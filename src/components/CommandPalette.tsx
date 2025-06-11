@@ -33,13 +33,13 @@ const isMatching = (e: KeyboardEvent, shortcut: string) => {
 
 const CommandPalette: React.FC = () => {
   const { addTask, addNote, tasks, notes } = useTaskStore()
-  const { flashcards, decks } = useFlashcardStore()
+  const { flashcards, decks, addFlashcard } = useFlashcardStore()
   const { shortcuts, defaultTaskPriority } = useSettings()
   const { toast } = useToast()
   const { currentCategoryId, setCurrentCategoryId } = useCurrentCategory()
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
-  const [mode, setMode] = useState<'task' | 'note'>('task')
+  const [mode, setMode] = useState<'task' | 'note' | 'flashcard'>('task')
   const [value, setValue] = useState('')
 
   const flattened = useMemo(() => flattenTasks(tasks), [tasks])
@@ -84,6 +84,10 @@ const CommandPalette: React.FC = () => {
         e.preventDefault()
         setMode('note')
         setOpen(true)
+      } else if (isMatching(e, shortcuts.newFlashcard)) {
+        e.preventDefault()
+        setMode('flashcard')
+        setOpen(true)
       }
     }
     document.addEventListener('keydown', handler)
@@ -108,9 +112,14 @@ const CommandPalette: React.FC = () => {
         isRecurring: false
       })
       toast({ description: 'Task erstellt' })
-    } else {
+    } else if (mode === 'note') {
       addNote({ title, text: '', color: '#F59E0B' })
       toast({ description: 'Notiz erstellt' })
+    } else if (mode === 'flashcard') {
+      if (decks.length > 0) {
+        addFlashcard({ front: title, back: '', deckId: decks[0].id })
+        toast({ description: 'Karte erstellt' })
+      }
     }
     setValue('')
     setOpen(false)
@@ -119,7 +128,13 @@ const CommandPalette: React.FC = () => {
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
       <CommandInput
-        placeholder={mode === 'task' ? 'Task-Titel eingeben...' : 'Notiz-Titel eingeben...'}
+        placeholder={
+          mode === 'task'
+            ? 'Task-Titel eingeben...'
+            : mode === 'note'
+              ? 'Notiz-Titel eingeben...'
+              : 'Vorderseite eingeben...'
+        }
         value={value}
         onValueChange={setValue}
         onKeyDown={e => {

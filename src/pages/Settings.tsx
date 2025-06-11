@@ -2,6 +2,7 @@ import React from 'react'
 import Navbar from '@/components/Navbar'
 import { useSettings, themePresets } from '@/hooks/useSettings'
 import { Input } from '@/components/ui/input'
+import KeyInput from '@/components/KeyInput'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { hslToHex, hexToHsl } from '@/utils/color'
@@ -214,29 +215,34 @@ const SettingsPage: React.FC = () => {
           <TabsContent value="shortcuts" className="space-y-4">
             <div>
               <Label htmlFor="open">Command Palette</Label>
-              <Input
-                id="open"
+              <KeyInput
                 value={shortcuts.openCommand}
-                onChange={e => updateShortcut('openCommand', e.target.value)}
-                placeholder="z.B. ctrl+k"
+                onChange={v => updateShortcut('openCommand', v)}
+                placeholder="ctrl+k"
               />
             </div>
             <div>
               <Label htmlFor="task">Neue Task</Label>
-              <Input
-                id="task"
+              <KeyInput
                 value={shortcuts.newTask}
-                onChange={e => updateShortcut('newTask', e.target.value)}
-                placeholder="z.B. ctrl+t"
+                onChange={v => updateShortcut('newTask', v)}
+                placeholder="ctrl+alt+t"
               />
             </div>
             <div>
               <Label htmlFor="note">Neue Notiz</Label>
-              <Input
-                id="note"
+              <KeyInput
                 value={shortcuts.newNote}
-                onChange={e => updateShortcut('newNote', e.target.value)}
-                placeholder="z.B. ctrl+n"
+                onChange={v => updateShortcut('newNote', v)}
+                placeholder="ctrl+alt+n"
+              />
+            </div>
+            <div>
+              <Label htmlFor="flashcard">Neue Karte</Label>
+              <KeyInput
+                value={shortcuts.newFlashcard}
+                onChange={v => updateShortcut('newFlashcard', v)}
+                placeholder="ctrl+alt+f"
               />
             </div>
           </TabsContent>
