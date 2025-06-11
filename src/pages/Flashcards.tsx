@@ -13,6 +13,7 @@ import {
   SelectItem
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { Progress } from '@/components/ui/progress';
 import { useFlashcardStore } from '@/hooks/useFlashcardStore';
 import { useSettings } from '@/hooks/useSettings';
 import { shuffleArray } from '@/utils/shuffle';
@@ -85,6 +86,25 @@ const FlashcardsPage: React.FC = () => {
         return 'Spaced Repetition';
     }
   }, [mode]);
+
+  const modeDescription = useMemo(() => {
+    switch (mode) {
+      case 'training':
+        return 'Im Training-Modus werden Karten zufällig wiederholt, bis sie richtig beantwortet wurden. Bewertungen beeinflussen den Spaced-Repetition-Algorithmus nicht.';
+      case 'random':
+        return 'Im Random-Modus werden alle ausgewählten Karten in zufälliger Reihenfolge angezeigt. Bewertungen wirken sich nicht auf den Algorithmus aus.';
+      case 'typing':
+        return useSpaced
+          ? 'Im Eingabe-Modus tippst du die Antwort ein. Bewertungen beeinflussen den Algorithmus.'
+          : 'Im Eingabe-Modus tippst du die Antwort ein. Bewertungen beeinflussen den Algorithmus nicht.';
+      case 'timed':
+        return useSpaced
+          ? 'Im Timed-Modus hast du ein Zeitlimit pro Karte. Bewertungen beeinflussen den Algorithmus.'
+          : 'Im Timed-Modus hast du ein Zeitlimit pro Karte. Bewertungen beeinflussen den Algorithmus nicht.';
+      default:
+        return 'Spaced Repetition zeigt nur fällige Karten entsprechend deinem Lernfortschritt an.';
+    }
+  }, [mode, useSpaced]);
   const handleModeChange = (
     value: 'spaced' | 'training' | 'random' | 'typing' | 'timed'
   ) => {
@@ -140,6 +160,12 @@ const FlashcardsPage: React.FC = () => {
   }, [filtered, dueCards, randomMode, nonSpaced, shuffleKey]);
 
   const current = trainingMode ? sessionCards[index] : cards[index];
+
+  const totalCards = useMemo(
+    () => (trainingMode ? sessionCards.length : cards.length),
+    [trainingMode, sessionCards.length, cards.length]
+  );
+  const progressValue = totalCards > 0 ? ((index) / totalCards) * 100 : 0;
 
   useEffect(() => {
     if (!current) {
@@ -309,6 +335,17 @@ const FlashcardsPage: React.FC = () => {
           <Card>
             <CardHeader>
               <CardTitle>{decks.find(d => d.id === current.deckId)?.name}</CardTitle>
+              <div className="mt-2">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs text-muted-foreground">
+                    Karte {Math.min(index + 1, totalCards)} / {totalCards}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {Math.round(progressValue)}%
+                  </span>
+                </div>
+                <Progress value={progressValue} className="h-2" />
+              </div>
             </CardHeader>
             <CardContent>
               {timedMode && timerStarted && (
@@ -417,6 +454,7 @@ const FlashcardsPage: React.FC = () => {
             </CardFooter>
           </Card>
         )}
+        <p className="text-sm text-muted-foreground">{modeDescription}</p>
       </div>
       <AlertDialog
         open={timedMode && !timerStarted && !!current}
