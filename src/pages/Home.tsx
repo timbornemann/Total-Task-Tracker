@@ -44,7 +44,7 @@ const Home: React.FC = () => {
           <Droppable droppableId="sections" direction="horizontal">
             {provided => (
               <div
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6"
+                className="flex flex-wrap gap-6 mb-6"
                 ref={provided.innerRef}
                 {...provided.droppableProps}
               >
@@ -55,6 +55,7 @@ const Home: React.FC = () => {
                         ref={prov.innerRef}
                         {...prov.draggableProps}
                         {...prov.dragHandleProps}
+                        className="w-full sm:w-1/2 lg:w-1/3"
                       >
                         <Link to={sec.path}>
                           <Card className="hover:shadow-md transition-all text-center">
