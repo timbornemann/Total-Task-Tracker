@@ -38,7 +38,6 @@ import {
 } from '@hello-pangea/dnd';
 import Navbar from './Navbar';
 import { usePomodoroStore } from './PomodoroTimer';
-import NoteCard from './NoteCard';
 
 const Dashboard: React.FC = () => {
   const {
@@ -118,10 +117,6 @@ const Dashboard: React.FC = () => {
     return Array.from(colors);
   }, [selectedCategory, tasks]);
 
-  const pinnedNotes = useMemo(
-    () => notes.filter(n => n.pinned).sort((a, b) => a.order - b.order).slice(0, 3),
-    [notes]
-  );
 
   // Filter categories and tasks based on search
   const filteredCategories = categories
@@ -399,24 +394,6 @@ const Dashboard: React.FC = () => {
           </Card>
         </div>
 
-        {pinnedNotes.length > 0 && (
-          <div className="mb-6 sm:mb-8">
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3">
-              Gepinnte Notizen
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {pinnedNotes.map(note => (
-                <Link
-                  key={note.id}
-                  to={`/notes?noteId=${note.id}`}
-                  className="block"
-                >
-                  <NoteCard note={note} onClick={() => {}} />
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Content */}
         {viewMode === 'categories' ? (
