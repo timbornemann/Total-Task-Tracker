@@ -12,6 +12,12 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent
+} from '@/components/ui/tabs'
 
 const SettingsPage: React.FC = () => {
   const {
@@ -194,222 +200,221 @@ const SettingsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar title="Einstellungen" />
-      <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
-        <div>
-          <Label htmlFor="open">Command Palette</Label>
-          <Input
-            id="open"
-            value={shortcuts.openCommand}
-            onChange={e => updateShortcut('openCommand', e.target.value)}
-            placeholder="z.B. ctrl+k"
-          />
-        </div>
-        <div>
-          <Label htmlFor="task">Neue Task</Label>
-          <Input
-            id="task"
-            value={shortcuts.newTask}
-            onChange={e => updateShortcut('newTask', e.target.value)}
-            placeholder="z.B. ctrl+t"
-          />
-        </div>
-        <div>
-          <Label htmlFor="note">Neue Notiz</Label>
-          <Input
-            id="note"
-            value={shortcuts.newNote}
-            onChange={e => updateShortcut('newNote', e.target.value)}
-            placeholder="z.B. ctrl+n"
-          />
-        </div>
-        <div>
-          <Label htmlFor="work">Lernzeit (Minuten)</Label>
-          <Input
-            id="work"
-            type="number"
-            value={pomodoro.workMinutes}
-            onChange={e => updatePomodoro('workMinutes', Number(e.target.value))}
-          />
-        </div>
-        <div>
-          <Label htmlFor="break">Pause (Minuten)</Label>
-          <Input
-            id="break"
-            type="number"
-            value={pomodoro.breakMinutes}
-            onChange={e => updatePomodoro('breakMinutes', Number(e.target.value))}
-          />
-        </div>
-        <div>
-          <Label htmlFor="priority">Standard-Priorität</Label>
-          <Select
-            value={defaultTaskPriority}
-            onValueChange={updateDefaultTaskPriority}
-          >
-            <SelectTrigger id="priority">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="low">Niedrig</SelectItem>
-              <SelectItem value="medium">Mittel</SelectItem>
-              <SelectItem value="high">Hoch</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="pt-4 border-t space-y-4">
-          <h2 className="font-semibold">Theme</h2>
-          <div className="space-y-2">
-            <Label htmlFor="bgColor">Hintergrund</Label>
-            <Input
-              id="bgColor"
-              type="color"
-              value={hslToHex(theme.background)}
-              onChange={e => updateTheme('background', hexToHsl(e.target.value))}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="fgColor">Vordergrund</Label>
-            <Input
-              id="fgColor"
-              type="color"
-              value={hslToHex(theme.foreground)}
-              onChange={e => updateTheme('foreground', hexToHsl(e.target.value))}
-            />
-          </div>
-        <div className="space-y-2">
-          <Label htmlFor="accentColor">Akzent</Label>
-          <Input
-            id="accentColor"
-            type="color"
-            value={hslToHex(theme.accent)}
-            onChange={e => updateTheme('accent', hexToHsl(e.target.value))}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="cardBgColor">Karten-Hintergrund</Label>
-          <Input
-            id="cardBgColor"
-            type="color"
-            value={hslToHex(theme.card)}
-            onChange={e => updateTheme('card', hexToHsl(e.target.value))}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="cardFgColor">Karten-Vordergrund</Label>
-          <Input
-            id="cardFgColor"
-            type="color"
-            value={hslToHex(theme['card-foreground'])}
-            onChange={e =>
-              updateTheme('card-foreground', hexToHsl(e.target.value))
-            }
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="statBarPrimary">Statistik Balken 1</Label>
-          <Input
-            id="statBarPrimary"
-            type="color"
-            value={hslToHex(theme['stat-bar-primary'])}
-            onChange={e =>
-              updateTheme('stat-bar-primary', hexToHsl(e.target.value))
-            }
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="statBarSecondary">Statistik Balken 2</Label>
-          <Input
-            id="statBarSecondary"
-            type="color"
-            value={hslToHex(theme['stat-bar-secondary'])}
-            onChange={e =>
-              updateTheme('stat-bar-secondary', hexToHsl(e.target.value))
-            }
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="kanbanTodo">Kanban ToDo</Label>
-          <Input
-            id="kanbanTodo"
-            type="color"
-            value={hslToHex(theme['kanban-todo'])}
-            onChange={e => updateTheme('kanban-todo', hexToHsl(e.target.value))}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="kanbanInprogress">Kanban In Arbeit</Label>
-          <Input
-            id="kanbanInprogress"
-            type="color"
-            value={hslToHex(theme['kanban-inprogress'])}
-            onChange={e =>
-              updateTheme('kanban-inprogress', hexToHsl(e.target.value))
-            }
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="kanbanDone">Kanban Done</Label>
-          <Input
-            id="kanbanDone"
-            type="color"
-            value={hslToHex(theme['kanban-done'])}
-            onChange={e => updateTheme('kanban-done', hexToHsl(e.target.value))}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="workRing">Pomodoro Arbeit</Label>
-          <Input
-            id="workRing"
-            type="color"
-            value={hslToHex(theme['pomodoro-work-ring'])}
-            onChange={e =>
-              updateTheme('pomodoro-work-ring', hexToHsl(e.target.value))
-            }
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="breakRing">Pomodoro Pause</Label>
-          <Input
-            id="breakRing"
-            type="color"
-            value={hslToHex(theme['pomodoro-break-ring'])}
-            onChange={e =>
-              updateTheme('pomodoro-break-ring', hexToHsl(e.target.value))
-            }
-          />
-        </div>
-      </div>
-        <div className="pt-4 border-t space-y-4">
-          <h2 className="font-semibold">Datenexport / -import</h2>
-          <div className="space-y-2">
-            <p className="font-medium">Tasks & Kategorien</p>
-            <div className="flex items-center gap-2">
-              <Button onClick={exportTasks}>Export</Button>
-              <Input type="file" accept="application/json" onChange={importTasks} />
+      <div className="max-w-2xl mx-auto px-4 py-6">
+        <Tabs defaultValue="shortcuts" className="space-y-4">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="shortcuts">Shortcuts</TabsTrigger>
+            <TabsTrigger value="pomodoro">Pomodoro</TabsTrigger>
+            <TabsTrigger value="tasks">Tasks</TabsTrigger>
+            <TabsTrigger value="theme">Theme</TabsTrigger>
+            <TabsTrigger value="data">Daten</TabsTrigger>
+          </TabsList>
+          <TabsContent value="shortcuts" className="space-y-4">
+            <div>
+              <Label htmlFor="open">Command Palette</Label>
+              <Input
+                id="open"
+                value={shortcuts.openCommand}
+                onChange={e => updateShortcut('openCommand', e.target.value)}
+                placeholder="z.B. ctrl+k"
+              />
             </div>
-          </div>
-          <div className="space-y-2">
-            <p className="font-medium">Notizen</p>
-            <div className="flex items-center gap-2">
-              <Button onClick={exportNotes}>Export</Button>
-              <Input type="file" accept="application/json" onChange={importNotes} />
+            <div>
+              <Label htmlFor="task">Neue Task</Label>
+              <Input
+                id="task"
+                value={shortcuts.newTask}
+                onChange={e => updateShortcut('newTask', e.target.value)}
+                placeholder="z.B. ctrl+t"
+              />
             </div>
-          </div>
-          <div className="space-y-2">
-            <p className="font-medium">Decks & Karten</p>
-            <div className="flex items-center gap-2">
-              <Button onClick={exportDecks}>Export</Button>
-              <Input type="file" accept="application/json" onChange={importDecks} />
+            <div>
+              <Label htmlFor="note">Neue Notiz</Label>
+              <Input
+                id="note"
+                value={shortcuts.newNote}
+                onChange={e => updateShortcut('newNote', e.target.value)}
+                placeholder="z.B. ctrl+n"
+              />
             </div>
-          </div>
-          <div className="space-y-2">
-            <p className="font-medium">Alles</p>
-            <div className="flex items-center gap-2">
-              <Button onClick={exportAll}>Export</Button>
-              <Input type="file" accept="application/json" onChange={importAll} />
+          </TabsContent>
+          <TabsContent value="pomodoro" className="space-y-4">
+            <div>
+              <Label htmlFor="work">Lernzeit (Minuten)</Label>
+              <Input
+                id="work"
+                type="number"
+                value={pomodoro.workMinutes}
+                onChange={e => updatePomodoro('workMinutes', Number(e.target.value))}
+              />
             </div>
-          </div>
-        </div>
+            <div>
+              <Label htmlFor="break">Pause (Minuten)</Label>
+              <Input
+                id="break"
+                type="number"
+                value={pomodoro.breakMinutes}
+                onChange={e => updatePomodoro('breakMinutes', Number(e.target.value))}
+              />
+            </div>
+          </TabsContent>
+          <TabsContent value="tasks" className="space-y-4">
+            <div>
+              <Label htmlFor="priority">Standard-Priorität</Label>
+              <Select value={defaultTaskPriority} onValueChange={updateDefaultTaskPriority}>
+                <SelectTrigger id="priority">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">Niedrig</SelectItem>
+                  <SelectItem value="medium">Mittel</SelectItem>
+                  <SelectItem value="high">Hoch</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </TabsContent>
+          <TabsContent value="theme" className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="bgColor">Hintergrund</Label>
+              <Input
+                id="bgColor"
+                type="color"
+                value={hslToHex(theme.background)}
+                onChange={e => updateTheme('background', hexToHsl(e.target.value))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="fgColor">Vordergrund</Label>
+              <Input
+                id="fgColor"
+                type="color"
+                value={hslToHex(theme.foreground)}
+                onChange={e => updateTheme('foreground', hexToHsl(e.target.value))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="accentColor">Akzent</Label>
+              <Input
+                id="accentColor"
+                type="color"
+                value={hslToHex(theme.accent)}
+                onChange={e => updateTheme('accent', hexToHsl(e.target.value))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="cardBgColor">Karten-Hintergrund</Label>
+              <Input
+                id="cardBgColor"
+                type="color"
+                value={hslToHex(theme.card)}
+                onChange={e => updateTheme('card', hexToHsl(e.target.value))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="cardFgColor">Karten-Vordergrund</Label>
+              <Input
+                id="cardFgColor"
+                type="color"
+                value={hslToHex(theme['card-foreground'])}
+                onChange={e => updateTheme('card-foreground', hexToHsl(e.target.value))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="statBarPrimary">Statistik Balken 1</Label>
+              <Input
+                id="statBarPrimary"
+                type="color"
+                value={hslToHex(theme['stat-bar-primary'])}
+                onChange={e => updateTheme('stat-bar-primary', hexToHsl(e.target.value))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="statBarSecondary">Statistik Balken 2</Label>
+              <Input
+                id="statBarSecondary"
+                type="color"
+                value={hslToHex(theme['stat-bar-secondary'])}
+                onChange={e => updateTheme('stat-bar-secondary', hexToHsl(e.target.value))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="kanbanTodo">Kanban ToDo</Label>
+              <Input
+                id="kanbanTodo"
+                type="color"
+                value={hslToHex(theme['kanban-todo'])}
+                onChange={e => updateTheme('kanban-todo', hexToHsl(e.target.value))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="kanbanInprogress">Kanban In Arbeit</Label>
+              <Input
+                id="kanbanInprogress"
+                type="color"
+                value={hslToHex(theme['kanban-inprogress'])}
+                onChange={e => updateTheme('kanban-inprogress', hexToHsl(e.target.value))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="kanbanDone">Kanban Done</Label>
+              <Input
+                id="kanbanDone"
+                type="color"
+                value={hslToHex(theme['kanban-done'])}
+                onChange={e => updateTheme('kanban-done', hexToHsl(e.target.value))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="workRing">Pomodoro Arbeit</Label>
+              <Input
+                id="workRing"
+                type="color"
+                value={hslToHex(theme['pomodoro-work-ring'])}
+                onChange={e => updateTheme('pomodoro-work-ring', hexToHsl(e.target.value))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="breakRing">Pomodoro Pause</Label>
+              <Input
+                id="breakRing"
+                type="color"
+                value={hslToHex(theme['pomodoro-break-ring'])}
+                onChange={e => updateTheme('pomodoro-break-ring', hexToHsl(e.target.value))}
+              />
+            </div>
+          </TabsContent>
+          <TabsContent value="data" className="space-y-4">
+            <h2 className="font-semibold">Datenexport / -import</h2>
+            <div className="space-y-2">
+              <p className="font-medium">Tasks & Kategorien</p>
+              <div className="flex items-center gap-2">
+                <Button onClick={exportTasks}>Export</Button>
+                <Input type="file" accept="application/json" onChange={importTasks} />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <p className="font-medium">Notizen</p>
+              <div className="flex items-center gap-2">
+                <Button onClick={exportNotes}>Export</Button>
+                <Input type="file" accept="application/json" onChange={importNotes} />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <p className="font-medium">Decks & Karten</p>
+              <div className="flex items-center gap-2">
+                <Button onClick={exportDecks}>Export</Button>
+                <Input type="file" accept="application/json" onChange={importDecks} />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <p className="font-medium">Alles</p>
+              <div className="flex items-center gap-2">
+                <Button onClick={exportAll}>Export</Button>
+                <Input type="file" accept="application/json" onChange={importAll} />
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   )
