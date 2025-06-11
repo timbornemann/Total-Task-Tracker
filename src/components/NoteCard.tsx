@@ -20,7 +20,7 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, onClick }) => {
 
   return (
     <Card
-      className="cursor-pointer hover:shadow-md transition-all"
+      className="cursor-pointer hover:shadow-md transition-all h-full flex flex-col"
       onClick={onClick}
     >
       <CardHeader className="pb-2 flex items-center space-x-2">
@@ -43,7 +43,7 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, onClick }) => {
           )}
         </button>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1">
         <ReactMarkdown className="prose prose-sm text-gray-600 line-clamp-3">
           {note.text}
         </ReactMarkdown>
