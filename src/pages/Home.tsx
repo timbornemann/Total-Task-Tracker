@@ -12,7 +12,7 @@ import { flattenTasks } from '@/utils/taskUtils';
 
 const Home: React.FC = () => {
   const { notes, tasks } = useTaskStore();
-  const { homeSections, reorderHomeSections } = useSettings();
+  const { homeSections, reorderHomeSections, showPinnedTasks, showPinnedNotes } = useSettings();
 
   const orderedSections: HomeSection[] = homeSections
     .map(key => allHomeSections.find(s => s.key === key))
@@ -73,7 +73,7 @@ const Home: React.FC = () => {
             )}
           </Droppable>
         </DragDropContext>
-        {pinnedTasks.length > 0 && (
+        {showPinnedTasks && pinnedTasks.length > 0 && (
           <div className="mb-6">
             <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-3">
               Gepinnte Tasks
@@ -101,7 +101,7 @@ const Home: React.FC = () => {
           </div>
         )}
 
-        {pinnedNotes.length > 0 && (
+        {showPinnedNotes && pinnedNotes.length > 0 && (
           <div>
             <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-3">
               Gepinnte Notizen

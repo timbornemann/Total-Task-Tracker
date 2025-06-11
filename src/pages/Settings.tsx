@@ -35,7 +35,11 @@ const SettingsPage: React.FC = () => {
     themeName,
     updateThemeName,
     homeSections,
-    toggleHomeSection
+    toggleHomeSection,
+    showPinnedTasks,
+    toggleShowPinnedTasks,
+    showPinnedNotes,
+    toggleShowPinnedNotes
   } = useSettings()
 
   const download = (data: any, name: string) => {
@@ -287,6 +291,22 @@ const SettingsPage: React.FC = () => {
             </div>
           </TabsContent>
           <TabsContent value="home" className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="showPinnedTasks"
+                checked={showPinnedTasks}
+                onCheckedChange={toggleShowPinnedTasks}
+              />
+              <Label htmlFor="showPinnedTasks">Gepinnte Tasks anzeigen</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="showPinnedNotes"
+                checked={showPinnedNotes}
+                onCheckedChange={toggleShowPinnedNotes}
+              />
+              <Label htmlFor="showPinnedNotes">Gepinnte Notizen anzeigen</Label>
+            </div>
             {allHomeSections.map(sec => (
               <div key={sec.key} className="flex items-center space-x-2">
                 <Checkbox
