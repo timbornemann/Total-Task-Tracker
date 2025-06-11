@@ -4,6 +4,17 @@ import { Task, Category, Note } from '@/types';
 const API_URL = '/api/data';
 
 const useTaskStoreImpl = () => {
+  const sortNotes = (list: Note[]): Note[] => {
+    const pinned = list
+      .filter(n => n.pinned)
+      .sort((a, b) => a.order - b.order)
+      .map((n, idx) => ({ ...n, order: idx }));
+    const others = list
+      .filter(n => !n.pinned)
+      .sort((a, b) => a.order - b.order)
+      .map((n, idx) => ({ ...n, order: idx }));
+    return [...pinned, ...others];
+  };
   const [tasks, setTasks] = useState<Task[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [notes, setNotes] = useState<Note[]>([]);
@@ -40,12 +51,15 @@ const useTaskStoreImpl = () => {
 
         if (savedNotes) {
           setNotes(
-            savedNotes.map((note: any, idx: number) => ({
-              ...note,
-              createdAt: new Date(note.createdAt),
-              updatedAt: new Date(note.updatedAt),
-              order: typeof note.order === 'number' ? note.order : idx
-            }))
+            sortNotes(
+              savedNotes.map((note: any, idx: number) => ({
+                ...note,
+                createdAt: new Date(note.createdAt),
+                updatedAt: new Date(note.updatedAt),
+                pinned: note.pinned ?? false,
+                order: typeof note.order === 'number' ? note.order : idx
+              }))
+            )
           );
         }
 
@@ -336,35 +350,40 @@ const useTaskStoreImpl = () => {
     });
   };
 
-  const addNote = (data: Omit<Note, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const addNote = (
+    data: Omit<Note, 'id' | 'createdAt' | 'updatedAt' | 'order'>
+  ) => {
     const newNote: Note = {
       ...data,
       id: Date.now().toString(),
       createdAt: new Date(),
       updatedAt: new Date(),
-      order: notes.length
+      order: 0,
+      pinned: data.pinned ?? false
     };
-    setNotes(prev => [...prev, newNote]);
+    setNotes(prev => sortNotes([...prev, newNote]));
   };
 
   const updateNote = (noteId: string, updates: Partial<Note>) => {
     setNotes(prev =>
-      prev.map(n =>
-        n.id === noteId ? { ...n, ...updates, updatedAt: new Date() } : n
+      sortNotes(
+        prev.map(n =>
+          n.id === noteId ? { ...n, ...updates, updatedAt: new Date() } : n
+        )
       )
     );
   };
 
   const deleteNote = (noteId: string) => {
-    setNotes(prev => prev.filter(n => n.id !== noteId).map((n, idx) => ({ ...n, order: idx })));
+    setNotes(prev => sortNotes(prev.filter(n => n.id !== noteId)));
   };
 
   const reorderNotes = (startIndex: number, endIndex: number) => {
     setNotes(prev => {
-      const ordered = Array.from(prev);
+      const ordered = sortNotes(prev);
       const [removed] = ordered.splice(startIndex, 1);
       ordered.splice(endIndex, 0, removed);
-      return ordered.map((n, idx) => ({ ...n, order: idx }));
+      return sortNotes(ordered);
     });
   };
 
