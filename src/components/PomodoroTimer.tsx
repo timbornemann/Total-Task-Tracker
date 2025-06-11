@@ -147,6 +147,47 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
   const { addSession, endBreak } = usePomodoroHistory();
   const pipWindowRef = useRef<Window | null>(null);
   const [now, setNow] = useState(Date.now());
+  const [position, setPosition] = useState<{ x: number; y: number }>(() => {
+    if (typeof window === 'undefined') return { x: 0, y: 0 };
+    try {
+      const stored = localStorage.getItem('pomodoroFloatPos');
+      if (stored) return JSON.parse(stored);
+    } catch {}
+    const sizePx = size * 2 + 24;
+    return {
+      x: window.innerWidth - sizePx - 16,
+      y: window.innerHeight - sizePx - 16
+    };
+  });
+  const offsetRef = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('pomodoroFloatPos', JSON.stringify(position));
+    } catch {}
+  }, [position]);
+
+  const handlePointerMove = (e: PointerEvent) => {
+    const sizePx = size * 2 + 24;
+    setPosition({
+      x: Math.min(Math.max(0, e.clientX - offsetRef.current.x), window.innerWidth - sizePx),
+      y: Math.min(
+        Math.max(0, e.clientY - offsetRef.current.y),
+        window.innerHeight - sizePx
+      )
+    });
+  };
+
+  const stopDrag = () => {
+    window.removeEventListener('pointermove', handlePointerMove);
+    window.removeEventListener('pointerup', stopDrag);
+  };
+
+  const startDrag = (e: React.PointerEvent<HTMLDivElement>) => {
+    offsetRef.current = { x: e.clientX - position.x, y: e.clientY - position.y };
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', stopDrag);
+  };
 
   useEffect(() => {
     if (!isPaused) return;
@@ -270,11 +311,13 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
 
   return (
     <div
+      onPointerDown={compact ? startDrag : undefined}
       className={
         compact
-          ? 'fixed bottom-4 right-4 bg-background shadow-lg rounded p-3 z-50'
+          ? 'fixed bg-background shadow-lg rounded p-3 z-50 cursor-move'
           : 'flex flex-col items-center space-y-4'
       }
+      style={compact ? { left: position.x, top: position.y } : undefined}
     >
       <div className="relative" style={{ width: radius * 2, height: radius * 2 }}>
         <svg
