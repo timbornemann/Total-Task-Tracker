@@ -12,7 +12,7 @@ Kleine Aufgabenverwaltung auf Basis von React und Node.js. Aufgaben lassen sich 
 ```bash
 # Repository klonen
 git clone <REPO_URL>
-cd task-tree-dashboard-docked
+cd total-task-tracker
 
 # Abhängigkeiten installieren
 npm install
@@ -22,7 +22,7 @@ Das Projekt nutzt für die Anzeige von Notizen **react-markdown**.
 
 ## Entwicklung starten
 
-Im Entwicklungsmodus läuft die React-Anwendung mit Vite auf Port **8080**. Für die Datenspeicherung kann gleichzeitig der Node-Server gestartet werden.
+Im Entwicklungsmodus läuft die React-Anwendung mit Vite auf Port **8081**. Für die Datenspeicherung kann gleichzeitig der Node-Server gestartet werden.
 
 ```bash
 # Frontend mit automatischem Reload
@@ -32,7 +32,7 @@ npm run dev
 npm start
 ```
 
-Rufe anschließend im Browser `http://localhost:8080` auf.
+Rufe anschließend im Browser `http://localhost:8081` auf.
 
 ---
 
@@ -89,6 +89,7 @@ npm start    # startet die gebaute App auf Port 3002
 - Standard-Priorität für neue Tasks einstellbar
 - Mehrere Theme-Voreinstellungen (light, dark, ocean, dark-red, hacker,
   motivation) und ein eigenes "Custom"-Theme wählbar
+- Im Custom-Theme lassen sich Farben der Oberfläche und Karten individuell anpassen
 
 ## Verwendung
 
