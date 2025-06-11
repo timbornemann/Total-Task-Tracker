@@ -1,6 +1,6 @@
 import React from 'react'
 import Navbar from '@/components/Navbar'
-import { useSettings } from '@/hooks/useSettings'
+import { useSettings, themePresets } from '@/hooks/useSettings'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -28,7 +28,9 @@ const SettingsPage: React.FC = () => {
     defaultTaskPriority,
     updateDefaultTaskPriority,
     theme,
-    updateTheme
+    updateTheme,
+    themeName,
+    updateThemeName
   } = useSettings()
 
   const download = (data: any, name: string) => {
@@ -274,6 +276,22 @@ const SettingsPage: React.FC = () => {
             </div>
           </TabsContent>
           <TabsContent value="theme" className="space-y-4">
+            <div>
+              <Label htmlFor="themePreset">Voreinstellung</Label>
+              <Select value={themeName} onValueChange={updateThemeName}>
+                <SelectTrigger id="themePreset">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.keys(themePresets).map(name => (
+                    <SelectItem key={name} value={name}>
+                      {name}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="custom">custom</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <div className="space-y-2">
               <Label htmlFor="bgColor">Hintergrund</Label>
               <Input
