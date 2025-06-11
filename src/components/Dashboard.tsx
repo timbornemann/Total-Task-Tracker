@@ -12,7 +12,8 @@ import {
   Plus,
   Search,
   LayoutGrid,
-  List
+  List,
+  ArrowLeft
 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import {
@@ -487,7 +488,16 @@ const Dashboard: React.FC = () => {
         ) : (
           <div>
             <div className="flex items-center justify-between mb-4 sm:mb-6">
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Tasks</h2>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleBackToCategories}
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Tasks</h2>
+              </div>
               <Badge variant="secondary">{filteredTasks.length} Tasks</Badge>
             </div>
             <div className="flex items-center gap-2 mb-4 sm:mb-6">
