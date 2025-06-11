@@ -21,6 +21,7 @@ import {
   Search,
   ClipboardList,
   GraduationCap,
+  ChevronDown,
 } from 'lucide-react'
 
 interface NavbarProps {
@@ -84,19 +85,17 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onMouseEnter={() => setOpenMenu('tasks')}
-                  onMouseLeave={() => setOpenMenu(null)}
+                  onClick={() => setOpenMenu(openMenu === 'tasks' ? null : 'tasks')}
                   className="flex items-center"
                 >
                   <ClipboardList className="h-4 w-4 mr-2" />
                   Tasks
+                  <ChevronDown
+                    className={`ml-1 h-3 w-3 transition-transform ${openMenu === 'tasks' ? 'rotate-180' : ''}`}
+                  />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="bg-background z-50"
-                onMouseEnter={() => setOpenMenu('tasks')}
-                onMouseLeave={() => setOpenMenu(null)}
-              >
+              <DropdownMenuContent className="bg-background z-50">
                 <DropdownMenuItem asChild>
                   <Link to="/tasks" className="flex items-center">
                     <LayoutGrid className="h-4 w-4 mr-2" /> Übersicht
@@ -128,19 +127,17 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onMouseEnter={() => setOpenMenu('learning')}
-                  onMouseLeave={() => setOpenMenu(null)}
+                  onClick={() => setOpenMenu(openMenu === 'learning' ? null : 'learning')}
                   className="flex items-center"
                 >
                   <GraduationCap className="h-4 w-4 mr-2" />
                   Lernen
+                  <ChevronDown
+                    className={`ml-1 h-3 w-3 transition-transform ${openMenu === 'learning' ? 'rotate-180' : ''}`}
+                  />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="bg-background z-50"
-                onMouseEnter={() => setOpenMenu('learning')}
-                onMouseLeave={() => setOpenMenu(null)}
-              >
+              <DropdownMenuContent className="bg-background z-50">
                 <DropdownMenuItem asChild>
                   <Link to="/flashcards" className="flex items-center">
                     <BookOpen className="h-4 w-4 mr-2" /> Karten
