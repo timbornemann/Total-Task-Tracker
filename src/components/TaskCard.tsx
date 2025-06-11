@@ -6,7 +6,16 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Edit, Trash2, Plus, FolderOpen, MoreVertical } from 'lucide-react';
+import {
+  Edit,
+  Trash2,
+  Plus,
+  FolderOpen,
+  MoreVertical,
+  Star,
+  StarOff
+} from 'lucide-react';
+import { useTaskStore } from '@/hooks/useTaskStore';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 interface TaskCardProps {
@@ -39,6 +48,12 @@ const TaskCard: React.FC<TaskCardProps> = ({
   const progressPercentage = progress.total > 0 ? (progress.completed / progress.total) * 100 : 0;
   const priorityClasses = getPriorityColor(task.priority);
   const priorityIcon = getPriorityIcon(task.priority);
+  const { updateTask } = useTaskStore();
+
+  const handleTogglePinned = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    updateTask(task.id, { pinned: !task.pinned });
+  };
 
   const handleToggleComplete = () => {
     if (task.subtasks.length === 0) {
@@ -120,6 +135,18 @@ const TaskCard: React.FC<TaskCardProps> = ({
             <Button
               variant="ghost"
               size="sm"
+              onClick={handleTogglePinned}
+              className="h-8 w-8 p-0"
+            >
+              {task.pinned ? (
+                <Star className="h-4 w-4 fill-current" />
+              ) : (
+                <StarOff className="h-4 w-4" />
+              )}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => onViewDetails(task)}
               className="h-8 w-8 p-0"
             >
@@ -159,11 +186,19 @@ const TaskCard: React.FC<TaskCardProps> = ({
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-background z-50">
-                <DropdownMenuItem onClick={() => onViewDetails(task)}>
-                  <FolderOpen className="h-4 w-4 mr-2" />
-                  Details anzeigen
-                </DropdownMenuItem>
+          <DropdownMenuContent align="end" className="bg-background z-50">
+            <DropdownMenuItem onClick={handleTogglePinned}>
+              {task.pinned ? (
+                <Star className="h-4 w-4 mr-2" />
+              ) : (
+                <StarOff className="h-4 w-4 mr-2" />
+              )}
+              {task.pinned ? 'Lösen' : 'Anheften'}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onViewDetails(task)}>
+              <FolderOpen className="h-4 w-4 mr-2" />
+              Details anzeigen
+            </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onAddSubtask(task)}>
                   <Plus className="h-4 w-4 mr-2" />
                   Unteraufgabe hinzufügen

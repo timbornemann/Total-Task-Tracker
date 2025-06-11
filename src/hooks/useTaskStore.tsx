@@ -44,7 +44,8 @@ const useTaskStoreImpl = () => {
               nextDue: task.nextDue ? new Date(task.nextDue) : undefined,
               order: typeof task.order === 'number' ? task.order : idx,
               completed: task.completed ?? false,
-              status: task.status ?? (task.completed ? 'done' : 'todo')
+              status: task.status ?? (task.completed ? 'done' : 'todo'),
+              pinned: task.pinned ?? false
             }))
           );
         }
@@ -109,20 +110,24 @@ const useTaskStoreImpl = () => {
     save();
   }, [tasks, categories, notes]);
 
-  const addTask = (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'subtasks'>) => {
-  const newTask: Task = {
-    ...taskData,
-    id: Date.now().toString(),
-    subtasks: [],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    dueDate: taskData.dueDate,
-    nextDue: taskData.isRecurring ? calculateNextDue(taskData.recurrencePattern) : undefined,
-    lastCompleted: undefined,
-    dueDate: taskData.dueDate ? new Date(taskData.dueDate) : undefined,
-    status: 'todo',
-    order: 0
-  };
+  const addTask = (
+    taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'subtasks' | 'pinned'>
+  ) => {
+    const newTask: Task = {
+      ...taskData,
+      id: Date.now().toString(),
+      subtasks: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      dueDate: taskData.dueDate ? new Date(taskData.dueDate) : undefined,
+      nextDue: taskData.isRecurring
+        ? calculateNextDue(taskData.recurrencePattern)
+        : undefined,
+      lastCompleted: undefined,
+      status: 'todo',
+      order: 0,
+      pinned: false
+    };
     
     if (taskData.parentId) {
       // Add as subtask
@@ -390,7 +395,9 @@ const useTaskStoreImpl = () => {
   const getTasksByCategory = (categoryId: string): Task[] => {
     return tasks
       .filter(task => task.categoryId === categoryId && !task.parentId)
-      .sort((a, b) => a.order - b.order);
+      .sort((a, b) =>
+        a.pinned === b.pinned ? a.order - b.order : a.pinned ? -1 : 1
+      );
   };
 
   const findTaskById = (taskId: string, tasksArray: Task[] = tasks): Task | null => {

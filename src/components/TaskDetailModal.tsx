@@ -6,7 +6,16 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Edit, Plus, Trash2, ArrowLeft, Timer } from 'lucide-react';
+import {
+  Edit,
+  Plus,
+  Trash2,
+  ArrowLeft,
+  Timer,
+  Star,
+  StarOff
+} from 'lucide-react';
+import { useTaskStore } from '@/hooks/useTaskStore';
 import { calculateTaskCompletion, getTaskProgress, getPriorityColor, getPriorityIcon } from '@/utils/taskUtils';
 import TaskCard from './TaskCard';
 
@@ -42,11 +51,17 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
 }) => {
   if (!task) return null;
 
+  const { updateTask } = useTaskStore();
+
   const isCompleted = calculateTaskCompletion(task);
   const progress = getTaskProgress(task);
   const progressPercentage = progress.total > 0 ? (progress.completed / progress.total) * 100 : 0;
   const priorityClasses = getPriorityColor(task.priority);
   const priorityIcon = getPriorityIcon(task.priority);
+
+  const handleTogglePinned = () => {
+    updateTask(task.id, { pinned: !task.pinned });
+  };
 
   const handleToggleComplete = () => {
     if (task.subtasks.length === 0) {
@@ -94,6 +109,18 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
               </div>
             </div>
             <div className="flex space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleTogglePinned}
+              >
+                {task.pinned ? (
+                  <Star className="h-4 w-4 mr-2" />
+                ) : (
+                  <StarOff className="h-4 w-4 mr-2" />
+                )}
+                {task.pinned ? 'Lösen' : 'Anheften'}
+              </Button>
               <Button
                 variant="outline"
                 size="sm"

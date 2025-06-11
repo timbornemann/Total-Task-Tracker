@@ -3,15 +3,20 @@ import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { LayoutGrid, BookOpen, List } from 'lucide-react';
+import TaskCard from '@/components/TaskCard';
 import { useTaskStore } from '@/hooks/useTaskStore';
 import NoteCard from '@/components/NoteCard';
 
 const Home: React.FC = () => {
-  const { notes } = useTaskStore();
+  const { notes, tasks } = useTaskStore();
 
   const pinnedNotes = useMemo(
     () => notes.filter(n => n.pinned).sort((a, b) => a.order - b.order).slice(0, 3),
     [notes]
+  );
+  const pinnedTasks = useMemo(
+    () => tasks.filter(t => t.pinned && !t.parentId).sort((a, b) => a.order - b.order).slice(0, 3),
+    [tasks]
   );
 
   return (
@@ -44,6 +49,33 @@ const Home: React.FC = () => {
             </Card>
           </Link>
         </div>
+        {pinnedTasks.length > 0 && (
+          <div className="mb-6">
+            <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-3">
+              Gepinnte Tasks
+            </h2>
+            <div className="space-y-3">
+              {pinnedTasks.map(task => (
+                <Link
+                  key={task.id}
+                  to={`/tasks?taskId=${task.id}`}
+                  className="block"
+                >
+                  <TaskCard
+                    task={task}
+                    onEdit={() => {}}
+                    onDelete={() => {}}
+                    onAddSubtask={() => {}}
+                    onToggleComplete={() => {}}
+                    onViewDetails={() => {}}
+                    showSubtasks={false}
+                  />
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
         {pinnedNotes.length > 0 && (
           <div>
             <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-3">
