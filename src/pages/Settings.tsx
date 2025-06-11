@@ -39,7 +39,13 @@ const SettingsPage: React.FC = () => {
     showPinnedTasks,
     toggleShowPinnedTasks,
     showPinnedNotes,
-    toggleShowPinnedNotes
+    toggleShowPinnedNotes,
+    flashcardTimer,
+    updateFlashcardTimer,
+    flashcardSessionSize,
+    updateFlashcardSessionSize,
+    flashcardDefaultMode,
+    updateFlashcardDefaultMode
   } = useSettings()
 
   const download = (data: any, name: string) => {
@@ -213,9 +219,10 @@ const SettingsPage: React.FC = () => {
       <Navbar title="Einstellungen" />
       <div className="max-w-2xl mx-auto px-4 py-6">
         <Tabs defaultValue="shortcuts" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="shortcuts">Shortcuts</TabsTrigger>
             <TabsTrigger value="pomodoro">Pomodoro</TabsTrigger>
+            <TabsTrigger value="flashcards">Karten</TabsTrigger>
             <TabsTrigger value="tasks">Tasks</TabsTrigger>
             <TabsTrigger value="home">Startseite</TabsTrigger>
             <TabsTrigger value="theme">Theme</TabsTrigger>
@@ -273,6 +280,44 @@ const SettingsPage: React.FC = () => {
                 value={pomodoro.breakMinutes}
                 onChange={e => updatePomodoro('breakMinutes', Number(e.target.value))}
               />
+            </div>
+          </TabsContent>
+          <TabsContent value="flashcards" className="space-y-4">
+            <div>
+              <Label htmlFor="timer">Timer pro Karte (Sekunden)</Label>
+              <Input
+                id="timer"
+                type="number"
+                value={flashcardTimer}
+                onChange={e => updateFlashcardTimer(Number(e.target.value))}
+              />
+            </div>
+            <div>
+              <Label htmlFor="sessionSize">Training-Session Größe</Label>
+              <Input
+                id="sessionSize"
+                type="number"
+                value={flashcardSessionSize}
+                onChange={e => updateFlashcardSessionSize(Number(e.target.value))}
+              />
+            </div>
+            <div>
+              <Label htmlFor="startMode">Startmodus</Label>
+              <Select
+                value={flashcardDefaultMode}
+                onValueChange={updateFlashcardDefaultMode}
+              >
+                <SelectTrigger id="startMode">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="spaced">Spaced Repetition</SelectItem>
+                  <SelectItem value="training">Training</SelectItem>
+                  <SelectItem value="random">Random</SelectItem>
+                  <SelectItem value="typing">Eingabe</SelectItem>
+                  <SelectItem value="timed">Timed</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </TabsContent>
           <TabsContent value="tasks" className="space-y-4">

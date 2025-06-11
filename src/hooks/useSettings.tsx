@@ -16,6 +16,16 @@ const defaultShortcuts: ShortcutKeys = {
 }
 
 const defaultPomodoro = { workMinutes: 25, breakMinutes: 5 }
+const defaultFlashcardSettings = {
+  timerSeconds: 10,
+  sessionSize: 5,
+  defaultMode: 'spaced' as
+    | 'spaced'
+    | 'training'
+    | 'random'
+    | 'typing'
+    | 'timed'
+}
 const defaultTaskPriority: 'low' | 'medium' | 'high' = 'medium'
 const defaultTheme = {
   background: '0 0% 100%',
@@ -130,6 +140,14 @@ interface SettingsContextValue {
   toggleShowPinnedTasks: () => void
   showPinnedNotes: boolean
   toggleShowPinnedNotes: () => void
+  flashcardTimer: number
+  updateFlashcardTimer: (value: number) => void
+  flashcardSessionSize: number
+  updateFlashcardSessionSize: (value: number) => void
+  flashcardDefaultMode: 'spaced' | 'training' | 'random' | 'typing' | 'timed'
+  updateFlashcardDefaultMode: (
+    value: 'spaced' | 'training' | 'random' | 'typing' | 'timed'
+  ) => void
 }
 
 const SettingsContext = createContext<SettingsContextValue | undefined>(undefined)
@@ -137,6 +155,15 @@ const SettingsContext = createContext<SettingsContextValue | undefined>(undefine
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [shortcuts, setShortcuts] = useState<ShortcutKeys>(defaultShortcuts)
   const [pomodoro, setPomodoro] = useState(defaultPomodoro)
+  const [flashcardTimer, setFlashcardTimer] = useState(
+    defaultFlashcardSettings.timerSeconds
+  )
+  const [flashcardSessionSize, setFlashcardSessionSize] = useState(
+    defaultFlashcardSettings.sessionSize
+  )
+  const [flashcardDefaultMode, setFlashcardDefaultMode] = useState(
+    defaultFlashcardSettings.defaultMode
+  )
   const [priority, setPriority] = useState<'low' | 'medium' | 'high'>(
     defaultTaskPriority
   )
@@ -183,6 +210,15 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           if (typeof data.showPinnedNotes === 'boolean') {
             setShowPinnedNotes(data.showPinnedNotes)
           }
+          if (typeof data.flashcardTimer === 'number') {
+            setFlashcardTimer(data.flashcardTimer)
+          }
+          if (typeof data.flashcardSessionSize === 'number') {
+            setFlashcardSessionSize(data.flashcardSessionSize)
+          }
+          if (typeof data.flashcardDefaultMode === 'string') {
+            setFlashcardDefaultMode(data.flashcardDefaultMode)
+          }
         }
       } catch (err) {
         console.error('Fehler beim Laden der Einstellungen', err)
@@ -205,7 +241,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             themeName,
             homeSections,
             showPinnedTasks,
-            showPinnedNotes
+            showPinnedNotes,
+            flashcardTimer,
+            flashcardSessionSize,
+            flashcardDefaultMode
           })
         })
       } catch (err) {
@@ -214,7 +253,19 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
 
     save()
-  }, [shortcuts, pomodoro, priority, theme, themeName, homeSections, showPinnedTasks, showPinnedNotes])
+  }, [
+    shortcuts,
+    pomodoro,
+    priority,
+    theme,
+    themeName,
+    homeSections,
+    showPinnedTasks,
+    showPinnedNotes,
+    flashcardTimer,
+    flashcardSessionSize,
+    flashcardDefaultMode
+  ])
 
   useEffect(() => {
     Object.entries(theme).forEach(([key, value]) => {
@@ -249,6 +300,20 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     if (themePresets[name]) {
       setTheme(themePresets[name])
     }
+  }
+
+  const updateFlashcardTimer = (value: number) => {
+    setFlashcardTimer(value)
+  }
+
+  const updateFlashcardSessionSize = (value: number) => {
+    setFlashcardSessionSize(value)
+  }
+
+  const updateFlashcardDefaultMode = (
+    value: 'spaced' | 'training' | 'random' | 'typing' | 'timed'
+  ) => {
+    setFlashcardDefaultMode(value)
   }
 
   const toggleHomeSection = (section: string) => {
@@ -295,7 +360,13 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         showPinnedTasks,
         toggleShowPinnedTasks,
         showPinnedNotes,
-        toggleShowPinnedNotes
+        toggleShowPinnedNotes,
+        flashcardTimer,
+        updateFlashcardTimer,
+        flashcardSessionSize,
+        updateFlashcardSessionSize,
+        flashcardDefaultMode,
+        updateFlashcardDefaultMode
       }}
     >
       {children}

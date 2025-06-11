@@ -70,9 +70,9 @@ npm start    # startet die gebaute App auf Port 3002
 - Lernkarten mit Spaced-Repetition-Training und Verwaltung eigener Karten
   - Decks lassen sich beim Lernen ein- oder ausblenden
   - Optionaler Zufallsmodus ohne Bewertung
-  - Trainingsmodus direkt auf der Kartenseite mit 5 Karten pro Runde und Fazit
+  - Trainingsmodus direkt auf der Kartenseite mit frei einstellbarer Rundengröße
   - Eingabemodus zum Tippen der Antworten; nach dem Prüfen bewertest du selbst, ob die Karte leicht, mittel oder schwer war
-  - Timed-Modus mit 10 Sekunden Countdown pro Karte; der Timer wird einmalig gestartet und kann pausiert werden. Bei Ablauf wird automatisch "schwer" gewertet
+  - Timed-Modus mit anpassbarem Countdown pro Karte; der Timer wird einmalig gestartet und kann pausiert werden. Bei Ablauf wird automatisch "schwer" gewertet
 - Statistikseite für Lernkarten
   - Deck-Statistiken mit Übersicht fälliger Karten
 - Speicherung der Daten auf dem lokalen Server
@@ -106,7 +106,7 @@ npm start    # startet die gebaute App auf Port 3002
    gezielt Decks ein- oder ausblenden, einen Zufallsmodus aktivieren und im
    Eingabemodus Antworten eintippen. Nach dem Vergleich der Lösung entscheidest
    du selbst, wie schwer dir die Karte fiel.
-   Im Timed-Modus bleiben dir pro Karte 10 Sekunden. Der Timer startet einmalig zu Beginn der Session und kann jederzeit pausiert werden. Bei 0 wird automatisch "schwer" gewertet.
+   Im Timed-Modus bestimmt ein einstellbarer Countdown die Zeit pro Karte. Der Timer startet einmalig zu Beginn der Session und kann jederzeit pausiert werden. Bei 0 wird automatisch "schwer" gewertet.
 
 Viel Spaß beim Ausprobieren!
 

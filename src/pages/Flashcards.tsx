@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { useFlashcardStore } from '@/hooks/useFlashcardStore';
+import { useSettings } from '@/hooks/useSettings';
 import { shuffleArray } from '@/utils/shuffle';
 import {
   AlertDialog,
@@ -26,17 +27,28 @@ import {
 
 const FlashcardsPage: React.FC = () => {
   const { flashcards, decks, rateFlashcard } = useFlashcardStore();
+  const {
+    flashcardTimer,
+    flashcardSessionSize,
+    flashcardDefaultMode
+  } = useSettings();
   const [selectedDecks, setSelectedDecks] = useState<string[]>([]);
-  const [randomMode, setRandomMode] = useState(false);
-  const [trainingMode, setTrainingMode] = useState(false);
-  const [typingMode, setTypingMode] = useState(false);
-  const [timedMode, setTimedMode] = useState(false);
+  const [randomMode, setRandomMode] = useState(
+    flashcardDefaultMode === 'random'
+  );
+  const [trainingMode, setTrainingMode] = useState(
+    flashcardDefaultMode === 'training'
+  );
+  const [typingMode, setTypingMode] = useState(
+    flashcardDefaultMode === 'typing'
+  );
+  const [timedMode, setTimedMode] = useState(flashcardDefaultMode === 'timed');
   const [useSpaced, setUseSpaced] = useState(true);
   const [timeLeft, setTimeLeft] = useState(0);
   const [timerActive, setTimerActive] = useState(false);
   const [timerStarted, setTimerStarted] = useState(false);
   const [timerPaused, setTimerPaused] = useState(false);
-  const TIMER_DURATION = 10;
+  const TIMER_DURATION = flashcardTimer;
   const [index, setIndex] = useState(0);
   const [showBack, setShowBack] = useState(false);
   const [showDone, setShowDone] = useState(false);
@@ -95,8 +107,8 @@ const FlashcardsPage: React.FC = () => {
   useEffect(() => {
     if (trainingMode) {
       const all = shuffleArray(filtered);
-      setSessionCards(all.slice(0, 5));
-      setRemainingCards(all.slice(5));
+      setSessionCards(all.slice(0, flashcardSessionSize));
+      setRemainingCards(all.slice(flashcardSessionSize));
       setIndex(0);
       setSummary({});
       setShowSummary(false);
@@ -196,8 +208,8 @@ const FlashcardsPage: React.FC = () => {
   const handleRestart = () => {
     if (trainingMode) {
       const all = shuffleArray(filtered);
-      setSessionCards(all.slice(0, 5));
-      setRemainingCards(all.slice(5));
+      setSessionCards(all.slice(0, flashcardSessionSize));
+      setRemainingCards(all.slice(flashcardSessionSize));
       setIndex(0);
       setShowBack(false);
       setSummary({});
@@ -407,9 +419,9 @@ const FlashcardsPage: React.FC = () => {
               if (remainingCards.length === 0) {
                 handleRestart();
               } else {
-                const next = remainingCards.slice(0, 5);
+                const next = remainingCards.slice(0, flashcardSessionSize);
                 setSessionCards(next);
-                setRemainingCards(remainingCards.slice(5));
+                setRemainingCards(remainingCards.slice(flashcardSessionSize));
                 setIndex(0);
                 setShowBack(false);
                 setShowSummary(false);
