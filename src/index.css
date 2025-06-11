@@ -10,7 +10,7 @@
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
 
-    --popover: 0 0% 100%;
+    --popover: 0 0% 98%;
     --popover-foreground: 222.2 84% 4.9%;
 
     --primary: 222.2 47.4% 11.2%;
@@ -49,6 +49,14 @@
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --stat-bar-primary: var(--accent);
+    --stat-bar-secondary: var(--muted);
+    --kanban-todo: var(--muted);
+    --kanban-inprogress: var(--secondary);
+    --kanban-done: var(--accent);
+    --pomodoro-work-ring: var(--primary);
+    --pomodoro-break-ring: var(--accent);
   }
 
   .dark {
@@ -58,7 +66,7 @@
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222.2 84% 4.9%;
+    --popover: 217.2 32.6% 17.5%;
     --popover-foreground: 210 40% 98%;
 
     --primary: 210 40% 98%;
@@ -87,6 +95,14 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --stat-bar-primary: var(--accent);
+    --stat-bar-secondary: var(--muted);
+    --kanban-todo: var(--muted);
+    --kanban-inprogress: var(--secondary);
+    --kanban-done: var(--accent);
+    --pomodoro-work-ring: var(--primary);
+    --pomodoro-break-ring: var(--accent);
   }
 }
 

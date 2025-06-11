@@ -61,12 +61,12 @@ const TaskCard: React.FC<TaskCardProps> = ({
                 type="checkbox"
                 checked={task.completed}
                 onChange={handleToggleComplete}
-                className="mt-1 h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 flex-shrink-0"
+                className="mt-1 h-4 w-4 text-primary rounded border-gray-300 focus:ring-primary flex-shrink-0"
               />
             )}
             <div className="flex-1 min-w-0">
               <CardTitle
-                className={`text-base sm:text-lg font-semibold cursor-pointer hover:text-blue-600 transition-colors ${
+                className={`text-base sm:text-lg font-semibold cursor-pointer hover:text-primary transition-colors ${
                   isCompleted ? 'line-through text-gray-500' : ''
                 } break-words`}
                 onClick={() => onViewDetails(task)}
@@ -102,7 +102,11 @@ const TaskCard: React.FC<TaskCardProps> = ({
                 )}
                 {task.dueDate && (
                   <span
-                    className={`text-xs flex-shrink-0 ${new Date(task.dueDate) < new Date() && !task.completed ? 'text-red-600' : 'text-gray-500'}`}
+                    className={`text-xs flex-shrink-0 ${
+                      new Date(task.dueDate) < new Date() && !task.completed
+                        ? 'text-destructive'
+                        : 'text-muted-foreground'
+                    }`}
                   >
                     Fällig am {new Date(task.dueDate).toLocaleDateString('de-DE')}
                   </span>
@@ -141,7 +145,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
               variant="ghost"
               size="sm"
               onClick={() => onDelete(task.id)}
-              className="h-8 w-8 p-0 text-red-600 hover:text-red-800"
+              className="h-8 w-8 p-0 text-destructive hover:text-destructive/80"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
@@ -168,9 +172,9 @@ const TaskCard: React.FC<TaskCardProps> = ({
                   <Edit className="h-4 w-4 mr-2" />
                   Bearbeiten
                 </DropdownMenuItem>
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onClick={() => onDelete(task.id)}
-                  className="text-red-600"
+                  className="text-destructive"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Löschen

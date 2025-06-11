@@ -70,7 +70,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                   type="checkbox"
                   checked={task.completed}
                   onChange={handleToggleComplete}
-                  className="mt-1 h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                  className="mt-1 h-5 w-5 text-primary rounded border-gray-300 focus:ring-primary"
                 />
               )}
               <div className="flex-1">
@@ -125,7 +125,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                   onDelete(task.id);
                   onClose();
                 }}
-                className="text-red-600 hover:text-red-800"
+                className="text-destructive hover:text-destructive/80"
               >
                 <Trash2 className="h-4 w-4 mr-2" />
                 Löschen
