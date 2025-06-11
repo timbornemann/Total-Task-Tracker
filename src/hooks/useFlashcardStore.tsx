@@ -122,6 +122,14 @@ const useFlashcardStoreImpl = () => {
     setFlashcards(prev => prev.filter(c => c.deckId !== id));
   };
 
+  const countCardsForDeck = (deckId: string) =>
+    flashcards.filter(c => c.deckId === deckId).length;
+
+  const countDueCardsForDeck = (deckId: string) =>
+    flashcards.filter(
+      c => c.deckId === deckId && new Date(c.dueDate) <= new Date()
+    ).length;
+
   const rateFlashcard = (
     id: string,
     difficulty: 'easy' | 'medium' | 'hard',
@@ -170,7 +178,9 @@ const useFlashcardStoreImpl = () => {
     rateFlashcard,
     addDeck,
     updateDeck,
-    deleteDeck
+    deleteDeck,
+    countCardsForDeck,
+    countDueCardsForDeck
   };
 };
 

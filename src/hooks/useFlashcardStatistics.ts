@@ -11,10 +11,11 @@ export interface FlashcardStats {
     hard: number;
   };
   upcomingDue: { date: string; count: number }[];
+  deckStats: { deckId: string; deckName: string; total: number; due: number }[];
 }
 
 export const useFlashcardStatistics = (): FlashcardStats => {
-  const { flashcards } = useFlashcardStore();
+  const { flashcards, decks } = useFlashcardStore();
 
   return useMemo(() => {
     const totalCards = flashcards.length;
@@ -48,6 +49,13 @@ export const useFlashcardStatistics = (): FlashcardStats => {
       });
     }
 
-    return { totalCards, dueCards, averageInterval, difficultyCounts, upcomingDue };
-  }, [flashcards]);
+    const deckStats = decks.map(deck => {
+      const cards = flashcards.filter(c => c.deckId === deck.id);
+      const total = cards.length;
+      const due = cards.filter(c => new Date(c.dueDate) <= new Date()).length;
+      return { deckId: deck.id, deckName: deck.name, total, due };
+    });
+
+    return { totalCards, dueCards, averageInterval, difficultyCounts, upcomingDue, deckStats };
+  }, [flashcards, decks]);
 };
