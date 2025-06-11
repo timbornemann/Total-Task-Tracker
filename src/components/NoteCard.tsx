@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
 import { Note } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Star, StarOff } from 'lucide-react';
@@ -43,7 +44,9 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, onClick }) => {
         </button>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-gray-600 line-clamp-3">{note.text}</p>
+        <ReactMarkdown className="prose prose-sm text-gray-600 line-clamp-3">
+          {note.text}
+        </ReactMarkdown>
       </CardContent>
     </Card>
   );
