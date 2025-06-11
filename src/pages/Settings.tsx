@@ -4,9 +4,23 @@ import { useSettings } from '@/hooks/useSettings'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 
 const SettingsPage: React.FC = () => {
-  const { shortcuts, updateShortcut, pomodoro, updatePomodoro } = useSettings()
+  const {
+    shortcuts,
+    updateShortcut,
+    pomodoro,
+    updatePomodoro,
+    defaultTaskPriority,
+    updateDefaultTaskPriority
+  } = useSettings()
 
   const download = (data: any, name: string) => {
     const blob = new Blob([JSON.stringify(data, null, 2)], {
@@ -222,6 +236,22 @@ const SettingsPage: React.FC = () => {
             value={pomodoro.breakMinutes}
             onChange={e => updatePomodoro('breakMinutes', Number(e.target.value))}
           />
+        </div>
+        <div>
+          <Label htmlFor="priority">Standard-Priorität</Label>
+          <Select
+            value={defaultTaskPriority}
+            onValueChange={updateDefaultTaskPriority}
+          >
+            <SelectTrigger id="priority">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="low">Niedrig</SelectItem>
+              <SelectItem value="medium">Mittel</SelectItem>
+              <SelectItem value="high">Hoch</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div className="pt-4 border-t space-y-4">
           <h2 className="font-semibold">Datenexport / -import</h2>

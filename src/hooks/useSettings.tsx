@@ -13,12 +13,15 @@ const defaultShortcuts: ShortcutKeys = {
 }
 
 const defaultPomodoro = { workMinutes: 25, breakMinutes: 5 }
+const defaultTaskPriority: 'low' | 'medium' | 'high' = 'medium'
 
 interface SettingsContextValue {
   shortcuts: ShortcutKeys
   updateShortcut: (key: keyof ShortcutKeys, value: string) => void
   pomodoro: { workMinutes: number; breakMinutes: number }
   updatePomodoro: (key: 'workMinutes' | 'breakMinutes', value: number) => void
+  defaultTaskPriority: 'low' | 'medium' | 'high'
+  updateDefaultTaskPriority: (value: 'low' | 'medium' | 'high') => void
 }
 
 const SettingsContext = createContext<SettingsContextValue | undefined>(undefined)
@@ -26,6 +29,9 @@ const SettingsContext = createContext<SettingsContextValue | undefined>(undefine
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [shortcuts, setShortcuts] = useState<ShortcutKeys>(defaultShortcuts)
   const [pomodoro, setPomodoro] = useState(defaultPomodoro)
+  const [priority, setPriority] = useState<'low' | 'medium' | 'high'>(
+    defaultTaskPriority
+  )
 
   useEffect(() => {
     const load = async () => {
@@ -38,6 +44,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           }
           if (data.pomodoro) {
             setPomodoro({ ...defaultPomodoro, ...data.pomodoro })
+          }
+          if (data.defaultTaskPriority) {
+            setPriority(data.defaultTaskPriority)
           }
         }
       } catch (err) {
@@ -53,7 +62,11 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         await fetch('/api/settings', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ shortcuts, pomodoro })
+          body: JSON.stringify({
+            shortcuts,
+            pomodoro,
+            defaultTaskPriority: priority
+          })
         })
       } catch (err) {
         console.error('Fehler beim Speichern der Einstellungen', err)
@@ -61,7 +74,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
 
     save()
-  }, [shortcuts, pomodoro])
+  }, [shortcuts, pomodoro, priority])
 
   const updateShortcut = (key: keyof ShortcutKeys, value: string) => {
     setShortcuts(prev => ({ ...prev, [key]: value.toLowerCase() }))
@@ -71,9 +84,20 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setPomodoro(prev => ({ ...prev, [key]: value }))
   }
 
+  const updateDefaultTaskPriority = (value: 'low' | 'medium' | 'high') => {
+    setPriority(value)
+  }
+
   return (
     <SettingsContext.Provider
-      value={{ shortcuts, updateShortcut, pomodoro, updatePomodoro }}
+      value={{
+        shortcuts,
+        updateShortcut,
+        pomodoro,
+        updatePomodoro,
+        defaultTaskPriority: priority,
+        updateDefaultTaskPriority
+      }}
     >
       {children}
     </SettingsContext.Provider>

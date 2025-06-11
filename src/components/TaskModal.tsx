@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { getPriorityColor } from '@/utils/taskUtils';
+import { useSettings } from '@/hooks/useSettings';
 
 interface TaskModalProps {
   isOpen: boolean;
@@ -38,10 +39,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
   defaultCategoryId,
   defaultDueDate
 }) => {
+  const { defaultTaskPriority } = useSettings()
   const [formData, setFormData] = useState<TaskFormData>({
     title: '',
     description: '',
-    priority: 'medium',
+    priority: defaultTaskPriority,
     color: '#3B82F6',
     categoryId: '',
     parentId: parentTask?.id,
@@ -74,7 +76,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
       setFormData({
         title: '',
         description: '',
-        priority: 'medium',
+        priority: defaultTaskPriority,
         color: '#3B82F6',
         categoryId:
           defaultCategoryId || parentTask?.categoryId || categories[0]?.id || '',
@@ -84,7 +86,15 @@ const TaskModal: React.FC<TaskModalProps> = ({
         recurrencePattern: undefined
       });
     }
-  }, [isOpen, task, categories, parentTask, defaultCategoryId, defaultDueDate]);
+  }, [
+    isOpen,
+    task,
+    categories,
+    parentTask,
+    defaultCategoryId,
+    defaultDueDate,
+    defaultTaskPriority
+  ]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

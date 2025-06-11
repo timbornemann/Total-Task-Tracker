@@ -85,6 +85,7 @@ npm start    # startet die gebaute App auf Port 3002
   sofort aktualisiert.
 - Lern- und Pausendauer frei konfigurierbar (auch direkt im Timer anpassbar)
 - Daten können im Einstellungsbereich exportiert und importiert werden
+- Standard-Priorität für neue Tasks einstellbar
 
 ## Verwendung
 

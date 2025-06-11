@@ -25,7 +25,7 @@ const isMatching = (e: KeyboardEvent, shortcut: string) => {
 
 const CommandPalette: React.FC = () => {
   const { addTask, addNote, tasks } = useTaskStore()
-  const { shortcuts } = useSettings()
+  const { shortcuts, defaultTaskPriority } = useSettings()
   const { toast } = useToast()
   const { currentCategoryId, setCurrentCategoryId } = useCurrentCategory()
   const navigate = useNavigate()
@@ -72,7 +72,7 @@ const CommandPalette: React.FC = () => {
       addTask({
         title,
         description: '',
-        priority: 'medium',
+        priority: defaultTaskPriority,
         color: '#3B82F6',
         categoryId: currentCategoryId || 'default',
         isRecurring: false
