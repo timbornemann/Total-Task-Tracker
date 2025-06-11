@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 
 const NotesPage = () => {
   const { notes, addNote, reorderNotes } = useTaskStore();
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleSave = (data: { title: string; text: string; color: string }) => {
