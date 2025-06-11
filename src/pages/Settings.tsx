@@ -4,6 +4,7 @@ import { useSettings } from '@/hooks/useSettings'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { hslToHex, hexToHsl } from '@/utils/color'
 import {
   Select,
   SelectContent,
@@ -19,7 +20,9 @@ const SettingsPage: React.FC = () => {
     pomodoro,
     updatePomodoro,
     defaultTaskPriority,
-    updateDefaultTaskPriority
+    updateDefaultTaskPriority,
+    theme,
+    updateTheme
   } = useSettings()
 
   const download = (data: any, name: string) => {
@@ -252,6 +255,36 @@ const SettingsPage: React.FC = () => {
               <SelectItem value="high">Hoch</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+        <div className="pt-4 border-t space-y-4">
+          <h2 className="font-semibold">Theme</h2>
+          <div className="space-y-2">
+            <Label htmlFor="bgColor">Hintergrund</Label>
+            <Input
+              id="bgColor"
+              type="color"
+              value={hslToHex(theme.background)}
+              onChange={e => updateTheme('background', hexToHsl(e.target.value))}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="fgColor">Vordergrund</Label>
+            <Input
+              id="fgColor"
+              type="color"
+              value={hslToHex(theme.foreground)}
+              onChange={e => updateTheme('foreground', hexToHsl(e.target.value))}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="accentColor">Akzent</Label>
+            <Input
+              id="accentColor"
+              type="color"
+              value={hslToHex(theme.accent)}
+              onChange={e => updateTheme('accent', hexToHsl(e.target.value))}
+            />
+          </div>
         </div>
         <div className="pt-4 border-t space-y-4">
           <h2 className="font-semibold">Datenexport / -import</h2>
