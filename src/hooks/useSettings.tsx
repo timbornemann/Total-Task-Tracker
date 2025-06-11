@@ -123,6 +123,9 @@ interface SettingsContextValue {
   updateTheme: (key: keyof typeof defaultTheme, value: string) => void
   themeName: string
   updateThemeName: (name: string) => void
+  homeSections: string[]
+  toggleHomeSection: (section: string) => void
+  reorderHomeSections: (start: number, end: number) => void
 }
 
 const SettingsContext = createContext<SettingsContextValue | undefined>(undefined)
@@ -135,6 +138,11 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   )
   const [theme, setTheme] = useState(defaultTheme)
   const [themeName, setThemeName] = useState('light')
+  const [homeSections, setHomeSections] = useState<string[]>([
+    'tasks',
+    'flashcards',
+    'notes'
+  ])
 
   useEffect(() => {
     const load = async () => {
@@ -160,6 +168,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
               setTheme(themePresets[data.themeName])
             }
           }
+          if (Array.isArray(data.homeSections)) {
+            setHomeSections(data.homeSections)
+          }
         }
       } catch (err) {
         console.error('Fehler beim Laden der Einstellungen', err)
@@ -179,7 +190,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             pomodoro,
             defaultTaskPriority: priority,
             theme,
-            themeName
+            themeName,
+            homeSections
           })
         })
       } catch (err) {
@@ -225,6 +237,23 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }
 
+  const toggleHomeSection = (section: string) => {
+    setHomeSections(prev =>
+      prev.includes(section)
+        ? prev.filter(s => s !== section)
+        : [...prev, section]
+    )
+  }
+
+  const reorderHomeSections = (start: number, end: number) => {
+    setHomeSections(prev => {
+      const updated = Array.from(prev)
+      const [removed] = updated.splice(start, 1)
+      updated.splice(end, 0, removed)
+      return updated
+    })
+  }
+
   return (
     <SettingsContext.Provider
       value={{
@@ -237,7 +266,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         theme,
         updateTheme,
         themeName,
-        updateThemeName
+        updateThemeName,
+        homeSections,
+        toggleHomeSection,
+        reorderHomeSections
       }}
     >
       {children}
