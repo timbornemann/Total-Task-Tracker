@@ -39,9 +39,9 @@ const Home: React.FC = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-wrap gap-6 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
           {orderedSections.map(sec => (
-            <div key={sec.key} className="w-full sm:w-1/2 lg:w-1/3">
+            <div key={sec.key}>
               <Link to={sec.path}>
                 <Card className="hover:shadow-md transition-all text-center">
                   <CardContent className="py-8">
