@@ -46,16 +46,13 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
             )}
             {category && (
               <div className="hidden sm:flex items-center space-x-2">
-                <span className="text-gray-500">/</span>
-                <div className="flex items-center space-x-2 min-w-0">
-                  <div
-                    className="w-4 h-4 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: category.color }}
-                  />
-                  <span className="font-medium text-gray-700 truncate">
-                    {category.name}
-                  </span>
-                </div>
+                <div
+                  className="w-3 h-3 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: category.color }}
+                />
+                <span className="font-medium text-gray-700 truncate text-sm">
+                  {category.name}
+                </span>
               </div>
             )}
           </div>
@@ -249,14 +246,11 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
             </div>
             {category && (
               <div className="flex items-center space-x-2 text-sm">
-                <span className="text-gray-500">In:</span>
-                <div className="flex items-center space-x-2">
-                  <div
-                    className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: category.color }}
-                  />
-                  <span className="font-medium text-gray-700">{category.name}</span>
-                </div>
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: category.color }}
+                />
+                <span className="font-medium text-gray-700">{category.name}</span>
               </div>
             )}
           </div>
