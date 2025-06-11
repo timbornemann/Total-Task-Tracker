@@ -126,6 +126,10 @@ interface SettingsContextValue {
   homeSections: string[]
   toggleHomeSection: (section: string) => void
   reorderHomeSections: (start: number, end: number) => void
+  showPinnedTasks: boolean
+  toggleShowPinnedTasks: () => void
+  showPinnedNotes: boolean
+  toggleShowPinnedNotes: () => void
 }
 
 const SettingsContext = createContext<SettingsContextValue | undefined>(undefined)
@@ -143,6 +147,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     'flashcards',
     'notes'
   ])
+  const [showPinnedTasks, setShowPinnedTasks] = useState(true)
+  const [showPinnedNotes, setShowPinnedNotes] = useState(true)
 
   useEffect(() => {
     const load = async () => {
@@ -171,6 +177,12 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           if (Array.isArray(data.homeSections)) {
             setHomeSections(data.homeSections)
           }
+          if (typeof data.showPinnedTasks === 'boolean') {
+            setShowPinnedTasks(data.showPinnedTasks)
+          }
+          if (typeof data.showPinnedNotes === 'boolean') {
+            setShowPinnedNotes(data.showPinnedNotes)
+          }
         }
       } catch (err) {
         console.error('Fehler beim Laden der Einstellungen', err)
@@ -191,7 +203,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             defaultTaskPriority: priority,
             theme,
             themeName,
-            homeSections
+            homeSections,
+            showPinnedTasks,
+            showPinnedNotes
           })
         })
       } catch (err) {
@@ -200,7 +214,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
 
     save()
-  }, [shortcuts, pomodoro, priority, theme, themeName])
+  }, [shortcuts, pomodoro, priority, theme, themeName, homeSections, showPinnedTasks, showPinnedNotes])
 
   useEffect(() => {
     Object.entries(theme).forEach(([key, value]) => {
@@ -254,6 +268,14 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     })
   }
 
+  const toggleShowPinnedTasks = () => {
+    setShowPinnedTasks(prev => !prev)
+  }
+
+  const toggleShowPinnedNotes = () => {
+    setShowPinnedNotes(prev => !prev)
+  }
+
   return (
     <SettingsContext.Provider
       value={{
@@ -269,7 +291,11 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         updateThemeName,
         homeSections,
         toggleHomeSection,
-        reorderHomeSections
+        reorderHomeSections,
+        showPinnedTasks,
+        toggleShowPinnedTasks,
+        showPinnedNotes,
+        toggleShowPinnedNotes
       }}
     >
       {children}
