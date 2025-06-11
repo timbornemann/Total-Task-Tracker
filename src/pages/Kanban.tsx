@@ -162,7 +162,7 @@ const Kanban: React.FC = () => {
                   <div
                     ref={provided.innerRef}
                     {...provided.droppableProps}
-                    className="bg-gray-100 rounded-md p-2 space-y-2 min-h-[200px]"
+                    className="bg-muted rounded-md p-2 space-y-2 min-h-[200px]"
                   >
                     <h2 className="text-base font-semibold mb-2">
                       {labels[status]}

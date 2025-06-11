@@ -283,7 +283,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
           className="transform -rotate-90"
         >
           <circle
-            stroke="#e5e7eb"
+            stroke="hsl(var(--muted))"
             fill="transparent"
             strokeWidth={stroke}
             r={normalizedRadius}
@@ -291,7 +291,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
             cy={radius}
           />
           <circle
-            stroke={mode === 'work' ? '#4f46e5' : '#16a34a'}
+            stroke={mode === 'work' ? 'hsl(var(--primary))' : 'hsl(var(--accent))'}
             fill="transparent"
             strokeWidth={stroke}
             strokeLinecap="round"
