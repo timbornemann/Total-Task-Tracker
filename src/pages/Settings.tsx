@@ -276,16 +276,36 @@ const SettingsPage: React.FC = () => {
               onChange={e => updateTheme('foreground', hexToHsl(e.target.value))}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="accentColor">Akzent</Label>
-            <Input
-              id="accentColor"
-              type="color"
-              value={hslToHex(theme.accent)}
-              onChange={e => updateTheme('accent', hexToHsl(e.target.value))}
-            />
-          </div>
+        <div className="space-y-2">
+          <Label htmlFor="accentColor">Akzent</Label>
+          <Input
+            id="accentColor"
+            type="color"
+            value={hslToHex(theme.accent)}
+            onChange={e => updateTheme('accent', hexToHsl(e.target.value))}
+          />
         </div>
+        <div className="space-y-2">
+          <Label htmlFor="cardBgColor">Karten-Hintergrund</Label>
+          <Input
+            id="cardBgColor"
+            type="color"
+            value={hslToHex(theme.card)}
+            onChange={e => updateTheme('card', hexToHsl(e.target.value))}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="cardFgColor">Karten-Vordergrund</Label>
+          <Input
+            id="cardFgColor"
+            type="color"
+            value={hslToHex(theme['card-foreground'])}
+            onChange={e =>
+              updateTheme('card-foreground', hexToHsl(e.target.value))
+            }
+          />
+        </div>
+      </div>
         <div className="pt-4 border-t space-y-4">
           <h2 className="font-semibold">Datenexport / -import</h2>
           <div className="space-y-2">

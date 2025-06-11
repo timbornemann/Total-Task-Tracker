@@ -18,7 +18,9 @@ const defaultTaskPriority: 'low' | 'medium' | 'high' = 'medium'
 const defaultTheme = {
   background: '0 0% 100%',
   foreground: '222.2 84% 4.9%',
-  accent: '210 40% 96.1%'
+  accent: '210 40% 96.1%',
+  card: '0 0% 100%',
+  'card-foreground': '222.2 84% 4.9%'
 }
 
 interface SettingsContextValue {
