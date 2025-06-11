@@ -1,11 +1,19 @@
 import React, { useEffect, useState, useMemo } from 'react'
-import { CommandDialog, CommandInput, CommandList, CommandEmpty, CommandItem } from '@/components/ui/command'
+import {
+  CommandDialog,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandItem,
+  CommandGroup
+} from '@/components/ui/command'
 import { useTaskStore } from '@/hooks/useTaskStore'
 import { useSettings } from '@/hooks/useSettings'
 import { useToast } from '@/hooks/use-toast'
 import { useCurrentCategory } from '@/hooks/useCurrentCategory'
 import { flattenTasks, FlattenedTask } from '@/utils/taskUtils'
 import { useNavigate } from 'react-router-dom'
+import { useFlashcardStore } from '@/hooks/useFlashcardStore'
 
 const isMatching = (e: KeyboardEvent, shortcut: string) => {
   const keys = shortcut.toLowerCase().split('+')
@@ -24,7 +32,8 @@ const isMatching = (e: KeyboardEvent, shortcut: string) => {
 }
 
 const CommandPalette: React.FC = () => {
-  const { addTask, addNote, tasks } = useTaskStore()
+  const { addTask, addNote, tasks, notes } = useTaskStore()
+  const { flashcards, decks } = useFlashcardStore()
   const { shortcuts, defaultTaskPriority } = useSettings()
   const { toast } = useToast()
   const { currentCategoryId, setCurrentCategoryId } = useCurrentCategory()
@@ -44,6 +53,22 @@ const CommandPalette: React.FC = () => {
         t.task.description.toLowerCase().includes(q)
     )
   }, [value, flattened])
+
+  const filteredNotes = useMemo(() => {
+    const q = value.trim().toLowerCase()
+    if (!q) return []
+    return notes.filter(
+      n => n.title.toLowerCase().includes(q) || n.text.toLowerCase().includes(q)
+    )
+  }, [value, notes])
+
+  const filteredCards = useMemo(() => {
+    const q = value.trim().toLowerCase()
+    if (!q) return []
+    return flashcards.filter(
+      c => c.front.toLowerCase().includes(q) || c.back.toLowerCase().includes(q)
+    )
+  }, [value, flashcards])
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -105,22 +130,63 @@ const CommandPalette: React.FC = () => {
         }}
       />
       <CommandList>
-        {filteredTasks.map(item => (
-          <CommandItem
-            key={item.task.id}
-            onSelect={() => {
-              setCurrentCategoryId(item.task.categoryId)
-              setOpen(false)
-              setValue('')
-              navigate(`/tasks?taskId=${item.task.id}`)
-            }}
-          >
-            {item.path.length > 0
-              ? `${item.path.map(p => p.title).join(' › ')} › ${item.task.title}`
-              : item.task.title}
-          </CommandItem>
-        ))}
-        <CommandEmpty>Keine Ergebnisse</CommandEmpty>
+        {filteredTasks.length > 0 && (
+          <CommandGroup heading="Tasks">
+            {filteredTasks.map(item => (
+              <CommandItem
+                key={`task-${item.task.id}`}
+                onSelect={() => {
+                  setCurrentCategoryId(item.task.categoryId)
+                  setOpen(false)
+                  setValue('')
+                  navigate(`/tasks?taskId=${item.task.id}`)
+                }}
+              >
+                {item.path.length > 0
+                  ? `${item.path.map(p => p.title).join(' › ')} › ${item.task.title}`
+                  : item.task.title}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        )}
+        {filteredNotes.length > 0 && (
+          <CommandGroup heading="Notizen">
+            {filteredNotes.map(note => (
+              <CommandItem
+                key={`note-${note.id}`}
+                onSelect={() => {
+                  setOpen(false)
+                  setValue('')
+                  navigate(`/notes/${note.id}`)
+                }}
+              >
+                {note.title}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        )}
+        {filteredCards.length > 0 && (
+          <CommandGroup heading="Karten">
+            {filteredCards.map(card => {
+              const deck = decks.find(d => d.id === card.deckId)
+              return (
+                <CommandItem
+                  key={`card-${card.id}`}
+                  onSelect={() => {
+                    setOpen(false)
+                    setValue('')
+                    navigate(`/flashcards/deck/${card.deckId}`)
+                  }}
+                >
+                  {deck ? `${deck.name}: ${card.front}` : card.front}
+                </CommandItem>
+              )
+            })}
+          </CommandGroup>
+        )}
+        {filteredTasks.length === 0 &&
+          filteredNotes.length === 0 &&
+          filteredCards.length === 0 && <CommandEmpty>Keine Ergebnisse</CommandEmpty>}
       </CommandList>
     </CommandDialog>
   )
