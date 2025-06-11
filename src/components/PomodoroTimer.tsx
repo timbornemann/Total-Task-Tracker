@@ -272,7 +272,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
     <div
       className={
         compact
-          ? 'fixed bottom-4 right-4 bg-white shadow-lg rounded p-3 z-50'
+          ? 'fixed bottom-4 right-4 bg-background shadow-lg rounded p-3 z-50'
           : 'flex flex-col items-center space-y-4'
       }
     >

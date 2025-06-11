@@ -43,7 +43,7 @@ const NoteDetailPage: React.FC = () => {
   if (!note) return <div className="p-4">Notiz nicht gefunden.</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Navbar title="Notiz" onHomeClick={() => navigate('/notes')} />
       <div className="max-w-2xl mx-auto py-8 px-4">
         <Button

@@ -221,7 +221,7 @@ const FlashcardsPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Navbar title="Karteikarten" />
       <div className="max-w-md mx-auto py-8 px-4 space-y-4">
         <div className="space-y-2">

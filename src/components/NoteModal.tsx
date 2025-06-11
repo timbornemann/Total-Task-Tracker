@@ -75,7 +75,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, onSave, note }) 
               rows={5}
             />
             {formData.text && (
-              <div className="mt-2 p-2 border rounded-sm bg-gray-50 max-h-40 overflow-auto">
+              <div className="mt-2 p-2 border rounded-sm bg-background max-h-40 overflow-auto">
                 <ReactMarkdown className="prose prose-sm">
                   {formData.text}
                 </ReactMarkdown>

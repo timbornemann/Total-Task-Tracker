@@ -30,19 +30,19 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
   const [showMobileMenu, setShowMobileMenu] = React.useState(false)
   const [openMenu, setOpenMenu] = React.useState<string | null>(null)
   return (
-    <header className="bg-white shadow-sm border-b sticky top-0 z-40">
+    <header className="bg-background shadow-sm border-b sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16">
           <div className="flex items-center space-x-2 sm:space-x-4">
             <Link
               to="/"
               onClick={onHomeClick}
-              className="text-lg sm:text-2xl font-bold text-gray-900"
+              className="text-lg sm:text-2xl font-bold text-foreground"
             >
               Task Tracker
             </Link>
             {title && (
-              <span className="hidden sm:inline text-gray-500">/ {title}</span>
+              <span className="hidden sm:inline text-muted-foreground">/ {title}</span>
             )}
             {category && (
               <div className="hidden sm:flex items-center space-x-2">
@@ -50,7 +50,7 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                   className="w-3 h-3 rounded-full flex-shrink-0"
                   style={{ backgroundColor: category.color }}
                 />
-                <span className="font-medium text-gray-700 truncate text-sm">
+                <span className="font-medium text-foreground truncate text-sm">
                   {category.name}
                 </span>
               </div>
@@ -81,7 +81,7 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                className="bg-white z-50"
+                className="bg-background z-50"
                 onMouseEnter={() => setOpenMenu('tasks')}
                 onMouseLeave={() => setOpenMenu(null)}
               >
@@ -123,7 +123,7 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                className="bg-white z-50"
+                className="bg-background z-50"
                 onMouseEnter={() => setOpenMenu('learning')}
                 onMouseLeave={() => setOpenMenu(null)}
               >
@@ -165,7 +165,7 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
         {showMobileMenu && (
           <div className="sm:hidden pb-4 space-y-4">
             <div className="space-y-2">
-              <p className="text-xs font-semibold text-gray-500">Tasks</p>
+              <p className="text-xs font-semibold text-muted-foreground">Tasks</p>
               <div className="flex flex-wrap gap-2">
                 <Link to="/tasks" className="flex-1">
                   <Button variant="outline" size="sm" className="w-full">
@@ -194,7 +194,7 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
               </div>
             </div>
             <div className="space-y-2">
-              <p className="text-xs font-semibold text-gray-500">Lernen</p>
+              <p className="text-xs font-semibold text-muted-foreground">Lernen</p>
               <div className="flex flex-wrap gap-2">
                 <Link to="/flashcards" className="flex-1">
                   <Button variant="outline" size="sm" className="w-full">
@@ -223,7 +223,7 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
               </div>
             </div>
             <div className="space-y-2">
-              <p className="text-xs font-semibold text-gray-500">Notizen</p>
+              <p className="text-xs font-semibold text-muted-foreground">Notizen</p>
               <div className="flex flex-wrap gap-2">
                 <Link to="/notes" className="flex-1">
                   <Button variant="outline" size="sm" className="w-full">
@@ -234,7 +234,7 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
               </div>
             </div>
             <div className="space-y-2">
-              <p className="text-xs font-semibold text-gray-500">Einstellungen</p>
+              <p className="text-xs font-semibold text-muted-foreground">Einstellungen</p>
               <div className="flex flex-wrap gap-2">
                 <Link to="/settings" className="flex-1">
                   <Button variant="outline" size="sm" className="w-full">
@@ -250,7 +250,7 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                   className="w-3 h-3 rounded-full"
                   style={{ backgroundColor: category.color }}
                 />
-                <span className="font-medium text-gray-700">{category.name}</span>
+                <span className="font-medium text-foreground">{category.name}</span>
               </div>
             )}
           </div>
