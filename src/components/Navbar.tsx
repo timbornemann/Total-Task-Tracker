@@ -19,6 +19,8 @@ import {
   BookOpen,
   Pencil,
   Search,
+  ClipboardList,
+  GraduationCap,
 } from 'lucide-react'
 
 interface NavbarProps {
@@ -84,7 +86,9 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                   size="sm"
                   onMouseEnter={() => setOpenMenu('tasks')}
                   onMouseLeave={() => setOpenMenu(null)}
+                  className="flex items-center"
                 >
+                  <ClipboardList className="h-4 w-4 mr-2" />
                   Tasks
                 </Button>
               </DropdownMenuTrigger>
@@ -126,7 +130,9 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                   size="sm"
                   onMouseEnter={() => setOpenMenu('learning')}
                   onMouseLeave={() => setOpenMenu(null)}
+                  className="flex items-center"
                 >
+                  <GraduationCap className="h-4 w-4 mr-2" />
                   Lernen
                 </Button>
               </DropdownMenuTrigger>
