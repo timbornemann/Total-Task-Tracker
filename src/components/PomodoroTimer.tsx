@@ -3,8 +3,11 @@ import ReactDOM from 'react-dom/client';
 import { Button } from '@/components/ui/button';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { useSettings } from '@/hooks/useSettings';
-import { usePomodoroHistory } from '@/hooks/usePomodoroHistory.tsx';
+import { useSettings, SettingsProvider } from '@/hooks/useSettings';
+import {
+  usePomodoroHistory,
+  PomodoroHistoryProvider
+} from '@/hooks/usePomodoroHistory.tsx';
 
 interface PomodoroState {
   isRunning: boolean;
@@ -151,6 +154,14 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
     return () => clearInterval(i);
   }, [isPaused]);
 
+  useEffect(() => {
+    if (!isPaused) return;
+    const id = setInterval(() => {
+      endBreak(Date.now());
+    }, 1000);
+    return () => clearInterval(id);
+  }, [isPaused, endBreak]);
+
   const pauseDuration = pauseStart ? Math.floor((now - pauseStart) / 1000) : 0;
 
   const openFloatingWindow = async () => {
@@ -179,7 +190,11 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
       const container = pip.document.createElement('div');
       pip.document.body.appendChild(container);
       ReactDOM.createRoot(container).render(
-        <PomodoroTimer size={150} floating />
+        <SettingsProvider>
+          <PomodoroHistoryProvider>
+            <PomodoroTimer size={150} floating />
+          </PomodoroHistoryProvider>
+        </SettingsProvider>
       );
       const cleanup = () => {
         pipWindowRef.current = null;
@@ -191,6 +206,15 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
     }
   };
   const handlePause = () => {
+    if (mode === 'work' && startTime) {
+      const now = Date.now();
+      addSession(startTime, now);
+      endBreak(now);
+      setStartTime(undefined);
+    }
+    if (mode === 'break') {
+      endBreak(Date.now());
+    }
     pause();
   };
 
@@ -206,6 +230,10 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
 
   const handleResume = () => {
     resume();
+    endBreak(Date.now());
+    if (mode === 'work') {
+      setStartTime(Date.now());
+    }
   };
 
   const handleStartBreak = () => {

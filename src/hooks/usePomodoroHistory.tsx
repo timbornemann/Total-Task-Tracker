@@ -44,7 +44,7 @@ const usePomodoroHistoryImpl = () => {
     setSessions(prev => {
       if (!prev.length) return prev
       const last = { ...prev[prev.length - 1] }
-      if (!last.breakEnd) last.breakEnd = time
+      last.breakEnd = time
       return [...prev.slice(0, -1), last]
     })
   }
