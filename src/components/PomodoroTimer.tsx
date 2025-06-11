@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { Button } from '@/components/ui/button';
 import { create } from 'zustand';
@@ -16,6 +16,7 @@ interface PomodoroState {
   breakDuration: number;
   startTime?: number;
   lastTick?: number;
+  pauseStart?: number;
   start: (taskId?: string) => void;
   pause: () => void;
   resume: () => void;
@@ -35,6 +36,7 @@ export const usePomodoroStore = create<PomodoroState>()(
     set => ({
       isRunning: false,
       isPaused: false,
+      pauseStart: undefined,
       remainingTime: WORK_DURATION,
       mode: 'work',
       currentTaskId: undefined,
@@ -46,14 +48,15 @@ export const usePomodoroStore = create<PomodoroState>()(
         set(state => ({
           isRunning: true,
           isPaused: false,
+          pauseStart: undefined,
           remainingTime: state.workDuration,
           mode: 'work',
           currentTaskId: taskId,
           startTime: Date.now(),
           lastTick: Date.now()
         })),
-      pause: () => set({ isPaused: true }),
-      resume: () => set({ isPaused: false, lastTick: Date.now() }),
+      pause: () => set({ isPaused: true, pauseStart: Date.now() }),
+      resume: () => set({ isPaused: false, lastTick: Date.now(), pauseStart: undefined }),
       reset: () =>
         set(state => ({
           isRunning: false,
@@ -62,12 +65,14 @@ export const usePomodoroStore = create<PomodoroState>()(
           mode: 'work',
           currentTaskId: undefined,
           startTime: undefined,
-          lastTick: undefined
+          lastTick: undefined,
+          pauseStart: undefined
         })),
       startBreak: () =>
         set(state => ({
           isRunning: true,
           isPaused: false,
+          pauseStart: undefined,
           mode: 'break',
           remainingTime: state.breakDuration,
           lastTick: Date.now()
@@ -128,6 +133,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
     resume,
     reset,
     startBreak,
+    pauseStart,
     workDuration,
     breakDuration,
     setDurations,
@@ -137,6 +143,15 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
   const { pomodoro, updatePomodoro } = useSettings();
   const { addSession, endBreak } = usePomodoroHistory();
   const pipWindowRef = useRef<Window | null>(null);
+  const [now, setNow] = useState(Date.now());
+
+  useEffect(() => {
+    if (!isPaused) return;
+    const i = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(i);
+  }, [isPaused]);
+
+  const pauseDuration = pauseStart ? Math.floor((now - pauseStart) / 1000) : 0;
 
   const openFloatingWindow = async () => {
     if (pipWindowRef.current && !pipWindowRef.current.closed) {
@@ -144,48 +159,38 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
       return;
     }
     try {
-      if (typeof (window as any).documentPictureInPicture !== 'undefined') {
-        const pip = await (window as any).documentPictureInPicture.requestWindow({
+      let pip: Window | null = null;
+      if ((window as any).documentPictureInPicture) {
+        pip = await (window as any).documentPictureInPicture.requestWindow({
           width: 220,
           height: 220
         });
-        pipWindowRef.current = pip;
-        pip.document.body.style.margin = '0';
-        const container = pip.document.createElement('div');
-        pip.document.body.appendChild(container);
-        ReactDOM.createRoot(container).render(
-          <PomodoroTimer size={150} floating />
-        );
-        pip.addEventListener('pagehide', () => {
-          pipWindowRef.current = null;
-        });
       } else {
-        const pip = window.open('', '', 'width=220,height=220');
-        if (!pip) return;
-        pipWindowRef.current = pip;
-        pip.document.title = 'Pomodoro';
-        pip.document.body.style.margin = '0';
-        const container = pip.document.createElement('div');
-        pip.document.body.appendChild(container);
-        ReactDOM.createRoot(container).render(
-          <PomodoroTimer size={150} floating />
-        );
-        pip.addEventListener('beforeunload', () => {
-          pipWindowRef.current = null;
-        });
+        pip = window.open('', '', 'width=220,height=220');
       }
+      if (!pip) return;
+      pipWindowRef.current = pip;
+      if (!pip.document.body) {
+        pip.document.write('<!DOCTYPE html><html><body></body></html>');
+        pip.document.close();
+      }
+      pip.document.title = 'Pomodoro';
+      pip.document.body.style.margin = '0';
+      const container = pip.document.createElement('div');
+      pip.document.body.appendChild(container);
+      ReactDOM.createRoot(container).render(
+        <PomodoroTimer size={150} floating />
+      );
+      const cleanup = () => {
+        pipWindowRef.current = null;
+      };
+      pip.addEventListener('pagehide', cleanup);
+      pip.addEventListener('beforeunload', cleanup);
     } catch (err) {
       console.error('Failed to open floating window', err);
     }
   };
   const handlePause = () => {
-    if (mode === 'work' && startTime) {
-      addSession(startTime, Date.now());
-      setStartTime(undefined);
-    }
-    if (mode === 'break') {
-      endBreak(Date.now());
-    }
     pause();
   };
 
@@ -200,7 +205,6 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
   };
 
   const handleResume = () => {
-    if (mode === 'work') setStartTime(Date.now());
     resume();
   };
 
@@ -262,7 +266,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
           <div
             className={size > 100 ? 'text-4xl font-bold' : 'text-2xl font-bold'}
           >
-            {formatTime(remainingTime)}
+            {isPaused ? `Pause: ${formatTime(pauseDuration)}` : formatTime(remainingTime)}
           </div>
         </div>
       </div>
@@ -273,7 +277,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
             Pause
           </Button>
         )}
-        {isRunning && !isPaused && mode === 'work' && (
+        {isRunning && !isPaused && mode === 'work' && !floating && !compact && (
           <Button onClick={handleStartBreak} variant="outline">
             Break
           </Button>
@@ -283,7 +287,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
             Weiter
           </Button>
         )}
-        {isRunning && (
+        {isRunning && !floating && !compact && (
           <Button onClick={handleReset} variant="outline">
             Reset
           </Button>
@@ -294,6 +298,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
           </Button>
         )}
       </div>
+      {!floating && !compact && (
       <div className="flex space-x-2 mt-2 text-xs">
         <div className="flex items-center space-x-1">
           <span>Arbeit</span>
@@ -318,6 +323,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
           />
         </div>
       </div>
+      )}
     </div>
   );
 };
