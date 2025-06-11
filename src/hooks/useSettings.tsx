@@ -20,6 +20,7 @@ const defaultTheme = {
   foreground: '222.2 84% 4.9%',
   accent: '212 100% 47%',
   card: '0 0% 98%',
+  popover: '0 0% 98%',
   'card-foreground': '222.2 84% 4.9%',
   'stat-bar-primary': '212 100% 47%',
   'stat-bar-secondary': '215 28% 80%',
@@ -37,6 +38,7 @@ export const themePresets: Record<string, typeof defaultTheme> = {
     foreground: '210 40% 98%',
     accent: '217 91% 60%',
     card: '218 28% 17%',
+    popover: '218 28% 17%',
     'card-foreground': '210 40% 98%',
     'stat-bar-primary': '217 91% 60%',
     'stat-bar-secondary': '218 14% 30%',
@@ -51,6 +53,7 @@ export const themePresets: Record<string, typeof defaultTheme> = {
     foreground: '222.2 47.4% 11.2%',
     accent: '199 94% 48%',
     card: '210 60% 96%',
+    popover: '210 60% 96%',
     'card-foreground': '222.2 47.4% 11.2%',
     'stat-bar-primary': '199 94% 48%',
     'stat-bar-secondary': '214.3 31.8% 91.4%',
@@ -65,6 +68,7 @@ export const themePresets: Record<string, typeof defaultTheme> = {
     foreground: '0 0% 98%',
     accent: '0 72% 51%',
     card: '0 0% 15%',
+    popover: '0 0% 15%',
     'card-foreground': '0 0% 98%',
     'stat-bar-primary': '0 72% 51%',
     'stat-bar-secondary': '0 0% 25%',
@@ -79,6 +83,7 @@ export const themePresets: Record<string, typeof defaultTheme> = {
     foreground: '120 100% 80%',
     accent: '120 70% 40%',
     card: '120 10% 12%',
+    popover: '120 10% 12%',
     'card-foreground': '120 100% 80%',
     'stat-bar-primary': '120 70% 40%',
     'stat-bar-secondary': '120 10% 20%',
@@ -93,6 +98,7 @@ export const themePresets: Record<string, typeof defaultTheme> = {
     foreground: '20 90% 10%',
     accent: '30 100% 50%',
     card: '0 0% 100%',
+    popover: '0 0% 100%',
     'card-foreground': '20 90% 10%',
     'stat-bar-primary': '30 100% 50%',
     'stat-bar-secondary': '38 88% 80%',
@@ -186,7 +192,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     Object.entries(theme).forEach(([key, value]) => {
       document.documentElement.style.setProperty(`--${key}`, value)
     })
-    if (themeName === 'dark') {
+    if (['dark', 'dark-red', 'hacker'].includes(themeName)) {
       document.documentElement.classList.add('dark')
     } else {
       document.documentElement.classList.remove('dark')

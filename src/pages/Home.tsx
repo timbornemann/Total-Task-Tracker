@@ -46,7 +46,7 @@ const Home: React.FC = () => {
         </div>
         {pinnedNotes.length > 0 && (
           <div>
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-3">
+            <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-3">
               Gepinnte Notizen
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">

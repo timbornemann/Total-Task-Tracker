@@ -359,26 +359,26 @@ const Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Gesamt Tasks</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Gesamt Tasks</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-xl sm:text-2xl font-bold text-gray-900">{totalTasks}</div>
+              <div className="text-xl sm:text-2xl font-bold text-foreground">{totalTasks}</div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Abgeschlossen</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Abgeschlossen</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-xl sm:text-2xl font-bold text-accent">{completedTasks}</div>
-              <div className="text-xs sm:text-sm text-gray-500">
+              <div className="text-xs sm:text-sm text-muted-foreground">
                 {totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0}% erledigt
               </div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Offen</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Offen</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-xl sm:text-2xl font-bold text-primary">{pendingTasks}</div>
@@ -386,7 +386,7 @@ const Dashboard: React.FC = () => {
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Kategorien</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">Kategorien</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-xl sm:text-2xl font-bold text-primary">{totalCategories}</div>
@@ -399,7 +399,7 @@ const Dashboard: React.FC = () => {
         {viewMode === 'categories' ? (
           <div>
             <div className="flex items-center justify-between mb-4 sm:mb-6">
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Kategorien</h2>
+              <h2 className="text-lg sm:text-xl font-semibold text-foreground">Kategorien</h2>
               <Badge variant="secondary">{filteredCategories.length} Kategorien</Badge>
             </div>
             <div className="flex items-center gap-2 mb-4 sm:mb-6">
@@ -499,7 +499,7 @@ const Dashboard: React.FC = () => {
                 >
                   <ArrowLeft className="h-4 w-4" />
                 </Button>
-                <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Tasks</h2>
+                <h2 className="text-lg sm:text-xl font-semibold text-foreground">Tasks</h2>
               </div>
               <Badge variant="secondary">{filteredTasks.length} Tasks</Badge>
             </div>

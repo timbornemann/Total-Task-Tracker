@@ -44,7 +44,7 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, onClick }) => {
         </button>
       </CardHeader>
       <CardContent className="flex-1">
-        <ReactMarkdown className="prose prose-sm text-gray-600 line-clamp-3">
+        <ReactMarkdown className="prose prose-sm text-muted-foreground line-clamp-3">
           {note.text}
         </ReactMarkdown>
       </CardContent>

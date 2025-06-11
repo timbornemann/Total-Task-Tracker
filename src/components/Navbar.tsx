@@ -18,6 +18,7 @@ import {
   Timer,
   BookOpen,
   Pencil,
+  Search,
 } from 'lucide-react'
 
 interface NavbarProps {
@@ -66,6 +67,13 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
             </Button>
           </div>
           <div className="hidden sm:flex items-center space-x-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => window.dispatchEvent(new Event('open-command-palette'))}
+            >
+              <Search className="h-4 w-4" />
+            </Button>
             <DropdownMenu
               open={openMenu === 'tasks'}
               onOpenChange={(open) => setOpenMenu(open ? 'tasks' : null)}
@@ -231,6 +239,23 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                     Notizen
                   </Button>
                 </Link>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <p className="text-xs font-semibold text-muted-foreground">Suche</p>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => {
+                    window.dispatchEvent(new Event('open-command-palette'))
+                    setShowMobileMenu(false)
+                  }}
+                >
+                  <Search className="h-4 w-4 mr-2" />
+                  Suche
+                </Button>
               </div>
             </div>
             <div className="space-y-2">

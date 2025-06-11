@@ -39,8 +39,8 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
       >
         <div className="flex items-start justify-between">
           <div className="flex items-start space-x-2 sm:space-x-3 flex-1 min-w-0">
-            <div 
-              className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-gray-300 flex-shrink-0 mt-1"
+            <div
+              className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-muted flex-shrink-0 mt-1"
               style={{ backgroundColor: category.color }}
             />
             <div className="flex-1 min-w-0">
@@ -48,7 +48,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                 {category.name}
               </CardTitle>
               {category.description && (
-                <p className="text-xs sm:text-sm text-gray-600 mt-1 line-clamp-2 break-words">
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1 line-clamp-2 break-words">
                   {category.description}
                 </p>
               )}
@@ -121,8 +121,8 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <FolderOpen className="h-4 w-4 text-gray-500 flex-shrink-0" />
-              <span className="text-xs sm:text-sm text-gray-600">
+              <FolderOpen className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              <span className="text-xs sm:text-sm text-muted-foreground">
                 {totalTasks} Task{totalTasks !== 1 ? 's' : ''}
               </span>
             </div>
@@ -139,7 +139,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
             </Badge>
           </div>
           
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-muted rounded-full h-2">
             <div 
               className="h-2 rounded-full transition-all duration-300"
               style={{ 
@@ -149,7 +149,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
             />
           </div>
           
-          <div className="text-xs text-gray-500 text-center">
+          <div className="text-xs text-muted-foreground text-center">
             {completedTasks} von {totalTasks} abgeschlossen
           </div>
         </div>

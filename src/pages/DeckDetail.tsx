@@ -62,7 +62,7 @@ const DeckDetailPage: React.FC = () => {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div className="font-medium">{card.front}</div>
-                  <div className="text-sm text-gray-600">{card.back}</div>
+                  <div className="text-sm text-muted-foreground">{card.back}</div>
                 </CardContent>
                 <CardFooter className="flex justify-end space-x-2">
                   <Button variant="outline" size="sm" onClick={() => { setEditingIndex(index); setIsModalOpen(true); }}>
