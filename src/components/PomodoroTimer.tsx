@@ -173,11 +173,11 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
       let pip: Window | null = null;
       if ((window as any).documentPictureInPicture) {
         pip = await (window as any).documentPictureInPicture.requestWindow({
-          width: 220,
-          height: 220
+          width: 200,
+          height: 200
         });
       } else {
-        pip = window.open('', '', 'width=220,height=220');
+        pip = window.open('', '', 'width=200,height=200');
       }
       if (!pip) return;
       pipWindowRef.current = pip;
@@ -194,14 +194,21 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
       pip.document.body.style.margin = '0';
       const container = pip.document.createElement('div');
       pip.document.body.appendChild(container);
-      ReactDOM.createRoot(container).render(
-        <SettingsProvider>
-          <PomodoroHistoryProvider>
-            <PomodoroTimer size={150} floating />
-          </PomodoroHistoryProvider>
-        </SettingsProvider>
-      );
+      const root = ReactDOM.createRoot(container);
+      const renderTimer = () => {
+        const size = Math.max(40, Math.floor((Math.min(pip!.innerWidth, pip!.innerHeight) - 40) / 2));
+        root.render(
+          <SettingsProvider>
+            <PomodoroHistoryProvider>
+              <PomodoroTimer size={size} floating />
+            </PomodoroHistoryProvider>
+          </SettingsProvider>
+        );
+      };
+      renderTimer();
+      pip.addEventListener('resize', renderTimer);
       const cleanup = () => {
+        pip.removeEventListener('resize', renderTimer);
         pipWindowRef.current = null;
       };
       pip.addEventListener('pagehide', cleanup);
