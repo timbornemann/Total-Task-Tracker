@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 
+
 export type ShortcutKeys = {
   openCommand: string
   newTask: string
@@ -14,6 +15,11 @@ const defaultShortcuts: ShortcutKeys = {
 
 const defaultPomodoro = { workMinutes: 25, breakMinutes: 5 }
 const defaultTaskPriority: 'low' | 'medium' | 'high' = 'medium'
+const defaultTheme = {
+  background: '0 0% 100%',
+  foreground: '222.2 84% 4.9%',
+  accent: '210 40% 96.1%'
+}
 
 interface SettingsContextValue {
   shortcuts: ShortcutKeys
@@ -22,6 +28,8 @@ interface SettingsContextValue {
   updatePomodoro: (key: 'workMinutes' | 'breakMinutes', value: number) => void
   defaultTaskPriority: 'low' | 'medium' | 'high'
   updateDefaultTaskPriority: (value: 'low' | 'medium' | 'high') => void
+  theme: typeof defaultTheme
+  updateTheme: (key: keyof typeof defaultTheme, value: string) => void
 }
 
 const SettingsContext = createContext<SettingsContextValue | undefined>(undefined)
@@ -32,6 +40,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [priority, setPriority] = useState<'low' | 'medium' | 'high'>(
     defaultTaskPriority
   )
+  const [theme, setTheme] = useState(defaultTheme)
 
   useEffect(() => {
     const load = async () => {
@@ -47,6 +56,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           }
           if (data.defaultTaskPriority) {
             setPriority(data.defaultTaskPriority)
+          }
+          if (data.theme) {
+            setTheme({ ...defaultTheme, ...data.theme })
           }
         }
       } catch (err) {
@@ -65,7 +77,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           body: JSON.stringify({
             shortcuts,
             pomodoro,
-            defaultTaskPriority: priority
+            defaultTaskPriority: priority,
+            theme
           })
         })
       } catch (err) {
@@ -74,7 +87,13 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
 
     save()
-  }, [shortcuts, pomodoro, priority])
+  }, [shortcuts, pomodoro, priority, theme])
+
+  useEffect(() => {
+    Object.entries(theme).forEach(([key, value]) => {
+      document.documentElement.style.setProperty(`--${key}`, value)
+    })
+  }, [theme])
 
   const updateShortcut = (key: keyof ShortcutKeys, value: string) => {
     setShortcuts(prev => ({ ...prev, [key]: value.toLowerCase() }))
@@ -88,6 +107,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setPriority(value)
   }
 
+  const updateTheme = (key: keyof typeof defaultTheme, value: string) => {
+    setTheme(prev => ({ ...prev, [key]: value }))
+  }
+
   return (
     <SettingsContext.Provider
       value={{
@@ -96,7 +119,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         pomodoro,
         updatePomodoro,
         defaultTaskPriority: priority,
-        updateDefaultTaskPriority
+        updateDefaultTaskPriority,
+        theme,
+        updateTheme
       }}
     >
       {children}
