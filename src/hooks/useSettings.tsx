@@ -5,12 +5,14 @@ export type ShortcutKeys = {
   openCommand: string
   newTask: string
   newNote: string
+  newFlashcard: string
 }
 
 const defaultShortcuts: ShortcutKeys = {
   openCommand: 'ctrl+k',
-  newTask: 'ctrl+t',
-  newNote: 'ctrl+n'
+  newTask: 'ctrl+alt+t',
+  newNote: 'ctrl+alt+n',
+  newFlashcard: 'ctrl+alt+f'
 }
 
 const defaultPomodoro = { workMinutes: 25, breakMinutes: 5 }

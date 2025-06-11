@@ -110,6 +110,16 @@ npm start    # startet die gebaute App auf Port 3002
 
 Viel Spaß beim Ausprobieren!
 
+### Tastenkürzel
+
+In den Einstellungen kannst du die wichtigsten Shortcuts per Tastendruck
+anpassen. Standardmäßig gelten folgende Kombinationen:
+
+- `ctrl+k` – Command Palette öffnen
+- `ctrl+alt+t` – Schnell eine neue Task anlegen
+- `ctrl+alt+n` – Schnell eine neue Notiz anlegen
+- `ctrl+alt+f` – Neue Lernkarte erstellen
+
 ## Lernkarten-Algorithmus
 
 Beim Bewerten einer Karte merkt sich das System, wie oft sie als **leicht**, **mittel** oder **schwer** eingestuft wurde. Aus diesen Zählen berechnet sich eine Erfolgsquote:
