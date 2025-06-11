@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { Note } from '@/types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -66,13 +67,20 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, onSave, note }) 
             />
           </div>
           <div>
-            <Label htmlFor="text">Text</Label>
+            <Label htmlFor="text">Text (Markdown)</Label>
             <Textarea
               id="text"
               value={formData.text}
               onChange={e => handleChange('text', e.target.value)}
               rows={5}
             />
+            {formData.text && (
+              <div className="mt-2 p-2 border rounded-sm bg-gray-50 max-h-40 overflow-auto">
+                <ReactMarkdown className="prose prose-sm">
+                  {formData.text}
+                </ReactMarkdown>
+              </div>
+            )}
           </div>
           <div>
             <Label>Farbe</Label>

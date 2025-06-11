@@ -15,6 +15,7 @@ import Statistics from "./pages/Statistics";
 import CalendarPage from "./pages/Calendar";
 import Kanban from "./pages/Kanban";
 import NotesPage from "./pages/Notes";
+import NoteDetailPage from "./pages/NoteDetail";
 import FlashcardsPage from "./pages/Flashcards";
 import FlashcardManagerPage from "./pages/FlashcardManager";
 import DeckDetailPage from "./pages/DeckDetail";
@@ -51,6 +52,7 @@ const App = () => (
               <Route path="/flashcards" element={<FlashcardsPage />} />
               <Route path="/flashcards/stats" element={<FlashcardStatisticsPage />} />
               <Route path="/notes" element={<NotesPage />} />
+              <Route path="/notes/:id" element={<NoteDetailPage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/pomodoro" element={<PomodoroPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
