@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
+import { allHomeSections } from '@/utils/homeSections'
 
 
 export type ShortcutKeys = {
@@ -134,6 +135,7 @@ interface SettingsContextValue {
   themeName: string
   updateThemeName: (name: string) => void
   homeSections: string[]
+  homeSectionOrder: string[]
   toggleHomeSection: (section: string) => void
   reorderHomeSections: (start: number, end: number) => void
   showPinnedTasks: boolean
@@ -169,6 +171,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   )
   const [theme, setTheme] = useState(defaultTheme)
   const [themeName, setThemeName] = useState('light')
+  const [homeSectionOrder, setHomeSectionOrder] = useState<string[]>(
+    allHomeSections.map(s => s.key)
+  )
   const [homeSections, setHomeSections] = useState<string[]>([
     'tasks',
     'flashcards',
@@ -200,6 +205,25 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             if (themePresets[data.themeName]) {
               setTheme(themePresets[data.themeName])
             }
+          }
+          if (Array.isArray(data.homeSectionOrder)) {
+            const order = data.homeSectionOrder as string[]
+            setHomeSectionOrder(
+              order.concat(
+                allHomeSections
+                  .filter(s => !order.includes(s.key))
+                  .map(s => s.key)
+              )
+            )
+          } else if (Array.isArray(data.homeSections)) {
+            setHomeSectionOrder(
+              data.homeSections.concat(
+                allHomeSections
+                  .filter(s => !data.homeSections.includes(s.key))
+                  .map(s => s.key)
+              )
+            )
+            setHomeSections(data.homeSections)
           }
           if (Array.isArray(data.homeSections)) {
             setHomeSections(data.homeSections)
@@ -240,6 +264,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             theme,
             themeName,
             homeSections,
+            homeSectionOrder,
             showPinnedTasks,
             showPinnedNotes,
             flashcardTimer,
@@ -260,6 +285,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     theme,
     themeName,
     homeSections,
+    homeSectionOrder,
     showPinnedTasks,
     showPinnedNotes,
     flashcardTimer,
@@ -325,7 +351,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }
 
   const reorderHomeSections = (start: number, end: number) => {
-    setHomeSections(prev => {
+    setHomeSectionOrder(prev => {
       const updated = Array.from(prev)
       const [removed] = updated.splice(start, 1)
       updated.splice(end, 0, removed)
@@ -355,6 +381,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         themeName,
         updateThemeName,
         homeSections,
+        homeSectionOrder,
         toggleHomeSection,
         reorderHomeSections,
         showPinnedTasks,

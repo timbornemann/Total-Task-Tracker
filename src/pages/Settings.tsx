@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { hslToHex, hexToHsl } from '@/utils/color'
 import { Checkbox } from '@/components/ui/checkbox'
 import { allHomeSections } from '@/utils/homeSections'
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd'
 import {
   Select,
   SelectContent,
@@ -35,7 +36,9 @@ const SettingsPage: React.FC = () => {
     themeName,
     updateThemeName,
     homeSections,
+    homeSectionOrder,
     toggleHomeSection,
+    reorderHomeSections,
     showPinnedTasks,
     toggleShowPinnedTasks,
     showPinnedNotes,
@@ -47,6 +50,11 @@ const SettingsPage: React.FC = () => {
     flashcardDefaultMode,
     updateFlashcardDefaultMode
   } = useSettings()
+
+  const handleHomeDrag = (result: DropResult) => {
+    if (!result.destination) return
+    reorderHomeSections(result.source.index, result.destination.index)
+  }
 
   const download = (data: any, name: string) => {
     const blob = new Blob([JSON.stringify(data, null, 2)], {
@@ -352,16 +360,42 @@ const SettingsPage: React.FC = () => {
               />
               <Label htmlFor="showPinnedNotes">Gepinnte Notizen anzeigen</Label>
             </div>
-            {allHomeSections.map(sec => (
-              <div key={sec.key} className="flex items-center space-x-2">
-                <Checkbox
-                  id={sec.key}
-                  checked={homeSections.includes(sec.key)}
-                  onCheckedChange={() => toggleHomeSection(sec.key)}
-                />
-                <Label htmlFor={sec.key}>{sec.label}</Label>
-              </div>
-            ))}
+            <DragDropContext onDragEnd={handleHomeDrag}>
+              <Droppable droppableId="homeOrder">
+                {provided => (
+                  <div
+                    className="space-y-2"
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    {homeSectionOrder.map((key, index) => {
+                      const sec = allHomeSections.find(s => s.key === key)
+                      if (!sec) return null
+                      return (
+                        <Draggable key={sec.key} draggableId={sec.key} index={index}>
+                          {prov => (
+                            <div
+                              ref={prov.innerRef}
+                              {...prov.draggableProps}
+                              {...prov.dragHandleProps}
+                              className="flex items-center space-x-2 border rounded p-2 bg-card"
+                            >
+                              <Checkbox
+                                id={sec.key}
+                                checked={homeSections.includes(sec.key)}
+                                onCheckedChange={() => toggleHomeSection(sec.key)}
+                              />
+                              <Label htmlFor={sec.key}>{sec.label}</Label>
+                            </div>
+                          )}
+                        </Draggable>
+                      )
+                    })}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
           </TabsContent>
           <TabsContent value="theme" className="space-y-4">
             <div>
