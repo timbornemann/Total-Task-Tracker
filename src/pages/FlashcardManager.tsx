@@ -31,7 +31,7 @@ const FlashcardManagerPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Navbar title="Decks" />
       <div className="max-w-2xl mx-auto py-8 px-4 space-y-4">
         <div className="flex justify-end">

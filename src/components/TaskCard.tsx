@@ -155,7 +155,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-white z-50">
+              <DropdownMenuContent align="end" className="bg-background z-50">
                 <DropdownMenuItem onClick={() => onViewDetails(task)}>
                   <FolderOpen className="h-4 w-4 mr-2" />
                   Details anzeigen

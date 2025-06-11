@@ -39,7 +39,7 @@ export const getPriorityColor = (priority: string): string => {
     case 'low':
       return 'text-green-600 bg-green-50 border-green-200';
     default:
-      return 'text-gray-600 bg-gray-50 border-gray-200';
+      return 'text-gray-600 bg-background border-gray-200';
   }
 };
 

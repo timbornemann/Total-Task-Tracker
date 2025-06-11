@@ -97,7 +97,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-white z-50">
+              <DropdownMenuContent align="end" className="bg-background z-50">
                 <DropdownMenuItem onClick={() => onEdit(category)}>
                   <Edit className="h-4 w-4 mr-2" />
                   Bearbeiten
