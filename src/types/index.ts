@@ -22,6 +22,8 @@ export interface Task {
   dueDate?: Date;
   /** Sort order within its list */
   order: number;
+  /** Whether the task is pinned */
+  pinned: boolean;
 }
 
 export interface Category {
