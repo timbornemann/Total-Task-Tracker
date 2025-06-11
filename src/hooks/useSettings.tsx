@@ -30,6 +30,38 @@ const defaultTheme = {
   'pomodoro-break-ring': '210 40% 96.1%'
 }
 
+export const themePresets: Record<string, typeof defaultTheme> = {
+  light: { ...defaultTheme },
+  dark: {
+    background: '222.2 84% 4.9%',
+    foreground: '210 40% 98%',
+    accent: '217.2 32.6% 17.5%',
+    card: '222.2 84% 4.9%',
+    'card-foreground': '210 40% 98%',
+    'stat-bar-primary': '217.2 32.6% 17.5%',
+    'stat-bar-secondary': '217.2 32.6% 17.5%',
+    'kanban-todo': '217.2 32.6% 17.5%',
+    'kanban-inprogress': '217.2 32.6% 17.5%',
+    'kanban-done': '217.2 32.6% 17.5%',
+    'pomodoro-work-ring': '210 40% 98%',
+    'pomodoro-break-ring': '217.2 32.6% 17.5%'
+  },
+  ocean: {
+    background: '210 60% 98%',
+    foreground: '222.2 47.4% 11.2%',
+    accent: '199 94% 48%',
+    card: '210 60% 98%',
+    'card-foreground': '222.2 47.4% 11.2%',
+    'stat-bar-primary': '199 94% 48%',
+    'stat-bar-secondary': '214.3 31.8% 91.4%',
+    'kanban-todo': '210 40% 96.1%',
+    'kanban-inprogress': '210 80% 85%',
+    'kanban-done': '199 94% 48%',
+    'pomodoro-work-ring': '199 94% 48%',
+    'pomodoro-break-ring': '210 40% 96.1%'
+  }
+}
+
 interface SettingsContextValue {
   shortcuts: ShortcutKeys
   updateShortcut: (key: keyof ShortcutKeys, value: string) => void
@@ -39,6 +71,8 @@ interface SettingsContextValue {
   updateDefaultTaskPriority: (value: 'low' | 'medium' | 'high') => void
   theme: typeof defaultTheme
   updateTheme: (key: keyof typeof defaultTheme, value: string) => void
+  themeName: string
+  updateThemeName: (name: string) => void
 }
 
 const SettingsContext = createContext<SettingsContextValue | undefined>(undefined)
@@ -50,6 +84,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     defaultTaskPriority
   )
   const [theme, setTheme] = useState(defaultTheme)
+  const [themeName, setThemeName] = useState('light')
 
   useEffect(() => {
     const load = async () => {
@@ -69,6 +104,12 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           if (data.theme) {
             setTheme({ ...defaultTheme, ...data.theme })
           }
+          if (data.themeName) {
+            setThemeName(data.themeName)
+            if (themePresets[data.themeName]) {
+              setTheme(themePresets[data.themeName])
+            }
+          }
         }
       } catch (err) {
         console.error('Fehler beim Laden der Einstellungen', err)
@@ -87,7 +128,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             shortcuts,
             pomodoro,
             defaultTaskPriority: priority,
-            theme
+            theme,
+            themeName
           })
         })
       } catch (err) {
@@ -96,13 +138,18 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
 
     save()
-  }, [shortcuts, pomodoro, priority, theme])
+  }, [shortcuts, pomodoro, priority, theme, themeName])
 
   useEffect(() => {
     Object.entries(theme).forEach(([key, value]) => {
       document.documentElement.style.setProperty(`--${key}`, value)
     })
-  }, [theme])
+    if (themeName === 'dark') {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  }, [theme, themeName])
 
   const updateShortcut = (key: keyof ShortcutKeys, value: string) => {
     setShortcuts(prev => ({ ...prev, [key]: value.toLowerCase() }))
@@ -118,6 +165,14 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const updateTheme = (key: keyof typeof defaultTheme, value: string) => {
     setTheme(prev => ({ ...prev, [key]: value }))
+    setThemeName('custom')
+  }
+
+  const updateThemeName = (name: string) => {
+    setThemeName(name)
+    if (themePresets[name]) {
+      setTheme(themePresets[name])
+    }
   }
 
   return (
@@ -130,7 +185,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         defaultTaskPriority: priority,
         updateDefaultTaskPriority,
         theme,
-        updateTheme
+        updateTheme,
+        themeName,
+        updateThemeName
       }}
     >
       {children}
