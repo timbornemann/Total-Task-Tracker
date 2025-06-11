@@ -10,9 +10,21 @@ const Statistics = () => {
   const stats = useStatistics();
 
   const priorityData = [
-    { name: 'Hoch', value: stats.tasksByPriority.high, color: '#EF4444' },
-    { name: 'Mittel', value: stats.tasksByPriority.medium, color: '#F59E0B' },
-    { name: 'Niedrig', value: stats.tasksByPriority.low, color: '#10B981' }
+    {
+      name: 'Hoch',
+      value: stats.tasksByPriority.high,
+      color: 'hsl(var(--destructive))'
+    },
+    {
+      name: 'Mittel',
+      value: stats.tasksByPriority.medium,
+      color: 'hsl(var(--primary))'
+    },
+    {
+      name: 'Niedrig',
+      value: stats.tasksByPriority.low,
+      color: 'hsl(var(--accent))'
+    }
   ];
 
   const categoryData = stats.tasksByCategory.map(cat => ({
@@ -45,10 +57,10 @@ const Statistics = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs sm:text-sm font-medium">Abgeschlossen</CardTitle>
-              <CheckCircle className="h-4 w-4 text-green-600" />
+              <CheckCircle className="h-4 w-4 text-accent" />
             </CardHeader>
             <CardContent>
-              <div className="text-lg sm:text-2xl font-bold text-green-600">{stats.completedTasks}</div>
+              <div className="text-lg sm:text-2xl font-bold text-accent">{stats.completedTasks}</div>
               <p className="text-xs text-muted-foreground">{completionRate}% der Tasks</p>
             </CardContent>
           </Card>
@@ -56,27 +68,27 @@ const Statistics = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs sm:text-sm font-medium">Offen</CardTitle>
-              <Clock className="h-4 w-4 text-yellow-600" />
+              <Clock className="h-4 w-4 text-accent" />
             </CardHeader>
             <CardContent>
-              <div className="text-lg sm:text-2xl font-bold text-yellow-600">{stats.pendingTasks}</div>
+              <div className="text-lg sm:text-2xl font-bold text-accent">{stats.pendingTasks}</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs sm:text-sm font-medium">Überfällig</CardTitle>
-              <Clock className="h-4 w-4 text-red-600" />
+              <Clock className="h-4 w-4 text-accent" />
             </CardHeader>
             <CardContent>
-              <div className="text-lg sm:text-2xl font-bold text-red-600">{stats.overdueTasks}</div>
+              <div className="text-lg sm:text-2xl font-bold text-accent">{stats.overdueTasks}</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs sm:text-sm font-medium">Erledigt 7 Tage</CardTitle>
-              <CheckCircle className="h-4 w-4 text-green-600" />
+              <CheckCircle className="h-4 w-4 text-accent" />
             </CardHeader>
             <CardContent>
               <div className="text-lg sm:text-2xl font-bold">{stats.tasksCompletedLast7Days}</div>
@@ -86,10 +98,10 @@ const Statistics = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs sm:text-sm font-medium">Wiederkehrend</CardTitle>
-              <TrendingUp className="h-4 w-4 text-blue-600" />
+              <TrendingUp className="h-4 w-4 text-accent" />
             </CardHeader>
             <CardContent>
-              <div className="text-lg sm:text-2xl font-bold text-blue-600">{stats.recurringTasks}</div>
+              <div className="text-lg sm:text-2xl font-bold text-accent">{stats.recurringTasks}</div>
             </CardContent>
           </Card>
 
@@ -165,8 +177,12 @@ const Statistics = () => {
                     />
                     <YAxis fontSize={12} />
                     <Tooltip />
-                    <Bar dataKey="completed" fill="#10B981" name="Abgeschlossen" />
-                    <Bar dataKey="total" fill="#E5E7EB" name="Gesamt" />
+                    <Bar
+                      dataKey="completed"
+                      fill="hsl(var(--accent))"
+                      name="Abgeschlossen"
+                    />
+                    <Bar dataKey="total" fill="hsl(var(--muted))" name="Gesamt" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -197,17 +213,17 @@ const Statistics = () => {
                     <Tooltip 
                       labelFormatter={(value) => new Date(value).toLocaleDateString('de-DE')}
                     />
-                    <Line 
-                      type="monotone" 
-                      dataKey="completed" 
-                      stroke="#10B981" 
+                    <Line
+                      type="monotone"
+                      dataKey="completed"
+                      stroke="hsl(var(--accent))"
                       strokeWidth={2}
                       name="Abgeschlossen"
                     />
-                    <Line 
-                      type="monotone" 
-                      dataKey="created" 
-                      stroke="#3B82F6" 
+                    <Line
+                      type="monotone"
+                      dataKey="created"
+                      stroke="hsl(var(--primary))"
                       strokeWidth={2}
                       name="Erstellt"
                     />
@@ -239,14 +255,14 @@ const Statistics = () => {
                     <tr key={index} className="border-b">
                       <td className="py-2 font-medium">{category.categoryName}</td>
                       <td className="text-right py-2">{category.count}</td>
-                      <td className="text-right py-2 text-green-600">{category.completed}</td>
+                      <td className="text-right py-2 text-accent">{category.completed}</td>
                       <td className="text-right py-2">
                         <div className="flex items-center justify-end">
-                          <div className="w-16 sm:w-20 bg-gray-200 rounded-full h-2 mr-2">
-                            <div 
-                              className="bg-blue-600 h-2 rounded-full"
-                              style={{ 
-                                width: `${category.count > 0 ? (category.completed / category.count) * 100 : 0}%` 
+                          <div className="w-16 sm:w-20 bg-muted rounded-full h-2 mr-2">
+                            <div
+                              className="bg-accent h-2 rounded-full"
+                              style={{
+                                width: `${category.count > 0 ? (category.completed / category.count) * 100 : 0}%`
                               }}
                             />
                           </div>

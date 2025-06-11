@@ -20,9 +20,21 @@ const FlashcardStatisticsPage: React.FC = () => {
   const stats = useFlashcardStatistics();
 
   const difficultyData = [
-    { name: "Leicht", value: stats.difficultyCounts.easy, color: "#10B981" },
-    { name: "Mittel", value: stats.difficultyCounts.medium, color: "#F59E0B" },
-    { name: "Schwer", value: stats.difficultyCounts.hard, color: "#EF4444" },
+    {
+      name: "Leicht",
+      value: stats.difficultyCounts.easy,
+      color: "hsl(var(--accent))",
+    },
+    {
+      name: "Mittel",
+      value: stats.difficultyCounts.medium,
+      color: "hsl(var(--primary))",
+    },
+    {
+      name: "Schwer",
+      value: stats.difficultyCounts.hard,
+      color: "hsl(var(--destructive))",
+    },
   ];
 
   return (
@@ -130,7 +142,7 @@ const FlashcardStatisticsPage: React.FC = () => {
                     <XAxis dataKey="date" fontSize={12} />
                     <YAxis fontSize={12} />
                     <Tooltip />
-                    <Bar dataKey="count" fill="#3B82F6" name="Karten" />
+                    <Bar dataKey="count" fill="hsl(var(--accent))" name="Karten" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -165,14 +177,14 @@ const FlashcardStatisticsPage: React.FC = () => {
                         <tr key={idx} className="border-b">
                           <td className="py-2 font-medium">{deck.deckName}</td>
                           <td className="text-right py-2">{deck.total}</td>
-                          <td className="text-right py-2 text-red-600">
+                          <td className="text-right py-2 text-accent">
                             {deck.due}
                           </td>
                           <td className="text-right py-2">
                             <div className="flex items-center justify-end">
-                              <div className="w-16 sm:w-20 bg-gray-200 rounded-full h-2 mr-2">
+                              <div className="w-16 sm:w-20 bg-muted rounded-full h-2 mr-2">
                                 <div
-                                  className="bg-red-600 h-2 rounded-full"
+                                  className="bg-accent h-2 rounded-full"
                                   style={{ width: `${percent}%` }}
                                 />
                               </div>

@@ -15,9 +15,9 @@ const PomodoroStats: React.FC = () => {
           <p className="text-sm">Arbeit: {stats.totalWorkMinutes} min</p>
           <p className="text-sm">Pause: {stats.totalBreakMinutes} min</p>
           <p className="text-sm mb-2">Zyklen: {stats.totalCycles}</p>
-          <div className="w-full h-3 bg-gray-200 rounded overflow-hidden">
+          <div className="w-full h-3 bg-muted rounded overflow-hidden">
             <div
-              className="h-full bg-indigo-500"
+              className="h-full bg-primary"
               style={{ width: `${
                 stats.totalWorkMinutes + stats.totalBreakMinutes === 0
                   ? 0
@@ -26,7 +26,7 @@ const PomodoroStats: React.FC = () => {
               }%` }}
             />
             <div
-              className="h-full bg-green-500"
+              className="h-full bg-accent"
               style={{ width: `${
                 stats.totalWorkMinutes + stats.totalBreakMinutes === 0
                   ? 0
@@ -46,9 +46,9 @@ const PomodoroStats: React.FC = () => {
           <p className="text-sm">Arbeit: {stats.todayTotals.workMinutes} min</p>
           <p className="text-sm">Pause: {stats.todayTotals.breakMinutes} min</p>
           <p className="text-sm mb-2">Zyklen: {stats.todayTotals.cycles}</p>
-          <div className="w-full h-3 bg-gray-200 rounded overflow-hidden mb-4">
+          <div className="w-full h-3 bg-muted rounded overflow-hidden mb-4">
             <div
-              className="h-full bg-indigo-500"
+              className="h-full bg-primary"
               style={{ width: `${
                 stats.todayTotals.workMinutes + stats.todayTotals.breakMinutes === 0
                   ? 0
@@ -57,7 +57,7 @@ const PomodoroStats: React.FC = () => {
               }%` }}
             />
             <div
-              className="h-full bg-green-500"
+              className="h-full bg-accent"
               style={{ width: `${
                 stats.todayTotals.workMinutes + stats.todayTotals.breakMinutes === 0
                   ? 0
@@ -72,8 +72,8 @@ const PomodoroStats: React.FC = () => {
                 <XAxis dataKey="time" fontSize={12} />
                 <YAxis fontSize={12} />
                 <Tooltip />
-                <Bar dataKey="work" stackId="a" fill="#4f46e5" />
-                <Bar dataKey="break" stackId="a" fill="#16a34a" />
+                <Bar dataKey="work" stackId="a" fill="hsl(var(--primary))" />
+                <Bar dataKey="break" stackId="a" fill="hsl(var(--accent))" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -97,7 +97,7 @@ const PomodoroStats: React.FC = () => {
                 <XAxis dataKey="time" fontSize={12} />
                 <YAxis fontSize={12} />
                 <Tooltip />
-                <Bar dataKey="value" fill="#4f46e5" />
+                <Bar dataKey="value" fill="hsl(var(--primary))" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -115,8 +115,8 @@ const PomodoroStats: React.FC = () => {
                 <XAxis dataKey="date" fontSize={12} />
                 <YAxis fontSize={12} />
                 <Tooltip />
-                <Bar dataKey="work" stackId="a" fill="#4f46e5" />
-                <Bar dataKey="break" stackId="a" fill="#16a34a" />
+                <Bar dataKey="work" stackId="a" fill="hsl(var(--primary))" />
+                <Bar dataKey="break" stackId="a" fill="hsl(var(--accent))" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -134,8 +134,8 @@ const PomodoroStats: React.FC = () => {
                 <XAxis dataKey="date" fontSize={12} />
                 <YAxis fontSize={12} />
                 <Tooltip />
-                <Bar dataKey="work" stackId="a" fill="#4f46e5" />
-                <Bar dataKey="break" stackId="a" fill="#16a34a" />
+                <Bar dataKey="work" stackId="a" fill="hsl(var(--primary))" />
+                <Bar dataKey="break" stackId="a" fill="hsl(var(--accent))" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -153,8 +153,8 @@ const PomodoroStats: React.FC = () => {
                 <XAxis dataKey="month" fontSize={12} />
                 <YAxis fontSize={12} />
                 <Tooltip />
-                <Bar dataKey="work" stackId="a" fill="#4f46e5" />
-                <Bar dataKey="break" stackId="a" fill="#16a34a" />
+                <Bar dataKey="work" stackId="a" fill="hsl(var(--primary))" />
+                <Bar dataKey="break" stackId="a" fill="hsl(var(--accent))" />
               </BarChart>
             </ResponsiveContainer>
           </div>
