@@ -65,6 +65,8 @@ export interface Note {
   updatedAt: Date;
   /** Sort order within the notes list */
   order: number;
+  /** Whether the note is pinned */
+  pinned: boolean;
 }
 
 export interface Flashcard {

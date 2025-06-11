@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { useTaskStore } from '@/hooks/useTaskStore';
 import NoteModal from '@/components/NoteModal';
@@ -6,11 +6,13 @@ import NoteCard from '@/components/NoteCard';
 import { Button } from '@/components/ui/button';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import Navbar from '@/components/Navbar';
+import { useSearchParams } from 'react-router-dom';
 
 const NotesPage = () => {
   const { notes, addNote, updateNote, reorderNotes } = useTaskStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingNote, setEditingNote] = useState<null | number>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const handleSave = (data: { title: string; text: string; color: string }) => {
     if (editingNote !== null) {
@@ -21,6 +23,17 @@ const NotesPage = () => {
       addNote(data);
     }
   };
+
+  useEffect(() => {
+    const id = searchParams.get('noteId');
+    if (id) {
+      const idx = notes.findIndex(n => n.id === id);
+      if (idx !== -1) {
+        setEditingNote(idx);
+        setIsModalOpen(true);
+      }
+    }
+  }, [searchParams, notes]);
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
@@ -78,6 +91,11 @@ const NotesPage = () => {
         onClose={() => {
           setIsModalOpen(false);
           setEditingNote(null);
+          const params = new URLSearchParams(searchParams);
+          if (params.has('noteId')) {
+            params.delete('noteId');
+            setSearchParams(params, { replace: true });
+          }
         }}
         onSave={handleSave}
         note={editingNote !== null ? notes[editingNote] : undefined}

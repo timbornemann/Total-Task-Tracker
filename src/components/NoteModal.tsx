@@ -9,7 +9,9 @@ import { Label } from '@/components/ui/label';
 interface NoteModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: Omit<Note, 'id' | 'createdAt' | 'updatedAt' | 'order'>) => void;
+  onSave: (
+    data: Omit<Note, 'id' | 'createdAt' | 'updatedAt' | 'order' | 'pinned'>
+  ) => void;
   note?: Note;
 }
 
