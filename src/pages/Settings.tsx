@@ -338,6 +338,15 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div className="space-y-2">
+              <Label htmlFor="popoverColor">Dropdown-Hintergrund</Label>
+              <Input
+                id="popoverColor"
+                type="color"
+                value={hslToHex(theme.popover)}
+                onChange={e => updateTheme('popover', hexToHsl(e.target.value))}
+              />
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="statBarPrimary">Statistik Balken Primär</Label>
               <Input
                 id="statBarPrimary"

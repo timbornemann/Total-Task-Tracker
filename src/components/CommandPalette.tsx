@@ -62,7 +62,12 @@ const CommandPalette: React.FC = () => {
       }
     }
     document.addEventListener('keydown', handler)
-    return () => document.removeEventListener('keydown', handler)
+    const openListener = () => setOpen(true)
+    window.addEventListener('open-command-palette', openListener)
+    return () => {
+      document.removeEventListener('keydown', handler)
+      window.removeEventListener('open-command-palette', openListener)
+    }
   }, [shortcuts])
 
   const create = () => {
