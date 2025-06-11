@@ -34,7 +34,7 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, onClick }) => {
         <button
           type="button"
           onClick={handleToggle}
-          className="text-yellow-500 hover:text-yellow-600"
+          className="text-accent-foreground hover:text-accent"
         >
           {note.pinned ? (
             <Star className="w-4 h-4 fill-current" />

@@ -60,10 +60,10 @@ const FlashcardStatisticsPage: React.FC = () => {
               <CardTitle className="text-xs sm:text-sm font-medium">
                 Fällig
               </CardTitle>
-              <Clock className="h-4 w-4 text-red-600" />
+              <Clock className="h-4 w-4 text-destructive" />
             </CardHeader>
             <CardContent>
-              <div className="text-lg sm:text-2xl font-bold text-red-600">
+              <div className="text-lg sm:text-2xl font-bold text-destructive">
                 {stats.dueCards}
               </div>
             </CardContent>
@@ -73,10 +73,10 @@ const FlashcardStatisticsPage: React.FC = () => {
               <CardTitle className="text-xs sm:text-sm font-medium">
                 Ø Intervall
               </CardTitle>
-              <TrendingUp className="h-4 w-4 text-blue-600" />
+              <TrendingUp className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
-              <div className="text-lg sm:text-2xl font-bold text-blue-600">
+              <div className="text-lg sm:text-2xl font-bold text-primary">
                 {Math.round(stats.averageInterval * 10) / 10} Tage
               </div>
             </CardContent>
@@ -142,7 +142,11 @@ const FlashcardStatisticsPage: React.FC = () => {
                     <XAxis dataKey="date" fontSize={12} />
                     <YAxis fontSize={12} />
                     <Tooltip />
-                    <Bar dataKey="count" fill="hsl(var(--accent))" name="Karten" />
+                    <Bar
+                      dataKey="count"
+                      fill="hsl(var(--stat-bar-primary))"
+                      name="Karten"
+                    />
                   </BarChart>
                 </ResponsiveContainer>
               </div>

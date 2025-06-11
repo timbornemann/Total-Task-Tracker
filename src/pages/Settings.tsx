@@ -305,6 +305,79 @@ const SettingsPage: React.FC = () => {
             }
           />
         </div>
+        <div className="space-y-2">
+          <Label htmlFor="statBarPrimary">Statistik Balken 1</Label>
+          <Input
+            id="statBarPrimary"
+            type="color"
+            value={hslToHex(theme['stat-bar-primary'])}
+            onChange={e =>
+              updateTheme('stat-bar-primary', hexToHsl(e.target.value))
+            }
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="statBarSecondary">Statistik Balken 2</Label>
+          <Input
+            id="statBarSecondary"
+            type="color"
+            value={hslToHex(theme['stat-bar-secondary'])}
+            onChange={e =>
+              updateTheme('stat-bar-secondary', hexToHsl(e.target.value))
+            }
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="kanbanTodo">Kanban ToDo</Label>
+          <Input
+            id="kanbanTodo"
+            type="color"
+            value={hslToHex(theme['kanban-todo'])}
+            onChange={e => updateTheme('kanban-todo', hexToHsl(e.target.value))}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="kanbanInprogress">Kanban In Arbeit</Label>
+          <Input
+            id="kanbanInprogress"
+            type="color"
+            value={hslToHex(theme['kanban-inprogress'])}
+            onChange={e =>
+              updateTheme('kanban-inprogress', hexToHsl(e.target.value))
+            }
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="kanbanDone">Kanban Done</Label>
+          <Input
+            id="kanbanDone"
+            type="color"
+            value={hslToHex(theme['kanban-done'])}
+            onChange={e => updateTheme('kanban-done', hexToHsl(e.target.value))}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="workRing">Pomodoro Arbeit</Label>
+          <Input
+            id="workRing"
+            type="color"
+            value={hslToHex(theme['pomodoro-work-ring'])}
+            onChange={e =>
+              updateTheme('pomodoro-work-ring', hexToHsl(e.target.value))
+            }
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="breakRing">Pomodoro Pause</Label>
+          <Input
+            id="breakRing"
+            type="color"
+            value={hslToHex(theme['pomodoro-break-ring'])}
+            onChange={e =>
+              updateTheme('pomodoro-break-ring', hexToHsl(e.target.value))
+            }
+          />
+        </div>
       </div>
         <div className="pt-4 border-t space-y-4">
           <h2 className="font-semibold">Datenexport / -import</h2>

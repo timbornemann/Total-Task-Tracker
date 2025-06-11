@@ -370,7 +370,7 @@ const Dashboard: React.FC = () => {
               <CardTitle className="text-sm font-medium text-gray-600">Abgeschlossen</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-xl sm:text-2xl font-bold text-green-600">{completedTasks}</div>
+              <div className="text-xl sm:text-2xl font-bold text-accent">{completedTasks}</div>
               <div className="text-xs sm:text-sm text-gray-500">
                 {totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0}% erledigt
               </div>
@@ -381,7 +381,7 @@ const Dashboard: React.FC = () => {
               <CardTitle className="text-sm font-medium text-gray-600">Offen</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-xl sm:text-2xl font-bold text-yellow-600">{pendingTasks}</div>
+              <div className="text-xl sm:text-2xl font-bold text-primary">{pendingTasks}</div>
             </CardContent>
           </Card>
           <Card>
@@ -389,7 +389,7 @@ const Dashboard: React.FC = () => {
               <CardTitle className="text-sm font-medium text-gray-600">Kategorien</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-xl sm:text-2xl font-bold text-blue-600">{totalCategories}</div>
+              <div className="text-xl sm:text-2xl font-bold text-primary">{totalCategories}</div>
             </CardContent>
           </Card>
         </div>

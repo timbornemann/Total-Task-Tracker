@@ -33,11 +33,11 @@ export const getTaskProgress = (task: Task): { completed: number; total: number 
 export const getPriorityColor = (priority: string): string => {
   switch (priority) {
     case 'high':
-      return 'text-red-600 bg-red-50 border-red-200';
+      return 'text-destructive bg-destructive/10 border-destructive/30';
     case 'medium':
-      return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+      return 'text-primary bg-primary/10 border-primary/30';
     case 'low':
-      return 'text-green-600 bg-green-50 border-green-200';
+      return 'text-accent bg-accent/10 border-accent/30';
     default:
       return 'text-gray-600 bg-background border-gray-200';
   }

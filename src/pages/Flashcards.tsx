@@ -278,7 +278,7 @@ const FlashcardsPage: React.FC = () => {
             <CardContent>
               {timedMode && timerStarted && (
                 <div className="flex justify-center items-center space-x-2 mb-4">
-                  <div className="text-2xl font-bold text-red-600 text-center">
+                  <div className="text-2xl font-bold text-destructive text-center">
                     {Math.max(timeLeft, 0)}
                   </div>
                   {timerPaused ? (
@@ -299,7 +299,7 @@ const FlashcardsPage: React.FC = () => {
                     <>
                       <div className="text-center">{current.back}</div>
                       <div
-                        className={`text-sm text-center ${isCorrect ? 'text-green-600' : 'text-red-600'}`}
+                        className={`text-sm text-center ${isCorrect ? 'text-accent' : 'text-destructive'}`}
                       >
                         {isCorrect ? 'Richtig!' : 'Falsch'}
                       </div>

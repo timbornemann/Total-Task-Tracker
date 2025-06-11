@@ -179,10 +179,14 @@ const Statistics = () => {
                     <Tooltip />
                     <Bar
                       dataKey="completed"
-                      fill="hsl(var(--accent))"
+                      fill="hsl(var(--stat-bar-primary))"
                       name="Abgeschlossen"
                     />
-                    <Bar dataKey="total" fill="hsl(var(--muted))" name="Gesamt" />
+                    <Bar
+                      dataKey="total"
+                      fill="hsl(var(--stat-bar-secondary))"
+                      name="Gesamt"
+                    />
                   </BarChart>
                 </ResponsiveContainer>
               </div>

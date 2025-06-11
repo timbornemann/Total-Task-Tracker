@@ -44,7 +44,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
               style={{ backgroundColor: category.color }}
             />
             <div className="flex-1 min-w-0">
-              <CardTitle className="text-base sm:text-lg font-semibold group-hover:text-blue-600 transition-colors break-words">
+              <CardTitle className="text-base sm:text-lg font-semibold group-hover:text-primary transition-colors break-words">
                 {category.name}
               </CardTitle>
               {category.description && (
@@ -77,7 +77,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                   onDelete(category.id);
                 }}
                 title="Löschen (rückgängig möglich)"
-                className="h-8 w-8 p-0 text-red-600 hover:text-red-800"
+                className="h-8 w-8 p-0 text-destructive hover:text-destructive/80"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -105,7 +105,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                 {category.id !== 'default' && (
                   <DropdownMenuItem
                     onClick={() => onDelete(category.id)}
-                    className="text-red-600"
+                    className="text-destructive"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
                     Löschen (Undo möglich)

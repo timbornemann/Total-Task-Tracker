@@ -20,7 +20,14 @@ const defaultTheme = {
   foreground: '222.2 84% 4.9%',
   accent: '210 40% 96.1%',
   card: '0 0% 100%',
-  'card-foreground': '222.2 84% 4.9%'
+  'card-foreground': '222.2 84% 4.9%',
+  'stat-bar-primary': '210 40% 96.1%',
+  'stat-bar-secondary': '214.3 31.8% 91.4%',
+  'kanban-todo': '210 40% 96.1%',
+  'kanban-inprogress': '214.3 31.8% 91.4%',
+  'kanban-done': '140 40% 96.1%',
+  'pomodoro-work-ring': '222.2 47.4% 11.2%',
+  'pomodoro-break-ring': '210 40% 96.1%'
 }
 
 interface SettingsContextValue {
