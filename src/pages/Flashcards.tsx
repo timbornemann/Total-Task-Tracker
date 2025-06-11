@@ -70,6 +70,21 @@ const FlashcardsPage: React.FC = () => {
     : timedMode
     ? 'timed'
     : 'spaced';
+
+  const modeLabel = useMemo(() => {
+    switch (mode) {
+      case 'training':
+        return 'Training';
+      case 'random':
+        return 'Random';
+      case 'typing':
+        return 'Eingabe';
+      case 'timed':
+        return 'Timed';
+      default:
+        return 'Spaced Repetition';
+    }
+  }, [mode]);
   const handleModeChange = (
     value: 'spaced' | 'training' | 'random' | 'typing' | 'timed'
   ) => {
@@ -103,6 +118,8 @@ const FlashcardsPage: React.FC = () => {
   );
 
   const nonSpaced = (!useSpaced) && (typingMode || timedMode);
+
+  const algorithmAffected = !(trainingMode || randomMode || nonSpaced);
 
   useEffect(() => {
     if (trainingMode) {
@@ -251,8 +268,14 @@ const FlashcardsPage: React.FC = () => {
                 <SelectItem value="timed">Timed</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-          <div className="space-y-1">
+            <p className="text-xs text-muted-foreground">
+              Aktiver Modus: {modeLabel}.{' '}
+              {algorithmAffected
+                ? 'Bewertungen beeinflussen den Spaced-Repetition-Algorithmus.'
+                : 'Bewertungen beeinflussen den Spaced-Repetition-Algorithmus nicht.'}
+            </p>
+        </div>
+        <div className="space-y-1">
             {decks.map(deck => (
               <div key={deck.id} className="flex items-center space-x-2">
                 <Checkbox
