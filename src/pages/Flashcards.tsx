@@ -294,12 +294,6 @@ const FlashcardsPage: React.FC = () => {
                 <SelectItem value="timed">Timed</SelectItem>
               </SelectContent>
             </Select>
-            <p className="text-xs text-muted-foreground">
-              Aktiver Modus: {modeLabel}.{' '}
-              {algorithmAffected
-                ? 'Bewertungen beeinflussen den Spaced-Repetition-Algorithmus.'
-                : 'Bewertungen beeinflussen den Spaced-Repetition-Algorithmus nicht.'}
-            </p>
         </div>
         <div className="space-y-1">
             {decks.map(deck => (
