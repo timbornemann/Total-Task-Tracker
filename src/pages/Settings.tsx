@@ -293,7 +293,7 @@ const SettingsPage: React.FC = () => {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="bgColor">Hintergrund</Label>
+              <Label htmlFor="bgColor">Hintergrund (App)</Label>
               <Input
                 id="bgColor"
                 type="color"
@@ -302,7 +302,7 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="fgColor">Vordergrund</Label>
+              <Label htmlFor="fgColor">Textfarbe</Label>
               <Input
                 id="fgColor"
                 type="color"
@@ -311,7 +311,7 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="accentColor">Akzent</Label>
+              <Label htmlFor="accentColor">Akzentfarbe</Label>
               <Input
                 id="accentColor"
                 type="color"
@@ -329,7 +329,7 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="cardFgColor">Karten-Vordergrund</Label>
+              <Label htmlFor="cardFgColor">Karten-Textfarbe</Label>
               <Input
                 id="cardFgColor"
                 type="color"
@@ -338,7 +338,7 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="statBarPrimary">Statistik Balken 1</Label>
+              <Label htmlFor="statBarPrimary">Statistik Balken Primär</Label>
               <Input
                 id="statBarPrimary"
                 type="color"
@@ -347,7 +347,7 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="statBarSecondary">Statistik Balken 2</Label>
+              <Label htmlFor="statBarSecondary">Statistik Balken Sekundär</Label>
               <Input
                 id="statBarSecondary"
                 type="color"
@@ -374,7 +374,7 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="kanbanDone">Kanban Done</Label>
+              <Label htmlFor="kanbanDone">Kanban Erledigt</Label>
               <Input
                 id="kanbanDone"
                 type="color"

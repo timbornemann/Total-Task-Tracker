@@ -11,7 +11,7 @@
     --card-foreground: 222.2 84% 4.9%;
 
     --popover: 0 0% 98%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: var(--foreground);
 
     --primary: 222.2 47.4% 11.2%;
     --primary-foreground: 210 40% 98%;
@@ -67,7 +67,7 @@
     --card-foreground: 210 40% 98%;
 
     --popover: 217.2 32.6% 17.5%;
-    --popover-foreground: 210 40% 98%;
+    --popover-foreground: var(--foreground);
 
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
@@ -113,5 +113,9 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  .prose {
+    @apply text-foreground;
   }
 }
