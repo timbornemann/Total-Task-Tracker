@@ -70,56 +70,34 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
           </div>
           <div className="hidden sm:flex items-center space-x-4">
             <DropdownMenu
-              open={openMenu === 'dashboard'}
-              onOpenChange={(open) => setOpenMenu(open ? 'dashboard' : null)}
+              open={openMenu === 'tasks'}
+              onOpenChange={(open) => setOpenMenu(open ? 'tasks' : null)}
             >
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
                   size="sm"
-                  onMouseEnter={() => setOpenMenu('dashboard')}
+                  onMouseEnter={() => setOpenMenu('tasks')}
                   onMouseLeave={() => setOpenMenu(null)}
                 >
-                  Dashboard
+                  Tasks
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 className="bg-white z-50"
-                onMouseEnter={() => setOpenMenu('dashboard')}
+                onMouseEnter={() => setOpenMenu('tasks')}
                 onMouseLeave={() => setOpenMenu(null)}
               >
                 <DropdownMenuItem asChild>
-                  <Link to="/" className="flex items-center">
+                  <Link to="/tasks" className="flex items-center">
                     <LayoutGrid className="h-4 w-4 mr-2" /> Übersicht
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/statistics" className="flex items-center">
-                    <BarChart3 className="h-4 w-4 mr-2" /> Statistiken
+                  <Link to="/kanban" className="flex items-center">
+                    <Columns className="h-4 w-4 mr-2" /> Kanban
                   </Link>
                 </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <DropdownMenu
-              open={openMenu === 'planning'}
-              onOpenChange={(open) => setOpenMenu(open ? 'planning' : null)}
-            >
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onMouseEnter={() => setOpenMenu('planning')}
-                  onMouseLeave={() => setOpenMenu(null)}
-                >
-                  Planung
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="bg-white z-50"
-                onMouseEnter={() => setOpenMenu('planning')}
-                onMouseLeave={() => setOpenMenu(null)}
-              >
                 <DropdownMenuItem asChild>
                   <Link to="/calendar" className="flex items-center">
                     <CalendarIcon className="h-4 w-4 mr-2" /> Kalender
@@ -131,8 +109,8 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/kanban" className="flex items-center">
-                    <Columns className="h-4 w-4 mr-2" /> Kanban
+                  <Link to="/statistics" className="flex items-center">
+                    <BarChart3 className="h-4 w-4 mr-2" /> Statistiken
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -175,61 +153,35 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <DropdownMenu
-              open={openMenu === 'more'}
-              onOpenChange={(open) => setOpenMenu(open ? 'more' : null)}
-            >
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onMouseEnter={() => setOpenMenu('more')}
-                  onMouseLeave={() => setOpenMenu(null)}
-                >
-                  Mehr
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="bg-white z-50"
-                onMouseEnter={() => setOpenMenu('more')}
-                onMouseLeave={() => setOpenMenu(null)}
-              >
-                <DropdownMenuItem asChild>
-                  <Link to="/notes" className="flex items-center">
-                    <List className="h-4 w-4 mr-2" /> Notizen
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/settings" className="flex items-center">
-                    <Cog className="h-4 w-4 mr-2" /> Einstellungen
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Link to="/notes">
+              <Button variant="outline" size="sm">
+                <List className="h-4 w-4 mr-2" /> Notizen
+              </Button>
+            </Link>
+            <Link to="/settings">
+              <Button variant="outline" size="sm">
+                <Cog className="h-4 w-4 mr-2" /> Einstellungen
+              </Button>
+            </Link>
           </div>
         </div>
         {showMobileMenu && (
           <div className="sm:hidden pb-4 space-y-4">
             <div className="space-y-2">
-              <p className="text-xs font-semibold text-gray-500">Dashboard</p>
+              <p className="text-xs font-semibold text-gray-500">Tasks</p>
               <div className="flex flex-wrap gap-2">
-                <Link to="/" className="flex-1">
+                <Link to="/tasks" className="flex-1">
                   <Button variant="outline" size="sm" className="w-full">
                     <LayoutGrid className="h-4 w-4 mr-2" />
                     Übersicht
                   </Button>
                 </Link>
-                <Link to="/statistics" className="flex-1">
+                <Link to="/kanban" className="flex-1">
                   <Button variant="outline" size="sm" className="w-full">
-                    <BarChart3 className="h-4 w-4 mr-2" />
-                    Statistiken
+                    <Columns className="h-4 w-4 mr-2" />
+                    Kanban
                   </Button>
                 </Link>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <p className="text-xs font-semibold text-gray-500">Planung</p>
-              <div className="flex flex-wrap gap-2">
                 <Link to="/calendar" className="flex-1">
                   <Button variant="outline" size="sm" className="w-full">
                     <CalendarIcon className="h-4 w-4 mr-2" />
@@ -242,10 +194,10 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                     Pomodoro
                   </Button>
                 </Link>
-                <Link to="/kanban" className="flex-1">
+                <Link to="/statistics" className="flex-1">
                   <Button variant="outline" size="sm" className="w-full">
-                    <Columns className="h-4 w-4 mr-2" />
-                    Kanban
+                    <BarChart3 className="h-4 w-4 mr-2" />
+                    Statistiken
                   </Button>
                 </Link>
               </div>
@@ -274,7 +226,7 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
               </div>
             </div>
             <div className="space-y-2">
-              <p className="text-xs font-semibold text-gray-500">Mehr</p>
+              <p className="text-xs font-semibold text-gray-500">Notizen</p>
               <div className="flex flex-wrap gap-2">
                 <Link to="/notes" className="flex-1">
                   <Button variant="outline" size="sm" className="w-full">
@@ -282,6 +234,11 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                     Notizen
                   </Button>
                 </Link>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <p className="text-xs font-semibold text-gray-500">Einstellungen</p>
+              <div className="flex flex-wrap gap-2">
                 <Link to="/settings" className="flex-1">
                   <Button variant="outline" size="sm" className="w-full">
                     <Cog className="h-4 w-4 mr-2" />

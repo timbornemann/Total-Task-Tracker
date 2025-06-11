@@ -9,7 +9,8 @@ import { CurrentCategoryProvider } from "@/hooks/useCurrentCategory";
 import { SettingsProvider } from "@/hooks/useSettings";
 import { FlashcardStoreProvider } from "@/hooks/useFlashcardStore";
 import CommandPalette from "@/components/CommandPalette";
-import Index from "./pages/Index";
+import Home from "./pages/Home";
+import TasksPage from "./pages/Tasks";
 import Statistics from "./pages/Statistics";
 import CalendarPage from "./pages/Calendar";
 import Kanban from "./pages/Kanban";
@@ -40,7 +41,8 @@ const App = () => (
             <BrowserRouter>
               <CommandPalette />
               <Routes>
-              <Route path="/" element={<Index />} />
+              <Route path="/" element={<Home />} />
+              <Route path="/tasks" element={<TasksPage />} />
               <Route path="/statistics" element={<Statistics />} />
               <Route path="/calendar" element={<CalendarPage />} />
               <Route path="/kanban" element={<Kanban />} />
