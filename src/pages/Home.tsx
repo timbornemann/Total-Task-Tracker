@@ -6,6 +6,7 @@ import { LayoutGrid, BookOpen, List } from 'lucide-react';
 import TaskCard from '@/components/TaskCard';
 import { useTaskStore } from '@/hooks/useTaskStore';
 import NoteCard from '@/components/NoteCard';
+import { flattenTasks } from '@/utils/taskUtils';
 
 const Home: React.FC = () => {
   const { notes, tasks } = useTaskStore();
@@ -15,7 +16,11 @@ const Home: React.FC = () => {
     [notes]
   );
   const pinnedTasks = useMemo(
-    () => tasks.filter(t => t.pinned && !t.parentId).sort((a, b) => a.order - b.order).slice(0, 3),
+    () =>
+      flattenTasks(tasks)
+        .filter(item => item.task.pinned)
+        .sort((a, b) => a.task.order - b.task.order)
+        .slice(0, 3),
     [tasks]
   );
 
@@ -55,14 +60,15 @@ const Home: React.FC = () => {
               Gepinnte Tasks
             </h2>
             <div className="space-y-3">
-              {pinnedTasks.map(task => (
+              {pinnedTasks.map(item => (
                 <Link
-                  key={task.id}
-                  to={`/tasks?taskId=${task.id}`}
+                  key={item.task.id}
+                  to={`/tasks?taskId=${item.task.id}`}
                   className="block"
                 >
                   <TaskCard
-                    task={task}
+                    task={item.task}
+                    parentPathTitles={item.path.map(p => p.title)}
                     onEdit={() => {}}
                     onDelete={() => {}}
                     onAddSubtask={() => {}}
