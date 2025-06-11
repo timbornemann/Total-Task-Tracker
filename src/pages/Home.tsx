@@ -41,10 +41,10 @@ const Home: React.FC = () => {
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <DragDropContext onDragEnd={handleDragEnd}>
-          <Droppable droppableId="sections" direction="horizontal">
+          <Droppable droppableId="sections">
             {provided => (
               <div
-                className="flex flex-wrap gap-6 mb-6"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6"
                 ref={provided.innerRef}
                 {...provided.droppableProps}
               >
@@ -55,7 +55,6 @@ const Home: React.FC = () => {
                         ref={prov.innerRef}
                         {...prov.draggableProps}
                         {...prov.dragHandleProps}
-                        className="w-full sm:w-1/2 lg:w-1/3"
                       >
                         <Link to={sec.path}>
                           <Card className="hover:shadow-md transition-all text-center">
