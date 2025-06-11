@@ -161,11 +161,26 @@ const FlashcardsPage: React.FC = () => {
 
   const current = trainingMode ? sessionCards[index] : cards[index];
 
-  const totalCards = useMemo(
-    () => (trainingMode ? sessionCards.length : cards.length),
-    [trainingMode, sessionCards.length, cards.length]
+  const overallTotalCards = useMemo(
+    () => (trainingMode ? filtered.length : cards.length),
+    [trainingMode, filtered.length, cards.length]
   );
-  const progressValue = totalCards > 0 ? ((index) / totalCards) * 100 : 0;
+
+  const completedCards = useMemo(
+    () =>
+      trainingMode
+      ? filtered.length - remainingCards.length - sessionCards.length
+      : index,
+    [trainingMode, filtered.length, remainingCards.length, sessionCards.length, index]
+  );
+
+  const progressValue =
+    overallTotalCards > 0
+      ? ((trainingMode ? completedCards + index : index) / overallTotalCards) * 100
+      : 0;
+
+  const sessionTotalCards = trainingMode ? sessionCards.length : overallTotalCards;
+  const overallCardNumber = trainingMode ? completedCards + index + 1 : index + 1;
 
   useEffect(() => {
     if (!current) {
@@ -332,7 +347,10 @@ const FlashcardsPage: React.FC = () => {
               <div className="mt-2">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs text-muted-foreground">
-                    Karte {Math.min(index + 1, totalCards)} / {totalCards}
+                    Karte {index + 1} / {sessionTotalCards}
+                    {trainingMode && (
+                      <> ({overallCardNumber} / {overallTotalCards})</>
+                    )}
                   </span>
                   <span className="text-xs text-muted-foreground">
                     {Math.round(progressValue)}%
