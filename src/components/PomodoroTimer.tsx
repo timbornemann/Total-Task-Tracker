@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
+import ReactDOM from 'react-dom/client';
 import { Button } from '@/components/ui/button';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -112,9 +113,11 @@ interface PomodoroTimerProps {
   compact?: boolean;
   /** Radius of the timer circle */
   size?: number;
+  /** Hide floating button when displayed inside floating window */
+  floating?: boolean;
 }
 
-const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80 }) => {
+const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, floating }) => {
   const {
     isRunning,
     isPaused,
@@ -133,6 +136,48 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80 }) => 
   } = usePomodoroStore();
   const { pomodoro, updatePomodoro } = useSettings();
   const { addSession, endBreak } = usePomodoroHistory();
+  const pipWindowRef = useRef<Window | null>(null);
+
+  const openFloatingWindow = async () => {
+    if (pipWindowRef.current && !pipWindowRef.current.closed) {
+      pipWindowRef.current.focus();
+      return;
+    }
+    try {
+      if (typeof (window as any).documentPictureInPicture !== 'undefined') {
+        const pip = await (window as any).documentPictureInPicture.requestWindow({
+          width: 220,
+          height: 220
+        });
+        pipWindowRef.current = pip;
+        pip.document.body.style.margin = '0';
+        const container = pip.document.createElement('div');
+        pip.document.body.appendChild(container);
+        ReactDOM.createRoot(container).render(
+          <PomodoroTimer size={150} floating />
+        );
+        pip.addEventListener('pagehide', () => {
+          pipWindowRef.current = null;
+        });
+      } else {
+        const pip = window.open('', '', 'width=220,height=220');
+        if (!pip) return;
+        pipWindowRef.current = pip;
+        pip.document.title = 'Pomodoro';
+        pip.document.body.style.margin = '0';
+        const container = pip.document.createElement('div');
+        pip.document.body.appendChild(container);
+        ReactDOM.createRoot(container).render(
+          <PomodoroTimer size={150} floating />
+        );
+        pip.addEventListener('beforeunload', () => {
+          pipWindowRef.current = null;
+        });
+      }
+    } catch (err) {
+      console.error('Failed to open floating window', err);
+    }
+  };
   const handlePause = () => {
     if (mode === 'work' && startTime) {
       addSession(startTime, Date.now());
@@ -241,6 +286,11 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80 }) => 
         {isRunning && (
           <Button onClick={handleReset} variant="outline">
             Reset
+          </Button>
+        )}
+        {!floating && (
+          <Button onClick={openFloatingWindow} variant="outline">
+            Float
           </Button>
         )}
       </div>

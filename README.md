@@ -72,7 +72,8 @@ npm start    # startet die gebaute App auf Port 3002
 - Statistikseite für Lernkarten
   - Deck-Statistiken mit Übersicht fälliger Karten
 - Speicherung der Daten auf dem lokalen Server
- - Pomodoro-Timer läuft beim Neuladen der Seite weiter
+- Pomodoro-Timer läuft beim Neuladen der Seite weiter
+- Kann als schwebendes Fenster (Picture-in-Picture) angezeigt werden
  - Statistikseite auf der Pomodoro-Seite mit Tages-, Wochen-, Monats- und Jahresübersicht
    - Auswertung nach Tageszeiten (Morgen, Mittag, Abend, Nacht)
    - Zusätzliche Anzeige für den aktuellen Tag
