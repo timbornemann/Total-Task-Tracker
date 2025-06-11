@@ -182,10 +182,15 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
       if (!pip) return;
       pipWindowRef.current = pip;
       if (!pip.document.body) {
-        pip.document.write('<!DOCTYPE html><html><body></body></html>');
+        pip.document.write('<!DOCTYPE html><html><head></head><body></body></html>');
         pip.document.close();
       }
       pip.document.title = 'Pomodoro';
+      pip.document.documentElement.className = document.documentElement.className;
+      document.querySelectorAll('style, link[rel="stylesheet"]').forEach(el => {
+        const clone = el.cloneNode(true) as HTMLElement;
+        pip.document.head.appendChild(clone);
+      });
       pip.document.body.style.margin = '0';
       const container = pip.document.createElement('div');
       pip.document.body.appendChild(container);
