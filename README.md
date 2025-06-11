@@ -86,8 +86,8 @@ npm start    # startet die gebaute App auf Port 3002
 - Lern- und Pausendauer frei konfigurierbar (auch direkt im Timer anpassbar)
 - Daten können im Einstellungsbereich exportiert und importiert werden
 - Standard-Priorität für neue Tasks einstellbar
-- Mehrere Theme-Voreinstellungen (light, dark, ocean) und ein eigenes
-  "Custom"-Theme wählbar
+- Mehrere Theme-Voreinstellungen (light, dark, ocean, dark-red, hacker,
+  motivation) und ein eigenes "Custom"-Theme wählbar
 
 ## Verwendung
 

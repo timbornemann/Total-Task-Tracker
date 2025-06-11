@@ -18,39 +18,39 @@ const defaultTaskPriority: 'low' | 'medium' | 'high' = 'medium'
 const defaultTheme = {
   background: '0 0% 100%',
   foreground: '222.2 84% 4.9%',
-  accent: '210 40% 96.1%',
-  card: '0 0% 100%',
+  accent: '212 100% 47%',
+  card: '0 0% 98%',
   'card-foreground': '222.2 84% 4.9%',
-  'stat-bar-primary': '210 40% 96.1%',
-  'stat-bar-secondary': '214.3 31.8% 91.4%',
+  'stat-bar-primary': '212 100% 47%',
+  'stat-bar-secondary': '215 28% 80%',
   'kanban-todo': '210 40% 96.1%',
-  'kanban-inprogress': '214.3 31.8% 91.4%',
-  'kanban-done': '140 40% 96.1%',
+  'kanban-inprogress': '215 28% 80%',
+  'kanban-done': '158 55% 52%',
   'pomodoro-work-ring': '222.2 47.4% 11.2%',
-  'pomodoro-break-ring': '210 40% 96.1%'
+  'pomodoro-break-ring': '212 100% 47%'
 }
 
 export const themePresets: Record<string, typeof defaultTheme> = {
   light: { ...defaultTheme },
   dark: {
-    background: '222.2 84% 4.9%',
+    background: '222 47% 11%',
     foreground: '210 40% 98%',
-    accent: '217.2 32.6% 17.5%',
-    card: '222.2 84% 4.9%',
+    accent: '217 91% 60%',
+    card: '218 28% 17%',
     'card-foreground': '210 40% 98%',
-    'stat-bar-primary': '217.2 32.6% 17.5%',
-    'stat-bar-secondary': '217.2 32.6% 17.5%',
-    'kanban-todo': '217.2 32.6% 17.5%',
-    'kanban-inprogress': '217.2 32.6% 17.5%',
-    'kanban-done': '217.2 32.6% 17.5%',
+    'stat-bar-primary': '217 91% 60%',
+    'stat-bar-secondary': '218 14% 30%',
+    'kanban-todo': '218 14% 30%',
+    'kanban-inprogress': '217 91% 60%',
+    'kanban-done': '158 64% 52%',
     'pomodoro-work-ring': '210 40% 98%',
-    'pomodoro-break-ring': '217.2 32.6% 17.5%'
+    'pomodoro-break-ring': '217 91% 60%'
   },
   ocean: {
     background: '210 60% 98%',
     foreground: '222.2 47.4% 11.2%',
     accent: '199 94% 48%',
-    card: '210 60% 98%',
+    card: '210 60% 96%',
     'card-foreground': '222.2 47.4% 11.2%',
     'stat-bar-primary': '199 94% 48%',
     'stat-bar-secondary': '214.3 31.8% 91.4%',
@@ -59,6 +59,48 @@ export const themePresets: Record<string, typeof defaultTheme> = {
     'kanban-done': '199 94% 48%',
     'pomodoro-work-ring': '199 94% 48%',
     'pomodoro-break-ring': '210 40% 96.1%'
+  },
+  'dark-red': {
+    background: '0 0% 9%',
+    foreground: '0 0% 98%',
+    accent: '0 72% 51%',
+    card: '0 0% 15%',
+    'card-foreground': '0 0% 98%',
+    'stat-bar-primary': '0 72% 51%',
+    'stat-bar-secondary': '0 0% 25%',
+    'kanban-todo': '0 0% 25%',
+    'kanban-inprogress': '0 72% 51%',
+    'kanban-done': '0 72% 51%',
+    'pomodoro-work-ring': '0 0% 98%',
+    'pomodoro-break-ring': '0 72% 51%'
+  },
+  hacker: {
+    background: '120 12% 8%',
+    foreground: '120 100% 80%',
+    accent: '120 70% 40%',
+    card: '120 10% 12%',
+    'card-foreground': '120 100% 80%',
+    'stat-bar-primary': '120 70% 40%',
+    'stat-bar-secondary': '120 10% 20%',
+    'kanban-todo': '120 20% 20%',
+    'kanban-inprogress': '120 40% 30%',
+    'kanban-done': '120 70% 40%',
+    'pomodoro-work-ring': '120 100% 80%',
+    'pomodoro-break-ring': '120 70% 40%'
+  },
+  motivation: {
+    background: '40 100% 98%',
+    foreground: '20 90% 10%',
+    accent: '30 100% 50%',
+    card: '0 0% 100%',
+    'card-foreground': '20 90% 10%',
+    'stat-bar-primary': '30 100% 50%',
+    'stat-bar-secondary': '38 88% 80%',
+    'kanban-todo': '38 88% 80%',
+    'kanban-inprogress': '30 100% 50%',
+    'kanban-done': '88 50% 50%',
+    'pomodoro-work-ring': '20 90% 10%',
+    'pomodoro-break-ring': '30 100% 50%'
   }
 }
 
