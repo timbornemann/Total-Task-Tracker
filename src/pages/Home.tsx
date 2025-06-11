@@ -2,7 +2,9 @@ import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
-import { LayoutGrid, BookOpen, List } from 'lucide-react';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+import { useSettings } from '@/hooks/useSettings';
+import { allHomeSections, HomeSection } from '@/utils/homeSections';
 import TaskCard from '@/components/TaskCard';
 import { useTaskStore } from '@/hooks/useTaskStore';
 import NoteCard from '@/components/NoteCard';
@@ -10,6 +12,11 @@ import { flattenTasks } from '@/utils/taskUtils';
 
 const Home: React.FC = () => {
   const { notes, tasks } = useTaskStore();
+  const { homeSections, reorderHomeSections } = useSettings();
+
+  const orderedSections: HomeSection[] = homeSections
+    .map(key => allHomeSections.find(s => s.key === key))
+    .filter((s): s is HomeSection => Boolean(s));
 
   const pinnedNotes = useMemo(
     () => notes.filter(n => n.pinned).sort((a, b) => a.order - b.order).slice(0, 3),
@@ -24,36 +31,48 @@ const Home: React.FC = () => {
     [tasks]
   );
 
+  const handleDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+    reorderHomeSections(result.source.index, result.destination.index);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-          <Link to="/tasks">
-            <Card className="hover:shadow-md transition-all text-center">
-              <CardContent className="py-8">
-                <LayoutGrid className="h-8 w-8 mx-auto mb-2" />
-                <CardTitle>Tasks</CardTitle>
-              </CardContent>
-            </Card>
-          </Link>
-          <Link to="/flashcards">
-            <Card className="hover:shadow-md transition-all text-center">
-              <CardContent className="py-8">
-                <BookOpen className="h-8 w-8 mx-auto mb-2" />
-                <CardTitle>Flashcards</CardTitle>
-              </CardContent>
-            </Card>
-          </Link>
-          <Link to="/notes">
-            <Card className="hover:shadow-md transition-all text-center">
-              <CardContent className="py-8">
-                <List className="h-8 w-8 mx-auto mb-2" />
-                <CardTitle>Notizen</CardTitle>
-              </CardContent>
-            </Card>
-          </Link>
-        </div>
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Droppable droppableId="sections" direction="horizontal">
+            {provided => (
+              <div
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6"
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+              >
+                {orderedSections.map((sec, index) => (
+                  <Draggable key={sec.key} draggableId={sec.key} index={index}>
+                    {prov => (
+                      <div
+                        ref={prov.innerRef}
+                        {...prov.draggableProps}
+                        {...prov.dragHandleProps}
+                      >
+                        <Link to={sec.path}>
+                          <Card className="hover:shadow-md transition-all text-center">
+                            <CardContent className="py-8">
+                              <sec.icon className="h-8 w-8 mx-auto mb-2" />
+                              <CardTitle>{sec.label}</CardTitle>
+                            </CardContent>
+                          </Card>
+                        </Link>
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
         {pinnedTasks.length > 0 && (
           <div className="mb-6">
             <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-3">

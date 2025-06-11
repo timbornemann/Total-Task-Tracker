@@ -6,6 +6,8 @@ import KeyInput from '@/components/KeyInput'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { hslToHex, hexToHsl } from '@/utils/color'
+import { Checkbox } from '@/components/ui/checkbox'
+import { allHomeSections } from '@/utils/homeSections'
 import {
   Select,
   SelectContent,
@@ -31,7 +33,9 @@ const SettingsPage: React.FC = () => {
     theme,
     updateTheme,
     themeName,
-    updateThemeName
+    updateThemeName,
+    homeSections,
+    toggleHomeSection
   } = useSettings()
 
   const download = (data: any, name: string) => {
@@ -205,10 +209,11 @@ const SettingsPage: React.FC = () => {
       <Navbar title="Einstellungen" />
       <div className="max-w-2xl mx-auto px-4 py-6">
         <Tabs defaultValue="shortcuts" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="shortcuts">Shortcuts</TabsTrigger>
             <TabsTrigger value="pomodoro">Pomodoro</TabsTrigger>
             <TabsTrigger value="tasks">Tasks</TabsTrigger>
+            <TabsTrigger value="home">Startseite</TabsTrigger>
             <TabsTrigger value="theme">Theme</TabsTrigger>
             <TabsTrigger value="data">Daten</TabsTrigger>
           </TabsList>
@@ -280,6 +285,18 @@ const SettingsPage: React.FC = () => {
                 </SelectContent>
               </Select>
             </div>
+          </TabsContent>
+          <TabsContent value="home" className="space-y-2">
+            {allHomeSections.map(sec => (
+              <div key={sec.key} className="flex items-center space-x-2">
+                <Checkbox
+                  id={sec.key}
+                  checked={homeSections.includes(sec.key)}
+                  onCheckedChange={() => toggleHomeSection(sec.key)}
+                />
+                <Label htmlFor={sec.key}>{sec.label}</Label>
+              </div>
+            ))}
           </TabsContent>
           <TabsContent value="theme" className="space-y-4">
             <div>
