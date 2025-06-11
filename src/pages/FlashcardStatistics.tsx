@@ -94,7 +94,49 @@ const FlashcardStatisticsPage: React.FC = () => {
                 </ResponsiveContainer>
               </div>
             </CardContent>
-          </Card>
+            </Card>
+          </div>
+          {stats.deckStats.length > 0 && (
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle className="text-base sm:text-lg">Decks im Detail</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs sm:text-sm">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left py-2 font-medium">Deck</th>
+                        <th className="text-right py-2 font-medium">Gesamt</th>
+                        <th className="text-right py-2 font-medium">Fällig</th>
+                        <th className="text-right py-2 font-medium">Fälligkeitsanteil</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {stats.deckStats.map((deck, idx) => {
+                        const percent = deck.total > 0 ? (deck.due / deck.total) * 100 : 0;
+                        return (
+                          <tr key={idx} className="border-b">
+                            <td className="py-2 font-medium">{deck.deckName}</td>
+                            <td className="text-right py-2">{deck.total}</td>
+                            <td className="text-right py-2 text-red-600">{deck.due}</td>
+                            <td className="text-right py-2">
+                              <div className="flex items-center justify-end">
+                                <div className="w-16 sm:w-20 bg-gray-200 rounded-full h-2 mr-2">
+                                  <div className="bg-red-600 h-2 rounded-full" style={{ width: `${percent}%` }} />
+                                </div>
+                                <span className="text-xs">{Math.round(percent)}%</span>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>

@@ -9,7 +9,14 @@ import { useFlashcardStore } from '@/hooks/useFlashcardStore';
 import { Deck } from '@/types';
 
 const FlashcardManagerPage: React.FC = () => {
-  const { decks, flashcards, addDeck, updateDeck, deleteDeck } = useFlashcardStore();
+  const {
+    decks,
+    addDeck,
+    updateDeck,
+    deleteDeck,
+    countCardsForDeck,
+    countDueCardsForDeck
+  } = useFlashcardStore();
   const navigate = useNavigate();
   const [isDeckModalOpen, setIsDeckModalOpen] = useState(false);
   const [editingDeck, setEditingDeck] = useState<Deck | null>(null);
@@ -37,13 +44,17 @@ const FlashcardManagerPage: React.FC = () => {
         ) : (
           <div className="space-y-4">
             {decks.map(deck => {
-              const count = flashcards.filter(c => c.deckId === deck.id).length;
+              const total = countCardsForDeck(deck.id);
+              const due = countDueCardsForDeck(deck.id);
               return (
                 <Card key={deck.id} onClick={() => navigate(`/flashcards/deck/${deck.id}`)} className="cursor-pointer">
                   <CardHeader>
                     <CardTitle>{deck.name}</CardTitle>
                   </CardHeader>
-                  <CardContent>{count} Karte{count !== 1 ? 'n' : ''}</CardContent>
+                  <CardContent>
+                    {total} Karte{total !== 1 ? 'n' : ''}
+                    <div className="text-sm text-muted-foreground">{due}/{total} fällig</div>
+                  </CardContent>
                   <CardFooter className="flex justify-end space-x-2">
                     <Button variant="outline" size="sm" onClick={e => { e.stopPropagation(); setEditingDeck(deck); setIsDeckModalOpen(true); }}>
                       <Pencil className="h-4 w-4" />

@@ -10,9 +10,19 @@ import { Plus, Pencil, Trash2 } from 'lucide-react';
 const DeckDetailPage: React.FC = () => {
   const { deckId } = useParams<{ deckId: string }>();
   const navigate = useNavigate();
-  const { flashcards, decks, addFlashcard, updateFlashcard, deleteFlashcard } = useFlashcardStore();
+  const {
+    decks,
+    addFlashcard,
+    updateFlashcard,
+    deleteFlashcard,
+    countCardsForDeck,
+    countDueCardsForDeck,
+    flashcards
+  } = useFlashcardStore();
   const deck = decks.find(d => d.id === deckId);
   const cards = flashcards.filter(c => c.deckId === deckId);
+  const totalCount = countCardsForDeck(deckId!);
+  const dueCount = countDueCardsForDeck(deckId!);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
@@ -33,7 +43,10 @@ const DeckDetailPage: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <Navbar title={deck.name} onHomeClick={() => navigate('/flashcards/manage')} />
       <div className="max-w-2xl mx-auto py-8 px-4 space-y-4">
-        <div className="flex justify-end">
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-muted-foreground">
+            {dueCount}/{totalCount} fällig
+          </span>
           <Button size="sm" onClick={() => setIsModalOpen(true)}>
             <Plus className="h-4 w-4 mr-2" /> Neue Karte
           </Button>
