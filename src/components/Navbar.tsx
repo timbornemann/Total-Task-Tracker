@@ -101,11 +101,6 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/pomodoro" className="flex items-center">
-                    <Timer className="h-4 w-4 mr-2" /> Pomodoro
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
                   <Link to="/statistics" className="flex items-center">
                     <BarChart3 className="h-4 w-4 mr-2" /> Statistiken
                   </Link>
@@ -140,6 +135,11 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                 <DropdownMenuItem asChild>
                   <Link to="/flashcards/manage" className="flex items-center">
                     <Pencil className="h-4 w-4 mr-2" /> Decks
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/pomodoro" className="flex items-center">
+                    <Timer className="h-4 w-4 mr-2" /> Pomodoro
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
@@ -185,12 +185,6 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                     Kalender
                   </Button>
                 </Link>
-                <Link to="/pomodoro" className="flex-1">
-                  <Button variant="outline" size="sm" className="w-full">
-                    <Timer className="h-4 w-4 mr-2" />
-                    Pomodoro
-                  </Button>
-                </Link>
                 <Link to="/statistics" className="flex-1">
                   <Button variant="outline" size="sm" className="w-full">
                     <BarChart3 className="h-4 w-4 mr-2" />
@@ -212,6 +206,12 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                   <Button variant="outline" size="sm" className="w-full">
                     <Pencil className="h-4 w-4 mr-2" />
                     Decks
+                  </Button>
+                </Link>
+                <Link to="/pomodoro" className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full">
+                    <Timer className="h-4 w-4 mr-2" />
+                    Pomodoro
                   </Button>
                 </Link>
                 <Link to="/flashcards/stats" className="flex-1">
