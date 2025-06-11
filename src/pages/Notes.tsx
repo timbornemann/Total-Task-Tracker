@@ -38,7 +38,7 @@ const NotesPage = () => {
             <Droppable droppableId="notes" direction="horizontal">
               {provided => (
                 <div
-                  className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+                  className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-fr"
                   ref={provided.innerRef}
                   {...provided.droppableProps}
                 >
@@ -49,6 +49,7 @@ const NotesPage = () => {
                           ref={prov.innerRef}
                           {...prov.draggableProps}
                           {...prov.dragHandleProps}
+                          className="h-full"
                         >
                           <NoteCard
                             note={note}

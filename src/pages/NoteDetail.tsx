@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import { useTaskStore } from '@/hooks/useTaskStore';
 import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -45,6 +46,14 @@ const NoteDetailPage: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <Navbar title="Notiz" onHomeClick={() => navigate('/notes')} />
       <div className="max-w-2xl mx-auto py-8 px-4">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate('/notes')}
+          className="mb-4"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" /> Zurück
+        </Button>
         {isEditing ? (
           <form className="space-y-4" onSubmit={e => { e.preventDefault(); handleSave(); }}>
             <div>
