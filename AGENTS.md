@@ -15,6 +15,17 @@ Diese Datei dient als Anleitung für automatisierte Agenten (z. B. Codex), wie
   * `/public` → Statische Assets
   * `Dockerfile`, `docker-compose.yml` → Container Setup
 
+* **Hauptfunktionen**:
+
+  * Aufgabenverwaltung mit Kategorien, Unteraufgaben und Wiederholungen
+  * Tasks und Notizen können angeheftet werden (maximal drei auf der Startseite)
+  * Kalenderansicht und Task-Statistiken
+  * Notizen mit Markdown-Vorschau und Drag & Drop
+  * Lernkarten mit Spaced-Repetition, Deck-Verwaltung und Statistikseite
+  * Globale Suche über die Command Palette (`Strg+K`)
+  * Pomodoro-Timer mit History und eigener Statistik
+  * Daten-Export/-Import und mehrere Theme-Voreinstellungen
+
 ---
 
 ## 2. Setup & Entwicklung
