@@ -41,10 +41,10 @@ Rufe anschließend im Browser `http://localhost:8081` auf.
 Die Anwendung kann komplett über einen Docker-Container ausgeführt werden. Dabei wird automatisch ein Produktionsbuild erstellt.
 
 1. Repository klonen und in das Projektverzeichnis wechseln
-2. Container bauen und starten
+2. Container bauen und starten (setzt optional die Versionsnummer)
 
 ```bash
-docker-compose up --build
+VERSION=$(git describe --tags --abbrev=0) docker-compose up --build
 ```
 
 Der Dienst lauscht anschließend auf Port **3002**. Im Browser unter `http://localhost:3002` erreichst du das Dashboard. Die Daten werden dauerhaft im Verzeichnis `./server/data` als SQLite-Datenbank abgelegt. Mit `docker-compose down` kann der Container gestoppt werden.
