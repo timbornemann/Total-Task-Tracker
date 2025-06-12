@@ -58,7 +58,9 @@ docker pull ghcr.io/timbornemann/total-task-tracker:latest
 docker run -d --name task-tracker -p 3002:3002 ghcr.io/timbornemann/total-task-tracker:latest
 ```
 
-Optional lassen sich die Daten per Volume auf dem Host speichern:
+Die Anwendung legt die SQLite-Daten standardmäßig im Docker-Volume `/app/server/data` ab. Dieses Volume wird automatisch erzeugt und bleibt auch nach einem Update des Containers erhalten.
+
+Möchtest du stattdessen ein bestimmtes Verzeichnis binden, kannst du ein Volume angeben:
 
 ```bash
 docker run -d \
