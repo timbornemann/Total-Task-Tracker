@@ -1,5 +1,7 @@
 # Use Node.js 18 Alpine as base image
 FROM node:18-alpine AS builder
+ARG VERSION=0.0.0
+ENV APP_VERSION=$VERSION
 
 # Set working directory
 WORKDIR /app
@@ -18,6 +20,8 @@ RUN npm run build
 
 # Production stage
 FROM node:18-alpine
+ARG VERSION=0.0.0
+ENV APP_VERSION=$VERSION
 
 WORKDIR /app
 
