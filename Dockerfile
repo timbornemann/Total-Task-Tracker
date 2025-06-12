@@ -23,6 +23,7 @@ WORKDIR /app
 
 # Copy built assets from builder stage
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
 COPY server ./server
 COPY package*.json ./
 

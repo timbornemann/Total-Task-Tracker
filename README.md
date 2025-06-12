@@ -49,6 +49,25 @@ docker-compose up --build
 
 Der Dienst lauscht anschließend auf Port **3002**. Im Browser unter `http://localhost:3002` erreichst du das Dashboard. Die Daten werden dauerhaft im Verzeichnis `./server/data` als SQLite-Datenbank abgelegt. Mit `docker-compose down` kann der Container gestoppt werden.
 
+## Nutzung des vorgefertigten Images
+
+Wenn du nicht lokal bauen möchtest, kannst du das bereits bereitgestellte Docker-Image aus der GitHub Container Registry nutzen:
+
+```bash
+docker pull ghcr.io/timbornemann/total-task-tracker:latest
+docker run -d --name task-tracker -p 3002:3002 ghcr.io/timbornemann/total-task-tracker:latest
+```
+
+Optional lassen sich die Daten per Volume auf dem Host speichern:
+
+```bash
+docker run -d \
+  --name task-tracker \
+  -p 3002:3002 \
+  -v ./server/data:/app/server/data \
+  ghcr.io/timbornemann/total-task-tracker:latest
+```
+
 ## Manuelle Produktion (optional)
 
 Möchtest du ohne Docker deployen, kannst du die Anwendung lokal bauen und den Node-Server direkt nutzen.
