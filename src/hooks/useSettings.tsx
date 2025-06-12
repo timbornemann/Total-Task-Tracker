@@ -27,6 +27,7 @@ const defaultFlashcardSettings = {
     | 'typing'
     | 'timed'
 }
+const defaultSyncInterval = 5
 const defaultTaskPriority: 'low' | 'medium' | 'high' = 'medium'
 const defaultTheme = {
   background: '0 0% 100%',
@@ -150,6 +151,8 @@ interface SettingsContextValue {
   updateFlashcardDefaultMode: (
     value: 'spaced' | 'training' | 'random' | 'typing' | 'timed'
   ) => void
+  syncInterval: number
+  updateSyncInterval: (value: number) => void
   syncFolder: string
   updateSyncFolder: (folder: string) => void
 }
@@ -184,6 +187,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [showPinnedTasks, setShowPinnedTasks] = useState(true)
   const [showPinnedNotes, setShowPinnedNotes] = useState(true)
   const [syncFolder, setSyncFolder] = useState('')
+  const [syncInterval, setSyncInterval] = useState(defaultSyncInterval)
 
   useEffect(() => {
     const load = async () => {
@@ -249,6 +253,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           if (typeof data.syncFolder === 'string') {
             setSyncFolder(data.syncFolder)
           }
+          if (typeof data.syncInterval === 'number') {
+            setSyncInterval(data.syncInterval)
+          }
         }
       } catch (err) {
         console.error('Fehler beim Laden der Einstellungen', err)
@@ -276,7 +283,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           flashcardTimer,
           flashcardSessionSize,
           flashcardDefaultMode,
-          syncFolder
+          syncFolder,
+          syncInterval
         })
       })
       } catch (err) {
@@ -298,7 +306,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     flashcardTimer,
     flashcardSessionSize,
     flashcardDefaultMode,
-    syncFolder
+    syncFolder,
+    syncInterval
   ])
 
   useEffect(() => {
@@ -354,6 +363,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setSyncFolder(folder)
   }
 
+  const updateSyncInterval = (value: number) => {
+    setSyncInterval(value)
+  }
+
   const toggleHomeSection = (section: string) => {
     setHomeSections(prev =>
       prev.includes(section)
@@ -406,6 +419,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         updateFlashcardSessionSize,
         flashcardDefaultMode,
         updateFlashcardDefaultMode,
+        syncInterval,
+        updateSyncInterval,
         syncFolder,
         updateSyncFolder
       }}

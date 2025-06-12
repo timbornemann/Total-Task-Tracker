@@ -107,7 +107,8 @@ npm start    # startet die gebaute App auf Port 3002
   sofort aktualisiert.
 - Lern- und Pausendauer frei konfigurierbar (auch direkt im Timer anpassbar)
 - Daten können im Einstellungsbereich exportiert und importiert werden
-- Automatische Synchronisation mit einem wählbaren Ordner
+- Automatische Synchronisation mit optional wählbarem Ordner
+  und einstellbarem Sync-Intervall
 - Standard-Priorität für neue Tasks einstellbar
 - Mehrere Theme-Voreinstellungen (light, dark, ocean, dark-red, hacker,
   motivation) und ein eigenes "Custom"-Theme wählbar
