@@ -21,11 +21,13 @@ import FlashcardManagerPage from "./pages/FlashcardManager";
 import DeckDetailPage from "./pages/DeckDetail";
 import FlashcardStatisticsPage from "./pages/FlashcardStatistics";
 import SettingsPage from "./pages/Settings";
+import ReleaseNotesPage from "./pages/ReleaseNotes";
 import NotFound from "./pages/NotFound";
 import PomodoroPage from "./pages/Pomodoro";
 import PomodoroTimer from "@/components/PomodoroTimer";
 import PomodoroTicker from "@/components/PomodoroTicker";
 import { PomodoroHistoryProvider } from "@/hooks/usePomodoroHistory.tsx";
+import ReleaseNotesModal from "@/components/ReleaseNotesModal";
 
 const queryClient = new QueryClient();
 
@@ -54,6 +56,7 @@ const App = () => (
               <Route path="/notes" element={<NotesPage />} />
               <Route path="/notes/:id" element={<NoteDetailPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/release-notes" element={<ReleaseNotesPage />} />
               <Route path="/pomodoro" element={<PomodoroPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
@@ -61,6 +64,7 @@ const App = () => (
             </BrowserRouter>
             <PomodoroTimer compact />
             <PomodoroTicker />
+            <ReleaseNotesModal />
             </CurrentCategoryProvider>
           </FlashcardStoreProvider>
         </TaskStoreProvider>
