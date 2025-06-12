@@ -33,6 +33,9 @@ COPY package*.json ./
 
 RUN npm prune --production || true
 
+# Persist application data
+VOLUME /app/server/data
+
 EXPOSE 3002
 
 CMD ["node", "server/index.js"]
