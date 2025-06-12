@@ -58,7 +58,18 @@ docker pull ghcr.io/timbornemann/total-task-tracker:latest
 docker run -d --name task-tracker -p 3002:3002 ghcr.io/timbornemann/total-task-tracker:latest
 ```
 
-Die Anwendung legt die SQLite-Daten standardmäßig im Docker-Volume `/app/server/data` ab. Dieses Volume wird automatisch erzeugt und bleibt auch nach einem Update des Containers erhalten.
+Um die Daten auch bei automatischen Updates durch Tools wie **Watchtower** zu erhalten, empfiehlt es sich, ein benanntes Docker-Volume zu nutzen:
+
+```bash
+docker volume create task-tracker-data
+docker run -d \
+  --name task-tracker \
+  -p 3002:3002 \
+  -v task-tracker-data:/app/server/data \
+  ghcr.io/timbornemann/total-task-tracker:latest
+```
+
+Die Anwendung legt die SQLite-Daten standardmäßig im Docker-Volume `/app/server/data` ab. Ohne Angabe eines eigenen Volumes erstellt Docker dafür ein anonymes Volume, das beim Entfernen des Containers verloren gehen kann.
 
 Möchtest du stattdessen ein bestimmtes Verzeichnis binden, kannst du ein Volume angeben:
 
