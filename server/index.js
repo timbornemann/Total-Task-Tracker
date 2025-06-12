@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { parse } from 'url';
 import Database from 'better-sqlite3';
+import dialog from 'node-file-dialog';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -50,6 +51,9 @@ try {
 } catch {}
 
 const initialSettings = loadSettings();
+if (typeof initialSettings.syncInterval === 'number') {
+  syncInterval = initialSettings.syncInterval;
+}
 if (initialSettings.syncFolder) {
   setSyncFolder(initialSettings.syncFolder);
 }
@@ -246,6 +250,7 @@ function saveAllData(data) {
 }
 
 let syncFolder = '';
+let syncInterval = 5; // minutes
 let syncTimer = null;
 let lastSyncMtime = 0;
 
@@ -304,9 +309,19 @@ function setSyncFolder(folder) {
   syncFolder = folder || '';
   if (syncTimer) clearInterval(syncTimer);
   syncTimer = null;
-  if (syncFolder) {
+  if (syncFolder && syncInterval > 0) {
     performSync();
-    syncTimer = setInterval(performSync, 5 * 60 * 1000);
+    syncTimer = setInterval(performSync, syncInterval * 60 * 1000);
+  }
+}
+
+function setSyncInterval(minutes) {
+  syncInterval = minutes || 0;
+  if (syncTimer) clearInterval(syncTimer);
+  syncTimer = null;
+  if (syncFolder && syncInterval > 0) {
+    performSync();
+    syncTimer = setInterval(performSync, syncInterval * 60 * 1000);
   }
 }
 
@@ -455,6 +470,22 @@ const server = http.createServer((req, res) => {
     }
   }
 
+  if (parsed.pathname === '/api/select-folder') {
+    if (req.method === 'GET') {
+      dialog({ type: 'directory' })
+        .then(paths => {
+          const folder = Array.isArray(paths) ? paths[0] : ''
+          res.writeHead(200, { 'Content-Type': 'application/json' })
+          res.end(JSON.stringify({ folder }))
+        })
+        .catch(() => {
+          res.writeHead(500)
+          res.end(JSON.stringify({ folder: '' }))
+        })
+      return
+    }
+  }
+
   if (parsed.pathname === '/api/settings') {
     if (req.method === 'GET') {
       res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -470,6 +501,9 @@ const server = http.createServer((req, res) => {
           saveSettings(settings);
           if (settings.syncFolder !== undefined) {
             setSyncFolder(settings.syncFolder);
+          }
+          if (settings.syncInterval !== undefined) {
+            setSyncInterval(settings.syncInterval);
           }
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ status: 'ok' }));

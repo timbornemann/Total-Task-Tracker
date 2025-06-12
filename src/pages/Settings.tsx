@@ -52,6 +52,8 @@ const SettingsPage: React.FC = () => {
     updateFlashcardSessionSize,
     flashcardDefaultMode,
     updateFlashcardDefaultMode,
+    syncInterval,
+    updateSyncInterval,
     syncFolder,
     updateSyncFolder
   } = useSettings()
@@ -225,6 +227,16 @@ const SettingsPage: React.FC = () => {
       body: JSON.stringify(merged)
     })
     window.location.reload()
+  }
+
+  const selectFolder = async () => {
+    const res = await fetch('/api/select-folder')
+    if (res.ok) {
+      const data = await res.json()
+      if (data.folder) {
+        updateSyncFolder(data.folder)
+      }
+    }
   }
 
   return (
@@ -542,10 +554,22 @@ const SettingsPage: React.FC = () => {
             <h2 className="font-semibold">Datenexport / -import</h2>
             <div className="space-y-2">
               <p className="font-medium">Sync-Ordner</p>
+              <div className="flex items-center gap-2">
+                <Input
+                  value={syncFolder}
+                  onChange={e => updateSyncFolder(e.target.value)}
+                  placeholder="/Pfad/zum/Ordner"
+                />
+                <Button variant="outline" onClick={selectFolder}>Ordner wählen</Button>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <p className="font-medium">Sync-Intervall (Minuten)</p>
               <Input
-                value={syncFolder}
-                onChange={e => updateSyncFolder(e.target.value)}
-                placeholder="/Pfad/zum/Ordner"
+                type="number"
+                min={1}
+                value={syncInterval}
+                onChange={e => updateSyncInterval(Number(e.target.value))}
               />
             </div>
             <div className="space-y-2">
