@@ -50,6 +50,11 @@ try {
   db.prepare('ALTER TABLE pomodoro_sessions ADD COLUMN breakEnd INTEGER').run();
 } catch {}
 
+let syncFolder = '';
+let syncInterval = 5; // minutes
+let syncTimer = null;
+let lastSyncMtime = 0;
+
 const initialSettings = loadSettings();
 if (typeof initialSettings.syncInterval === 'number') {
   syncInterval = initialSettings.syncInterval;
@@ -248,11 +253,6 @@ function saveAllData(data) {
   saveFlashcards(data.flashcards || []);
   saveDecks(data.decks || []);
 }
-
-let syncFolder = '';
-let syncInterval = 5; // minutes
-let syncTimer = null;
-let lastSyncMtime = 0;
 
 function mergeLists(curr = [], inc = [], compare = 'updatedAt') {
   const map = new Map();
