@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import KeyInput from '@/components/KeyInput'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { Link } from 'react-router-dom'
 import { hslToHex, hexToHsl } from '@/utils/color'
 import { Checkbox } from '@/components/ui/checkbox'
 import { allHomeSections } from '@/utils/homeSections'
@@ -22,6 +23,8 @@ import {
   TabsTrigger,
   TabsContent
 } from '@/components/ui/tabs'
+import ReactMarkdown from 'react-markdown'
+import readme from '../../README.md?raw'
 
 const SettingsPage: React.FC = () => {
   const {
@@ -227,7 +230,7 @@ const SettingsPage: React.FC = () => {
       <Navbar title="Einstellungen" />
       <div className="max-w-2xl mx-auto px-4 py-6">
         <Tabs defaultValue="shortcuts" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-7">
+          <TabsList className="grid w-full grid-cols-8">
             <TabsTrigger value="shortcuts">Shortcuts</TabsTrigger>
             <TabsTrigger value="pomodoro">Pomodoro</TabsTrigger>
             <TabsTrigger value="flashcards">Karten</TabsTrigger>
@@ -235,6 +238,7 @@ const SettingsPage: React.FC = () => {
             <TabsTrigger value="home">Startseite</TabsTrigger>
             <TabsTrigger value="theme">Theme</TabsTrigger>
             <TabsTrigger value="data">Daten</TabsTrigger>
+            <TabsTrigger value="info">Info</TabsTrigger>
           </TabsList>
           <TabsContent value="shortcuts" className="space-y-4">
             <div>
@@ -563,8 +567,24 @@ const SettingsPage: React.FC = () => {
               </div>
             </div>
           </TabsContent>
+          <TabsContent value="info" className="space-y-4">
+            <div className="prose dark:prose-invert">
+              <ReactMarkdown>{readme}</ReactMarkdown>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Version {__APP_VERSION__}{' '}
+              <Link to="/release-notes" className="underline">
+                Release Notes
+              </Link>
+            </p>
+          </TabsContent>
         </Tabs>
-        <p className="text-xs text-muted-foreground mt-4">Version {__APP_VERSION__}</p>
+        <p className="text-xs text-muted-foreground mt-4">
+          Version {__APP_VERSION__}{' '}
+          <Link to="/release-notes" className="underline">
+            Release Notes
+          </Link>
+        </p>
       </div>
     </div>
   )

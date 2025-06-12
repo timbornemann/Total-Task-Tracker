@@ -109,6 +109,7 @@ npm start    # startet die gebaute App auf Port 3002
 - Mehrere Theme-Voreinstellungen (light, dark, ocean, dark-red, hacker,
   motivation) und ein eigenes "Custom"-Theme wählbar
 - Im Custom-Theme lassen sich Farben der Oberfläche und Karten individuell anpassen
+- Neuer "Info"-Reiter in den Einstellungen zeigt Versionsnummer, Release Notes und README
 
 ## Verwendung
 

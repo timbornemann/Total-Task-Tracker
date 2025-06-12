@@ -7,12 +7,13 @@ import { componentTagger } from "lovable-tagger";
 const pkg = JSON.parse(
   fs.readFileSync(new URL("./package.json", import.meta.url), "utf8")
 );
+const version = process.env.APP_VERSION || pkg.version;
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   base: '/',
   define: {
-    __APP_VERSION__: JSON.stringify(pkg.version),
+    __APP_VERSION__: JSON.stringify(version),
   },
   server: {
     host: "0.0.0.0",

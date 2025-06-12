@@ -172,11 +172,6 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                 <Cog className="h-4 w-4 mr-2" /> Einstellungen
               </Button>
             </Link>
-            <Link to="/release-notes">
-              <Button variant="outline" size="sm">
-                <Info className="h-4 w-4 mr-2" /> Release Notes
-              </Button>
-            </Link>
           </div>
         </div>
         {showMobileMenu && (
@@ -274,12 +269,6 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                   <Button variant="outline" size="sm" className="w-full">
                     <Cog className="h-4 w-4 mr-2" />
                     Einstellungen
-                  </Button>
-                </Link>
-                <Link to="/release-notes" className="flex-1">
-                  <Button variant="outline" size="sm" className="w-full">
-                    <Info className="h-4 w-4 mr-2" />
-                    Release Notes
                   </Button>
                 </Link>
               </div>
