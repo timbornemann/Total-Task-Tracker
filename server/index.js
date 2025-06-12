@@ -244,7 +244,8 @@ function loadAllData() {
     categories: loadCategories(),
     notes: loadNotes(),
     flashcards: loadFlashcards(),
-    decks: loadDecks()
+    decks: loadDecks(),
+    settings: loadSettings()
   };
 }
 
@@ -252,6 +253,15 @@ function saveAllData(data) {
   saveData(data);
   saveFlashcards(data.flashcards || []);
   saveDecks(data.decks || []);
+  if (data.settings) {
+    saveSettings(data.settings);
+    if (data.settings.syncFolder !== undefined) {
+      setSyncFolder(data.settings.syncFolder);
+    }
+    if (data.settings.syncInterval !== undefined) {
+      setSyncInterval(data.settings.syncInterval);
+    }
+  }
 }
 
 function mergeLists(curr = [], inc = [], compare = 'updatedAt') {
@@ -276,7 +286,8 @@ function mergeData(curr, inc) {
     categories: mergeLists(curr.categories, inc.categories),
     notes: mergeLists(curr.notes, inc.notes),
     flashcards: mergeLists(curr.flashcards, inc.flashcards, null),
-    decks: mergeLists(curr.decks, inc.decks, null)
+    decks: mergeLists(curr.decks, inc.decks, null),
+    settings: { ...curr.settings, ...inc.settings }
   };
 }
 
