@@ -150,6 +150,8 @@ interface SettingsContextValue {
   updateFlashcardDefaultMode: (
     value: 'spaced' | 'training' | 'random' | 'typing' | 'timed'
   ) => void
+  syncFolder: string
+  updateSyncFolder: (folder: string) => void
 }
 
 const SettingsContext = createContext<SettingsContextValue | undefined>(undefined)
@@ -181,6 +183,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   ])
   const [showPinnedTasks, setShowPinnedTasks] = useState(true)
   const [showPinnedNotes, setShowPinnedNotes] = useState(true)
+  const [syncFolder, setSyncFolder] = useState('')
 
   useEffect(() => {
     const load = async () => {
@@ -243,6 +246,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           if (typeof data.flashcardDefaultMode === 'string') {
             setFlashcardDefaultMode(data.flashcardDefaultMode)
           }
+          if (typeof data.syncFolder === 'string') {
+            setSyncFolder(data.syncFolder)
+          }
         }
       } catch (err) {
         console.error('Fehler beim Laden der Einstellungen', err)
@@ -263,15 +269,16 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             defaultTaskPriority: priority,
             theme,
             themeName,
-            homeSections,
-            homeSectionOrder,
-            showPinnedTasks,
-            showPinnedNotes,
-            flashcardTimer,
-            flashcardSessionSize,
-            flashcardDefaultMode
-          })
+          homeSections,
+          homeSectionOrder,
+          showPinnedTasks,
+          showPinnedNotes,
+          flashcardTimer,
+          flashcardSessionSize,
+          flashcardDefaultMode,
+          syncFolder
         })
+      })
       } catch (err) {
         console.error('Fehler beim Speichern der Einstellungen', err)
       }
@@ -290,7 +297,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     showPinnedNotes,
     flashcardTimer,
     flashcardSessionSize,
-    flashcardDefaultMode
+    flashcardDefaultMode,
+    syncFolder
   ])
 
   useEffect(() => {
@@ -340,6 +348,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     value: 'spaced' | 'training' | 'random' | 'typing' | 'timed'
   ) => {
     setFlashcardDefaultMode(value)
+  }
+
+  const updateSyncFolder = (folder: string) => {
+    setSyncFolder(folder)
   }
 
   const toggleHomeSection = (section: string) => {
@@ -393,7 +405,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         flashcardSessionSize,
         updateFlashcardSessionSize,
         flashcardDefaultMode,
-        updateFlashcardDefaultMode
+        updateFlashcardDefaultMode,
+        syncFolder,
+        updateSyncFolder
       }}
     >
       {children}

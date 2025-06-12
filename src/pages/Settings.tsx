@@ -51,7 +51,9 @@ const SettingsPage: React.FC = () => {
     flashcardSessionSize,
     updateFlashcardSessionSize,
     flashcardDefaultMode,
-    updateFlashcardDefaultMode
+    updateFlashcardDefaultMode,
+    syncFolder,
+    updateSyncFolder
   } = useSettings()
 
   const handleHomeDrag = (result: DropResult) => {
@@ -538,6 +540,14 @@ const SettingsPage: React.FC = () => {
           </TabsContent>
           <TabsContent value="data" className="space-y-4">
             <h2 className="font-semibold">Datenexport / -import</h2>
+            <div className="space-y-2">
+              <p className="font-medium">Sync-Ordner</p>
+              <Input
+                value={syncFolder}
+                onChange={e => updateSyncFolder(e.target.value)}
+                placeholder="/Pfad/zum/Ordner"
+              />
+            </div>
             <div className="space-y-2">
               <p className="font-medium">Tasks & Kategorien</p>
               <div className="flex items-center gap-2">

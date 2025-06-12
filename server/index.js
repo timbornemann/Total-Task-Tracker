@@ -49,6 +49,11 @@ try {
   db.prepare('ALTER TABLE pomodoro_sessions ADD COLUMN breakEnd INTEGER').run();
 } catch {}
 
+const initialSettings = loadSettings();
+if (initialSettings.syncFolder) {
+  setSyncFolder(initialSettings.syncFolder);
+}
+
 function dateReviver(key, value) {
   if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
     const d = new Date(value);
@@ -240,6 +245,71 @@ function saveAllData(data) {
   saveDecks(data.decks || []);
 }
 
+let syncFolder = '';
+let syncTimer = null;
+let lastSyncMtime = 0;
+
+function mergeLists(curr = [], inc = [], compare = 'updatedAt') {
+  const map = new Map();
+  for (const c of curr) map.set(c.id, c);
+  for (const i of inc || []) {
+    if (map.has(i.id)) {
+      const ex = map.get(i.id);
+      if (compare && ex[compare] && i[compare]) {
+        if (new Date(i[compare]) > new Date(ex[compare])) map.set(i.id, i);
+      }
+    } else {
+      map.set(i.id, i);
+    }
+  }
+  return Array.from(map.values());
+}
+
+function mergeData(curr, inc) {
+  return {
+    tasks: mergeLists(curr.tasks, inc.tasks),
+    categories: mergeLists(curr.categories, inc.categories),
+    notes: mergeLists(curr.notes, inc.notes),
+    flashcards: mergeLists(curr.flashcards, inc.flashcards, null),
+    decks: mergeLists(curr.decks, inc.decks, null)
+  };
+}
+
+function performSync() {
+  if (!syncFolder) return;
+  const file = path.join(syncFolder, 'task-tracker-sync.json');
+  try {
+    let incoming = null;
+    if (fs.existsSync(file)) {
+      const stat = fs.statSync(file);
+      if (stat.mtimeMs > lastSyncMtime) {
+        incoming = JSON.parse(fs.readFileSync(file, 'utf8'), dateReviver);
+        lastSyncMtime = stat.mtimeMs;
+      }
+    }
+    if (incoming) {
+      const merged = mergeData(loadAllData(), incoming);
+      saveAllData(merged);
+    }
+    const data = loadAllData();
+    fs.mkdirSync(syncFolder, { recursive: true });
+    fs.writeFileSync(file, JSON.stringify(data, (k, v) => v instanceof Date ? v.toISOString() : v, 2));
+    lastSyncMtime = Date.now();
+  } catch (err) {
+    console.error('Sync error', err);
+  }
+}
+
+function setSyncFolder(folder) {
+  syncFolder = folder || '';
+  if (syncTimer) clearInterval(syncTimer);
+  syncTimer = null;
+  if (syncFolder) {
+    performSync();
+    syncTimer = setInterval(performSync, 5 * 60 * 1000);
+  }
+}
+
 function serveStatic(filePath, res) {
   fs.readFile(filePath, (err, data) => {
     if (err) {
@@ -398,6 +468,9 @@ const server = http.createServer((req, res) => {
         try {
           const settings = JSON.parse(body || '{}');
           saveSettings(settings);
+          if (settings.syncFolder !== undefined) {
+            setSyncFolder(settings.syncFolder);
+          }
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ status: 'ok' }));
         } catch {
