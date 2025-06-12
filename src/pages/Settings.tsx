@@ -564,6 +564,7 @@ const SettingsPage: React.FC = () => {
             </div>
           </TabsContent>
         </Tabs>
+        <p className="text-xs text-muted-foreground mt-4">Version {__APP_VERSION__}</p>
       </div>
     </div>
   )
