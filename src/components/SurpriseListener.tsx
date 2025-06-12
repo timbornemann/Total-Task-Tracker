@@ -6,7 +6,7 @@ const SurpriseListener: React.FC = () => {
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 'l') {
+      if (e.ctrlKey && e.altKey && e.key.toLowerCase() === '3') {
         e.preventDefault()
         navigate('/surprise')
       }
