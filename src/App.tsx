@@ -28,6 +28,8 @@ import PomodoroTimer from "@/components/PomodoroTimer";
 import PomodoroTicker from "@/components/PomodoroTicker";
 import { PomodoroHistoryProvider } from "@/hooks/usePomodoroHistory.tsx";
 import ReleaseNotesModal from "@/components/ReleaseNotesModal";
+import SurprisePage from "./pages/Surprise";
+import SurpriseListener from "@/components/SurpriseListener";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +44,7 @@ const App = () => (
             <Toaster />
             <Sonner />
             <BrowserRouter>
+              <SurpriseListener />
               <CommandPalette />
               <Routes>
               <Route path="/" element={<Home />} />
@@ -58,6 +61,7 @@ const App = () => (
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/release-notes" element={<ReleaseNotesPage />} />
               <Route path="/pomodoro" element={<PomodoroPage />} />
+              <Route path="/surprise" element={<SurprisePage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
               </Routes>
