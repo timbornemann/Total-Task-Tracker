@@ -110,7 +110,8 @@ npm start    # startet die gebaute App auf Port 3002
   (inklusive Einstellungen)
 - Automatische Synchronisation mit optional wählbarem Ordner
   und einstellbarem Sync-Intervall. Dabei werden nun auch die
-  Einstellungen mitgespeichert und abgeglichen.
+  Einstellungen mitgespeichert und abgeglichen, der Ordnerpfad
+  selbst wird jedoch nicht in der Sync-Datei gespeichert.
 - Standard-Priorität für neue Tasks einstellbar
 - Mehrere Theme-Voreinstellungen (light, dark, ocean, dark-red, hacker,
   motivation) und ein eigenes "Custom"-Theme wählbar

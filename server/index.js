@@ -300,6 +300,7 @@ function performSync() {
       const stat = fs.statSync(file);
       if (stat.mtimeMs > lastSyncMtime) {
         incoming = JSON.parse(fs.readFileSync(file, 'utf8'), dateReviver);
+        if (incoming.settings) delete incoming.settings.syncFolder;
         lastSyncMtime = stat.mtimeMs;
       }
     }
@@ -308,8 +309,16 @@ function performSync() {
       saveAllData(merged);
     }
     const data = loadAllData();
+    if (data.settings) delete data.settings.syncFolder;
     fs.mkdirSync(syncFolder, { recursive: true });
-    fs.writeFileSync(file, JSON.stringify(data, (k, v) => v instanceof Date ? v.toISOString() : v, 2));
+    fs.writeFileSync(
+      file,
+      JSON.stringify(
+        data,
+        (k, v) => (v instanceof Date ? v.toISOString() : v),
+        2
+      )
+    );
     lastSyncMtime = Date.now();
   } catch (err) {
     console.error('Sync error', err);
@@ -458,7 +467,14 @@ const server = http.createServer((req, res) => {
   if (parsed.pathname === '/api/all') {
     if (req.method === 'GET') {
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(loadAllData()));
+      const all = loadAllData();
+      if (all.settings) delete all.settings.syncFolder;
+      res.end(
+        JSON.stringify(
+          all,
+          (k, v) => (v instanceof Date ? v.toISOString() : v)
+        )
+      );
       return;
     }
     if (req.method === 'PUT') {
