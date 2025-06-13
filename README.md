@@ -1,6 +1,10 @@
 # Total-Task-Tracker
 
-Kleine Aufgabenverwaltung auf Basis von React und Node.js. Aufgaben lassen sich in Kategorien organisieren und in einem Kalender oder auf einer Statistikseite auswerten. Die Daten werden dabei auf dem Server in einer kleinen SQLite-Datenbank gespeichert.
+
+Der Total-Task-Tracker ist eine leistungsstarke, lokal betriebene Aufgaben- und Lernverwaltung auf Basis von React, Node.js und SQLite. Die Anwendung kombiniert klassische To-do-Funktionen mit Kalenderintegration, Markdown-Notizen, einem Pomodoro-Timer und einem integrierten Lernkarten-System mit Spaced-Repetition-Algorithmus.
+Ideal für Selbstorganisation, Projektplanung oder die strukturierte Prüfungsvorbereitung.
+
+Die Daten werden dabei vollständig lokal auf dem Server gespeichert – entweder per Docker oder im klassischen Node.js-Betrieb. So behältst du volle Kontrolle über deine Inhalte – ohne Cloud-Zwang.
 
 ## Inhaltsverzeichnis
 - [Voraussetzungen](#voraussetzungen)
