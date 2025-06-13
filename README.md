@@ -2,12 +2,61 @@
 
 Kleine Aufgabenverwaltung auf Basis von React und Node.js. Aufgaben lassen sich in Kategorien organisieren und in einem Kalender oder auf einer Statistikseite auswerten. Die Daten werden dabei auf dem Server in einer kleinen SQLite-Datenbank gespeichert.
 
+## Inhaltsverzeichnis
+- [Voraussetzungen](#voraussetzungen)
+- [Schnellstart mit dem fertigen Docker-Image](#schnellstart-mit-dem-fertigen-docker-image)
+- [Docker-Compose: Image selbst bauen](#docker-compose-image-selbst-bauen)
+- [Installation für die lokale Entwicklung](#installation-für-die-lokale-entwicklung)
+- [Entwicklung starten](#entwicklung-starten)
+- [Automatische Updates mit Watchtower](#automatische-updates-mit-watchtower)
+- [Manuelle Produktion ohne Docker](#manuelle-produktion-ohne-docker)
+- [Funktionen](#funktionen)
+- [Verwendung](#verwendung)
+- [Tastenkürzel](#tastenkürzel)
+- [Lernkarten-Algorithmus](#lernkarten-algorithmus)
+
 ## Voraussetzungen
 
 * Für die lokale Entwicklung: **Node.js** (empfohlen Version 18) und **npm**
 * Für den produktiven Betrieb: **Docker** und **docker-compose**
 
-## Installation (lokale Entwicklung)
+## Schnellstart mit dem fertigen Docker-Image (empfohlen)
+
+Wenn du nicht lokal bauen möchtest, kannst du das bereits bereitgestellte Docker-Image aus der GitHub Container Registry nutzen:
+
+```bash
+docker pull ghcr.io/timbornemann/total-task-tracker:latest
+docker run -d \
+  --name total-task-tracker \
+  -p 3002:3002 \
+  -v total-task-tracker-data:/app/server/data \
+  ghcr.io/timbornemann/total-task-tracker:latest
+```
+
+Die Anwendung legt ihre SQLite-Daten standardmäßig im Volume `total-task-tracker-data` ab. Dieses Volume wird beim ersten Start automatisch angelegt und bleibt auch nach einem Container-Update erhalten. Möchtest du stattdessen ein bestimmtes Verzeichnis binden, kannst du ein Volume angeben:
+
+```bash
+docker run -d \
+  --name total-task-tracker \
+  -p 3002:3002 \
+  -v ./server/data:/app/server/data \
+  ghcr.io/timbornemann/total-task-tracker:latest
+```
+
+## Docker-Compose: Image selbst bauen
+
+Die Anwendung kann auch komplett über `docker-compose` ausgeführt werden. Dabei wird automatisch ein Produktionsbuild erstellt.
+
+1. Repository klonen und in das Projektverzeichnis wechseln
+2. Container bauen und starten (setzt optional die Versionsnummer)
+
+```bash
+VERSION=$(git describe --tags --abbrev=0) docker-compose up --build
+```
+
+Der Dienst lauscht anschließend auf Port **3002**. Im Browser unter `http://localhost:3002` erreichst du das Dashboard. Die Daten werden in einem benannten Docker-Volume (`total-task-tracker-data`) gespeichert. Mit `docker-compose down` kann der Container gestoppt werden, ohne dass die Daten verloren gehen.
+
+## Installation für die lokale Entwicklung
 
 ```bash
 # Repository klonen
@@ -35,46 +84,6 @@ npm start
 Rufe anschließend im Browser `http://localhost:8081` auf.
 
 ---
-
-## Bereitstellung mit Docker
-
-Die Anwendung kann komplett über einen Docker-Container ausgeführt werden. Dabei wird automatisch ein Produktionsbuild erstellt.
-
-1. Repository klonen und in das Projektverzeichnis wechseln
-2. Container bauen und starten (setzt optional die Versionsnummer)
-
-```bash
-VERSION=$(git describe --tags --abbrev=0) docker-compose up --build
-```
-
-Der Dienst lauscht anschließend auf Port **3002**. Im Browser unter `http://localhost:3002` erreichst du das Dashboard. Die Daten werden in einem benannten Docker-Volume (`total-task-tracker-data`) gespeichert, das automatisch erstellt wird. Mit `docker-compose down` kann der Container gestoppt werden, ohne dass die Daten verloren gehen.
-
-## Nutzung des vorgefertigten Images
-
-Wenn du nicht lokal bauen möchtest, kannst du das bereits bereitgestellte Docker-Image aus der GitHub Container Registry nutzen:
-
-```bash
-docker pull ghcr.io/timbornemann/total-task-tracker:latest
-docker run -d \
-  --name total-task-tracker \
-  -p 3002:3002 \
-  -v total-task-tracker-data:/app/server/data \
-  ghcr.io/timbornemann/total-task-tracker:latest
-```
-
-Die Daten werden dabei automatisch im Volume `total-task-tracker-data` gespeichert, sodass Updates mit Tools wie **Watchtower** keine Daten verlieren.
-
-Die Anwendung legt die SQLite-Daten standardmäßig im Volume `total-task-tracker-data` ab. Dieses Volume wird beim ersten Start automatisch angelegt und bleibt auch nach einem Container-Update erhalten.
-
-Möchtest du stattdessen ein bestimmtes Verzeichnis binden, kannst du ein Volume angeben:
-
-```bash
-docker run -d \
-  --name total-task-tracker \
-  -p 3002:3002 \
-  -v ./server/data:/app/server/data \
-  ghcr.io/timbornemann/total-task-tracker:latest
-```
 
 ## Automatische Updates mit Watchtower
 
@@ -108,7 +117,7 @@ docker run --rm \
   containrrr/watchtower total-task-tracker-app --run-once
 ```
 
-## Manuelle Produktion (optional)
+## Manuelle Produktion ohne Docker
 
 Möchtest du ohne Docker deployen, kannst du die Anwendung lokal bauen und den Node-Server direkt nutzen.
 
