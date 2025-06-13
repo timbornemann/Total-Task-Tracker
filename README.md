@@ -76,6 +76,38 @@ docker run -d \
   ghcr.io/timbornemann/total-task-tracker:latest
 ```
 
+## Automatische Updates mit Watchtower
+
+Um den Container stets aktuell zu halten, kannst du [Watchtower](https://containrrr.dev/watchtower/) einsetzen. Damit wird regelmäßig geprüft, ob neue Images verfügbar sind.
+
+### Alle Container überwachen
+
+```bash
+docker run -d --name watchtower \
+  --restart unless-stopped \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  containrrr/watchtower --interval 3600
+```
+
+Der Parameter `--interval` gibt das Prüfintervall in Sekunden an. Im Beispiel sucht Watchtower also jede Stunde nach Updates und startet betroffene Container neu.
+
+### Nur diesen Container aktualisieren
+
+```bash
+docker run -d --name watchtower \
+  --restart unless-stopped \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  containrrr/watchtower task-tracker-app --interval 3600
+```
+
+Soll Watchtower lediglich einmalig prüfen und danach beendet werden, füge `--run-once` hinzu:
+
+```bash
+docker run --rm \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  containrrr/watchtower task-tracker-app --run-once
+```
+
 ## Manuelle Produktion (optional)
 
 Möchtest du ohne Docker deployen, kannst du die Anwendung lokal bauen und den Node-Server direkt nutzen.
