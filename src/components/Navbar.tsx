@@ -44,7 +44,7 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
               onClick={onHomeClick}
               className="text-lg sm:text-2xl font-bold text-foreground"
             >
-              Task Tracker
+              Total-Task-Tracker
             </Link>
             {title && (
               <span className="hidden sm:inline text-muted-foreground">/ {title}</span>

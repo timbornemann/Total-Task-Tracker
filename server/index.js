@@ -293,7 +293,7 @@ function mergeData(curr, inc) {
 
 function performSync() {
   if (!syncFolder) return;
-  const file = path.join(syncFolder, 'task-tracker-sync.json');
+  const file = path.join(syncFolder, 'total-task-tracker-sync.json');
   try {
     let incoming = null;
     if (fs.existsSync(file)) {
