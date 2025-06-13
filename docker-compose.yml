@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  task-tracker:
+  total-task-tracker:
     build:
       context: .
       args:
@@ -9,13 +9,13 @@ services:
     ports:
       - "3002:3002"
     restart: unless-stopped
-    container_name: task-tracker-app
+    container_name: total-task-tracker-app
     environment:
       - NODE_ENV=production
       - APP_VERSION=${VERSION:-0.0.0}
     volumes:
-      - task-tracker-data:/app/server/data
+      - total-task-tracker-data:/app/server/data
 
 volumes:
-  task-tracker-data:
-    name: task-tracker-data
+  total-task-tracker-data:
+    name: total-task-tracker-data
