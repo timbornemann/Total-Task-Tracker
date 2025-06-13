@@ -47,7 +47,7 @@ Die Anwendung kann komplett über einen Docker-Container ausgeführt werden. Dab
 VERSION=$(git describe --tags --abbrev=0) docker-compose up --build
 ```
 
-Der Dienst lauscht anschließend auf Port **3002**. Im Browser unter `http://localhost:3002` erreichst du das Dashboard. Die Daten werden dauerhaft im Verzeichnis `./server/data` als SQLite-Datenbank abgelegt. Mit `docker-compose down` kann der Container gestoppt werden.
+Der Dienst lauscht anschließend auf Port **3002**. Im Browser unter `http://localhost:3002` erreichst du das Dashboard. Die Daten werden in einem benannten Docker-Volume (`task-tracker-data`) gespeichert, das automatisch erstellt wird. Mit `docker-compose down` kann der Container gestoppt werden, ohne dass die Daten verloren gehen.
 
 ## Nutzung des vorgefertigten Images
 
@@ -55,13 +55,6 @@ Wenn du nicht lokal bauen möchtest, kannst du das bereits bereitgestellte Docke
 
 ```bash
 docker pull ghcr.io/timbornemann/total-task-tracker:latest
-docker run -d --name task-tracker -p 3002:3002 ghcr.io/timbornemann/total-task-tracker:latest
-```
-
-Um die Daten auch bei automatischen Updates durch Tools wie **Watchtower** zu erhalten, empfiehlt es sich, ein benanntes Docker-Volume zu nutzen:
-
-```bash
-docker volume create task-tracker-data
 docker run -d \
   --name task-tracker \
   -p 3002:3002 \
@@ -69,7 +62,9 @@ docker run -d \
   ghcr.io/timbornemann/total-task-tracker:latest
 ```
 
-Die Anwendung legt die SQLite-Daten standardmäßig im Docker-Volume `/app/server/data` ab. Ohne Angabe eines eigenen Volumes erstellt Docker dafür ein anonymes Volume, das beim Entfernen des Containers verloren gehen kann.
+Die Daten werden dabei automatisch im Volume `task-tracker-data` gespeichert, sodass Updates mit Tools wie **Watchtower** keine Daten verlieren.
+
+Die Anwendung legt die SQLite-Daten standardmäßig im Volume `task-tracker-data` ab. Dieses Volume wird beim ersten Start automatisch angelegt und bleibt auch nach einem Container-Update erhalten.
 
 Möchtest du stattdessen ein bestimmtes Verzeichnis binden, kannst du ein Volume angeben:
 

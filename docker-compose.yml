@@ -14,4 +14,8 @@ services:
       - NODE_ENV=production
       - APP_VERSION=${VERSION:-0.0.0}
     volumes:
-      - ./server/data:/app/server/data
+      - task-tracker-data:/app/server/data
+
+volumes:
+  task-tracker-data:
+    name: task-tracker-data
