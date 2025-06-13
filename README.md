@@ -134,6 +134,7 @@ npm start    # startet die gebaute App auf Port 3002
 
 - Aufgaben anlegen, bearbeiten und in Kategorien sortieren
 - Unteraufgaben, Prioritäten und Wiederholungen
+- Separate Seite für wiederkehrende Aufgaben mit eigenen Intervallen und dynamischen Titeln
 - Kalenderansicht mit direkter Task-Erstellung; Tagesaufgaben sind klickbar und bieten alle Task-Optionen
 - Eigene Notizen mit Farbe und Drag & Drop sortierbar
   - Notizen lassen sich anpinnen; die ersten drei angepinnten erscheinen auf der Startseite
@@ -173,6 +174,7 @@ npm start    # startet die gebaute App auf Port 3002
 
 1. Nach dem Start siehst du die vorhandenen **Kategorien**. Mit dem Button `Kategorie` kannst du neue Kategorien erstellen.
 2. Wähle eine Kategorie aus, um ihre **Tasks** zu sehen. Über `Task` legst du neue Aufgaben an. Dort kannst du Titel, Beschreibung, Priorität, Farbe, Fälligkeitsdatum und optionale Wiederholung definieren.
+3. Wiederkehrende Aufgaben verwaltest du auf der Seite **Wiederkehrend**. Dort legst du Vorlagen mit festen oder benutzerdefinierten Intervallen an und kannst Platzhalter wie `{date}` oder `{counter}` im Titel nutzen.
 3. Tasks lassen sich per Drag & Drop umsortieren oder in Unteraufgaben aufteilen.
 4. Über das Suchfeld und die Filter sortierst und findest du Aufgaben nach Priorität oder Farbe.
 5. Mit dem Sternsymbol kannst du eine Task anpinnen. Die ersten drei gepinnten erscheinen auf der Startseite.

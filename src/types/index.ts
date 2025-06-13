@@ -24,6 +24,9 @@ export interface Task {
   order: number;
   /** Whether the task is pinned */
   pinned: boolean;
+  template?: boolean;
+  titleTemplate?: string;
+  customIntervalDays?: number;
 }
 
 export interface Category {
@@ -50,6 +53,9 @@ export interface TaskFormData {
   dueDate?: Date;
   isRecurring: boolean;
   recurrencePattern?: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  customIntervalDays?: number;
+  titleTemplate?: string;
+  template?: boolean;
 }
 
 export interface CategoryFormData {
