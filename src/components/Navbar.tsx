@@ -113,6 +113,11 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
+                  <Link to="/recurring" className="flex items-center">
+                    <List className="h-4 w-4 mr-2" /> Wiederkehrend
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
                   <Link to="/statistics" className="flex items-center">
                     <BarChart3 className="h-4 w-4 mr-2" /> Statistiken
                   </Link>
@@ -195,6 +200,12 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                   <Button variant="outline" size="sm" className="w-full">
                     <CalendarIcon className="h-4 w-4 mr-2" />
                     Kalender
+                  </Button>
+                </Link>
+                <Link to="/recurring" className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full">
+                    <List className="h-4 w-4 mr-2" />
+                    Wiederkehrend
                   </Button>
                 </Link>
                 <Link to="/statistics" className="flex-1">

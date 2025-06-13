@@ -18,6 +18,7 @@ const useTaskStoreImpl = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [notes, setNotes] = useState<Note[]>([]);
+  const [recurring, setRecurring] = useState<Task[]>([]);
   const [recentlyDeletedCategories, setRecentlyDeletedCategories] =
     useState<{ category: Category; taskIds: string[] }[]>([]);
 
@@ -30,7 +31,8 @@ const useTaskStoreImpl = () => {
         const {
           tasks: savedTasks,
           categories: savedCategories,
-          notes: savedNotes
+          notes: savedNotes,
+          recurring: savedRecurring
         } = await res.json();
 
         if (savedTasks) {
@@ -64,6 +66,24 @@ const useTaskStoreImpl = () => {
           );
         }
 
+        if (savedRecurring) {
+          setRecurring(
+            savedRecurring.map((t: any, idx: number) => ({
+              ...t,
+              createdAt: new Date(t.createdAt),
+              updatedAt: new Date(t.updatedAt),
+              dueDate: t.dueDate ? new Date(t.dueDate) : undefined,
+              lastCompleted: t.lastCompleted ? new Date(t.lastCompleted) : undefined,
+              nextDue: t.nextDue ? new Date(t.nextDue) : undefined,
+              order: typeof t.order === 'number' ? t.order : idx,
+              completed: t.completed ?? false,
+              status: t.status ?? 'todo',
+              pinned: t.pinned ?? false,
+              template: true
+            }))
+          );
+        }
+
         if (savedCategories && savedCategories.length) {
           setCategories(
             savedCategories.map((category: any, idx: number) => ({
@@ -93,6 +113,10 @@ const useTaskStoreImpl = () => {
     loadData();
   }, []);
 
+  useEffect(() => {
+    processRecurring();
+  }, [recurring]);
+
   // Save to server whenever data changes
   useEffect(() => {
     const save = async () => {
@@ -100,7 +124,7 @@ const useTaskStoreImpl = () => {
         await fetch(API_URL, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ tasks, categories, notes })
+          body: JSON.stringify({ tasks, categories, notes, recurring })
         });
       } catch (error) {
         console.error('Fehler beim Speichern der Daten:', error);
@@ -108,7 +132,7 @@ const useTaskStoreImpl = () => {
     };
 
     save();
-  }, [tasks, categories, notes]);
+  }, [tasks, categories, notes, recurring]);
 
   const addTask = (
     taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'subtasks' | 'pinned'>
@@ -121,12 +145,15 @@ const useTaskStoreImpl = () => {
       updatedAt: new Date(),
       dueDate: taskData.dueDate ? new Date(taskData.dueDate) : undefined,
       nextDue: taskData.isRecurring
-        ? calculateNextDue(taskData.recurrencePattern)
+        ? calculateNextDue(taskData.recurrencePattern, taskData.customIntervalDays)
         : undefined,
       lastCompleted: undefined,
       status: 'todo',
       order: 0,
-      pinned: false
+      pinned: false,
+      customIntervalDays: taskData.customIntervalDays,
+      titleTemplate: taskData.titleTemplate,
+      template: taskData.template
     };
     
     if (taskData.parentId) {
@@ -159,12 +186,15 @@ const useTaskStoreImpl = () => {
     }
   };
 
-  const calculateNextDue = (pattern?: 'daily' | 'weekly' | 'monthly' | 'yearly'): Date | undefined => {
-    if (!pattern) return undefined;
-    
+  const calculateNextDue = (
+    pattern?: 'daily' | 'weekly' | 'monthly' | 'yearly',
+    customDays?: number
+  ): Date | undefined => {
+    if (!pattern && !customDays) return undefined;
+
     const now = new Date();
     const nextDue = new Date(now);
-    
+
     switch (pattern) {
       case 'daily':
         nextDue.setDate(now.getDate() + 1);
@@ -178,8 +208,10 @@ const useTaskStoreImpl = () => {
       case 'yearly':
         nextDue.setFullYear(now.getFullYear() + 1);
         break;
+      default:
+        if (customDays) nextDue.setDate(now.getDate() + customDays);
     }
-    
+
     return nextDue;
   };
 
@@ -243,6 +275,63 @@ const useTaskStoreImpl = () => {
       );
       return [...reorderedMain, ...subs];
     });
+  };
+
+  const addRecurringTask = (
+    data: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'subtasks' | 'pinned'>
+  ) => {
+    const newItem: Task = {
+      ...data,
+      id: Date.now().toString(),
+      subtasks: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      completed: false,
+      status: 'todo',
+      order: recurring.length,
+      pinned: false,
+      template: true,
+      nextDue: calculateNextDue(data.recurrencePattern, data.customIntervalDays),
+    };
+    setRecurring(prev => [...prev, newItem]);
+  };
+
+  const updateRecurringTask = (id: string, updates: Partial<Task>) => {
+    setRecurring(prev =>
+      prev.map(t => (t.id === id ? { ...t, ...updates, updatedAt: new Date() } : t))
+    );
+  };
+
+  const deleteRecurringTask = (id: string) => {
+    setRecurring(prev => prev.filter(t => t.id !== id));
+  };
+
+  const generateTitle = (t: Task): string => {
+    const now = new Date();
+    let title = t.titleTemplate || t.title;
+    title = title.replace('{date}', now.toLocaleDateString('de-DE'));
+    title = title.replace('{counter}', String(t.order + 1));
+    return title;
+  };
+
+  const processRecurring = () => {
+    setRecurring(prev =>
+      prev.map(t => {
+        if (t.nextDue && t.nextDue <= new Date()) {
+          addTask({
+            ...t,
+            title: generateTitle(t),
+            template: undefined,
+            titleTemplate: undefined,
+            isRecurring: false,
+            parentId: undefined,
+          });
+          const next = calculateNextDue(t.recurrencePattern, t.customIntervalDays);
+          return { ...t, nextDue: next, order: t.order + 1 };
+        }
+        return t;
+      })
+    );
   };
 
   const addCategory = (categoryData: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>) => {
@@ -432,7 +521,11 @@ const useTaskStoreImpl = () => {
     addNote,
     updateNote,
     deleteNote,
-    reorderNotes
+    reorderNotes,
+    recurring,
+    addRecurringTask,
+    updateRecurringTask,
+    deleteRecurringTask
   };
 };
 

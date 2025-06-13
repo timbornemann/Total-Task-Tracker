@@ -49,7 +49,10 @@ const TaskModal: React.FC<TaskModalProps> = ({
     parentId: parentTask?.id,
     dueDate: undefined,
     isRecurring: false,
-    recurrencePattern: undefined
+    recurrencePattern: undefined,
+    customIntervalDays: undefined,
+    titleTemplate: undefined,
+    template: false
   });
 
   const colorOptions = [
@@ -70,7 +73,10 @@ const TaskModal: React.FC<TaskModalProps> = ({
         parentId: task.parentId,
         dueDate: task.dueDate,
         isRecurring: task.isRecurring,
-        recurrencePattern: task.recurrencePattern
+        recurrencePattern: task.recurrencePattern,
+        customIntervalDays: task.customIntervalDays,
+        titleTemplate: task.titleTemplate,
+        template: task.template
       });
     } else {
       setFormData({
@@ -83,7 +89,10 @@ const TaskModal: React.FC<TaskModalProps> = ({
         parentId: parentTask?.id,
         dueDate: defaultDueDate,
         isRecurring: false,
-        recurrencePattern: undefined
+        recurrencePattern: undefined,
+        customIntervalDays: undefined,
+        titleTemplate: undefined,
+        template: false
       });
     }
   }, [
@@ -242,11 +251,32 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     <SelectItem value="daily">Täglich</SelectItem>
                     <SelectItem value="weekly">Wöchentlich</SelectItem>
                     <SelectItem value="monthly">Monatlich</SelectItem>
-                    <SelectItem value="yearly">Jährlich</SelectItem>
-                  </SelectContent>
-                </Select>
+                <SelectItem value="yearly">Jährlich</SelectItem>
+                </SelectContent>
+              </Select>
+              <div className="mt-2">
+                <Label htmlFor="customDays">Benutzerdefinierte Tage</Label>
+                <Input
+                  id="customDays"
+                  type="number"
+                  value={formData.customIntervalDays ?? ''}
+                  onChange={(e) =>
+                    handleChange('customIntervalDays', e.target.value ? Number(e.target.value) : undefined)
+                  }
+                  placeholder="z.B. 3"
+                />
               </div>
-            )}
+              <div className="mt-2">
+                <Label htmlFor="titleTemplate">Dynamischer Titel</Label>
+                <Input
+                  id="titleTemplate"
+                  value={formData.titleTemplate || ''}
+                  onChange={(e) => handleChange('titleTemplate', e.target.value)}
+                  placeholder="{date} oder {counter} nutzen"
+                />
+              </div>
+            </div>
+          )}
           </div>
 
           <div className="flex justify-end space-x-2 pt-4">
