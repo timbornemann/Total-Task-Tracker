@@ -60,6 +60,7 @@ const RecurringTasksPage = () => {
         onSave={handleSave}
         task={editingTask || undefined}
         categories={categories}
+        defaultIsRecurring
       />
     </div>
   );

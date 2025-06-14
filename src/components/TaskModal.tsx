@@ -27,6 +27,11 @@ interface TaskModalProps {
    * Default due date when creating a new task. Ignored when editing.
    */
   defaultDueDate?: Date;
+
+  /**
+   * Default value for the recurring toggle when creating a new task.
+   */
+  defaultIsRecurring?: boolean;
 }
 
 const TaskModal: React.FC<TaskModalProps> = ({
@@ -37,7 +42,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
   categories,
   parentTask,
   defaultCategoryId,
-  defaultDueDate
+  defaultDueDate,
+  defaultIsRecurring = false
 }) => {
   const { defaultTaskPriority } = useSettings()
   const [formData, setFormData] = useState<TaskFormData>({
@@ -48,7 +54,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     categoryId: '',
     parentId: parentTask?.id,
     dueDate: undefined,
-    isRecurring: false,
+    isRecurring: defaultIsRecurring,
     recurrencePattern: undefined,
     customIntervalDays: undefined,
     dueOption: undefined,
@@ -98,7 +104,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
           defaultCategoryId || parentTask?.categoryId || categories[0]?.id || '',
         parentId: parentTask?.id,
         dueDate: defaultDueDate,
-        isRecurring: false,
+        isRecurring: defaultIsRecurring,
         recurrencePattern: undefined,
         customIntervalDays: undefined,
         dueOption: undefined,
@@ -117,7 +123,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
     parentTask,
     defaultCategoryId,
     defaultDueDate,
-    defaultTaskPriority
+    defaultTaskPriority,
+    defaultIsRecurring
   ]);
 
   const handleSubmit = (e: React.FormEvent) => {
