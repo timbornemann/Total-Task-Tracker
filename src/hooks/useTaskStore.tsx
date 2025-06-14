@@ -315,6 +315,7 @@ const useTaskStoreImpl = () => {
       }
       return new Date();
     })();
+    const shouldCreateNow = start <= new Date();
     const newItem: Task = {
       ...data,
       id: Date.now().toString(),
@@ -326,12 +327,32 @@ const useTaskStoreImpl = () => {
       order: recurring.length,
       pinned: false,
       template: true,
-      nextDue: calculateNextDue(
-        data.recurrencePattern,
-        data.customIntervalDays,
-        start
-      ),
+      nextDue: shouldCreateNow
+        ? calculateNextDue(
+            data.recurrencePattern,
+            data.customIntervalDays,
+            start
+          )
+        : start,
     };
+
+    if (shouldCreateNow) {
+      addTask({
+        ...newItem,
+        dueDate: calculateDueDate(newItem),
+        dueOption: undefined,
+        dueAfterDays: undefined,
+        startOption: undefined,
+        startWeekday: undefined,
+        startDate: undefined,
+        title: generateTitle(newItem),
+        template: undefined,
+        titleTemplate: undefined,
+        isRecurring: false,
+        parentId: undefined,
+      });
+    }
+
     setRecurring(prev => [...prev, newItem]);
   };
 
