@@ -117,6 +117,11 @@ const useTaskStoreImpl = () => {
     processRecurring();
   }, [recurring]);
 
+  useEffect(() => {
+    const interval = setInterval(processRecurring, 60000);
+    return () => clearInterval(interval);
+  }, [recurring]);
+
   // Save to server whenever data changes
   useEffect(() => {
     const save = async () => {
@@ -188,31 +193,51 @@ const useTaskStoreImpl = () => {
 
   const calculateNextDue = (
     pattern?: 'daily' | 'weekly' | 'monthly' | 'yearly',
-    customDays?: number
+    customDays?: number,
+    fromDate: Date = new Date()
   ): Date | undefined => {
     if (!pattern && !customDays) return undefined;
 
-    const now = new Date();
-    const nextDue = new Date(now);
+    const nextDue = new Date(fromDate);
 
     switch (pattern) {
       case 'daily':
-        nextDue.setDate(now.getDate() + 1);
+        nextDue.setDate(fromDate.getDate() + 1);
         break;
       case 'weekly':
-        nextDue.setDate(now.getDate() + 7);
+        nextDue.setDate(fromDate.getDate() + 7);
         break;
       case 'monthly':
-        nextDue.setMonth(now.getMonth() + 1);
+        nextDue.setMonth(fromDate.getMonth() + 1);
         break;
       case 'yearly':
-        nextDue.setFullYear(now.getFullYear() + 1);
+        nextDue.setFullYear(fromDate.getFullYear() + 1);
         break;
       default:
-        if (customDays) nextDue.setDate(now.getDate() + customDays);
+        if (customDays) nextDue.setDate(fromDate.getDate() + customDays);
     }
 
     return nextDue;
+  };
+
+  const calculateDueDate = (t: Task): Date | undefined => {
+    if (!t.dueOption) return undefined;
+    const base = new Date();
+    switch (t.dueOption) {
+      case 'days':
+        if (t.dueAfterDays) base.setDate(base.getDate() + t.dueAfterDays);
+        break;
+      case 'weekEnd': {
+        const day = base.getDay();
+        const diff = 7 - day;
+        base.setDate(base.getDate() + diff);
+        break;
+      }
+      case 'monthEnd':
+        base.setMonth(base.getMonth() + 1, 0);
+        break;
+    }
+    return base;
   };
 
   const updateTask = (taskId: string, updates: Partial<Task>) => {
@@ -280,6 +305,16 @@ const useTaskStoreImpl = () => {
   const addRecurringTask = (
     data: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'subtasks' | 'pinned'>
   ) => {
+    const start = (() => {
+      if (data.startOption === 'date' && data.startDate) return new Date(data.startDate);
+      if (data.startOption === 'weekday' && typeof data.startWeekday === 'number') {
+        const d = new Date();
+        const diff = (7 + data.startWeekday - d.getDay()) % 7;
+        d.setDate(d.getDate() + diff);
+        return d;
+      }
+      return new Date();
+    })();
     const newItem: Task = {
       ...data,
       id: Date.now().toString(),
@@ -291,7 +326,11 @@ const useTaskStoreImpl = () => {
       order: recurring.length,
       pinned: false,
       template: true,
-      nextDue: calculateNextDue(data.recurrencePattern, data.customIntervalDays),
+      nextDue: calculateNextDue(
+        data.recurrencePattern,
+        data.customIntervalDays,
+        start
+      ),
     };
     setRecurring(prev => [...prev, newItem]);
   };
@@ -320,13 +359,23 @@ const useTaskStoreImpl = () => {
         if (t.nextDue && t.nextDue <= new Date()) {
           addTask({
             ...t,
+            dueDate: calculateDueDate(t),
+            dueOption: undefined,
+            dueAfterDays: undefined,
+            startOption: undefined,
+            startWeekday: undefined,
+            startDate: undefined,
             title: generateTitle(t),
             template: undefined,
             titleTemplate: undefined,
             isRecurring: false,
             parentId: undefined,
           });
-          const next = calculateNextDue(t.recurrencePattern, t.customIntervalDays);
+          const next = calculateNextDue(
+            t.recurrencePattern,
+            t.customIntervalDays,
+            t.nextDue
+          );
           return { ...t, nextDue: next, order: t.order + 1 };
         }
         return t;

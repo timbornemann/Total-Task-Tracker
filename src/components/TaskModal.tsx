@@ -51,6 +51,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
     isRecurring: false,
     recurrencePattern: undefined,
     customIntervalDays: undefined,
+    dueOption: undefined,
+    dueAfterDays: undefined,
+    startOption: 'today',
+    startWeekday: undefined,
+    startDate: undefined,
     titleTemplate: undefined,
     template: false
   });
@@ -75,6 +80,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
         isRecurring: task.isRecurring,
         recurrencePattern: task.recurrencePattern,
         customIntervalDays: task.customIntervalDays,
+        dueOption: task.dueOption,
+        dueAfterDays: task.dueAfterDays,
+        startOption: task.startOption || 'today',
+        startWeekday: task.startWeekday,
+        startDate: task.startDate,
         titleTemplate: task.titleTemplate,
         template: task.template
       });
@@ -91,6 +101,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
         isRecurring: false,
         recurrencePattern: undefined,
         customIntervalDays: undefined,
+        dueOption: undefined,
+        dueAfterDays: undefined,
+        startOption: 'today',
+        startWeekday: undefined,
+        startDate: undefined,
         titleTemplate: undefined,
         template: false
       });
@@ -114,12 +129,32 @@ const TaskModal: React.FC<TaskModalProps> = ({
   };
 
   const handleChange = (field: keyof TaskFormData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => {
+      const updated: TaskFormData = { ...prev, [field]: value };
+      if (field === 'recurrencePattern' && value) {
+        updated.customIntervalDays = undefined;
+      }
+      if (field === 'customIntervalDays' && value) {
+        updated.recurrencePattern = undefined;
+      }
+      if (field === 'isRecurring') {
+        if (value) {
+          updated.dueDate = undefined;
+        } else {
+          updated.dueOption = undefined;
+          updated.dueAfterDays = undefined;
+          updated.startOption = 'today';
+          updated.startWeekday = undefined;
+          updated.startDate = undefined;
+        }
+      }
+      return updated;
+    });
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {task ? 'Task bearbeiten' : parentTask ? 'Unteraufgabe erstellen' : 'Neue Task erstellen'}
@@ -200,15 +235,43 @@ const TaskModal: React.FC<TaskModalProps> = ({
           </div>
         </div>
 
-        <div>
-          <Label htmlFor="dueDate">Fällig am</Label>
-          <Input
-            id="dueDate"
-            type="date"
-            value={formData.dueDate ? new Date(formData.dueDate).toISOString().split('T')[0] : ''}
-            onChange={(e) => handleChange('dueDate', e.target.value ? new Date(e.target.value) : undefined)}
-          />
-        </div>
+        {!formData.isRecurring && (
+          <div>
+            <Label htmlFor="dueDate">Fällig am</Label>
+            <Input
+              id="dueDate"
+              type="date"
+              value={formData.dueDate ? new Date(formData.dueDate).toISOString().split('T')[0] : ''}
+              onChange={(e) => handleChange('dueDate', e.target.value ? new Date(e.target.value) : undefined)}
+            />
+          </div>
+        )}
+
+        {formData.isRecurring && (
+          <div>
+            <Label>Fälligkeit</Label>
+            <Select value={formData.dueOption} onValueChange={(v) => handleChange('dueOption', v as any)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Fälligkeit wählen..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="days">Nach Tagen</SelectItem>
+                <SelectItem value="weekEnd">Ende der Woche</SelectItem>
+                <SelectItem value="monthEnd">Ende des Monats</SelectItem>
+              </SelectContent>
+            </Select>
+            {formData.dueOption === 'days' && (
+              <Input
+                className="mt-2"
+                id="dueAfterDays"
+                type="number"
+                value={formData.dueAfterDays ?? ''}
+                onChange={(e) => handleChange('dueAfterDays', e.target.value ? Number(e.target.value) : undefined)}
+                placeholder="z.B. 3"
+              />
+            )}
+          </div>
+        )}
 
         <div>
           <Label>Farbe</Label>
@@ -265,6 +328,47 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   }
                   placeholder="z.B. 3"
                 />
+              </div>
+              <div className="mt-2">
+                <Label>Start</Label>
+                <Select value={formData.startOption} onValueChange={(v) => handleChange('startOption', v as any)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="today">Heute</SelectItem>
+                    <SelectItem value="weekday">Wochentag</SelectItem>
+                    <SelectItem value="date">Festes Datum</SelectItem>
+                  </SelectContent>
+                </Select>
+                {formData.startOption === 'weekday' && (
+                  <Select
+                    value={formData.startWeekday !== undefined ? String(formData.startWeekday) : ''}
+                    onValueChange={(val) => handleChange('startWeekday', Number(val))}
+                    className="mt-2"
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Wochentag wählen..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0">Sonntag</SelectItem>
+                      <SelectItem value="1">Montag</SelectItem>
+                      <SelectItem value="2">Dienstag</SelectItem>
+                      <SelectItem value="3">Mittwoch</SelectItem>
+                      <SelectItem value="4">Donnerstag</SelectItem>
+                      <SelectItem value="5">Freitag</SelectItem>
+                      <SelectItem value="6">Samstag</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+                {formData.startOption === 'date' && (
+                  <Input
+                    type="date"
+                    className="mt-2"
+                    value={formData.startDate ? new Date(formData.startDate).toISOString().split('T')[0] : ''}
+                    onChange={(e) => handleChange('startDate', e.target.value ? new Date(e.target.value) : undefined)}
+                  />
+                )}
               </div>
               <div className="mt-2">
                 <Label htmlFor="titleTemplate">Dynamischer Titel</Label>
