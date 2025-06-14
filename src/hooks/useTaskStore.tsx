@@ -115,12 +115,12 @@ const useTaskStoreImpl = () => {
 
   useEffect(() => {
     processRecurring();
-  }, [recurring]);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(processRecurring, 60000);
     return () => clearInterval(interval);
-  }, [recurring]);
+  }, []);
 
   // Save to server whenever data changes
   useEffect(() => {
@@ -354,8 +354,9 @@ const useTaskStoreImpl = () => {
   };
 
   const processRecurring = () => {
-    setRecurring(prev =>
-      prev.map(t => {
+    setRecurring(prev => {
+      let changed = false;
+      const updated = prev.map(t => {
         if (t.nextDue && t.nextDue <= new Date()) {
           addTask({
             ...t,
@@ -376,11 +377,13 @@ const useTaskStoreImpl = () => {
             t.customIntervalDays,
             t.nextDue
           );
+          changed = true;
           return { ...t, nextDue: next, order: t.order + 1 };
         }
         return t;
-      })
-    );
+      });
+      return changed ? updated : prev;
+    });
   };
 
   const addCategory = (categoryData: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>) => {
