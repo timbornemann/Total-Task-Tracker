@@ -5,7 +5,7 @@ import { useTaskStore } from '@/hooks/useTaskStore';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import MarkdownEditor from '@/components/MarkdownEditor';
 import { Label } from '@/components/ui/label';
 import ReactMarkdown from 'react-markdown';
 
@@ -62,7 +62,7 @@ const NoteDetailPage: React.FC = () => {
             </div>
             <div>
               <Label htmlFor="text">Text (Markdown)</Label>
-              <Textarea id="text" rows={10} value={formData.text} onChange={e => handleChange('text', e.target.value)} />
+              <MarkdownEditor value={formData.text} onChange={val => handleChange('text', val)} rows={10} />
             </div>
             <div>
               <Label>Farbe</Label>

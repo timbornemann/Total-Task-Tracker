@@ -4,7 +4,7 @@ import { Note } from '@/types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import MarkdownEditor from './MarkdownEditor';
 import { Label } from '@/components/ui/label';
 
 interface NoteModalProps {
@@ -68,10 +68,9 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, onSave, note }) 
           </div>
           <div>
             <Label htmlFor="text">Text (Markdown)</Label>
-            <Textarea
-              id="text"
+            <MarkdownEditor
               value={formData.text}
-              onChange={e => handleChange('text', e.target.value)}
+              onChange={val => handleChange('text', val)}
               rows={5}
             />
             {formData.text && (
