@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import {
@@ -40,6 +40,30 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
+  const [activeLine, setActiveLine] = useState('');
+  const [lineIndex, setLineIndex] = useState(0);
+  const [lineHeight, setLineHeight] = useState(0);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      const styles = window.getComputedStyle(textareaRef.current);
+      setLineHeight(parseFloat(styles.lineHeight));
+      updateActiveLine();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const updateActiveLine = () => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    const pos = textarea.selectionStart;
+    const before = value.slice(0, pos);
+    const start = before.lastIndexOf('\n') + 1;
+    const end = value.indexOf('\n', pos);
+    const line = value.slice(start, end === -1 ? value.length : end);
+    setActiveLine(line);
+    setLineIndex(before.split('\n').length - 1);
+  };
 
   const wrapSelection = (prefix: string, suffix = '') => {
     const textarea = textareaRef.current;
@@ -273,11 +297,28 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
         >
           <ReactMarkdown>{value || ''}</ReactMarkdown>
         </div>
+        {lineHeight > 0 && (
+          <pre
+            className="pointer-events-none absolute whitespace-pre bg-transparent"
+            style={{
+              top: lineIndex * lineHeight + 32 - (textareaRef.current?.scrollTop || 0),
+              left: 32,
+            }}
+          >
+            {activeLine}
+          </pre>
+        )}
         <Textarea
           ref={textareaRef}
           value={value}
-          onChange={e => onChange(e.target.value)}
+          onChange={e => {
+            onChange(e.target.value);
+            updateActiveLine();
+          }}
           rows={rows}
+          onKeyUp={updateActiveLine}
+          onClick={updateActiveLine}
+          onSelect={updateActiveLine}
           onScroll={() => {
             if (previewRef.current && textareaRef.current) {
               previewRef.current.scrollTop = textareaRef.current.scrollTop;
