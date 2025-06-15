@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import { parse } from 'url';
 import Database from 'better-sqlite3';
 import dialog from 'node-file-dialog';
+import os from 'os';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -620,6 +621,26 @@ const server = http.createServer((req, res) => {
       });
       return;
     }
+  }
+
+  if (parsed.pathname === '/api/server-info') {
+    const ips = [];
+    const ifaces = os.networkInterfaces();
+    Object.values(ifaces).forEach(list => {
+      for (const iface of list || []) {
+        if (iface.family === 'IPv4' && !iface.internal) {
+          ips.push(iface.address);
+        }
+      }
+    });
+    const info = {
+      ips,
+      port,
+      urls: ips.map(ip => `http://${ip}:${port}/`)
+    };
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(info));
+    return;
   }
 
   // serve static files

@@ -170,6 +170,7 @@ npm start    # startet die gebaute App auf Port 3002
   motivation) und ein eigenes "Custom"-Theme wählbar
 - Im Custom-Theme lassen sich Farben der Oberfläche und Karten individuell anpassen
 - Neuer "Info"-Reiter in den Einstellungen zeigt Versionsnummer, Release Notes und README
+- Untermenü "Server Info" in den Einstellungen listet IP-Adressen, Port und fertige URLs auf
 
 ## Verwendung
 

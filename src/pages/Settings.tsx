@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Navbar from '@/components/Navbar'
 import { useSettings, themePresets } from '@/hooks/useSettings'
 import { Input } from '@/components/ui/input'
@@ -25,6 +25,12 @@ import {
 } from '@/components/ui/tabs'
 import ReactMarkdown from 'react-markdown'
 import readme from '../../README.md?raw'
+
+interface ServerInfo {
+  ips: string[]
+  port: number
+  urls: string[]
+}
 
 const SettingsPage: React.FC = () => {
   const {
@@ -57,6 +63,23 @@ const SettingsPage: React.FC = () => {
     syncFolder,
     updateSyncFolder
   } = useSettings()
+
+  const [serverInfo, setServerInfo] = useState<ServerInfo | null>(null)
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await fetch('/api/server-info')
+        if (res.ok) {
+          const data = await res.json()
+          setServerInfo(data)
+        }
+      } catch (err) {
+        console.error('Failed to load server info', err)
+      }
+    }
+    load()
+  }, [])
 
   const handleHomeDrag = (result: DropResult) => {
     if (!result.destination) return
@@ -244,7 +267,7 @@ const SettingsPage: React.FC = () => {
       <Navbar title="Einstellungen" />
       <div className="max-w-2xl mx-auto px-4 py-6">
         <Tabs defaultValue="shortcuts" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-8">
+          <TabsList className="grid w-full grid-cols-9">
             <TabsTrigger value="shortcuts">Shortcuts</TabsTrigger>
             <TabsTrigger value="pomodoro">Pomodoro</TabsTrigger>
             <TabsTrigger value="flashcards">Karten</TabsTrigger>
@@ -252,6 +275,7 @@ const SettingsPage: React.FC = () => {
             <TabsTrigger value="home">Startseite</TabsTrigger>
             <TabsTrigger value="theme">Theme</TabsTrigger>
             <TabsTrigger value="data">Daten</TabsTrigger>
+            <TabsTrigger value="server">Server</TabsTrigger>
             <TabsTrigger value="info">Info</TabsTrigger>
           </TabsList>
           <TabsContent value="shortcuts" className="space-y-4">
@@ -600,6 +624,32 @@ const SettingsPage: React.FC = () => {
                 <Input type="file" accept="application/json" onChange={importAll} />
               </div>
             </div>
+          </TabsContent>
+          <TabsContent value="server" className="space-y-4">
+            <h2 className="font-semibold">Server Info</h2>
+            {serverInfo ? (
+              <div className="space-y-2">
+                <p>Port: {serverInfo.port}</p>
+                <div>
+                  <p className="font-medium">IPs</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    {serverInfo.ips.map(ip => (
+                      <li key={ip}>{ip}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-medium">URLs</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    {serverInfo.urls.map(url => (
+                      <li key={url}>{url}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ) : (
+              <p>Lade...</p>
+            )}
           </TabsContent>
           <TabsContent value="info" className="space-y-4">
             <div className="prose dark:prose-invert">
