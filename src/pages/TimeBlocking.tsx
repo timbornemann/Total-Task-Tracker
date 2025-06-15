@@ -163,6 +163,8 @@ const TimeBlockingPage = () => {
       start: number
       end: number
       origin: number
+      column: number
+      columns: number
     } | null>(null)
     const [selection, setSelection] = useState<{ start: number; end: number } | null>(null)
 
@@ -175,7 +177,17 @@ const TimeBlockingPage = () => {
       )
     }, [tasks, drag])
 
-    const layout = useMemo(() => layoutTasks(displayTasks), [displayTasks])
+    const layout = useMemo(() => {
+      const items = layoutTasks(displayTasks)
+      if (drag) {
+        const current = items.find(i => i.task.id === drag.id)
+        if (current) {
+          current.column = drag.column
+          current.columns = drag.columns
+        }
+      }
+      return items
+    }, [displayTasks, drag?.id, drag?.column, drag?.columns])
 
     const getMinutes = (clientY: number) => {
       const rect = containerRef.current!.getBoundingClientRect()
@@ -199,7 +211,15 @@ const TimeBlockingPage = () => {
         const isResize = bottom - y < 8
         type = isResize ? 'resize' : 'move'
       }
-      setDrag({ id: item.task.id, type, start: item.start, end: item.end, origin: y })
+      setDrag({
+        id: item.task.id,
+        type,
+        start: item.start,
+        end: item.end,
+        origin: y,
+        column: item.column,
+        columns: item.columns
+      })
     }
 
     const handleContainerPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -285,7 +305,7 @@ const TimeBlockingPage = () => {
               <div
                 key={task.id}
                 onPointerDown={e => handleTaskPointerDown(item, e)}
-                className="absolute rounded px-2 text-sm overflow-hidden cursor-pointer"
+                className="absolute rounded text-sm overflow-hidden cursor-pointer pl-4 pr-2 py-1"
                 style={{
                   top: `${top}%`,
                   height: `${height}%`,
