@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import {
@@ -22,6 +22,8 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from '@/components/ui/tooltip';
+import ReactMarkdown from 'react-markdown';
+import { cn } from '@/lib/utils';
 
 interface MarkdownEditorProps {
   value: string;
@@ -37,6 +39,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
   className,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [isPreview, setIsPreview] = useState(false);
 
   const wrapSelection = (prefix: string, suffix = '') => {
     const textarea = textareaRef.current;
@@ -83,7 +86,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
               type="button"
               size="sm"
               variant="outline"
-              onClick={() => wrapSelection('**', '**')}
+              onClick={() => wrapSelection('**', '**')
             >
               <Bold />
             </Button>
@@ -96,7 +99,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
               type="button"
               size="sm"
               variant="outline"
-              onClick={() => wrapSelection('*', '*')}
+              onClick={() => wrapSelection('*', '*')
             >
               <Italic />
             </Button>
@@ -260,13 +263,34 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
           <TooltipContent>Horizontal Rule</TooltipContent>
         </Tooltip>
       </div>
-      <Textarea
-        ref={textareaRef}
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        rows={rows}
-        className={className}
-      />
+      {isPreview ? (
+        <div
+          className={cn(
+            'prose max-w-none p-8 min-h-[80px] border rounded-sm bg-background shadow-sm cursor-text',
+            className
+          )}
+          onClick={() => {
+            setIsPreview(false);
+            textareaRef.current?.focus();
+          }}
+          tabIndex={0}
+        >
+          <ReactMarkdown>{value || ''}</ReactMarkdown>
+        </div>
+      ) : (
+        <Textarea
+          ref={textareaRef}
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          rows={rows}
+          onBlur={() => setIsPreview(true)}
+          onFocus={() => setIsPreview(false)}
+          className={cn(
+            'prose max-w-none p-8 min-h-[80px] bg-background border rounded-sm shadow-sm focus-visible:ring-0 focus-visible:outline-none',
+            className
+          )}
+        />
+      )
     </div>
   );
 };
