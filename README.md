@@ -1,18 +1,72 @@
-# Task Tree Dashboard
+# Total-Task-Tracker
 
-Kleine Aufgabenverwaltung auf Basis von React und Node.js. Aufgaben lassen sich in Kategorien organisieren und in einem Kalender oder auf einer Statistikseite auswerten. Die Daten werden dabei auf dem Server in einer kleinen SQLite-Datenbank gespeichert.
+
+Der Total-Task-Tracker ist eine leistungsstarke, lokal betriebene Aufgaben- und Lernverwaltung auf Basis von React, Node.js und SQLite. Die Anwendung kombiniert klassische To-do-Funktionen mit Kalenderintegration, Markdown-Notizen, einem Pomodoro-Timer und einem integrierten Lernkarten-System mit Spaced-Repetition-Algorithmus.
+Ideal für Selbstorganisation, Projektplanung oder die strukturierte Prüfungsvorbereitung.
+
+Die Daten werden dabei vollständig lokal auf dem Server gespeichert, entweder per Docker oder im klassischen Node.js-Betrieb. So behältst du volle Kontrolle über deine Inhalte.
+
+## Inhaltsverzeichnis
+- [Voraussetzungen](#voraussetzungen)
+- [Schnellstart mit dem fertigen Docker-Image](#schnellstart-mit-dem-fertigen-docker-image)
+- [Docker-Compose: Image selbst bauen](#docker-compose-image-selbst-bauen)
+- [Installation für die lokale Entwicklung](#installation-für-die-lokale-entwicklung)
+- [Entwicklung starten](#entwicklung-starten)
+- [Automatische Updates mit Watchtower](#automatische-updates-mit-watchtower)
+- [Manuelle Produktion ohne Docker](#manuelle-produktion-ohne-docker)
+- [Funktionen](#funktionen)
+- [Verwendung](#verwendung)
+- [Tastenkürzel](#tastenkürzel)
+- [Lernkarten-Algorithmus](#lernkarten-algorithmus)
 
 ## Voraussetzungen
 
 * Für die lokale Entwicklung: **Node.js** (empfohlen Version 18) und **npm**
 * Für den produktiven Betrieb: **Docker** und **docker-compose**
 
-## Installation (lokale Entwicklung)
+## Schnellstart mit dem fertigen Docker-Image (empfohlen)
+
+Wenn du nicht lokal bauen möchtest, kannst du das bereits bereitgestellte Docker-Image aus der GitHub Container Registry nutzen:
+
+```bash
+docker pull ghcr.io/timbornemann/total-task-tracker:latest
+docker run -d `
+  --name total-task-tracker `
+  -p 3002:3002 `
+  -v total-task-tracker-data:/app/server/data `
+  ghcr.io/timbornemann/total-task-tracker:latest
+
+```
+
+Die Anwendung legt ihre SQLite-Daten standardmäßig im Volume `total-task-tracker-data` ab. Dieses Volume wird beim ersten Start automatisch angelegt und bleibt auch nach einem Container-Update erhalten. Möchtest du stattdessen ein bestimmtes Verzeichnis binden, kannst du ein Volume angeben:
+
+```bash
+docker run -d `
+  --name total-task-tracker `
+  -p 3002:3002 `
+  -v ./server/data:/app/server/data `
+  ghcr.io/timbornemann/total-task-tracker:latest
+```
+
+## Docker-Compose: Image selbst bauen
+
+Die Anwendung kann auch komplett über `docker-compose` ausgeführt werden. Dabei wird automatisch ein Produktionsbuild erstellt.
+
+1. Repository klonen und in das Projektverzeichnis wechseln
+2. Container bauen und starten (setzt optional die Versionsnummer)
+
+```bash
+VERSION=$(git describe --tags --abbrev=0) docker-compose up --build
+```
+
+Der Dienst lauscht anschließend auf Port **3002**. Im Browser unter `http://localhost:3002` erreichst du das Dashboard. Die Daten werden in einem benannten Docker-Volume (`total-task-tracker-data`) gespeichert. Mit `docker-compose down` kann der Container gestoppt werden, ohne dass die Daten verloren gehen.
+
+## Installation für die lokale Entwicklung
 
 ```bash
 # Repository klonen
 git clone <REPO_URL>
-cd total-task-tracker
+cd Total-Task-Tracker
 
 # Abhängigkeiten installieren
 npm install
@@ -36,52 +90,39 @@ Rufe anschließend im Browser `http://localhost:8081` auf.
 
 ---
 
-## Bereitstellung mit Docker
+## Automatische Updates mit Watchtower
 
-Die Anwendung kann komplett über einen Docker-Container ausgeführt werden. Dabei wird automatisch ein Produktionsbuild erstellt.
+Um den Container stets aktuell zu halten, kannst du [Watchtower](https://containrrr.dev/watchtower/) einsetzen. Damit wird regelmäßig geprüft, ob neue Images verfügbar sind.
 
-1. Repository klonen und in das Projektverzeichnis wechseln
-2. Container bauen und starten (setzt optional die Versionsnummer)
-
-```bash
-VERSION=$(git describe --tags --abbrev=0) docker-compose up --build
-```
-
-Der Dienst lauscht anschließend auf Port **3002**. Im Browser unter `http://localhost:3002` erreichst du das Dashboard. Die Daten werden dauerhaft im Verzeichnis `./server/data` als SQLite-Datenbank abgelegt. Mit `docker-compose down` kann der Container gestoppt werden.
-
-## Nutzung des vorgefertigten Images
-
-Wenn du nicht lokal bauen möchtest, kannst du das bereits bereitgestellte Docker-Image aus der GitHub Container Registry nutzen:
+### Alle Container überwachen
 
 ```bash
-docker pull ghcr.io/timbornemann/total-task-tracker:latest
-docker run -d --name task-tracker -p 3002:3002 ghcr.io/timbornemann/total-task-tracker:latest
+docker run -d --name watchtower `
+  --restart unless-stopped `
+  -v /var/run/docker.sock:/var/run/docker.sock `
+  containrrr/watchtower --interval 3600
 ```
 
-Um die Daten auch bei automatischen Updates durch Tools wie **Watchtower** zu erhalten, empfiehlt es sich, ein benanntes Docker-Volume zu nutzen:
+Der Parameter `--interval` gibt das Prüfintervall in Sekunden an. Im Beispiel sucht Watchtower also jede Stunde nach Updates und startet betroffene Container neu.
+
+### Nur diesen Container aktualisieren
 
 ```bash
-docker volume create task-tracker-data
-docker run -d \
-  --name task-tracker \
-  -p 3002:3002 \
-  -v task-tracker-data:/app/server/data \
-  ghcr.io/timbornemann/total-task-tracker:latest
+docker run -d --name watchtower `
+  --restart unless-stopped `
+  -v /var/run/docker.sock:/var/run/docker.sock `
+  containrrr/watchtower total-task-tracker-app --interval 3600
 ```
 
-Die Anwendung legt die SQLite-Daten standardmäßig im Docker-Volume `/app/server/data` ab. Ohne Angabe eines eigenen Volumes erstellt Docker dafür ein anonymes Volume, das beim Entfernen des Containers verloren gehen kann.
-
-Möchtest du stattdessen ein bestimmtes Verzeichnis binden, kannst du ein Volume angeben:
+Soll Watchtower lediglich einmalig prüfen und danach beendet werden, füge `--run-once` hinzu:
 
 ```bash
-docker run -d \
-  --name task-tracker \
-  -p 3002:3002 \
-  -v ./server/data:/app/server/data \
-  ghcr.io/timbornemann/total-task-tracker:latest
+docker run --rm `
+  -v /var/run/docker.sock:/var/run/docker.sock `
+  containrrr/watchtower total-task-tracker-app --run-once
 ```
 
-## Manuelle Produktion (optional)
+## Manuelle Produktion ohne Docker
 
 Möchtest du ohne Docker deployen, kannst du die Anwendung lokal bauen und den Node-Server direkt nutzen.
 
@@ -93,7 +134,8 @@ npm start    # startet die gebaute App auf Port 3002
 ## Funktionen
 
 - Aufgaben anlegen, bearbeiten und in Kategorien sortieren
-- Unteraufgaben, Prioritäten und Wiederholungen
+- Unteraufgaben und Prioritäten
+- Separate Seite für wiederkehrende Aufgaben mit eigenen Intervallen und dynamischen Titeln
 - Kalenderansicht mit direkter Task-Erstellung; Tagesaufgaben sind klickbar und bieten alle Task-Optionen
 - Eigene Notizen mit Farbe und Drag & Drop sortierbar
   - Notizen lassen sich anpinnen; die ersten drei angepinnten erscheinen auf der Startseite
@@ -132,15 +174,16 @@ npm start    # startet die gebaute App auf Port 3002
 ## Verwendung
 
 1. Nach dem Start siehst du die vorhandenen **Kategorien**. Mit dem Button `Kategorie` kannst du neue Kategorien erstellen.
-2. Wähle eine Kategorie aus, um ihre **Tasks** zu sehen. Über `Task` legst du neue Aufgaben an. Dort kannst du Titel, Beschreibung, Priorität, Farbe, Fälligkeitsdatum und optionale Wiederholung definieren.
-3. Tasks lassen sich per Drag & Drop umsortieren oder in Unteraufgaben aufteilen.
-4. Über das Suchfeld und die Filter sortierst und findest du Aufgaben nach Priorität oder Farbe.
-5. Mit dem Sternsymbol kannst du eine Task anpinnen. Die ersten drei gepinnten erscheinen auf der Startseite.
-6. Mit `Strg+K` (oder über das Suchsymbol) öffnest du die **globale Suche**. Sie durchsucht Tasks, Notizen und Lernkarten und führt dich bei Auswahl direkt zum entsprechenden Eintrag.
-7. In der **Kalender**-Ansicht klickst du auf ein Datum, um alle bis dahin fälligen Aufgaben zu sehen. Dort kannst du die Tasks direkt öffnen, bearbeiten, Unteraufgaben anlegen oder löschen. Die **Statistiken** geben einen Überblick über erledigte Tasks.
-8. Unter **Notizen** kannst du unabhängige Notizen verwalten und per Drag & Drop sortieren. Gepinnte Notizen erscheinen auf der Startseite. Deine Inhalte kannst du dabei in Markdown verfassen. Beim Anklicken einer Notiz siehst du zunächst eine Vorschau, die du dort auch bearbeiten kannst.
-9. Unter **Decks** legst du Kartendecks an und kannst sie bearbeiten. In der Detailansicht eines Decks fügst du einzelne Karten hinzu.
-10. Der Bereich **Karten** zeigt dir fällige Karten zum Lernen an. Dort kannst du
+2. Wähle eine Kategorie aus, um ihre **Tasks** zu sehen. Über `Task` legst du neue Aufgaben an. Dort kannst du Titel, Beschreibung, Priorität, Farbe und ein Fälligkeitsdatum festlegen.
+3. Wiederkehrende Aufgaben erstellst du über die Seite **Wiederkehrend**. Dort legst du Vorlagen mit festen oder benutzerdefinierten Intervallen an und kannst Platzhalter wie `{date}` oder `{counter}` im Titel nutzen.
+4. Tasks lassen sich per Drag & Drop umsortieren oder in Unteraufgaben aufteilen.
+5. Über das Suchfeld und die Filter sortierst und findest du Aufgaben nach Priorität oder Farbe.
+6. Mit dem Sternsymbol kannst du eine Task anpinnen. Die ersten drei gepinnten erscheinen auf der Startseite.
+7. Mit `Strg+K` (oder über das Suchsymbol) öffnest du die **globale Suche**. Sie durchsucht Tasks, Notizen und Lernkarten und führt dich bei Auswahl direkt zum entsprechenden Eintrag.
+8. In der **Kalender**-Ansicht klickst du auf ein Datum, um alle bis dahin fälligen Aufgaben zu sehen. Dort kannst du die Tasks direkt öffnen, bearbeiten, Unteraufgaben anlegen oder löschen. Die **Statistiken** geben einen Überblick über erledigte Tasks.
+9. Unter **Notizen** kannst du unabhängige Notizen verwalten und per Drag & Drop sortieren. Gepinnte Notizen erscheinen auf der Startseite. Deine Inhalte kannst du dabei in Markdown verfassen. Beim Anklicken einer Notiz siehst du zunächst eine Vorschau, die du dort auch bearbeiten kannst.
+10. Unter **Decks** legst du Kartendecks an und kannst sie bearbeiten. In der Detailansicht eines Decks fügst du einzelne Karten hinzu.
+11. Der Bereich **Karten** zeigt dir fällige Karten zum Lernen an. Dort kannst du
    gezielt Decks ein- oder ausblenden, einen Zufallsmodus aktivieren und im
    Eingabemodus Antworten eintippen. Nach dem Vergleich der Lösung entscheidest
    du selbst, wie schwer dir die Karte fiel.
@@ -173,3 +216,4 @@ Die nächste Wiederholungszeit wird dann wie folgt bestimmt:
 3. Das Intervall erhöht sich um `interval * Faktor`
 
 Dadurch fließt sowohl die bisherige Leistung als auch die aktuelle Bewertung in das nächste Fälligkeitsdatum ein.
+

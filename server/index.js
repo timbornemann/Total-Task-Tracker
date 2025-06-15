@@ -28,6 +28,10 @@ db.exec(`
     id TEXT PRIMARY KEY,
     data TEXT NOT NULL
   );
+  CREATE TABLE IF NOT EXISTS recurring (
+    id TEXT PRIMARY KEY,
+    data TEXT NOT NULL
+  );
   CREATE TABLE IF NOT EXISTS flashcards (
     id TEXT PRIMARY KEY,
     data TEXT NOT NULL
@@ -111,11 +115,23 @@ function loadNotes() {
   }
 }
 
+function loadRecurring() {
+  try {
+    return db
+      .prepare('SELECT data FROM recurring')
+      .all()
+      .map(row => JSON.parse(row.data, dateReviver));
+  } catch {
+    return [];
+  }
+}
+
 function loadData() {
   return {
     tasks: loadTasks(),
     categories: loadCategories(),
-    notes: loadNotes()
+    notes: loadNotes(),
+    recurring: loadRecurring()
   };
 }
 
@@ -152,11 +168,23 @@ function saveNotes(notes) {
   tx();
 }
 
+function saveRecurring(list) {
+  const tx = db.transaction(() => {
+    db.exec('DELETE FROM recurring');
+    for (const item of list || []) {
+      db.prepare('INSERT INTO recurring (id, data) VALUES (?, ?)')
+        .run(item.id, toJson(item));
+    }
+  });
+  tx();
+}
+
 function saveData(data) {
   const tx = db.transaction(() => {
     saveTasks(data.tasks || []);
     saveCategories(data.categories || []);
     saveNotes(data.notes || []);
+    saveRecurring(data.recurring || []);
   });
   tx();
 }
@@ -243,6 +271,7 @@ function loadAllData() {
     tasks: loadTasks(),
     categories: loadCategories(),
     notes: loadNotes(),
+    recurring: loadRecurring(),
     flashcards: loadFlashcards(),
     decks: loadDecks(),
     settings: loadSettings()
@@ -253,6 +282,7 @@ function saveAllData(data) {
   saveData(data);
   saveFlashcards(data.flashcards || []);
   saveDecks(data.decks || []);
+  if (data.recurring) saveRecurring(data.recurring);
   if (data.settings) {
     saveSettings(data.settings);
     if (data.settings.syncFolder !== undefined) {
@@ -285,6 +315,7 @@ function mergeData(curr, inc) {
     tasks: mergeLists(curr.tasks, inc.tasks),
     categories: mergeLists(curr.categories, inc.categories),
     notes: mergeLists(curr.notes, inc.notes),
+    recurring: mergeLists(curr.recurring, inc.recurring),
     flashcards: mergeLists(curr.flashcards, inc.flashcards, null),
     decks: mergeLists(curr.decks, inc.decks, null),
     settings: { ...curr.settings, ...inc.settings }
@@ -293,7 +324,7 @@ function mergeData(curr, inc) {
 
 function performSync() {
   if (!syncFolder) return;
-  const file = path.join(syncFolder, 'task-tracker-sync.json');
+  const file = path.join(syncFolder, 'total-task-tracker-sync.json');
   try {
     let incoming = null;
     if (fs.existsSync(file)) {
@@ -427,6 +458,30 @@ const server = http.createServer((req, res) => {
         try {
           const decks = JSON.parse(body || '[]');
           saveDecks(decks);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ status: 'ok' }));
+        } catch {
+          res.writeHead(400);
+          res.end();
+        }
+      });
+      return;
+    }
+  }
+
+  if (parsed.pathname === '/api/recurring' || parsed.pathname === '/api/recurring/') {
+    if (req.method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(loadRecurring()));
+      return;
+    }
+    if (req.method === 'PUT') {
+      let body = '';
+      req.on('data', chunk => { body += chunk; });
+      req.on('end', () => {
+        try {
+          const list = JSON.parse(body || '[]');
+          saveRecurring(list);
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ status: 'ok' }));
         } catch {

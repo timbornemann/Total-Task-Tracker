@@ -19,11 +19,23 @@ export interface Task {
   recurrencePattern?: 'daily' | 'weekly' | 'monthly' | 'yearly';
   lastCompleted?: Date;
   nextDue?: Date;
-  dueDate?: Date;
+  /** How to calculate due date for recurring tasks */
+  dueOption?: 'days' | 'weekEnd' | 'monthEnd';
+  /** Number of days after creation when dueOption is 'days' */
+  dueAfterDays?: number;
+  /** Start configuration for recurring task */
+  startOption?: 'today' | 'weekday' | 'date';
+  /** Weekday number if startOption is 'weekday' (0=Sunday) */
+  startWeekday?: number;
+  /** Fixed start date if startOption is 'date' */
+  startDate?: Date;
   /** Sort order within its list */
   order: number;
   /** Whether the task is pinned */
   pinned: boolean;
+  template?: boolean;
+  titleTemplate?: string;
+  customIntervalDays?: number;
 }
 
 export interface Category {
@@ -50,6 +62,14 @@ export interface TaskFormData {
   dueDate?: Date;
   isRecurring: boolean;
   recurrencePattern?: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  customIntervalDays?: number;
+  dueOption?: 'days' | 'weekEnd' | 'monthEnd';
+  dueAfterDays?: number;
+  startOption?: 'today' | 'weekday' | 'date';
+  startWeekday?: number;
+  startDate?: Date;
+  titleTemplate?: string;
+  template?: boolean;
 }
 
 export interface CategoryFormData {

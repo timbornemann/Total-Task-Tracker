@@ -44,7 +44,7 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
               onClick={onHomeClick}
               className="text-lg sm:text-2xl font-bold text-foreground"
             >
-              Task Tracker
+              Total-Task-Tracker
             </Link>
             {title && (
               <span className="hidden sm:inline text-muted-foreground">/ {title}</span>
@@ -110,6 +110,11 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                 <DropdownMenuItem asChild>
                   <Link to="/calendar" className="flex items-center">
                     <CalendarIcon className="h-4 w-4 mr-2" /> Kalender
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/recurring" className="flex items-center">
+                    <List className="h-4 w-4 mr-2" /> Wiederkehrend
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
@@ -195,6 +200,12 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                   <Button variant="outline" size="sm" className="w-full">
                     <CalendarIcon className="h-4 w-4 mr-2" />
                     Kalender
+                  </Button>
+                </Link>
+                <Link to="/recurring" className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full">
+                    <List className="h-4 w-4 mr-2" />
+                    Wiederkehrend
                   </Button>
                 </Link>
                 <Link to="/statistics" className="flex-1">

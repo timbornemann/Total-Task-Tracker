@@ -195,6 +195,7 @@ const CalendarPage = () => {
         parentTask={parentTask || undefined}
         defaultCategoryId={categories[0]?.id}
         defaultDueDate={selected}
+        allowRecurring={false}
       />
 
       <TaskDetailModal
