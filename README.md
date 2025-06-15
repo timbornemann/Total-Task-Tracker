@@ -30,11 +30,12 @@ Wenn du nicht lokal bauen möchtest, kannst du das bereits bereitgestellte Docke
 
 ```bash
 docker pull ghcr.io/timbornemann/total-task-tracker:latest
-docker run -d \
-  --name total-task-tracker \
-  -p 3002:3002 \
-  -v total-task-tracker-data:/app/server/data \
+docker run -d `
+  --name total-task-tracker `
+  -p 3002:3002 `
+  -v total-task-tracker-data:/app/server/data `
   ghcr.io/timbornemann/total-task-tracker:latest
+
 ```
 
 Die Anwendung legt ihre SQLite-Daten standardmäßig im Volume `total-task-tracker-data` ab. Dieses Volume wird beim ersten Start automatisch angelegt und bleibt auch nach einem Container-Update erhalten. Möchtest du stattdessen ein bestimmtes Verzeichnis binden, kannst du ein Volume angeben:
