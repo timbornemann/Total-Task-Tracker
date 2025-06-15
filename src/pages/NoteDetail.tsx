@@ -45,7 +45,7 @@ const NoteDetailPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar title="Notiz" onHomeClick={() => navigate('/notes')} />
-      <div className="max-w-2xl mx-auto py-8 px-4">
+      <div className="max-w-6xl mx-auto py-8 px-4">
         <Button
           variant="ghost"
           size="sm"
@@ -56,8 +56,8 @@ const NoteDetailPage: React.FC = () => {
         </Button>
         {isEditing ? (
           <form className="space-y-4" onSubmit={e => { e.preventDefault(); handleSave(); }}>
-            <div className="md:flex md:space-x-4">
-              <div className="md:w-1/2 space-y-4">
+            <div className="md:flex md:space-x-8">
+              <div className="md:w-2/3 space-y-4">
                 <div>
                   <Label htmlFor="title">Titel *</Label>
                   <Input
@@ -94,7 +94,7 @@ const NoteDetailPage: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="md:w-1/2 mt-4 md:mt-0">
+              <div className="md:w-1/3 mt-4 md:mt-0">
                 <Label>Vorschau</Label>
                 <div className="p-2 border rounded-sm bg-background max-h-96 overflow-auto mt-2">
                   {formData.text ? (
