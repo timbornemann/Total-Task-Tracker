@@ -29,6 +29,10 @@ export interface Task {
   startWeekday?: number;
   /** Fixed start date if startOption is 'date' */
   startDate?: Date;
+  /** Optional start time in HH:mm */
+  startTime?: string;
+  /** Optional end time in HH:mm */
+  endTime?: string;
   /** Sort order within its list */
   order: number;
   /** Whether the task is pinned */
@@ -68,6 +72,10 @@ export interface TaskFormData {
   startOption?: 'today' | 'weekday' | 'date';
   startWeekday?: number;
   startDate?: Date;
+  /** Optional start time in HH:mm */
+  startTime?: string;
+  /** Optional end time in HH:mm */
+  endTime?: string;
   titleTemplate?: string;
   template?: boolean;
 }

@@ -120,6 +120,8 @@ npm start    # startet die gebaute App auf Port 3002
 - Unteraufgaben und Prioritäten
 - Separate Seite für wiederkehrende Aufgaben mit eigenen Intervallen und dynamischen Titeln
 - Kalenderansicht mit direkter Task-Erstellung; Tagesaufgaben sind klickbar und bieten alle Task-Optionen
+- Neue Zeitplan-Seite mit Tages-, Wochen- und Monatsansicht
+  - Aufgaben lassen sich mit Start- und Endzeit planen
 - Eigene Notizen mit Farbe und Drag & Drop sortierbar
   - Notizen lassen sich anpinnen; die ersten drei angepinnten erscheinen auf der Startseite
   - Tasks lassen sich ebenfalls anpinnen; die ersten drei werden auf der Startseite gezeigt

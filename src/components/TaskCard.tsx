@@ -124,6 +124,9 @@ const TaskCard: React.FC<TaskCardProps> = ({
                     }`}
                   >
                     Fällig am {new Date(task.dueDate).toLocaleDateString('de-DE')}
+                    {task.startTime && (
+                      <> {task.startTime}-{task.endTime || ''}</>
+                    )}
                   </span>
                 )}
               </div>
