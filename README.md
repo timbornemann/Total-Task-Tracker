@@ -169,7 +169,7 @@ npm start    # startet die gebaute App auf Port 3002
 7. Mit `Strg+K` (oder über das Suchsymbol) öffnest du die **globale Suche**. Sie durchsucht Tasks, Notizen und Lernkarten und führt dich bei Auswahl direkt zum entsprechenden Eintrag.
 8. In der **Zeitplan**-Ansicht wählst du einen Tag, eine Woche oder einen Monat aus. Aufgaben mit Uhrzeit erscheinen als Blöcke, solche ohne Zeit als Liste unterhalb des Plans. 
    Die **Statistiken** geben einen Überblick über erledigte Tasks.
-9. Unter **Notizen** kannst du unabhängige Notizen verwalten und per Drag & Drop sortieren. Gepinnte Notizen erscheinen auf der Startseite. Deine Inhalte kannst du dabei in Markdown verfassen. Beim Anklicken einer Notiz siehst du zunächst eine Vorschau, die du dort auch bearbeiten kannst. Der Editor stellt zahlreiche Schaltflächen für gängige Formatierungen bereit.
+9. Unter **Notizen** kannst du unabhängige Notizen verwalten und per Drag & Drop sortieren. Gepinnte Notizen erscheinen auf der Startseite. Deine Inhalte kannst du dabei in Markdown verfassen. Beim Anklicken einer Notiz siehst du zunächst eine Vorschau und kannst sie direkt bearbeiten. Auf dem Desktop erscheint nun während des Bearbeitens eine Live-Vorschau rechts neben dem Editor. Der Editor stellt zahlreiche Schaltflächen für gängige Formatierungen bereit.
 10. Unter **Decks** legst du Kartendecks an und kannst sie bearbeiten. In der Detailansicht eines Decks fügst du einzelne Karten hinzu.
 11. Der Bereich **Karten** zeigt dir fällige Karten zum Lernen an. Dort kannst du
    gezielt Decks ein- oder ausblenden, einen Zufallsmodus aktivieren und im

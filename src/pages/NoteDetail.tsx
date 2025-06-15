@@ -56,28 +56,53 @@ const NoteDetailPage: React.FC = () => {
         </Button>
         {isEditing ? (
           <form className="space-y-4" onSubmit={e => { e.preventDefault(); handleSave(); }}>
-            <div>
-              <Label htmlFor="title">Titel *</Label>
-              <Input id="title" value={formData.title} onChange={e => handleChange('title', e.target.value)} required />
-            </div>
-            <div>
-              <Label htmlFor="text">Text (Markdown)</Label>
-              <MarkdownEditor value={formData.text} onChange={val => handleChange('text', val)} rows={10} />
-            </div>
-            <div>
-              <Label>Farbe</Label>
-              <div className="flex space-x-2 mt-2">
-                {colorOptions.map(color => (
-                  <button
-                    key={color}
-                    type="button"
-                    className={`w-8 h-8 rounded-full border-2 transition-all ${
-                      formData.color === color ? 'border-gray-800 scale-110' : 'border-gray-300 hover:scale-105'
-                    }`}
-                    style={{ backgroundColor: color }}
-                    onClick={() => handleChange('color', color)}
+            <div className="md:flex md:space-x-4">
+              <div className="md:w-1/2 space-y-4">
+                <div>
+                  <Label htmlFor="title">Titel *</Label>
+                  <Input
+                    id="title"
+                    value={formData.title}
+                    onChange={e => handleChange('title', e.target.value)}
+                    required
                   />
-                ))}
+                </div>
+                <div>
+                  <Label htmlFor="text">Text (Markdown)</Label>
+                  <MarkdownEditor
+                    value={formData.text}
+                    onChange={val => handleChange('text', val)}
+                    rows={10}
+                  />
+                </div>
+                <div>
+                  <Label>Farbe</Label>
+                  <div className="flex space-x-2 mt-2">
+                    {colorOptions.map(color => (
+                      <button
+                        key={color}
+                        type="button"
+                        className={`w-8 h-8 rounded-full border-2 transition-all ${
+                          formData.color === color
+                            ? 'border-gray-800 scale-110'
+                            : 'border-gray-300 hover:scale-105'
+                        }`}
+                        style={{ backgroundColor: color }}
+                        onClick={() => handleChange('color', color)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="md:w-1/2 mt-4 md:mt-0">
+                <Label>Vorschau</Label>
+                <div className="p-2 border rounded-sm bg-background max-h-96 overflow-auto mt-2">
+                  {formData.text ? (
+                    <ReactMarkdown className="prose">{formData.text}</ReactMarkdown>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Noch keine Vorschau</p>
+                  )}
+                </div>
               </div>
             </div>
             <div className="flex justify-end space-x-2 pt-4">
