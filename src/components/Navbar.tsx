@@ -118,7 +118,7 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to="/statistics" className="flex items-center">
-                    <BarChart3 className="h-4 w-4 mr-2" /> Statistiken
+                    <BarChart3 className="h-4 w-4 mr-2" /> Task-Statistiken
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -210,7 +210,7 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                 <Link to="/statistics" className="flex-1">
                   <Button variant="outline" size="sm" className="w-full">
                     <BarChart3 className="h-4 w-4 mr-2" />
-                    Statistiken
+                    Task-Statistiken
                   </Button>
                 </Link>
               </div>
