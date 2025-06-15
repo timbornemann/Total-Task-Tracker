@@ -20,6 +20,12 @@ const startOfWeek = (d: Date) => {
   return date;
 };
 
+const startOfMonth = (d: Date) => {
+  const date = new Date(d.getFullYear(), d.getMonth(), 1);
+  date.setHours(0, 0, 0, 0);
+  return date;
+};
+
 const TimeBlockingPage = () => {
   const { tasks } = useTaskStore();
   const [date, setDate] = useState<Date>(new Date());
@@ -122,20 +128,83 @@ const TimeBlockingPage = () => {
     </div>
   );
 
-  const renderMonth = () => (
-    <div>
-      <Calendar
-        mode="single"
-        selected={date}
-        onSelect={d => d && setDate(d)}
-        modifiers={{ event: eventDays }}
-        modifiersClassNames={{ event: 'bg-primary/20' }}
-      />
-      <div className="mt-4">
-        <DaySchedule tasks={dayTasks} />
+  const renderMonth = () => {
+    const start = startOfMonth(date);
+    const end = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    const days: (Date | null)[] = [];
+    const prefix = (start.getDay() + 6) % 7;
+    for (let i = 0; i < prefix; i++) days.push(null);
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      days.push(new Date(d));
+    }
+    while (days.length % 7 !== 0) days.push(null);
+    const weeks = [] as (Date | null)[][];
+    for (let i = 0; i < days.length; i += 7) {
+      weeks.push(days.slice(i, i + 7));
+    }
+
+    const handlePrev = () =>
+      setDate(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+    const handleNext = () =>
+      setDate(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+
+    return (
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <button className="p-1 rounded hover:bg-muted" onClick={handlePrev}>
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <div className="font-medium">
+            {date.toLocaleDateString('de-DE', {
+              month: 'long',
+              year: 'numeric'
+            })}
+          </div>
+          <button className="p-1 rounded hover:bg-muted" onClick={handleNext}>
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+        <div className="grid grid-cols-7 gap-2">
+          {weeks.map((week, wi) => (
+            <React.Fragment key={wi}>
+              {week.map((d, di) => (
+                <div
+                  key={di}
+                  className="min-h-[100px] border rounded p-1 text-xs space-y-1"
+                  onClick={() => d && setDate(d)}
+                >
+                  {d && (
+                    <>
+                      <div className="font-semibold text-sm">
+                        {d.getDate()}
+                      </div>
+                      {getTasksFor(d).slice(0, 3).map(task => (
+                        <div
+                          key={task.id}
+                          className="flex items-center space-x-1 truncate"
+                        >
+                          <span
+                            className="w-2 h-2 rounded-full"
+                            style={{ backgroundColor: task.color }}
+                          />
+                          <span className="truncate">{task.title}</span>
+                        </div>
+                      ))}
+                      {getTasksFor(d).length > 3 && (
+                        <div className="text-muted-foreground">
+                          +{getTasksFor(d).length - 3} mehr
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              ))}
+            </React.Fragment>
+          ))}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background">
