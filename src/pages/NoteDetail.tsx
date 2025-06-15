@@ -121,6 +121,7 @@ const NoteDetailPage: React.FC = () => {
             </div>
           </div>
         )}
+        </div>
       </div>
     </div>
   );
