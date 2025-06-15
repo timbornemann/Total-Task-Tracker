@@ -4,6 +4,8 @@ import { useTaskStore } from '@/hooks/useTaskStore';
 import { Calendar } from '@/components/ui/calendar';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import TaskModal from '@/components/TaskModal';
+import { TaskFormData, Task } from '@/types';
 
 const parseMinutes = (time?: string) => {
   if (!time) return null;
@@ -26,8 +28,24 @@ const startOfMonth = (d: Date) => {
   return date;
 };
 
+const formatTime = (m: number) => {
+  const h = Math.floor(m / 60)
+  const mm = Math.floor(m % 60)
+  return `${String(h).padStart(2, '0')}:${String(mm).padStart(2, '0')}`
+}
+
+const snap = (m: number) => {
+  return Math.min(1440, Math.max(0, Math.round(m / 15) * 15))
+}
+
 const TimeBlockingPage = () => {
-  const { tasks } = useTaskStore();
+  const { tasks, categories, addTask, updateTask } = useTaskStore()
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalDefaults, setModalDefaults] = useState<{
+    start?: string
+    end?: string
+    due?: Date
+  }>({})
   const [date, setDate] = useState<Date>(new Date());
   const [view, setView] = useState<'day' | 'week' | 'month'>('day');
 
@@ -55,14 +73,31 @@ const TimeBlockingPage = () => {
 
   const eventDays = useMemo(() => Object.keys(tasksByDate).map(d => new Date(d)), [tasksByDate]);
 
-  const layoutTasks = (list: typeof dayTasks) => {
-    type LayoutItem = {
-      task: (typeof list)[number];
-      start: number;
-      end: number;
-      column: number;
-      columns: number;
-    };
+  const handleUpdateTimes = (id: string, start: number, end: number) => {
+    updateTask(id, {
+      startTime: formatTime(start),
+      endTime: formatTime(end)
+    })
+  }
+
+  const handleCreateFromSchedule = (start: number, end: number, day: Date) => {
+    setModalDefaults({
+      start: formatTime(start),
+      end: formatTime(end),
+      due: day
+    })
+    setIsModalOpen(true)
+  }
+
+  interface LayoutItem {
+    task: Task
+    start: number
+    end: number
+    column: number
+    columns: number
+  }
+
+  const layoutTasks = (list: Task[]) => {
 
     const events = list
       .map(t => {
@@ -112,8 +147,105 @@ const TimeBlockingPage = () => {
     return result;
   };
 
-  const DaySchedule = ({ tasks, showTimes = true }: { tasks: typeof dayTasks; showTimes?: boolean }) => {
-    const layout = useMemo(() => layoutTasks(tasks), [tasks]);
+  const DaySchedule = ({
+    tasks,
+    showTimes = true,
+    date
+  }: {
+    tasks: Task[]
+    showTimes?: boolean
+    date: Date
+  }) => {
+    const containerRef = React.useRef<HTMLDivElement>(null)
+    const [drag, setDrag] = useState<{
+      id: string
+      type: 'move' | 'resize'
+      start: number
+      end: number
+      origin: number
+    } | null>(null)
+    const [selection, setSelection] = useState<{ start: number; end: number } | null>(null)
+
+    const displayTasks = useMemo(() => {
+      if (!drag) return tasks
+      return tasks.map(t =>
+        t.id === drag.id
+          ? { ...t, startTime: formatTime(drag.start), endTime: formatTime(drag.end) }
+          : t
+      )
+    }, [tasks, drag])
+
+    const layout = useMemo(() => layoutTasks(displayTasks), [displayTasks])
+
+    const getMinutes = (clientY: number) => {
+      const rect = containerRef.current!.getBoundingClientRect()
+      const y = clientY - rect.top
+      return snap((y / rect.height) * 1440)
+    }
+
+    const handleTaskPointerDown = (item: LayoutItem, e: React.PointerEvent<HTMLDivElement>) => {
+      e.stopPropagation()
+      const rect = containerRef.current!.getBoundingClientRect()
+      const y = e.clientY - rect.top
+      const bottom = (item.end / 1440) * rect.height
+      const isResize = bottom - y < 8
+      setDrag({ id: item.task.id, type: isResize ? 'resize' : 'move', start: item.start, end: item.end, origin: y })
+    }
+
+    const handleContainerPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+      if (e.target !== containerRef.current) return
+      const m = getMinutes(e.clientY)
+      setSelection({ start: m, end: m })
+    }
+
+    const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+      if (drag) {
+        const m = getMinutes(e.clientY)
+        if (drag.type === 'move') {
+          const delta = m - snap((drag.origin / containerRef.current!.getBoundingClientRect().height) * 1440)
+          let start = drag.start + delta
+          let end = drag.end + delta
+          const diff = end - start
+          if (start < 0) {
+            start = 0
+            end = diff
+          }
+          if (end > 1440) {
+            end = 1440
+            start = 1440 - diff
+          }
+          setDrag({ ...drag, start, end })
+        } else {
+          let end = m
+          if (end < drag.start + 15) end = drag.start + 15
+          if (end > 1440) end = 1440
+          setDrag({ ...drag, end })
+        }
+      } else if (selection) {
+        setSelection(prev => (prev ? { ...prev, end: getMinutes(e.clientY) } : null))
+      }
+    }
+
+    const handlePointerUp = () => {
+      if (drag) {
+        handleUpdateTimes(drag.id, drag.start, drag.end)
+        setDrag(null)
+      }
+      if (selection) {
+        let { start, end } = selection
+        if (end < start) [start, end] = [end, start]
+        if (end === start) end = start + 30
+        handleCreateFromSchedule(start, end, date)
+        setSelection(null)
+      }
+    }
+
+    const handleDoubleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+      if (e.target !== containerRef.current) return
+      const start = getMinutes(e.clientY)
+      handleCreateFromSchedule(start, start + 30, date)
+    }
+
     return (
       <div className="relative border h-[600px]">
         {Array.from({ length: 24 }).map((_, i) => (
@@ -125,17 +257,25 @@ const TimeBlockingPage = () => {
             {showTimes && <div className="-mt-2">{String(i).padStart(2, '0')}:00</div>}
           </div>
         ))}
-        <div className="absolute inset-0 ml-14 mr-2">
+        <div
+          ref={containerRef}
+          className="absolute inset-0 ml-14 mr-2"
+          onPointerDown={handleContainerPointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onDoubleClick={handleDoubleClick}
+        >
           {layout.map(item => {
-            const { task, start, end, column, columns } = item;
-            const top = (start / 1440) * 100;
-            const height = Math.max(((end - start) / 1440) * 100, 2);
-            const width = 100 / columns;
-            const left = column * width;
+            const { task, start, end, column, columns } = item
+            const top = (start / 1440) * 100
+            const height = Math.max(((end - start) / 1440) * 100, 2)
+            const width = 100 / columns
+            const left = column * width
             return (
               <div
                 key={task.id}
-                className="absolute rounded px-2 text-sm overflow-hidden"
+                onPointerDown={e => handleTaskPointerDown(item, e)}
+                className="absolute rounded px-2 text-sm overflow-hidden cursor-pointer"
                 style={{
                   top: `${top}%`,
                   height: `${height}%`,
@@ -149,12 +289,23 @@ const TimeBlockingPage = () => {
                   {task.startTime} - {task.endTime}
                 </div>
               </div>
-            );
+            )
           })}
+          {selection && (
+            <div
+              className="absolute bg-primary opacity-30 rounded"
+              style={{
+                top: `${(Math.min(selection.start, selection.end) / 1440) * 100}%`,
+                height: `${(Math.abs(selection.end - selection.start) / 1440) * 100}%`,
+                left: 0,
+                right: 0
+              }}
+            />
+          )}
         </div>
       </div>
-    );
-  };
+    )
+  }
 
   const renderDay = () => (
     <div className="flex flex-col lg:flex-row gap-6">
@@ -162,7 +313,11 @@ const TimeBlockingPage = () => {
         <Calendar mode="single" selected={date} onSelect={d => d && setDate(d)} />
       </div>
       <div className="flex-1 space-y-4">
-        <DaySchedule tasks={dayWithTimes} />
+        <DaySchedule
+          tasks={dayWithTimes}
+          date={date}
+          showTimes
+        />
         {dayWithoutTimes.length > 0 && (
           <div>
             <h3 className="font-medium text-sm mb-1">Ohne Uhrzeit</h3>
@@ -212,7 +367,11 @@ const TimeBlockingPage = () => {
               <div className="text-center text-sm font-medium">
                 {d.toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric' })}
               </div>
-              <DaySchedule tasks={withTimes} showTimes={idx === 0} />
+              <DaySchedule
+                tasks={withTimes}
+                showTimes={idx === 0}
+                date={d}
+              />
               {withoutTimes.length > 0 && (
                 <ul className="mt-1 space-y-1 text-xs">
                   {withoutTimes.map(task => (
@@ -324,14 +483,30 @@ const TimeBlockingPage = () => {
           <ToggleGroupItem value="week">Woche</ToggleGroupItem>
           <ToggleGroupItem value="month">Monat</ToggleGroupItem>
         </ToggleGroup>
-        <div className="mt-4">
-          {view === 'day' && renderDay()}
-          {view === 'week' && renderWeek()}
-          {view === 'month' && renderMonth()}
-        </div>
+      <div className="mt-4">
+        {view === 'day' && renderDay()}
+        {view === 'week' && renderWeek()}
+        {view === 'month' && renderMonth()}
       </div>
+      <TaskModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false)
+          setModalDefaults({})
+        }}
+        onSave={(data: TaskFormData) => {
+          addTask({ ...data, completed: false })
+        }}
+        categories={categories}
+        defaultCategoryId={categories[0]?.id}
+        defaultDueDate={modalDefaults.due}
+        defaultStartTime={modalDefaults.start}
+        defaultEndTime={modalDefaults.end}
+        allowRecurring={false}
+      />
     </div>
-  );
+  </div>
+);
 };
 
 export default TimeBlockingPage;
