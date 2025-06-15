@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import {
@@ -39,7 +39,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
   className,
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [isPreview, setIsPreview] = useState(false);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   const wrapSelection = (prefix: string, suffix = '') => {
     const textarea = textareaRef.current;
@@ -263,34 +263,33 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
           <TooltipContent>Horizontal Rule</TooltipContent>
         </Tooltip>
       </div>
-      {isPreview ? (
+      <div className="relative">
         <div
+          ref={previewRef}
           className={cn(
-            'prose max-w-none p-8 min-h-[80px] border rounded-sm bg-background shadow-sm cursor-text',
+            'pointer-events-none prose max-w-none p-8 min-h-[80px] border rounded-sm bg-background shadow-sm overflow-auto',
             className
           )}
-          onClick={() => {
-            setIsPreview(false);
-            textareaRef.current?.focus();
-          }}
-          tabIndex={0}
         >
           <ReactMarkdown>{value || ''}</ReactMarkdown>
         </div>
-      ) : (
         <Textarea
           ref={textareaRef}
           value={value}
           onChange={e => onChange(e.target.value)}
           rows={rows}
-          onBlur={() => setIsPreview(true)}
-          onFocus={() => setIsPreview(false)}
+          onScroll={() => {
+            if (previewRef.current && textareaRef.current) {
+              previewRef.current.scrollTop = textareaRef.current.scrollTop;
+            }
+          }}
           className={cn(
-            'prose max-w-none p-8 min-h-[80px] bg-background border rounded-sm shadow-sm focus-visible:ring-0 focus-visible:outline-none',
+            'absolute inset-0 p-8 min-h-[80px] bg-transparent border rounded-sm shadow-sm focus-visible:ring-0 focus-visible:outline-none resize-none',
             className
           )}
+          style={{ color: 'transparent', caretColor: 'currentColor' }}
         />
-        )}
+      </div>
       </div>
   );
 };

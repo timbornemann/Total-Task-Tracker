@@ -76,7 +76,7 @@ const NoteDetailPage: React.FC = () => {
                 rows={20}
                 className="min-h-[60vh]"
               />
-              <div className="absolute top-4 right-4 flex space-x-2 bg-background/80 p-2 rounded-md shadow">
+              <div className="absolute top-20 right-4 flex space-x-2 bg-background/80 p-2 rounded-md shadow">
                 {colorOptions.map(color => (
                   <button
                     key={color}
