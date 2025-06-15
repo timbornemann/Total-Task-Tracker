@@ -55,37 +55,106 @@ const TimeBlockingPage = () => {
 
   const eventDays = useMemo(() => Object.keys(tasksByDate).map(d => new Date(d)), [tasksByDate]);
 
-  const DaySchedule = ({ tasks, showTimes = true }: { tasks: typeof dayTasks; showTimes?: boolean }) => (
-    <div className="relative border h-[600px]">
-      {Array.from({ length: 24 }).map((_, i) => (
-        <div
-          key={i}
-          className="absolute left-0 w-full border-t text-xs text-muted-foreground"
-          style={{ top: `${(i / 24) * 100}%` }}
-        >
-          {showTimes && <div className="-mt-2">{String(i).padStart(2, '0')}:00</div>}
-        </div>
-      ))}
-      {tasks.map(task => {
-        const start = parseMinutes(task.startTime) ?? 0;
-        const end = parseMinutes(task.endTime) ?? start + 30;
-        const top = (start / 1440) * 100;
-        const height = Math.max(((end - start) / 1440) * 100, 2);
-        return (
+  const layoutTasks = (list: typeof dayTasks) => {
+    type LayoutItem = {
+      task: (typeof list)[number];
+      start: number;
+      end: number;
+      column: number;
+      columns: number;
+    };
+
+    const events = list
+      .map(t => {
+        const start = parseMinutes(t.startTime) ?? 0;
+        const end = parseMinutes(t.endTime) ?? start + 30;
+        return { task: t, start, end };
+      })
+      .sort((a, b) => a.start - b.start);
+
+    const result: LayoutItem[] = [];
+    let group: typeof events = [];
+    let groupEnd = 0;
+
+    const flushGroup = () => {
+      if (group.length === 0) return;
+      const colsEnd: number[] = [];
+      const groupItems: LayoutItem[] = [];
+      group.forEach(ev => {
+        let col = colsEnd.findIndex(e => e <= ev.start);
+        if (col === -1) {
+          col = colsEnd.length;
+          colsEnd.push(ev.end);
+        } else {
+          colsEnd[col] = ev.end;
+        }
+        groupItems.push({ ...ev, column: col, columns: 0 });
+      });
+      const total = colsEnd.length;
+      groupItems.forEach(i => (i.columns = total));
+      result.push(...groupItems);
+    };
+
+    for (const ev of events) {
+      if (group.length === 0) {
+        group.push(ev);
+        groupEnd = ev.end;
+      } else if (ev.start < groupEnd) {
+        group.push(ev);
+        groupEnd = Math.max(groupEnd, ev.end);
+      } else {
+        flushGroup();
+        group = [ev];
+        groupEnd = ev.end;
+      }
+    }
+    flushGroup();
+    return result;
+  };
+
+  const DaySchedule = ({ tasks, showTimes = true }: { tasks: typeof dayTasks; showTimes?: boolean }) => {
+    const layout = useMemo(() => layoutTasks(tasks), [tasks]);
+    return (
+      <div className="relative border h-[600px]">
+        {Array.from({ length: 24 }).map((_, i) => (
           <div
-            key={task.id}
-            className="absolute left-14 right-2 bg-primary/20 rounded px-2 text-sm overflow-hidden"
-            style={{ top: `${top}%`, height: `${height}%` }}
+            key={i}
+            className="absolute left-0 w-full border-t text-xs text-muted-foreground"
+            style={{ top: `${(i / 24) * 100}%` }}
           >
-            <div className="font-medium truncate">{task.title}</div>
-            <div className="text-xs">
-              {task.startTime} - {task.endTime}
-            </div>
+            {showTimes && <div className="-mt-2">{String(i).padStart(2, '0')}:00</div>}
           </div>
-        );
-      })}
-    </div>
-  );
+        ))}
+        <div className="absolute inset-0 ml-14 mr-2">
+          {layout.map(item => {
+            const { task, start, end, column, columns } = item;
+            const top = (start / 1440) * 100;
+            const height = Math.max(((end - start) / 1440) * 100, 2);
+            const width = 100 / columns;
+            const left = column * width;
+            return (
+              <div
+                key={task.id}
+                className="absolute rounded px-2 text-sm overflow-hidden"
+                style={{
+                  top: `${top}%`,
+                  height: `${height}%`,
+                  left: `${left}%`,
+                  width: `${width}%`,
+                  backgroundColor: task.color
+                }}
+              >
+                <div className="font-medium truncate">{task.title}</div>
+                <div className="text-xs">
+                  {task.startTime} - {task.endTime}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
 
   const renderDay = () => (
     <div className="flex flex-col lg:flex-row gap-6">
