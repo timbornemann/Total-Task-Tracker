@@ -45,7 +45,7 @@ const NoteDetailPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar title="Notiz" onHomeClick={() => navigate('/notes')} />
-      <div className="max-w-6xl mx-auto py-8 px-4">
+      <div className="py-8 px-4 w-full">
         <Button
           variant="ghost"
           size="sm"
@@ -56,8 +56,8 @@ const NoteDetailPage: React.FC = () => {
         </Button>
         {isEditing ? (
           <form className="space-y-4" onSubmit={e => { e.preventDefault(); handleSave(); }}>
-            <div className="md:flex md:space-x-8">
-              <div className="md:w-2/3 space-y-4">
+            <div className="md:grid md:grid-cols-2 md:gap-8">
+              <div className="flex flex-col space-y-4 h-[60vh]">
                 <div>
                   <Label htmlFor="title">Titel *</Label>
                   <Input
@@ -72,7 +72,8 @@ const NoteDetailPage: React.FC = () => {
                   <MarkdownEditor
                     value={formData.text}
                     onChange={val => handleChange('text', val)}
-                    rows={10}
+                    rows={20}
+                    className="h-full"
                   />
                 </div>
                 <div>
@@ -94,9 +95,9 @@ const NoteDetailPage: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="md:w-1/3 mt-4 md:mt-0">
+              <div className="flex flex-col mt-4 md:mt-0 h-[60vh]">
                 <Label>Vorschau</Label>
-                <div className="p-2 border rounded-sm bg-background max-h-96 overflow-auto mt-2">
+                <div className="p-4 border rounded-sm bg-background flex-1 overflow-auto mt-2">
                   {formData.text ? (
                     <ReactMarkdown className="prose">{formData.text}</ReactMarkdown>
                   ) : (
