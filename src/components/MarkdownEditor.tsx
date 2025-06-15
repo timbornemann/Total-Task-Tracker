@@ -40,29 +40,33 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
-  const [activeLine, setActiveLine] = useState('');
-  const [lineIndex, setLineIndex] = useState(0);
-  const [lineHeight, setLineHeight] = useState(0);
-
+  const [cursorPosition, setCursorPosition] = useState<number | null>(null);
+  const [activeLine, setActiveLine] = useState<number | null>(null);
+  
+  // Calculate which line the cursor is in
   useEffect(() => {
-    if (textareaRef.current) {
-      const styles = window.getComputedStyle(textareaRef.current);
-      setLineHeight(parseFloat(styles.lineHeight));
-      updateActiveLine();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (cursorPosition === null) return;
+    
+    // Find line number based on cursor position
+    const textBeforeCursor = value.substring(0, cursorPosition);
+    const lineNumber = (textBeforeCursor.match(/\n/g) || []).length;
+    setActiveLine(lineNumber);
+  }, [cursorPosition, value]);
 
-  const updateActiveLine = () => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-    const pos = textarea.selectionStart;
-    const before = value.slice(0, pos);
-    const start = before.lastIndexOf('\n') + 1;
-    const end = value.indexOf('\n', pos);
-    const line = value.slice(start, end === -1 ? value.length : end);
-    setActiveLine(line);
-    setLineIndex(before.split('\n').length - 1);
+  // Split text into lines for rendering hybrid view
+  const getHybridContent = () => {
+    if (activeLine === null) return value;
+    
+    const lines = value.split('\n');
+    
+    // Create hybrid content where each line is either rendered as markdown or shown as plain text
+    return lines.map((line, index) => {
+      if (index === activeLine) {
+        // Return a special marker for the active line
+        return `<div class="active-line-marker">${line}</div>`;
+      }
+      return line;
+    }).join('\n');
   };
 
   const wrapSelection = (prefix: string, suffix = '') => {
@@ -79,6 +83,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
       const cursor = start + prefix.length;
       textarea.selectionStart = cursor;
       textarea.selectionEnd = cursor + selected.length;
+      setCursorPosition(cursor);
     });
   };
 
@@ -94,11 +99,36 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
       const cursor = start + content.length;
       textarea.selectionStart = cursor;
       textarea.selectionEnd = cursor;
+      setCursorPosition(cursor);
     });
   };
 
   const insertPrefix = (prefix: string) => {
     wrapSelection(prefix);
+  };
+
+  // Custom component to handle the active line rendering
+  const MarkdownWithActiveLine = (props: { children: string }) => {
+    const content = props.children;
+    
+    if (!content.includes('<div class="active-line-marker">')) {
+      return <ReactMarkdown>{content}</ReactMarkdown>;
+    }
+    
+    // Split by the special marker
+    const parts = content.split(/<div class="active-line-marker">(.*?)<\/div>/);
+    
+    if (parts.length < 3) return <ReactMarkdown>{content}</ReactMarkdown>;
+    
+    return (
+      <>
+        {parts[0] && <ReactMarkdown>{parts[0]}</ReactMarkdown>}
+        <div className="active-line-editor bg-muted/20 -mx-2 px-2">
+          {parts[1]}
+        </div>
+        {parts[2] && <ReactMarkdown>{parts[2]}</ReactMarkdown>}
+      </>
+    );
   };
 
   return (
@@ -291,47 +321,45 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
         <div
           ref={previewRef}
           className={cn(
-            'pointer-events-none prose max-w-none p-8 min-h-[80px] border rounded-sm bg-background shadow-sm overflow-auto',
+            'prose max-w-none p-8 min-h-[80px] border rounded-sm bg-background shadow-sm overflow-auto',
             className
           )}
         >
-          <ReactMarkdown>{value || ''}</ReactMarkdown>
+          <MarkdownWithActiveLine>{getHybridContent()}</MarkdownWithActiveLine>
         </div>
-        {lineHeight > 0 && (
-          <pre
-            className="pointer-events-none absolute whitespace-pre bg-transparent"
-            style={{
-              top: lineIndex * lineHeight + 32 - (textareaRef.current?.scrollTop || 0),
-              left: 32,
-            }}
-          >
-            {activeLine}
-          </pre>
-        )}
         <Textarea
           ref={textareaRef}
           value={value}
-          onChange={e => {
-            onChange(e.target.value);
-            updateActiveLine();
-          }}
+          onChange={e => onChange(e.target.value)}
           rows={rows}
-          onKeyUp={updateActiveLine}
-          onClick={updateActiveLine}
-          onSelect={updateActiveLine}
+          onSelect={() => {
+            if (textareaRef.current) {
+              setCursorPosition(textareaRef.current.selectionStart);
+            }
+          }}
+          onClick={() => {
+            if (textareaRef.current) {
+              setCursorPosition(textareaRef.current.selectionStart);
+            }
+          }}
+          onKeyUp={() => {
+            if (textareaRef.current) {
+              setCursorPosition(textareaRef.current.selectionStart);
+            }
+          }}
           onScroll={() => {
             if (previewRef.current && textareaRef.current) {
               previewRef.current.scrollTop = textareaRef.current.scrollTop;
             }
           }}
           className={cn(
-            'absolute inset-0 p-8 min-h-[80px] bg-transparent border rounded-sm shadow-sm focus-visible:ring-0 focus-visible:outline-none resize-none',
+            'absolute inset-0 p-8 min-h-[80px] opacity-0 border rounded-sm shadow-sm focus-visible:ring-0 focus-visible:outline-none resize-none',
             className
           )}
-          style={{ color: 'transparent', caretColor: 'currentColor' }}
+          style={{ caretColor: 'black' }}
         />
       </div>
-      </div>
+    </div>
   );
 };
 
