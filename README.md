@@ -41,10 +41,10 @@ docker run -d `
 Die Anwendung legt ihre SQLite-Daten standardmäßig im Volume `total-task-tracker-data` ab. Dieses Volume wird beim ersten Start automatisch angelegt und bleibt auch nach einem Container-Update erhalten. Möchtest du stattdessen ein bestimmtes Verzeichnis binden, kannst du ein Volume angeben:
 
 ```bash
-docker run -d \
-  --name total-task-tracker \
-  -p 3002:3002 \
-  -v ./server/data:/app/server/data \
+docker run -d `
+  --name total-task-tracker `
+  -p 3002:3002 `
+  -v ./server/data:/app/server/data `
   ghcr.io/timbornemann/total-task-tracker:latest
 ```
 
@@ -97,9 +97,9 @@ Um den Container stets aktuell zu halten, kannst du [Watchtower](https://contain
 ### Alle Container überwachen
 
 ```bash
-docker run -d --name watchtower \
-  --restart unless-stopped \
-  -v /var/run/docker.sock:/var/run/docker.sock \
+docker run -d --name watchtower `
+  --restart unless-stopped `
+  -v /var/run/docker.sock:/var/run/docker.sock `
   containrrr/watchtower --interval 3600
 ```
 
@@ -108,17 +108,17 @@ Der Parameter `--interval` gibt das Prüfintervall in Sekunden an. Im Beispiel s
 ### Nur diesen Container aktualisieren
 
 ```bash
-docker run -d --name watchtower \
-  --restart unless-stopped \
-  -v /var/run/docker.sock:/var/run/docker.sock \
+docker run -d --name watchtower `
+  --restart unless-stopped `
+  -v /var/run/docker.sock:/var/run/docker.sock `
   containrrr/watchtower total-task-tracker-app --interval 3600
 ```
 
 Soll Watchtower lediglich einmalig prüfen und danach beendet werden, füge `--run-once` hinzu:
 
 ```bash
-docker run --rm \
-  -v /var/run/docker.sock:/var/run/docker.sock \
+docker run --rm `
+  -v /var/run/docker.sock:/var/run/docker.sock `
   containrrr/watchtower total-task-tracker-app --run-once
 ```
 
