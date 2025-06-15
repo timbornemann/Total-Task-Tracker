@@ -230,23 +230,23 @@ const TimeBlockingPage = () => {
 
     const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
       if (drag) {
-        const m = getMinutes(e.clientY)
+        const rect = containerRef.current!.getBoundingClientRect()
+        const diff = ((e.clientY - rect.top) - drag.origin) / rect.height * 1440
         if (drag.type === 'move') {
-          const delta = m - snap((drag.origin / containerRef.current!.getBoundingClientRect().height) * 1440)
-          let start = drag.start + delta
-          let end = drag.end + delta
-          const diff = end - start
+          let start = snap(drag.start + diff)
+          let end = snap(drag.end + diff)
+          const duration = end - start
           if (start < 0) {
             start = 0
-            end = diff
+            end = duration
           }
           if (end > 1440) {
             end = 1440
-            start = 1440 - diff
+            start = 1440 - duration
           }
           setDrag({ ...drag, start, end })
         } else {
-          let end = m
+          let end = snap(drag.end + diff)
           if (end < drag.start + 15) end = drag.start + 15
           if (end > 1440) end = 1440
           setDrag({ ...drag, end })
