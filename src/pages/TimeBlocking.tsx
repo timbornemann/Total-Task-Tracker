@@ -162,7 +162,8 @@ const TimeBlockingPage = () => {
       type: 'move' | 'resize'
       start: number
       end: number
-      origin: number
+      initialY: number
+      duration: number
       column: number
       columns: number
     } | null>(null)
@@ -201,8 +202,6 @@ const TimeBlockingPage = () => {
       action: 'move' | 'resize' | null = null
     ) => {
       e.stopPropagation()
-      const rect = containerRef.current!.getBoundingClientRect()
-      const y = e.clientY - rect.top
       const type: 'move' | 'resize' = action ?? 'move'
       containerRef.current?.setPointerCapture(e.pointerId)
       setDrag({
@@ -210,7 +209,8 @@ const TimeBlockingPage = () => {
         type,
         start: item.start,
         end: item.end,
-        origin: y,
+        initialY: e.clientY,
+        duration: item.end - item.start,
         column: item.column,
         columns: item.columns
       })
@@ -226,25 +226,29 @@ const TimeBlockingPage = () => {
     const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
       if (drag) {
         const rect = containerRef.current!.getBoundingClientRect()
-        const diff = ((e.clientY - rect.top) - drag.origin) / rect.height * 1440
+        const pixelDiff = e.clientY - drag.initialY
+        const minuteDiff = (pixelDiff / rect.height) * 1440
+        
         if (drag.type === 'move') {
-          const duration = drag.end - drag.start
-          let start = snap(drag.start + diff)
-          let end = start + duration
+          let start = snap(drag.start + minuteDiff)
+          let end = start + drag.duration
+          
           if (start < 0) {
             start = 0
-            end = duration
+            end = drag.duration
           }
           if (end > 1440) {
             end = 1440
-            start = 1440 - duration
+            start = 1440 - drag.duration
           }
           setDrag({ ...drag, start, end })
         } else {
-          let end = snap(drag.end + diff)
+          let end = snap(drag.end + minuteDiff)
+          
           if (end < drag.start + 30) end = drag.start + 30
           if (end > 1440) end = 1440
-          setDrag({ ...drag, end })
+          
+          setDrag({ ...drag, end, initialY: e.clientY })
         }
       } else if (selection) {
         setSelection(prev => (prev ? { ...prev, end: getMinutes(e.clientY) } : null))
@@ -533,7 +537,12 @@ const TimeBlockingPage = () => {
           setModalDefaults({})
         }}
         onSave={(data: TaskFormData) => {
-          addTask({ ...data, completed: false })
+          addTask({ 
+            ...data, 
+            completed: false,
+            status: 'todo',
+            order: 0
+          })
         }}
         categories={categories}
         defaultCategoryId={categories[0]?.id}
