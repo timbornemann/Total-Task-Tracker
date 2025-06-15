@@ -203,14 +203,8 @@ const TimeBlockingPage = () => {
       e.stopPropagation()
       const rect = containerRef.current!.getBoundingClientRect()
       const y = e.clientY - rect.top
-      let type: 'move' | 'resize'
-      if (action) {
-        type = action
-      } else {
-        const bottom = (item.end / 1440) * rect.height
-        const isResize = bottom - y < 8
-        type = isResize ? 'resize' : 'move'
-      }
+      const type: 'move' | 'resize' = action ?? 'move'
+      containerRef.current?.setPointerCapture(e.pointerId)
       setDrag({
         id: item.task.id,
         type,
@@ -226,6 +220,7 @@ const TimeBlockingPage = () => {
       if (e.target !== containerRef.current) return
       const m = getMinutes(e.clientY)
       setSelection({ start: m, end: m })
+      containerRef.current?.setPointerCapture(e.pointerId)
     }
 
     const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -256,7 +251,7 @@ const TimeBlockingPage = () => {
       }
     }
 
-    const handlePointerUp = () => {
+    const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
       if (drag) {
         handleUpdateTimes(drag.id, drag.start, drag.end)
         setDrag(null)
@@ -268,6 +263,7 @@ const TimeBlockingPage = () => {
         handleCreateFromSchedule(start, end, date)
         setSelection(null)
       }
+      containerRef.current?.releasePointerCapture(e.pointerId)
     }
 
     const handleDoubleClick = (e: React.MouseEvent<HTMLDivElement>) => {
