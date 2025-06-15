@@ -3,7 +3,7 @@ import Navbar from '@/components/Navbar';
 import { useTaskStore } from '@/hooks/useTaskStore';
 import { Calendar } from '@/components/ui/calendar';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Move, GripVertical } from 'lucide-react';
 import TaskModal from '@/components/TaskModal';
 import { TaskFormData, Task } from '@/types';
 
@@ -183,13 +183,23 @@ const TimeBlockingPage = () => {
       return snap((y / rect.height) * 1440)
     }
 
-    const handleTaskPointerDown = (item: LayoutItem, e: React.PointerEvent<HTMLDivElement>) => {
+    const handleTaskPointerDown = (
+      item: LayoutItem,
+      e: React.PointerEvent<HTMLDivElement>,
+      action: 'move' | 'resize' | null = null
+    ) => {
       e.stopPropagation()
       const rect = containerRef.current!.getBoundingClientRect()
       const y = e.clientY - rect.top
-      const bottom = (item.end / 1440) * rect.height
-      const isResize = bottom - y < 8
-      setDrag({ id: item.task.id, type: isResize ? 'resize' : 'move', start: item.start, end: item.end, origin: y })
+      let type: 'move' | 'resize'
+      if (action) {
+        type = action
+      } else {
+        const bottom = (item.end / 1440) * rect.height
+        const isResize = bottom - y < 8
+        type = isResize ? 'resize' : 'move'
+      }
+      setDrag({ id: item.task.id, type, start: item.start, end: item.end, origin: y })
     }
 
     const handleContainerPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -284,6 +294,18 @@ const TimeBlockingPage = () => {
                   backgroundColor: task.color
                 }}
               >
+                <div
+                  className="absolute top-0 left-0 p-0.5 cursor-move"
+                  onPointerDown={e => handleTaskPointerDown(item, e, 'move')}
+                >
+                  <Move className="h-3 w-3" />
+                </div>
+                <div
+                  className="absolute bottom-0 right-0 p-0.5 cursor-ns-resize"
+                  onPointerDown={e => handleTaskPointerDown(item, e, 'resize')}
+                >
+                  <GripVertical className="h-3 w-3" />
+                </div>
                 <div className="font-medium truncate">{task.title}</div>
                 <div className="text-xs">
                   {task.startTime} - {task.endTime}
