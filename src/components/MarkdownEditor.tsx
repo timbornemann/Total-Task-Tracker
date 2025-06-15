@@ -86,7 +86,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
               type="button"
               size="sm"
               variant="outline"
-              onClick={() => wrapSelection('**', '**')
+              onClick={() => wrapSelection('**', '**')}
             >
               <Bold />
             </Button>
@@ -99,7 +99,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
               type="button"
               size="sm"
               variant="outline"
-              onClick={() => wrapSelection('*', '*')
+              onClick={() => wrapSelection('*', '*')}
             >
               <Italic />
             </Button>
@@ -290,8 +290,8 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
             className
           )}
         />
-      )
-    </div>
+        )}
+      </div>
   );
 };
 
