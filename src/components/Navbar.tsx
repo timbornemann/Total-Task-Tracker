@@ -107,11 +107,6 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/calendar" className="flex items-center">
-                    <CalendarIcon className="h-4 w-4 mr-2" /> Kalender
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
                   <Link to="/timeblocks" className="flex items-center">
                     <CalendarIcon className="h-4 w-4 mr-2" /> Zeitplan
                   </Link>
@@ -198,12 +193,6 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                   <Button variant="outline" size="sm" className="w-full">
                     <Columns className="h-4 w-4 mr-2" />
                     Kanban
-                  </Button>
-                </Link>
-                <Link to="/calendar" className="flex-1">
-                  <Button variant="outline" size="sm" className="w-full">
-                    <CalendarIcon className="h-4 w-4 mr-2" />
-                    Kalender
                   </Button>
                 </Link>
                 <Link to="/timeblocks" className="flex-1">

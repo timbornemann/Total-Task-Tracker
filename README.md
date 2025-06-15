@@ -119,9 +119,9 @@ npm start    # startet die gebaute App auf Port 3002
 - Aufgaben anlegen, bearbeiten und in Kategorien sortieren
 - Unteraufgaben und Prioritäten
 - Separate Seite für wiederkehrende Aufgaben mit eigenen Intervallen und dynamischen Titeln
-- Kalenderansicht mit direkter Task-Erstellung; Tagesaufgaben sind klickbar und bieten alle Task-Optionen
-- Neue Zeitplan-Seite mit Tages-, Wochen- und Monatsansicht
+- Zeitplan-Seite mit Tages-, Wochen- und Monatsansicht
   - Aufgaben lassen sich mit Start- und Endzeit planen
+  - Tasks ohne Uhrzeit werden pro Tag als Liste angezeigt
 - Eigene Notizen mit Farbe und Drag & Drop sortierbar
   - Notizen lassen sich anpinnen; die ersten drei angepinnten erscheinen auf der Startseite
   - Tasks lassen sich ebenfalls anpinnen; die ersten drei werden auf der Startseite gezeigt
@@ -167,7 +167,8 @@ npm start    # startet die gebaute App auf Port 3002
 5. Über das Suchfeld und die Filter sortierst und findest du Aufgaben nach Priorität oder Farbe.
 6. Mit dem Sternsymbol kannst du eine Task anpinnen. Die ersten drei gepinnten erscheinen auf der Startseite.
 7. Mit `Strg+K` (oder über das Suchsymbol) öffnest du die **globale Suche**. Sie durchsucht Tasks, Notizen und Lernkarten und führt dich bei Auswahl direkt zum entsprechenden Eintrag.
-8. In der **Kalender**-Ansicht klickst du auf ein Datum, um alle bis dahin fälligen Aufgaben zu sehen. Dort kannst du die Tasks direkt öffnen, bearbeiten, Unteraufgaben anlegen oder löschen. Die **Statistiken** geben einen Überblick über erledigte Tasks.
+8. In der **Zeitplan**-Ansicht wählst du einen Tag, eine Woche oder einen Monat aus. Aufgaben mit Uhrzeit erscheinen als Blöcke, solche ohne Zeit als Liste unterhalb des Plans. 
+   Die **Statistiken** geben einen Überblick über erledigte Tasks.
 9. Unter **Notizen** kannst du unabhängige Notizen verwalten und per Drag & Drop sortieren. Gepinnte Notizen erscheinen auf der Startseite. Deine Inhalte kannst du dabei in Markdown verfassen. Beim Anklicken einer Notiz siehst du zunächst eine Vorschau, die du dort auch bearbeiten kannst. Der Editor stellt zahlreiche Schaltflächen für gängige Formatierungen bereit.
 10. Unter **Decks** legst du Kartendecks an und kannst sie bearbeiten. In der Detailansicht eines Decks fügst du einzelne Karten hinzu.
 11. Der Bereich **Karten** zeigt dir fällige Karten zum Lernen an. Dort kannst du
