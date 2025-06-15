@@ -231,7 +231,7 @@ const TimeBlockingPage = () => {
         
         if (drag.type === 'move') {
           let start = snap(drag.start + minuteDiff)
-          let end = start + drag.duration
+          let end = snap(start + drag.duration)
           
           if (start < 0) {
             start = 0
@@ -239,9 +239,10 @@ const TimeBlockingPage = () => {
           }
           if (end > 1440) {
             end = 1440
-            start = 1440 - drag.duration
+            start = end - drag.duration
           }
-          setDrag({ ...drag, start, end })
+          
+          setDrag({ ...drag, start, end, initialY: e.clientY })
         } else {
           let end = snap(drag.end + minuteDiff)
           
