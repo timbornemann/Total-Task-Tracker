@@ -27,9 +27,15 @@ interface MarkdownEditorProps {
   value: string;
   onChange: (value: string) => void;
   rows?: number;
+  className?: string;
 }
 
-const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange, rows = 5 }) => {
+const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
+  value,
+  onChange,
+  rows = 5,
+  className,
+}) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const wrapSelection = (prefix: string, suffix = '') => {
@@ -259,6 +265,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ value, onChange, rows =
         value={value}
         onChange={e => onChange(e.target.value)}
         rows={rows}
+        className={className}
       />
     </div>
   );
