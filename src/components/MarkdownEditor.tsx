@@ -32,6 +32,27 @@ interface MarkdownEditorProps {
   className?: string;
 }
 
+// Global styles for the markdown editor
+const editorStyles = `
+  .active-line-editor {
+    position: relative;
+    font-family: monospace;
+    white-space: pre-wrap;
+  }
+  .cursor-indicator {
+    display: inline-block;
+    width: 2px;
+    height: 1.2em;
+    background-color: #000;
+    animation: blink 1s step-end infinite;
+    vertical-align: middle;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+`;
+
 const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
   value,
   onChange,
@@ -42,8 +63,9 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
   const previewRef = useRef<HTMLDivElement>(null);
   const [cursorPosition, setCursorPosition] = useState<number | null>(null);
   const [activeLine, setActiveLine] = useState<number | null>(null);
+  const [cursorColumn, setCursorColumn] = useState<number>(0);
   
-  // Calculate which line the cursor is in
+  // Calculate which line and column the cursor is in
   useEffect(() => {
     if (cursorPosition === null) return;
     
@@ -51,6 +73,11 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     const textBeforeCursor = value.substring(0, cursorPosition);
     const lineNumber = (textBeforeCursor.match(/\n/g) || []).length;
     setActiveLine(lineNumber);
+    
+    // Find column position in current line
+    const lastNewlinePos = textBeforeCursor.lastIndexOf('\n');
+    const columnPos = lastNewlinePos === -1 ? cursorPosition : cursorPosition - lastNewlinePos - 1;
+    setCursorColumn(columnPos);
   }, [cursorPosition, value]);
 
   // Split text into lines for rendering hybrid view
@@ -62,8 +89,13 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     // Create hybrid content where each line is either rendered as markdown or shown as plain text
     return lines.map((line, index) => {
       if (index === activeLine) {
-        // Return a special marker for the active line
-        return `<div class="active-line-marker">${line}</div>`;
+        // Return a special marker for the active line with cursor position
+        if (cursorColumn <= line.length) {
+          const before = line.substring(0, cursorColumn);
+          const after = line.substring(cursorColumn);
+          return `<div class="active-line-marker">${before}<span class="cursor-position"></span>${after}</div>`;
+        }
+        return `<div class="active-line-marker">${line}<span class="cursor-position"></span></div>`;
       }
       return line;
     }).join('\n');
@@ -120,16 +152,43 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     
     if (parts.length < 3) return <ReactMarkdown>{content}</ReactMarkdown>;
     
+    // Process the active line to include the cursor indicator
+    const activeLine = parts[1];
+    const cursorParts = activeLine.split('<span class="cursor-position"></span>');
+    
     return (
       <>
         {parts[0] && <ReactMarkdown>{parts[0]}</ReactMarkdown>}
-        <div className="active-line-editor bg-muted/20 -mx-2 px-2">
-          {parts[1]}
+        <div className="active-line-editor bg-primary/10 -mx-2 px-2 py-1 border-l-2 border-primary relative">
+          {cursorParts.length > 1 ? (
+            <>
+              {cursorParts[0]}
+              <span className="cursor-indicator"></span>
+              {cursorParts[1]}
+            </>
+          ) : (
+            activeLine
+          )}
         </div>
         {parts[2] && <ReactMarkdown>{parts[2]}</ReactMarkdown>}
       </>
     );
   };
+  
+  // Update cursor visibility when cursor moves
+  useEffect(() => {
+    const updateCursorVisibility = () => {
+      if (textareaRef.current && cursorPosition !== null) {
+        // Force the cursor to be visible by focusing and setting the selection
+        const textarea = textareaRef.current;
+        textarea.focus();
+        textarea.selectionStart = cursorPosition;
+        textarea.selectionEnd = cursorPosition;
+      }
+    };
+    
+    updateCursorVisibility();
+  }, [cursorPosition]);
 
   return (
     <div>
@@ -347,6 +406,11 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
               setCursorPosition(textareaRef.current.selectionStart);
             }
           }}
+          onKeyDown={() => {
+            if (textareaRef.current) {
+              setCursorPosition(textareaRef.current.selectionStart);
+            }
+          }}
           onScroll={() => {
             if (previewRef.current && textareaRef.current) {
               previewRef.current.scrollTop = textareaRef.current.scrollTop;
@@ -356,9 +420,10 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
             'absolute inset-0 p-8 min-h-[80px] opacity-0 border rounded-sm shadow-sm focus-visible:ring-0 focus-visible:outline-none resize-none',
             className
           )}
-          style={{ caretColor: 'black' }}
+          style={{ caretColor: 'transparent' }}
         />
       </div>
+      <style dangerouslySetInnerHTML={{ __html: editorStyles }} />
     </div>
   );
 };
