@@ -14,7 +14,6 @@ import {
   Columns,
   LayoutGrid,
   List,
-  Info,
   Cog,
   Timer,
   BookOpen,
