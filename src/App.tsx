@@ -31,6 +31,7 @@ import ReleaseNotesModal from "@/components/ReleaseNotesModal";
 import SurprisePage from "./pages/Surprise";
 import SurpriseListener from "@/components/SurpriseListener";
 import RecurringTasksPage from "./pages/RecurringTasks";
+import TimeBlockingPage from "./pages/TimeBlocking";
 
 const queryClient = new QueryClient();
 
@@ -54,6 +55,7 @@ const App = () => (
               <Route path="/calendar" element={<CalendarPage />} />
               <Route path="/kanban" element={<Kanban />} />
               <Route path="/recurring" element={<RecurringTasksPage />} />
+              <Route path="/timeblocks" element={<TimeBlockingPage />} />
               <Route path="/flashcards/manage" element={<FlashcardManagerPage />} />
               <Route path="/flashcards/deck/:deckId" element={<DeckDetailPage />} />
               <Route path="/flashcards" element={<FlashcardsPage />} />

@@ -68,6 +68,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
     startOption: 'today',
     startWeekday: undefined,
     startDate: undefined,
+    startTime: undefined,
+    endTime: undefined,
     titleTemplate: undefined,
     template: false
   });
@@ -97,6 +99,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
         startOption: task.startOption || 'today',
         startWeekday: task.startWeekday,
         startDate: task.startDate,
+        startTime: task.startTime,
+        endTime: task.endTime,
         titleTemplate: task.titleTemplate,
         template: task.template
       });
@@ -118,6 +122,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
         startOption: 'today',
         startWeekday: undefined,
         startDate: undefined,
+        startTime: undefined,
+        endTime: undefined,
         titleTemplate: undefined,
         template: false
       });
@@ -258,6 +264,26 @@ const TaskModal: React.FC<TaskModalProps> = ({
               value={formData.dueDate ? new Date(formData.dueDate).toISOString().split('T')[0] : ''}
               onChange={(e) => handleChange('dueDate', e.target.value ? new Date(e.target.value) : undefined)}
             />
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              <div>
+                <Label htmlFor="startTime">Startzeit</Label>
+                <Input
+                  id="startTime"
+                  type="time"
+                  value={formData.startTime || ''}
+                  onChange={(e) => handleChange('startTime', e.target.value || undefined)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="endTime">Endzeit</Label>
+                <Input
+                  id="endTime"
+                  type="time"
+                  value={formData.endTime || ''}
+                  onChange={(e) => handleChange('endTime', e.target.value || undefined)}
+                />
+              </div>
+            </div>
           </div>
         )}
 

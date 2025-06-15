@@ -48,7 +48,9 @@ const useTaskStoreImpl = () => {
               order: typeof task.order === 'number' ? task.order : idx,
               completed: task.completed ?? false,
               status: task.status ?? (task.completed ? 'done' : 'todo'),
-              pinned: task.pinned ?? false
+              pinned: task.pinned ?? false,
+              startTime: task.startTime,
+              endTime: task.endTime
             }))
           );
         }
@@ -80,7 +82,9 @@ const useTaskStoreImpl = () => {
               completed: t.completed ?? false,
               status: t.status ?? 'todo',
               pinned: t.pinned ?? false,
-              template: true
+              template: true,
+              startTime: t.startTime,
+              endTime: t.endTime
             }))
           );
         }
@@ -153,6 +157,8 @@ const useTaskStoreImpl = () => {
       createdAt: new Date(),
       updatedAt: new Date(),
       dueDate: taskData.dueDate ? new Date(taskData.dueDate) : undefined,
+      startTime: taskData.startTime,
+      endTime: taskData.endTime,
       nextDue: taskData.isRecurring
         ? calculateNextDue(taskData.recurrencePattern, taskData.customIntervalDays)
         : undefined,
@@ -263,7 +269,9 @@ const useTaskStoreImpl = () => {
             ...task,
             ...updates,
             updatedAt: new Date(),
-            dueDate: updates.dueDate ? new Date(updates.dueDate) : task.dueDate
+            dueDate: updates.dueDate ? new Date(updates.dueDate) : task.dueDate,
+            startTime: updates.startTime ?? task.startTime,
+            endTime: updates.endTime ?? task.endTime
           };
         }
         if (task.subtasks.length > 0) {
@@ -331,6 +339,8 @@ const useTaskStoreImpl = () => {
       order: recurring.length,
       pinned: false,
       template: true,
+      startTime: data.startTime,
+      endTime: data.endTime,
       nextDue: shouldCreateNow
         ? calculateNextDue(
             data.recurrencePattern,
@@ -349,6 +359,8 @@ const useTaskStoreImpl = () => {
         startOption: undefined,
         startWeekday: undefined,
         startDate: undefined,
+        startTime: newItem.startTime,
+        endTime: newItem.endTime,
         title: generateTitle(newItem),
         template: undefined,
         titleTemplate: undefined,
@@ -388,14 +400,16 @@ const useTaskStoreImpl = () => {
             dueDate: calculateDueDate(t),
             dueOption: undefined,
             dueAfterDays: undefined,
-            startOption: undefined,
-            startWeekday: undefined,
-            startDate: undefined,
-            title: generateTitle(t),
-            template: undefined,
-            titleTemplate: undefined,
-            isRecurring: false,
-            parentId: undefined,
+        startOption: undefined,
+        startWeekday: undefined,
+        startDate: undefined,
+        startTime: t.startTime,
+        endTime: t.endTime,
+        title: generateTitle(t),
+        template: undefined,
+        titleTemplate: undefined,
+        isRecurring: false,
+        parentId: undefined,
           });
           const next = calculateNextDue(
             t.recurrencePattern,
