@@ -37,6 +37,16 @@ interface TaskModalProps {
    * Whether recurring options should be available.
    */
   allowRecurring?: boolean;
+
+  /**
+   * Default start time when creating a new task.
+   */
+  defaultStartTime?: string;
+
+  /**
+   * Default end time when creating a new task.
+   */
+  defaultEndTime?: string;
 }
 
 const TaskModal: React.FC<TaskModalProps> = ({
@@ -49,7 +59,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
   defaultCategoryId,
   defaultDueDate,
   defaultIsRecurring = false,
-  allowRecurring = true
+  allowRecurring = true,
+  defaultStartTime,
+  defaultEndTime
 }) => {
   const { defaultTaskPriority } = useSettings()
   const [formData, setFormData] = useState<TaskFormData>({
@@ -122,8 +134,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
         startOption: 'today',
         startWeekday: undefined,
         startDate: undefined,
-        startTime: undefined,
-        endTime: undefined,
+        startTime: defaultStartTime,
+        endTime: defaultEndTime,
         titleTemplate: undefined,
         template: false
       });
@@ -137,7 +149,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
     defaultDueDate,
     defaultTaskPriority,
     defaultIsRecurring,
-    allowRecurring
+    allowRecurring,
+    defaultStartTime,
+    defaultEndTime
   ]);
 
   const handleSubmit = (e: React.FormEvent) => {
