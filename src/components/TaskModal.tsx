@@ -32,6 +32,11 @@ interface TaskModalProps {
    * Default value for the recurring toggle when creating a new task.
    */
   defaultIsRecurring?: boolean;
+
+  /**
+   * Whether recurring options should be available.
+   */
+  allowRecurring?: boolean;
 }
 
 const TaskModal: React.FC<TaskModalProps> = ({
@@ -43,7 +48,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
   parentTask,
   defaultCategoryId,
   defaultDueDate,
-  defaultIsRecurring = false
+  defaultIsRecurring = false,
+  allowRecurring = true
 }) => {
   const { defaultTaskPriority } = useSettings()
   const [formData, setFormData] = useState<TaskFormData>({
@@ -54,7 +60,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     categoryId: '',
     parentId: parentTask?.id,
     dueDate: undefined,
-    isRecurring: defaultIsRecurring,
+    isRecurring: allowRecurring ? defaultIsRecurring : false,
     recurrencePattern: undefined,
     customIntervalDays: undefined,
     dueOption: undefined,
@@ -83,7 +89,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
         categoryId: task.categoryId,
         parentId: task.parentId,
         dueDate: task.dueDate,
-        isRecurring: task.isRecurring,
+        isRecurring: allowRecurring ? task.isRecurring : false,
         recurrencePattern: task.recurrencePattern,
         customIntervalDays: task.customIntervalDays,
         dueOption: task.dueOption,
@@ -104,7 +110,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
           defaultCategoryId || parentTask?.categoryId || categories[0]?.id || '',
         parentId: parentTask?.id,
         dueDate: defaultDueDate,
-        isRecurring: defaultIsRecurring,
+        isRecurring: allowRecurring ? defaultIsRecurring : false,
         recurrencePattern: undefined,
         customIntervalDays: undefined,
         dueOption: undefined,
@@ -124,7 +130,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
     defaultCategoryId,
     defaultDueDate,
     defaultTaskPriority,
-    defaultIsRecurring
+    defaultIsRecurring,
+    allowRecurring
   ]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -297,23 +304,24 @@ const TaskModal: React.FC<TaskModalProps> = ({
             </div>
           </div>
 
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="recurring">Wiederkehrende Aufgabe</Label>
-              <Switch
-                id="recurring"
-                checked={formData.isRecurring}
-                onCheckedChange={(checked) => handleChange('isRecurring', checked)}
-              />
-            </div>
+          {allowRecurring && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="recurring">Wiederkehrende Aufgabe</Label>
+                <Switch
+                  id="recurring"
+                  checked={formData.isRecurring}
+                  onCheckedChange={(checked) => handleChange('isRecurring', checked)}
+                />
+              </div>
 
-            {formData.isRecurring && (
-              <div>
-                <Label htmlFor="recurrence">Wiederholung</Label>
-                <Select 
-                  value={formData.recurrencePattern} 
-                  onValueChange={(value) => handleChange('recurrencePattern', value)}
-                >
+              {formData.isRecurring && (
+                <div>
+                  <Label htmlFor="recurrence">Wiederholung</Label>
+                  <Select
+                    value={formData.recurrencePattern}
+                    onValueChange={(value) => handleChange('recurrencePattern', value)}
+                  >
                   <SelectTrigger>
                     <SelectValue placeholder="Wiederholung auswählen..." />
                   </SelectTrigger>
@@ -386,9 +394,10 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   placeholder="{date} oder {counter} nutzen"
                 />
               </div>
+                </div>
+              )}
             </div>
           )}
-          </div>
 
           <div className="flex justify-end space-x-2 pt-4">
             <Button type="button" variant="outline" onClick={onClose}>

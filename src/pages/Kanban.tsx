@@ -215,6 +215,7 @@ const Kanban: React.FC = () => {
         categories={categories}
         parentTask={parentTask || undefined}
         defaultDueDate={undefined}
+        allowRecurring={false}
       />
 
       <TaskDetailModal

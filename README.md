@@ -133,7 +133,7 @@ npm start    # startet die gebaute App auf Port 3002
 ## Funktionen
 
 - Aufgaben anlegen, bearbeiten und in Kategorien sortieren
-- Unteraufgaben, Prioritäten und Wiederholungen
+- Unteraufgaben und Prioritäten
 - Separate Seite für wiederkehrende Aufgaben mit eigenen Intervallen und dynamischen Titeln
 - Kalenderansicht mit direkter Task-Erstellung; Tagesaufgaben sind klickbar und bieten alle Task-Optionen
 - Eigene Notizen mit Farbe und Drag & Drop sortierbar
@@ -173,16 +173,16 @@ npm start    # startet die gebaute App auf Port 3002
 ## Verwendung
 
 1. Nach dem Start siehst du die vorhandenen **Kategorien**. Mit dem Button `Kategorie` kannst du neue Kategorien erstellen.
-2. Wähle eine Kategorie aus, um ihre **Tasks** zu sehen. Über `Task` legst du neue Aufgaben an. Dort kannst du Titel, Beschreibung, Priorität, Farbe, Fälligkeitsdatum und optionale Wiederholung definieren.
-3. Wiederkehrende Aufgaben verwaltest du auf der Seite **Wiederkehrend**. Dort legst du Vorlagen mit festen oder benutzerdefinierten Intervallen an und kannst Platzhalter wie `{date}` oder `{counter}` im Titel nutzen.
-3. Tasks lassen sich per Drag & Drop umsortieren oder in Unteraufgaben aufteilen.
-4. Über das Suchfeld und die Filter sortierst und findest du Aufgaben nach Priorität oder Farbe.
-5. Mit dem Sternsymbol kannst du eine Task anpinnen. Die ersten drei gepinnten erscheinen auf der Startseite.
-6. Mit `Strg+K` (oder über das Suchsymbol) öffnest du die **globale Suche**. Sie durchsucht Tasks, Notizen und Lernkarten und führt dich bei Auswahl direkt zum entsprechenden Eintrag.
-7. In der **Kalender**-Ansicht klickst du auf ein Datum, um alle bis dahin fälligen Aufgaben zu sehen. Dort kannst du die Tasks direkt öffnen, bearbeiten, Unteraufgaben anlegen oder löschen. Die **Statistiken** geben einen Überblick über erledigte Tasks.
-8. Unter **Notizen** kannst du unabhängige Notizen verwalten und per Drag & Drop sortieren. Gepinnte Notizen erscheinen auf der Startseite. Deine Inhalte kannst du dabei in Markdown verfassen. Beim Anklicken einer Notiz siehst du zunächst eine Vorschau, die du dort auch bearbeiten kannst.
-9. Unter **Decks** legst du Kartendecks an und kannst sie bearbeiten. In der Detailansicht eines Decks fügst du einzelne Karten hinzu.
-10. Der Bereich **Karten** zeigt dir fällige Karten zum Lernen an. Dort kannst du
+2. Wähle eine Kategorie aus, um ihre **Tasks** zu sehen. Über `Task` legst du neue Aufgaben an. Dort kannst du Titel, Beschreibung, Priorität, Farbe und ein Fälligkeitsdatum festlegen.
+3. Wiederkehrende Aufgaben erstellst du über die Seite **Wiederkehrend**. Dort legst du Vorlagen mit festen oder benutzerdefinierten Intervallen an und kannst Platzhalter wie `{date}` oder `{counter}` im Titel nutzen.
+4. Tasks lassen sich per Drag & Drop umsortieren oder in Unteraufgaben aufteilen.
+5. Über das Suchfeld und die Filter sortierst und findest du Aufgaben nach Priorität oder Farbe.
+6. Mit dem Sternsymbol kannst du eine Task anpinnen. Die ersten drei gepinnten erscheinen auf der Startseite.
+7. Mit `Strg+K` (oder über das Suchsymbol) öffnest du die **globale Suche**. Sie durchsucht Tasks, Notizen und Lernkarten und führt dich bei Auswahl direkt zum entsprechenden Eintrag.
+8. In der **Kalender**-Ansicht klickst du auf ein Datum, um alle bis dahin fälligen Aufgaben zu sehen. Dort kannst du die Tasks direkt öffnen, bearbeiten, Unteraufgaben anlegen oder löschen. Die **Statistiken** geben einen Überblick über erledigte Tasks.
+9. Unter **Notizen** kannst du unabhängige Notizen verwalten und per Drag & Drop sortieren. Gepinnte Notizen erscheinen auf der Startseite. Deine Inhalte kannst du dabei in Markdown verfassen. Beim Anklicken einer Notiz siehst du zunächst eine Vorschau, die du dort auch bearbeiten kannst.
+10. Unter **Decks** legst du Kartendecks an und kannst sie bearbeiten. In der Detailansicht eines Decks fügst du einzelne Karten hinzu.
+11. Der Bereich **Karten** zeigt dir fällige Karten zum Lernen an. Dort kannst du
    gezielt Decks ein- oder ausblenden, einen Zufallsmodus aktivieren und im
    Eingabemodus Antworten eintippen. Nach dem Vergleich der Lösung entscheidest
    du selbst, wie schwer dir die Karte fiel.
