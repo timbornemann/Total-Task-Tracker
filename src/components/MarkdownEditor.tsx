@@ -353,10 +353,9 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
             }
           }}
           className={cn(
-            'absolute inset-0 p-8 min-h-[80px] opacity-0 border rounded-sm shadow-sm focus-visible:ring-0 focus-visible:outline-none resize-none',
+            'absolute inset-0 p-8 min-h-[80px] text-transparent caret-black border rounded-sm shadow-sm focus-visible:ring-0 focus-visible:outline-none resize-none',
             className
           )}
-          style={{ caretColor: 'black' }}
         />
       </div>
     </div>
