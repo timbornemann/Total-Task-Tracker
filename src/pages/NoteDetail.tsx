@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import MarkdownEditor from '@/components/MarkdownEditor';
-import { Label } from '@/components/ui/label';
 import ReactMarkdown from 'react-markdown';
 
 const NoteDetailPage: React.FC = () => {
@@ -45,68 +44,55 @@ const NoteDetailPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar title="Notiz" onHomeClick={() => navigate('/notes')} />
-      <div className="py-8 px-4 w-full">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate('/notes')}
-          className="mb-4"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" /> Zurück
-        </Button>
+      <div className="py-8 px-4 w-full flex justify-center">
+        <div className="w-full max-w-4xl space-y-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/notes')}
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" /> Zurück
+          </Button>
         {isEditing ? (
-          <form className="space-y-4" onSubmit={e => { e.preventDefault(); handleSave(); }}>
-            <div className="md:grid md:grid-cols-2 md:gap-8">
-              <div className="flex flex-col space-y-4 h-[60vh]">
-                <div>
-                  <Label htmlFor="title">Titel *</Label>
-                  <Input
-                    id="title"
-                    value={formData.title}
-                    onChange={e => handleChange('title', e.target.value)}
-                    required
+          <form
+            className="space-y-6"
+            onSubmit={e => {
+              e.preventDefault();
+              handleSave();
+            }}
+          >
+            <Input
+              id="title"
+              placeholder="Titel *"
+              value={formData.title}
+              onChange={e => handleChange('title', e.target.value)}
+              required
+              className="text-3xl font-bold border-none focus-visible:ring-0 focus-visible:outline-none p-0 bg-transparent"
+            />
+            <div className="relative">
+              <MarkdownEditor
+                value={formData.text}
+                onChange={val => handleChange('text', val)}
+                rows={20}
+                className="min-h-[60vh]"
+              />
+              <div className="absolute top-4 right-4 flex space-x-2 bg-background/80 p-2 rounded-md shadow">
+                {colorOptions.map(color => (
+                  <button
+                    key={color}
+                    type="button"
+                    className={`w-8 h-8 rounded-full border-2 transition-all ${
+                      formData.color === color
+                        ? 'border-gray-800 scale-110'
+                        : 'border-gray-300 hover:scale-105'
+                    }`}
+                    style={{ backgroundColor: color }}
+                    onClick={() => handleChange('color', color)}
                   />
-                </div>
-                <div>
-                  <Label htmlFor="text">Text (Markdown)</Label>
-                  <MarkdownEditor
-                    value={formData.text}
-                    onChange={val => handleChange('text', val)}
-                    rows={20}
-                    className="h-full"
-                  />
-                </div>
-                <div>
-                  <Label>Farbe</Label>
-                  <div className="flex space-x-2 mt-2">
-                    {colorOptions.map(color => (
-                      <button
-                        key={color}
-                        type="button"
-                        className={`w-8 h-8 rounded-full border-2 transition-all ${
-                          formData.color === color
-                            ? 'border-gray-800 scale-110'
-                            : 'border-gray-300 hover:scale-105'
-                        }`}
-                        style={{ backgroundColor: color }}
-                        onClick={() => handleChange('color', color)}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col mt-4 md:mt-0 h-[60vh]">
-                <Label>Vorschau</Label>
-                <div className="p-4 border rounded-sm bg-background flex-1 overflow-auto mt-2">
-                  {formData.text ? (
-                    <ReactMarkdown className="prose">{formData.text}</ReactMarkdown>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">Noch keine Vorschau</p>
-                  )}
-                </div>
+                ))}
               </div>
             </div>
-            <div className="flex justify-end space-x-2 pt-4">
+            <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
                 Abbrechen
               </Button>
@@ -114,18 +100,22 @@ const NoteDetailPage: React.FC = () => {
             </div>
           </form>
         ) : (
-          <div className="space-y-4">
-            <h1 className="text-2xl font-bold" style={{ color: note.color }}>
+          <div className="space-y-6 text-center">
+            <h1 className="text-3xl font-bold" style={{ color: note.color }}>
               {note.title}
             </h1>
-            <ReactMarkdown className="prose">
-              {note.text}
-            </ReactMarkdown>
+            <ReactMarkdown className="prose mx-auto">{note.text}</ReactMarkdown>
             <div className="flex justify-end space-x-2 pt-4">
               <Button variant="outline" onClick={() => setIsEditing(true)}>
                 Bearbeiten
               </Button>
-              <Button variant="destructive" onClick={() => { deleteNote(note.id); navigate('/notes'); }}>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  deleteNote(note.id);
+                  navigate('/notes');
+                }}
+              >
                 Löschen
               </Button>
             </div>
