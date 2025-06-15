@@ -35,7 +35,7 @@ const formatTime = (m: number) => {
 }
 
 const snap = (m: number) => {
-  return Math.min(1440, Math.max(0, Math.round(m / 15) * 15))
+  return Math.min(1440, Math.max(0, Math.round(m / 30) * 30))
 }
 
 const TimeBlockingPage = () => {
@@ -228,9 +228,9 @@ const TimeBlockingPage = () => {
         const rect = containerRef.current!.getBoundingClientRect()
         const diff = ((e.clientY - rect.top) - drag.origin) / rect.height * 1440
         if (drag.type === 'move') {
+          const duration = drag.end - drag.start
           let start = snap(drag.start + diff)
-          let end = snap(drag.end + diff)
-          const duration = end - start
+          let end = start + duration
           if (start < 0) {
             start = 0
             end = duration
@@ -242,7 +242,7 @@ const TimeBlockingPage = () => {
           setDrag({ ...drag, start, end })
         } else {
           let end = snap(drag.end + diff)
-          if (end < drag.start + 15) end = drag.start + 15
+          if (end < drag.start + 30) end = drag.start + 30
           if (end > 1440) end = 1440
           setDrag({ ...drag, end })
         }
