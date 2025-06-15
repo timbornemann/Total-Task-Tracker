@@ -10,6 +10,7 @@ import { hslToHex, hexToHsl } from '@/utils/color'
 import { Checkbox } from '@/components/ui/checkbox'
 import { allHomeSections } from '@/utils/homeSections'
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd'
+import { GripVertical } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -420,14 +421,17 @@ const SettingsPage: React.FC = () => {
                               ref={prov.innerRef}
                               {...prov.draggableProps}
                               {...prov.dragHandleProps}
-                              className="flex items-center space-x-2 border rounded p-2 bg-card"
+                              className="flex items-center justify-between border rounded p-2 bg-card"
                             >
-                              <Checkbox
-                                id={sec.key}
-                                checked={homeSections.includes(sec.key)}
-                                onCheckedChange={() => toggleHomeSection(sec.key)}
-                              />
-                              <Label htmlFor={sec.key}>{sec.label}</Label>
+                              <div className="flex items-center space-x-2">
+                                <Checkbox
+                                  id={sec.key}
+                                  checked={homeSections.includes(sec.key)}
+                                  onCheckedChange={() => toggleHomeSection(sec.key)}
+                                />
+                                <Label htmlFor={sec.key}>{sec.label}</Label>
+                              </div>
+                              <GripVertical className="h-4 w-4 text-muted-foreground" />
                             </div>
                           )}
                         </Draggable>
