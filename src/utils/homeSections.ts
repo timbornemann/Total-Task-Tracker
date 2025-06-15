@@ -21,7 +21,6 @@ export interface HomeSection {
 export const allHomeSections: HomeSection[] = [
   { key: 'tasks', label: 'Tasks', path: '/tasks', icon: ClipboardList },
   { key: 'kanban', label: 'Kanban', path: '/kanban', icon: Columns },
-  { key: 'calendar', label: 'Kalender', path: '/calendar', icon: CalendarIcon },
   { key: 'timeblocks', label: 'Zeitplan', path: '/timeblocks', icon: CalendarIcon },
   { key: 'statistics', label: 'Task-Statistiken', path: '/statistics', icon: BarChart3 },
   { key: 'flashcards', label: 'Karten', path: '/flashcards', icon: BookOpen },

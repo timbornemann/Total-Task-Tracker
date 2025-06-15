@@ -12,7 +12,6 @@ import CommandPalette from "@/components/CommandPalette";
 import Home from "./pages/Home";
 import TasksPage from "./pages/Tasks";
 import Statistics from "./pages/Statistics";
-import CalendarPage from "./pages/Calendar";
 import Kanban from "./pages/Kanban";
 import NotesPage from "./pages/Notes";
 import NoteDetailPage from "./pages/NoteDetail";
@@ -52,7 +51,6 @@ const App = () => (
               <Route path="/" element={<Home />} />
               <Route path="/tasks" element={<TasksPage />} />
               <Route path="/statistics" element={<Statistics />} />
-              <Route path="/calendar" element={<CalendarPage />} />
               <Route path="/kanban" element={<Kanban />} />
               <Route path="/recurring" element={<RecurringTasksPage />} />
               <Route path="/timeblocks" element={<TimeBlockingPage />} />

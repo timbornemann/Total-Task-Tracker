@@ -45,6 +45,8 @@ const TimeBlockingPage = () => {
   const getTasksFor = (d: Date) => tasksByDate[d.toDateString()] || [];
 
   const dayTasks = useMemo(() => getTasksFor(date), [tasksByDate, date]);
+  const dayWithTimes = dayTasks.filter(t => t.startTime || t.endTime);
+  const dayWithoutTimes = dayTasks.filter(t => !t.startTime && !t.endTime);
 
   const weekDays = useMemo(() => {
     const start = startOfWeek(date);
@@ -90,8 +92,24 @@ const TimeBlockingPage = () => {
       <div className="lg:w-1/3">
         <Calendar mode="single" selected={date} onSelect={d => d && setDate(d)} />
       </div>
-      <div className="flex-1">
-        <DaySchedule tasks={dayTasks} />
+      <div className="flex-1 space-y-4">
+        <DaySchedule tasks={dayWithTimes} />
+        {dayWithoutTimes.length > 0 && (
+          <div>
+            <h3 className="font-medium text-sm mb-1">Ohne Uhrzeit</h3>
+            <ul className="space-y-1 text-sm">
+              {dayWithoutTimes.map(task => (
+                <li key={task.id} className="flex items-center space-x-2">
+                  <span
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: task.color }}
+                  />
+                  <span className="truncate">{task.title}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -116,14 +134,32 @@ const TimeBlockingPage = () => {
         </button>
       </div>
       <div className="grid grid-cols-7 gap-2">
-        {weekDays.map((d, idx) => (
-          <div key={d.toDateString()} className="flex flex-col space-y-1">
-            <div className="text-center text-sm font-medium">
-              {d.toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric' })}
+        {weekDays.map((d, idx) => {
+          const dayList = getTasksFor(d);
+          const withTimes = dayList.filter(t => t.startTime || t.endTime);
+          const withoutTimes = dayList.filter(t => !t.startTime && !t.endTime);
+          return (
+            <div key={d.toDateString()} className="flex flex-col space-y-1">
+              <div className="text-center text-sm font-medium">
+                {d.toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric' })}
+              </div>
+              <DaySchedule tasks={withTimes} showTimes={idx === 0} />
+              {withoutTimes.length > 0 && (
+                <ul className="mt-1 space-y-1 text-xs">
+                  {withoutTimes.map(task => (
+                    <li key={task.id} className="flex items-center space-x-1">
+                      <span
+                        className="w-2 h-2 rounded-full"
+                        style={{ backgroundColor: task.color }}
+                      />
+                      <span className="truncate">{task.title}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
-            <DaySchedule tasks={getTasksFor(d)} showTimes={idx === 0} />
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
