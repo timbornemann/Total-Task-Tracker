@@ -19,6 +19,7 @@ const useTaskStoreImpl = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [notes, setNotes] = useState<Note[]>([]);
   const [recurring, setRecurring] = useState<Task[]>([]);
+  const [loaded, setLoaded] = useState(false);
   const [recentlyDeletedCategories, setRecentlyDeletedCategories] =
     useState<{ category: Category; taskIds: string[] }[]>([]);
 
@@ -105,8 +106,10 @@ const useTaskStoreImpl = () => {
           };
           setCategories([defaultCategory]);
         }
+        setLoaded(true);
       } catch (error) {
         console.error('Fehler beim Laden der Daten:', error);
+        setLoaded(true);
       }
     };
 
@@ -122,8 +125,9 @@ const useTaskStoreImpl = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Save to server whenever data changes
+  // Save to server whenever data changes after initial load
   useEffect(() => {
+    if (!loaded) return;
     const save = async () => {
       try {
         await fetch(API_URL, {
@@ -137,7 +141,7 @@ const useTaskStoreImpl = () => {
     };
 
     save();
-  }, [tasks, categories, notes, recurring]);
+  }, [tasks, categories, notes, recurring, loaded]);
 
   const addTask = (
     taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'subtasks' | 'pinned'>
