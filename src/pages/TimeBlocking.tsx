@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, Move, GripVertical } from 'lucide-react';
 import TaskModal from '@/components/TaskModal';
 import { TaskFormData, Task } from '@/types';
 import { useTranslation } from 'react-i18next';
+import i18n from '@/lib/i18n';
 
 const parseMinutes = (time?: string) => {
   if (!time) return null;
@@ -42,6 +43,7 @@ const snap = (m: number) => {
 const TimeBlockingPage = () => {
   const { tasks, categories, addTask, updateTask } = useTaskStore()
   const { t } = useTranslation()
+  const locale = i18n.language === 'de' ? 'de-DE' : 'en-US'
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalDefaults, setModalDefaults] = useState<{
     start?: string
@@ -365,7 +367,7 @@ const TimeBlockingPage = () => {
         />
         {dayWithoutTimes.length > 0 && (
           <div>
-            <h3 className="font-medium text-sm mb-1">Ohne Uhrzeit</h3>
+            <h3 className="font-medium text-sm mb-1">{t('timeBlocking.withoutTime')}</h3>
             <ul className="space-y-1 text-sm">
               {dayWithoutTimes.map(task => (
                 <li key={task.id} className="flex items-center space-x-2">
@@ -393,7 +395,7 @@ const TimeBlockingPage = () => {
           <ChevronLeft className="h-4 w-4" />
         </button>
         <div className="font-medium">
-          {weekDays[0].toLocaleDateString('de-DE')} - {weekDays[6].toLocaleDateString('de-DE')}
+          {weekDays[0].toLocaleDateString(locale)} - {weekDays[6].toLocaleDateString(locale)}
         </div>
         <button
           className="p-1 rounded hover:bg-muted"
@@ -410,7 +412,7 @@ const TimeBlockingPage = () => {
           return (
             <div key={d.toDateString()} className="flex flex-col space-y-1">
               <div className="text-center text-sm font-medium">
-                {d.toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric' })}
+                {d.toLocaleDateString(locale, { weekday: 'short', day: 'numeric' })}
               </div>
               <DaySchedule
                 tasks={withTimes}
@@ -464,7 +466,7 @@ const TimeBlockingPage = () => {
             <ChevronLeft className="h-4 w-4" />
           </button>
           <div className="font-medium">
-            {date.toLocaleDateString('de-DE', {
+            {date.toLocaleDateString(locale, {
               month: 'long',
               year: 'numeric'
             })}

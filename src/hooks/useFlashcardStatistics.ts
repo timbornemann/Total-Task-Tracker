@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useFlashcardStore } from './useFlashcardStore';
+import i18n from '@/lib/i18n';
 
 export interface FlashcardStats {
   totalCards: number;
@@ -18,6 +19,7 @@ export const useFlashcardStatistics = (): FlashcardStats => {
   const { flashcards, decks } = useFlashcardStore();
 
   return useMemo(() => {
+    const locale = i18n.language === 'de' ? 'de-DE' : 'en-US'
     const totalCards = flashcards.length;
     const dueCards = flashcards.filter(c => new Date(c.dueDate) <= new Date()).length;
     const averageInterval =
@@ -44,7 +46,7 @@ export const useFlashcardStatistics = (): FlashcardStats => {
         c => c.dueDate.toISOString().split('T')[0] === key
       ).length;
       upcomingDue.push({
-        date: d.toLocaleDateString('de-DE', { month: 'short', day: 'numeric' }),
+        date: d.toLocaleDateString(locale, { month: 'short', day: 'numeric' }),
         count
       });
     }
