@@ -161,7 +161,8 @@
     "weekday": "Wochentag",
     "date": "Festes Datum",
     "titleTemplate": "Dynamischer Titel",
-    "color": "Farbe"
+    "color": "Farbe",
+    "placeholderExample": "z.B. 3"
   },
   "deckModal": {
     "editTitle": "Deck bearbeiten",
@@ -472,5 +473,26 @@
   "taskStore": {
     "defaultCategoryName": "Allgemein",
     "defaultCategoryDescription": "Standard Kategorie für alle Tasks"
+  },
+  "weekdays": {
+    "sunday": "Sonntag",
+    "monday": "Montag",
+    "tuesday": "Dienstag",
+    "wednesday": "Mittwoch",
+    "thursday": "Donnerstag",
+    "friday": "Freitag",
+    "saturday": "Samstag"
+  },
+  "ui": {
+    "previous": "Zurück",
+    "next": "Weiter",
+    "morePages": "Weitere Seiten",
+    "previousSlide": "Vorherige Folie",
+    "nextSlide": "Nächste Folie",
+    "close": "Schließen",
+    "toggleSidebar": "Sidebar umschalten",
+    "more": "Mehr",
+    "goPrevAria": "Zur vorherigen Seite",
+    "goNextAria": "Zur nächsten Seite"
   }
 }
