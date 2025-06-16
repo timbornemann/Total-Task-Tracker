@@ -2,19 +2,21 @@ import React from 'react';
 import { usePomodoroStats } from '@/hooks/usePomodoroStats';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
+import { useTranslation } from 'react-i18next';
 
 const PomodoroStats: React.FC = () => {
   const stats = usePomodoroStats();
+  const { t } = useTranslation();
   return (
     <div className="w-full grid gap-4 md:grid-cols-2">
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Gesamt</CardTitle>
+          <CardTitle className="text-base">{t('pomodoroStats.total')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm">Arbeit: {stats.totalWorkMinutes} min</p>
-          <p className="text-sm">Pause: {stats.totalBreakMinutes} min</p>
-          <p className="text-sm mb-2">Zyklen: {stats.totalCycles}</p>
+          <p className="text-sm">{t('pomodoroStats.work')}: {stats.totalWorkMinutes} min</p>
+          <p className="text-sm">{t('pomodoroStats.break')}: {stats.totalBreakMinutes} min</p>
+          <p className="text-sm mb-2">{t('pomodoroStats.cycles')}: {stats.totalCycles}</p>
           <div className="w-full h-3 bg-muted rounded overflow-hidden">
             <div
               className="h-full bg-primary"
@@ -40,12 +42,12 @@ const PomodoroStats: React.FC = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Heute</CardTitle>
+          <CardTitle className="text-base">{t('pomodoroStats.today')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm">Arbeit: {stats.todayTotals.workMinutes} min</p>
-          <p className="text-sm">Pause: {stats.todayTotals.breakMinutes} min</p>
-          <p className="text-sm mb-2">Zyklen: {stats.todayTotals.cycles}</p>
+          <p className="text-sm">{t('pomodoroStats.work')}: {stats.todayTotals.workMinutes} min</p>
+          <p className="text-sm">{t('pomodoroStats.break')}: {stats.todayTotals.breakMinutes} min</p>
+          <p className="text-sm mb-2">{t('pomodoroStats.cycles')}: {stats.todayTotals.cycles}</p>
           <div className="w-full h-3 bg-muted rounded overflow-hidden mb-4">
             <div
               className="h-full bg-primary"
@@ -82,16 +84,16 @@ const PomodoroStats: React.FC = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Tageszeiten (Gesamt)</CardTitle>
+          <CardTitle className="text-base">{t('pomodoroStats.timesOfDayTotal')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-40">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={[
-                  { time: 'Morgen', value: stats.timeOfDay.morning },
-                  { time: 'Mittag', value: stats.timeOfDay.afternoon },
-                  { time: 'Abend', value: stats.timeOfDay.evening },
-                  { time: 'Nacht', value: stats.timeOfDay.night }
+                  { time: t('pomodoroStats.morning'), value: stats.timeOfDay.morning },
+                  { time: t('pomodoroStats.afternoon'), value: stats.timeOfDay.afternoon },
+                  { time: t('pomodoroStats.evening'), value: stats.timeOfDay.evening },
+                  { time: t('pomodoroStats.night'), value: stats.timeOfDay.night }
                 ]}
                 margin={{ top: 10, right: 20, left: 0, bottom: 20 }}>
                 <XAxis dataKey="time" fontSize={12} />
@@ -106,7 +108,7 @@ const PomodoroStats: React.FC = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Diese Woche</CardTitle>
+          <CardTitle className="text-base">{t('pomodoroStats.thisWeek')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-40">
@@ -125,7 +127,7 @@ const PomodoroStats: React.FC = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Dieser Monat</CardTitle>
+          <CardTitle className="text-base">{t('pomodoroStats.thisMonth')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-40">
@@ -144,7 +146,7 @@ const PomodoroStats: React.FC = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Dieses Jahr</CardTitle>
+          <CardTitle className="text-base">{t('pomodoroStats.thisYear')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-40">

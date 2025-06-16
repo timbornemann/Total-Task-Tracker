@@ -239,5 +239,31 @@
     "completed": "Task abgeschlossen",
     "reactivated": "Task reaktiviert",
     "deleteConfirm": "Sind Sie sicher, dass Sie \"{{title}}\" löschen möchten?"
+  },
+  "pomodoroTimer": {
+    "start": "Start",
+    "pause": "Pause",
+    "resume": "Weiter",
+    "break": "Pause",
+    "reset": "Reset",
+    "float": "Float",
+    "workLabel": "Arbeit",
+    "breakLabel": "Pause",
+    "pauseLabel": "Pause:"
+  },
+  "pomodoroStats": {
+    "total": "Gesamt",
+    "today": "Heute",
+    "thisWeek": "Diese Woche",
+    "thisMonth": "Dieser Monat",
+    "thisYear": "Dieses Jahr",
+    "work": "Arbeit",
+    "break": "Pause",
+    "cycles": "Zyklen",
+    "morning": "Morgen",
+    "afternoon": "Mittag",
+    "evening": "Abend",
+    "night": "Nacht",
+    "timesOfDayTotal": "Tageszeiten (Gesamt)"
   }
 }

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import ReactDOM from 'react-dom/client';
 import { Button } from '@/components/ui/button';
 import { create } from 'zustand';
@@ -145,6 +146,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
   } = usePomodoroStore();
   const { pomodoro, updatePomodoro } = useSettings();
   const { addSession, endBreak } = usePomodoroHistory();
+  const { t } = useTranslation();
   const pipWindowRef = useRef<Window | null>(null);
   const [now, setNow] = useState(Date.now());
   const [position, setPosition] = useState<{ x: number; y: number }>(() => {
@@ -353,42 +355,44 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
           <div
             className={size > 100 ? 'text-4xl font-bold' : 'text-2xl font-bold'}
           >
-            {isPaused ? `Pause: ${formatTime(pauseDuration)}` : formatTime(remainingTime)}
+            {isPaused
+              ? `${t('pomodoroTimer.pauseLabel')} ${formatTime(pauseDuration)}`
+              : formatTime(remainingTime)}
           </div>
         </div>
       </div>
       <div className="flex space-x-2 mt-4">
-        {!isRunning && <Button onClick={() => start()}>Start</Button>}
+        {!isRunning && <Button onClick={() => start()}>{t('pomodoroTimer.start')}</Button>}
         {isRunning && !isPaused && (
           <Button onClick={handlePause} variant="outline">
-            Pause
+            {t('pomodoroTimer.pause')}
           </Button>
         )}
         {isRunning && !isPaused && mode === 'work' && !floating && !compact && (
           <Button onClick={handleStartBreak} variant="outline">
-            Break
+            {t('pomodoroTimer.break')}
           </Button>
         )}
         {isRunning && isPaused && (
           <Button onClick={handleResume} variant="outline">
-            Weiter
+            {t('pomodoroTimer.resume')}
           </Button>
         )}
         {isRunning && !floating && !compact && (
           <Button onClick={handleReset} variant="outline">
-            Reset
+            {t('pomodoroTimer.reset')}
           </Button>
         )}
         {!floating && (
           <Button onClick={openFloatingWindow} variant="outline">
-            Float
+            {t('pomodoroTimer.float')}
           </Button>
         )}
       </div>
       {!floating && !compact && (
       <div className="flex space-x-2 mt-2 text-xs">
         <div className="flex items-center space-x-1">
-          <span>Arbeit</span>
+          <span>{t('pomodoroTimer.workLabel')}</span>
           <input
             type="number"
             className="w-12 border rounded px-1"
@@ -399,7 +403,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
           />
         </div>
         <div className="flex items-center space-x-1">
-          <span>Pause</span>
+          <span>{t('pomodoroTimer.breakLabel')}</span>
           <input
             type="number"
             className="w-12 border rounded px-1"
