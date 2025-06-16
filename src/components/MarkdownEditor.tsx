@@ -51,6 +51,15 @@ const editorStyles = `
     0%, 100% { opacity: 1; }
     50% { opacity: 0; }
   }
+  .empty-line {
+    height: 1.5em;
+    display: block;
+    position: relative;
+  }
+  .empty-line::after {
+    content: '\\00a0'; /* Non-breaking space */
+    visibility: visible;
+  }
 `;
 
 const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
@@ -80,9 +89,19 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     setCursorColumn(columnPos);
   }, [cursorPosition, value]);
 
+  // Process text to preserve empty lines
+  const processTextForDisplay = (text: string): string => {
+    // Replace consecutive newlines with special markers
+    return text.replace(/\n\n+/g, (match) => {
+      // For each newline create a special empty line marker
+      const emptyLines = match.split('').map(() => '<span class="empty-line"></span>').join('');
+      return '\n' + emptyLines;
+    });
+  };
+
   // Split text into lines for rendering hybrid view
   const getHybridContent = () => {
-    if (activeLine === null) return value;
+    if (activeLine === null) return processTextForDisplay(value);
     
     const lines = value.split('\n');
     
@@ -96,6 +115,10 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
           return `<div class="active-line-marker">${before}<span class="cursor-position"></span>${after}</div>`;
         }
         return `<div class="active-line-marker">${line}<span class="cursor-position"></span></div>`;
+      }
+      // Handle empty lines
+      if (line.trim() === '') {
+        return `<div class="empty-line-marker"></div>`;
       }
       return line;
     }).join('\n');
@@ -139,18 +162,56 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     wrapSelection(prefix);
   };
 
+  // Handle key press events
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (textareaRef.current) {
+      setCursorPosition(textareaRef.current.selectionStart);
+    }
+
+    // Special handling for Enter key to ensure we properly handle empty lines
+    if (e.key === 'Enter') {
+      const textarea = textareaRef.current;
+      if (!textarea) return;
+      
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      
+      // Insert a newline character
+      const newValue = value.slice(0, start) + '\n' + value.slice(end);
+      onChange(newValue);
+      
+      // Set cursor position after the inserted newline
+      requestAnimationFrame(() => {
+        textarea.focus();
+        const newPosition = start + 1;
+        textarea.selectionStart = newPosition;
+        textarea.selectionEnd = newPosition;
+        setCursorPosition(newPosition);
+      });
+      
+      e.preventDefault(); // Prevent the default Enter behavior
+    }
+  };
+
   // Custom component to handle the active line rendering
   const MarkdownWithActiveLine = (props: { children: string }) => {
     const content = props.children;
     
-    if (!content.includes('<div class="active-line-marker">')) {
+    if (!content.includes('<div class="active-line-marker">') && 
+        !content.includes('<div class="empty-line-marker">')) {
       return <ReactMarkdown>{content}</ReactMarkdown>;
     }
     
-    // Split by the special marker
-    const parts = content.split(/<div class="active-line-marker">(.*?)<\/div>/);
+    // Handle empty line markers
+    let processedContent = content.replace(/<div class="empty-line-marker"><\/div>/g, '<div class="empty-line"></div>');
     
-    if (parts.length < 3) return <ReactMarkdown>{content}</ReactMarkdown>;
+    // Split by the special marker
+    const parts = processedContent.split(/<div class="active-line-marker">(.*?)<\/div>/);
+    
+    if (parts.length < 3) {
+      // If there's no active line marker but possibly empty lines
+      return <div dangerouslySetInnerHTML={{ __html: processedContent }} />;
+    }
     
     // Process the active line to include the cursor indicator
     const activeLine = parts[1];
@@ -406,11 +467,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
               setCursorPosition(textareaRef.current.selectionStart);
             }
           }}
-          onKeyDown={() => {
-            if (textareaRef.current) {
-              setCursorPosition(textareaRef.current.selectionStart);
-            }
-          }}
+          onKeyDown={handleKeyDown}
           onScroll={() => {
             if (previewRef.current && textareaRef.current) {
               previewRef.current.scrollTop = textareaRef.current.scrollTop;
