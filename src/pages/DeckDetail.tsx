@@ -47,7 +47,7 @@ const DeckDetailPage: React.FC = () => {
       <div className="max-w-2xl mx-auto py-8 px-4 space-y-4">
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">
-            {dueCount}/{totalCount} fällig
+            {t('deckDetail.dueProgress', { due: dueCount, total: totalCount })}
           </span>
           <Button size="sm" onClick={() => setIsModalOpen(true)}>
             <Plus className="h-4 w-4 mr-2" /> {t('deckDetail.newCard')}

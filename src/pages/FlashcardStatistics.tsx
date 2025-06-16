@@ -79,7 +79,8 @@ const FlashcardStatisticsPage: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="text-lg sm:text-2xl font-bold text-primary">
-                {Math.round(stats.averageInterval * 10) / 10} Tage
+                {Math.round(stats.averageInterval * 10) / 10}{' '}
+                {t('flashcardStats.days')}
               </div>
             </CardContent>
           </Card>

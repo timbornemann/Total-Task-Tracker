@@ -151,13 +151,15 @@
     },
     "category": "Kategorie",
     "total": "Gesamt",
-    "progress": "Fortschritt"
+    "progress": "Fortschritt",
+    "ofTasks": "der Tasks"
   },
   "deckDetail": {
     "newCard": "Neue Karte",
     "noCards": "Noch keine Karten vorhanden.",
     "notFound": "Deck nicht gefunden.",
-    "cardNumber": "Karte {{number}}"
+    "cardNumber": "Karte {{number}}",
+    "dueProgress": "{{due}}/{{total}} fällig"
   },
   "releaseNotes": {
     "title": "Release Notes",
@@ -166,13 +168,17 @@
   "flashcardManager": {
     "title": "Decks",
     "newDeck": "Neues Deck",
-    "none": "Noch keine Decks vorhanden."
+    "none": "Noch keine Decks vorhanden.",
+    "cards": "{{count}} Karte",
+    "cards_plural": "{{count}} Karten",
+    "dueProgress": "{{due}}/{{total}} fällig"
   },
   "flashcardStats": {
     "title": "Karten Statistiken",
     "totalCards": "Gesamt Karten",
     "due": "Fällig",
     "avgInterval": "Ø Intervall",
+    "days": "Tage",
     "difficulty": "Schwierigkeiten",
     "upcoming": "Fälligkeit nächste 7 Tage",
     "deckDetails": "Decks im Detail",
@@ -205,6 +211,8 @@
     "sessionDone": "Session beendet",
     "continue": "Weiter",
     "allDone": "Alle Karten durch",
+    "pause": "Pause",
+    "cardProgress": "Karte {{number}} / {{total}}",
     "correct": "Richtig!",
     "wrong": "Falsch",
     "description": {
@@ -227,7 +235,8 @@
     "title": "Zeitplan",
     "day": "Tag",
     "week": "Woche",
-    "month": "Monat"
+    "month": "Monat",
+    "more": "+{{count}} mehr"
   },
   "kanban": {
     "todo": "To Do",
