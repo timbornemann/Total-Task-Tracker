@@ -193,6 +193,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [syncFolder, setSyncFolder] = useState('')
   const [syncInterval, setSyncInterval] = useState(defaultSyncInterval)
   const [language, setLanguage] = useState(defaultLanguage)
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
     const load = async () => {
@@ -269,11 +270,13 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       } catch (err) {
         console.error('Error loading settings', err)
       }
+      setLoaded(true)
     }
     load()
   }, [])
 
   useEffect(() => {
+    if (!loaded) return
     const save = async () => {
       try {
         await fetch('/api/settings', {
@@ -285,18 +288,18 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             defaultTaskPriority: priority,
             theme,
             themeName,
-          homeSections,
-          homeSectionOrder,
-          showPinnedTasks,
-          showPinnedNotes,
-          flashcardTimer,
-          flashcardSessionSize,
-          flashcardDefaultMode,
-          syncFolder,
-          syncInterval,
-          language
+            homeSections,
+            homeSectionOrder,
+            showPinnedTasks,
+            showPinnedNotes,
+            flashcardTimer,
+            flashcardSessionSize,
+            flashcardDefaultMode,
+            syncFolder,
+            syncInterval,
+            language
+          })
         })
-      })
       } catch (err) {
         console.error('Error saving settings', err)
       }
@@ -304,6 +307,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     save()
   }, [
+    loaded,
     shortcuts,
     pomodoro,
     priority,
