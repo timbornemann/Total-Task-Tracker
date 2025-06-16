@@ -1,5 +1,6 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import { Task, Category, Note } from '@/types';
+import i18n from '@/lib/i18n';
 
 const API_URL = '/api/data';
 
@@ -385,7 +386,8 @@ const useTaskStoreImpl = () => {
   const generateTitle = (t: Task): string => {
     const now = new Date();
     let title = t.titleTemplate || t.title;
-    title = title.replace('{date}', now.toLocaleDateString('de-DE'));
+    const locale = i18n.language === 'de' ? 'de-DE' : 'en-US';
+    title = title.replace('{date}', now.toLocaleDateString(locale));
     title = title.replace('{counter}', String(t.order + 1));
     return title;
   };

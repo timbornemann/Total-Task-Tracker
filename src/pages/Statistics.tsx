@@ -1,6 +1,7 @@
 
 import React from 'react'
 import { useTranslation } from 'react-i18next'
+import i18n from '@/lib/i18n'
 import { useStatistics } from '@/hooks/useStatistics'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -222,17 +223,23 @@ const Statistics = () => {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={stats.completionTrend}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      dataKey="date" 
+                    <XAxis
+                      dataKey="date"
                       fontSize={12}
-                      tickFormatter={(value) => new Date(value).toLocaleDateString('de-DE', { 
-                        month: 'short', 
-                        day: 'numeric' 
-                      })}
+                      tickFormatter={value =>
+                        new Date(value).toLocaleDateString(
+                          i18n.language === 'de' ? 'de-DE' : 'en-US',
+                          { month: 'short', day: 'numeric' }
+                        )
+                      }
                     />
                     <YAxis fontSize={12} />
-                    <Tooltip 
-                      labelFormatter={(value) => new Date(value).toLocaleDateString('de-DE')}
+                    <Tooltip
+                      labelFormatter={value =>
+                        new Date(value).toLocaleDateString(
+                          i18n.language === 'de' ? 'de-DE' : 'en-US'
+                        )
+                      }
                     />
                     <Line
                       type="monotone"

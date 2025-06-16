@@ -1,12 +1,14 @@
 import { useMemo } from 'react';
 import { usePomodoroHistory } from './usePomodoroHistory.tsx';
 import { PomodoroStats } from '@/types';
+import i18n from '@/lib/i18n';
 
 export const usePomodoroStats = (): PomodoroStats => {
   const { sessions } = usePomodoroHistory();
 
   return useMemo(() => {
     const minutes = (start: number, end: number) => Math.round((end - start) / 60000);
+    const locale = i18n.language === 'de' ? 'de-DE' : 'en-US'
     const totalWorkMinutes = sessions.reduce(
       (sum, s) => sum + minutes(s.start, s.end),
       0
@@ -35,7 +37,7 @@ export const usePomodoroStats = (): PomodoroStats => {
     const year = sessions.filter(s => s.start >= yearStart.getTime());
 
     const todayData = today.map(s => ({
-      time: new Date(s.start).toLocaleTimeString('de-DE', {
+      time: new Date(s.start).toLocaleTimeString(locale, {
         hour: '2-digit',
         minute: '2-digit'
       }),
@@ -70,7 +72,7 @@ export const usePomodoroStats = (): PomodoroStats => {
 
     const weekData = aggregateBy(
       week,
-      d => d.toLocaleDateString('de-DE', { weekday: 'short' }),
+      d => d.toLocaleDateString(locale, { weekday: 'short' }),
       7,
       'day'
     );
@@ -83,7 +85,7 @@ export const usePomodoroStats = (): PomodoroStats => {
     );
     const yearData = aggregateBy(
       year,
-      d => d.toLocaleDateString('de-DE', { month: 'short' }),
+      d => d.toLocaleDateString(locale, { month: 'short' }),
       12,
       'month'
     );

@@ -2,6 +2,7 @@
 import { useMemo } from 'react';
 import { useTaskStore } from './useTaskStore';
 import { TaskStats } from '@/types';
+import i18n from '@/lib/i18n';
 
 export const useStatistics = (): TaskStats => {
   const { tasks, categories } = useTaskStore();
@@ -76,8 +77,9 @@ export const useStatistics = (): TaskStats => {
         return taskDate === dateStr;
       });
       
+      const locale = i18n.language === 'de' ? 'de-DE' : 'en-US'
       completionTrend.push({
-        date: date.toLocaleDateString('de-DE', { month: 'short', day: 'numeric' }),
+        date: date.toLocaleDateString(locale, { month: 'short', day: 'numeric' }),
         completed: dayTasks.filter(task => task.completed).length,
         created: dayTasks.length,
       });

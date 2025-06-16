@@ -287,7 +287,7 @@ const SettingsPage: React.FC = () => {
         </TabsList>
           <TabsContent value="shortcuts" className="space-y-4">
             <div>
-              <Label htmlFor="open">Command Palette</Label>
+              <Label htmlFor="open">{t('settingsPage.commandPalette')}</Label>
               <KeyInput
                 value={shortcuts.openCommand}
                 onChange={v => updateShortcut('openCommand', v)}
@@ -295,7 +295,7 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div>
-              <Label htmlFor="task">Neue Task</Label>
+              <Label htmlFor="task">{t('settingsPage.newTask')}</Label>
               <KeyInput
                 value={shortcuts.newTask}
                 onChange={v => updateShortcut('newTask', v)}
@@ -303,7 +303,7 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div>
-              <Label htmlFor="note">Neue Notiz</Label>
+              <Label htmlFor="note">{t('settingsPage.newNote')}</Label>
               <KeyInput
                 value={shortcuts.newNote}
                 onChange={v => updateShortcut('newNote', v)}
@@ -311,7 +311,7 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div>
-              <Label htmlFor="flashcard">Neue Karte</Label>
+              <Label htmlFor="flashcard">{t('settingsPage.newFlashcard')}</Label>
               <KeyInput
                 value={shortcuts.newFlashcard}
                 onChange={v => updateShortcut('newFlashcard', v)}
@@ -321,7 +321,7 @@ const SettingsPage: React.FC = () => {
           </TabsContent>
           <TabsContent value="pomodoro" className="space-y-4">
             <div>
-              <Label htmlFor="work">Lernzeit (Minuten)</Label>
+              <Label htmlFor="work">{t('settingsPage.workMinutes')}</Label>
               <Input
                 id="work"
                 type="number"
@@ -330,7 +330,7 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div>
-              <Label htmlFor="break">Pause (Minuten)</Label>
+              <Label htmlFor="break">{t('settingsPage.breakMinutes')}</Label>
               <Input
                 id="break"
                 type="number"
@@ -341,7 +341,7 @@ const SettingsPage: React.FC = () => {
           </TabsContent>
           <TabsContent value="flashcards" className="space-y-4">
             <div>
-              <Label htmlFor="timer">Timer pro Karte (Sekunden)</Label>
+              <Label htmlFor="timer">{t('settingsPage.flashcardTimer')}</Label>
               <Input
                 id="timer"
                 type="number"
@@ -350,7 +350,7 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div>
-              <Label htmlFor="sessionSize">Training-Session Größe</Label>
+              <Label htmlFor="sessionSize">{t('settingsPage.flashcardSessionSize')}</Label>
               <Input
                 id="sessionSize"
                 type="number"
@@ -359,7 +359,7 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div>
-              <Label htmlFor="startMode">Startmodus</Label>
+              <Label htmlFor="startMode">{t('settingsPage.startMode')}</Label>
               <Select
                 value={flashcardDefaultMode}
                 onValueChange={updateFlashcardDefaultMode}
@@ -368,26 +368,26 @@ const SettingsPage: React.FC = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="spaced">Spaced Repetition</SelectItem>
-                  <SelectItem value="training">Training</SelectItem>
-                  <SelectItem value="random">Random</SelectItem>
-                  <SelectItem value="typing">Eingabe</SelectItem>
-                  <SelectItem value="timed">Timed</SelectItem>
+                  <SelectItem value="spaced">{t('settingsPage.spaced')}</SelectItem>
+                  <SelectItem value="training">{t('settingsPage.training')}</SelectItem>
+                  <SelectItem value="random">{t('settingsPage.random')}</SelectItem>
+                  <SelectItem value="typing">{t('settingsPage.typing')}</SelectItem>
+                  <SelectItem value="timed">{t('settingsPage.timed')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </TabsContent>
           <TabsContent value="tasks" className="space-y-4">
             <div>
-              <Label htmlFor="priority">Standard-Priorität</Label>
+              <Label htmlFor="priority">{t('settingsPage.defaultTaskPriority')}</Label>
               <Select value={defaultTaskPriority} onValueChange={updateDefaultTaskPriority}>
                 <SelectTrigger id="priority">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="low">Niedrig</SelectItem>
-                  <SelectItem value="medium">Mittel</SelectItem>
-                  <SelectItem value="high">Hoch</SelectItem>
+                  <SelectItem value="low">{t('settingsPage.low')}</SelectItem>
+                  <SelectItem value="medium">{t('settingsPage.medium')}</SelectItem>
+                  <SelectItem value="high">{t('settingsPage.high')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -399,7 +399,7 @@ const SettingsPage: React.FC = () => {
                 checked={showPinnedTasks}
                 onCheckedChange={toggleShowPinnedTasks}
               />
-              <Label htmlFor="showPinnedTasks">Gepinnte Tasks anzeigen</Label>
+              <Label htmlFor="showPinnedTasks">{t('settingsPage.showPinnedTasks')}</Label>
             </div>
             <div className="flex items-center space-x-2">
               <Checkbox
@@ -407,7 +407,7 @@ const SettingsPage: React.FC = () => {
                 checked={showPinnedNotes}
                 onCheckedChange={toggleShowPinnedNotes}
               />
-              <Label htmlFor="showPinnedNotes">Gepinnte Notizen anzeigen</Label>
+              <Label htmlFor="showPinnedNotes">{t('settingsPage.showPinnedNotes')}</Label>
             </div>
             <DragDropContext onDragEnd={handleHomeDrag}>
               <Droppable droppableId="homeOrder">
@@ -451,7 +451,7 @@ const SettingsPage: React.FC = () => {
           </TabsContent>
           <TabsContent value="theme" className="space-y-4">
             <div>
-              <Label htmlFor="themePreset">Voreinstellung</Label>
+              <Label htmlFor="themePreset">{t('settingsPage.themePreset')}</Label>
               <Select value={themeName} onValueChange={updateThemeName}>
                 <SelectTrigger id="themePreset">
                   <SelectValue />
@@ -462,12 +462,12 @@ const SettingsPage: React.FC = () => {
                       {name}
                     </SelectItem>
                   ))}
-                  <SelectItem value="custom">custom</SelectItem>
+                  <SelectItem value="custom">{t('settingsPage.custom')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="bgColor">Hintergrund (App)</Label>
+              <Label htmlFor="bgColor">{t('settingsPage.bgColor')}</Label>
               <Input
                 id="bgColor"
                 type="color"
@@ -476,7 +476,7 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="fgColor">Textfarbe</Label>
+              <Label htmlFor="fgColor">{t('settingsPage.fgColor')}</Label>
               <Input
                 id="fgColor"
                 type="color"
@@ -485,7 +485,7 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="accentColor">Akzentfarbe</Label>
+              <Label htmlFor="accentColor">{t('settingsPage.accentColor')}</Label>
               <Input
                 id="accentColor"
                 type="color"
@@ -494,7 +494,7 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="cardBgColor">Karten-Hintergrund</Label>
+              <Label htmlFor="cardBgColor">{t('settingsPage.cardBgColor')}</Label>
               <Input
                 id="cardBgColor"
                 type="color"
@@ -503,7 +503,7 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="cardFgColor">Karten-Textfarbe</Label>
+              <Label htmlFor="cardFgColor">{t('settingsPage.cardFgColor')}</Label>
               <Input
                 id="cardFgColor"
                 type="color"
@@ -512,7 +512,7 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="popoverColor">Dropdown-Hintergrund</Label>
+              <Label htmlFor="popoverColor">{t('settingsPage.popoverColor')}</Label>
               <Input
                 id="popoverColor"
                 type="color"
@@ -521,7 +521,7 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="statBarPrimary">Statistik Balken Primär</Label>
+              <Label htmlFor="statBarPrimary">{t('settingsPage.statBarPrimary')}</Label>
               <Input
                 id="statBarPrimary"
                 type="color"
@@ -530,7 +530,7 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="statBarSecondary">Statistik Balken Sekundär</Label>
+              <Label htmlFor="statBarSecondary">{t('settingsPage.statBarSecondary')}</Label>
               <Input
                 id="statBarSecondary"
                 type="color"
@@ -539,7 +539,7 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="kanbanTodo">Kanban ToDo</Label>
+              <Label htmlFor="kanbanTodo">{t('settingsPage.kanbanTodo')}</Label>
               <Input
                 id="kanbanTodo"
                 type="color"
@@ -548,7 +548,7 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="kanbanInprogress">Kanban In Arbeit</Label>
+              <Label htmlFor="kanbanInprogress">{t('settingsPage.kanbanInprogress')}</Label>
               <Input
                 id="kanbanInprogress"
                 type="color"
@@ -557,7 +557,7 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="kanbanDone">Kanban Erledigt</Label>
+              <Label htmlFor="kanbanDone">{t('settingsPage.kanbanDone')}</Label>
               <Input
                 id="kanbanDone"
                 type="color"
@@ -566,7 +566,7 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="workRing">Pomodoro Arbeit</Label>
+              <Label htmlFor="workRing">{t('settingsPage.workRing')}</Label>
               <Input
                 id="workRing"
                 type="color"
@@ -575,7 +575,7 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="breakRing">Pomodoro Pause</Label>
+              <Label htmlFor="breakRing">{t('settingsPage.breakRing')}</Label>
               <Input
                 id="breakRing"
                 type="color"
@@ -602,20 +602,20 @@ const SettingsPage: React.FC = () => {
           </div>
         </TabsContent>
         <TabsContent value="data" className="space-y-4">
-            <h2 className="font-semibold">Datenexport / -import</h2>
+            <h2 className="font-semibold">{t('settingsPage.dataTitle')}</h2>
             <div className="space-y-2">
-              <p className="font-medium">Sync-Ordner</p>
+              <p className="font-medium">{t('settingsPage.syncFolder')}</p>
               <div className="flex items-center gap-2">
                 <Input
                   value={syncFolder}
                   onChange={e => updateSyncFolder(e.target.value)}
                   placeholder="/Pfad/zum/Ordner"
                 />
-                <Button variant="outline" onClick={selectFolder}>Ordner wählen</Button>
+                <Button variant="outline" onClick={selectFolder}>{t('settingsPage.selectFolder')}</Button>
               </div>
             </div>
             <div className="space-y-2">
-              <p className="font-medium">Sync-Intervall (Minuten)</p>
+              <p className="font-medium">{t('settingsPage.syncInterval')}</p>
               <Input
                 type="number"
                 min={1}
@@ -624,30 +624,30 @@ const SettingsPage: React.FC = () => {
               />
             </div>
             <div className="space-y-2">
-              <p className="font-medium">Tasks & Kategorien</p>
+              <p className="font-medium">{t('settingsPage.tasksAndCategories')}</p>
               <div className="flex items-center gap-2">
-                <Button onClick={exportTasks}>Export</Button>
+                <Button onClick={exportTasks}>{t('settingsPage.export')}</Button>
                 <Input type="file" accept="application/json" onChange={importTasks} />
               </div>
             </div>
             <div className="space-y-2">
-              <p className="font-medium">Notizen</p>
+              <p className="font-medium">{t('settingsPage.notes')}</p>
               <div className="flex items-center gap-2">
-                <Button onClick={exportNotes}>Export</Button>
+                <Button onClick={exportNotes}>{t('settingsPage.export')}</Button>
                 <Input type="file" accept="application/json" onChange={importNotes} />
               </div>
             </div>
             <div className="space-y-2">
-              <p className="font-medium">Decks & Karten</p>
+              <p className="font-medium">{t('settingsPage.decksAndCards')}</p>
               <div className="flex items-center gap-2">
-                <Button onClick={exportDecks}>Export</Button>
+                <Button onClick={exportDecks}>{t('settingsPage.export')}</Button>
                 <Input type="file" accept="application/json" onChange={importDecks} />
               </div>
             </div>
             <div className="space-y-2">
-              <p className="font-medium">Alles</p>
+              <p className="font-medium">{t('settingsPage.all')}</p>
               <div className="flex items-center gap-2">
-                <Button onClick={exportAll}>Export</Button>
+                <Button onClick={exportAll}>{t('settingsPage.export')}</Button>
                 <Input type="file" accept="application/json" onChange={importAll} />
               </div>
             </div>
