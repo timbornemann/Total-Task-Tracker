@@ -25,9 +25,11 @@ import {
   AlertDialogTitle,
   AlertDialogAction
 } from '@/components/ui/alert-dialog';
+import { useTranslation } from 'react-i18next';
 
 const FlashcardsPage: React.FC = () => {
   const { flashcards, decks, rateFlashcard } = useFlashcardStore();
+  const { t } = useTranslation();
   const {
     flashcardTimer,
     flashcardSessionSize,
@@ -292,21 +294,21 @@ const FlashcardsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar title="Karteikarten" />
+      <Navbar title={t('flashcardsPage.title')} />
       <div className="max-w-md mx-auto py-8 px-4 space-y-4">
         <div className="space-y-2">
           <div className="flex items-center space-x-2">
-            <Label className="text-sm">Modus:</Label>
+            <Label className="text-sm">{t('flashcardsPage.mode')}:</Label>
             <Select value={mode} onValueChange={handleModeChange}>
               <SelectTrigger className="w-40">
-                <SelectValue placeholder="Modus" />
+                <SelectValue placeholder={t('flashcardsPage.mode')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="spaced">Spaced Repetition</SelectItem>
-                <SelectItem value="training">Training</SelectItem>
-                <SelectItem value="random">Random</SelectItem>
-                <SelectItem value="typing">Eingabe</SelectItem>
-                <SelectItem value="timed">Timed</SelectItem>
+                <SelectItem value="spaced">{t('flashcardsPage.spaced')}</SelectItem>
+                <SelectItem value="training">{t('flashcardsPage.training')}</SelectItem>
+                <SelectItem value="random">{t('flashcardsPage.random')}</SelectItem>
+                <SelectItem value="typing">{t('flashcardsPage.typing')}</SelectItem>
+                <SelectItem value="timed">{t('flashcardsPage.timed')}</SelectItem>
               </SelectContent>
             </Select>
         </div>
@@ -329,7 +331,7 @@ const FlashcardsPage: React.FC = () => {
           </div>
           {(typingMode || timedMode) && (
             <div className="flex items-center justify-between pt-2">
-              <Label htmlFor="useSpaced">Spaced Repetition</Label>
+              <Label htmlFor="useSpaced">{t('flashcardsPage.useSpaced')}</Label>
               <Switch
                 id="useSpaced"
                 checked={useSpaced}
@@ -339,7 +341,7 @@ const FlashcardsPage: React.FC = () => {
           )}
         </div>
         {!current ? (
-          <p className="text-sm text-muted-foreground">Keine fälligen Karten.</p>
+          <p className="text-sm text-muted-foreground">{t('flashcardsPage.noDue')}</p>
         ) : (
           <Card>
             <CardHeader>
@@ -367,7 +369,7 @@ const FlashcardsPage: React.FC = () => {
                   </div>
                   {timerPaused ? (
                     <Button size="sm" variant="outline" onClick={() => setTimerPaused(false)}>
-                      Weiter
+                      {t('flashcardsPage.continue')}
                     </Button>
                   ) : (
                     <Button size="sm" variant="outline" onClick={() => setTimerPaused(true)}>
@@ -385,7 +387,7 @@ const FlashcardsPage: React.FC = () => {
                       <div
                         className={`text-sm text-center ${isCorrect ? 'text-accent' : 'text-destructive'}`}
                       >
-                        {isCorrect ? 'Richtig!' : 'Falsch'}
+                        {isCorrect ? t('flashcardsPage.correct') : t('flashcardsPage.wrong')}
                       </div>
                     </>
                   ) : (
@@ -422,7 +424,7 @@ const FlashcardsPage: React.FC = () => {
                       setShowBack(true);
                     }}
                   >
-                    Check
+                    {t('flashcardsPage.check')}
                   </Button>
                 ) : (
                   <>
@@ -430,36 +432,36 @@ const FlashcardsPage: React.FC = () => {
                       variant="outline"
                       onClick={() => handleRate('hard')}
                     >
-                      Schwer
+                      {t('flashcardsPage.hard')}
                     </Button>
                     <Button
                       variant="outline"
                       onClick={() => handleRate('medium')}
                     >
-                      Mittel
+                      {t('flashcardsPage.medium')}
                     </Button>
                     <Button
                       variant="outline"
                       onClick={() => handleRate('easy')}
                     >
-                      Leicht
+                      {t('flashcardsPage.easy')}
                     </Button>
                   </>
                 )
               ) : randomMode && !trainingMode ? (
                 <Button variant="outline" onClick={() => handleRate('easy')}>
-                  Nächste Karte
+                  {t('flashcardsPage.nextCard')}
                 </Button>
               ) : (
                 <>
                   <Button variant="outline" onClick={() => handleRate('hard')}>
-                    Schwer
+                    {t('flashcardsPage.hard')}
                   </Button>
                   <Button variant="outline" onClick={() => handleRate('medium')}>
-                    Mittel
+                    {t('flashcardsPage.medium')}
                   </Button>
                   <Button variant="outline" onClick={() => handleRate('easy')}>
-                    Leicht
+                    {t('flashcardsPage.easy')}
                   </Button>
                 </>
               )}
@@ -473,13 +475,13 @@ const FlashcardsPage: React.FC = () => {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Timer starten?</AlertDialogTitle>
+            <AlertDialogTitle>{t('flashcardsPage.timerStart')}</AlertDialogTitle>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogAction
               onClick={() => setTimerStarted(true)}
             >
-              Start
+              {t('flashcardsPage.start')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -508,7 +510,7 @@ const FlashcardsPage: React.FC = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {trainingMode ? 'Training beendet' : 'Session beendet'}
+              {trainingMode ? t('flashcardsPage.trainingDone') : t('flashcardsPage.sessionDone')}
             </AlertDialogTitle>
           </AlertDialogHeader>
           <div className="max-h-60 overflow-y-auto space-y-2 my-2 text-sm">
@@ -517,14 +519,16 @@ const FlashcardsPage: React.FC = () => {
               return (
                 <div key={id}>
                   <div className="font-medium">{card?.front}</div>
-                  <div>Leicht: {counts.easy}, Mittel: {counts.medium}, Schwer: {counts.hard}</div>
+                  <div>
+                    {t('flashcardsPage.easy')}: {counts.easy}, {t('flashcardsPage.medium')}: {counts.medium}, {t('flashcardsPage.hard')}: {counts.hard}
+                  </div>
                 </div>
               );
             })}
           </div>
           <AlertDialogFooter>
             <AlertDialogAction onClick={() => setShowSummary(false)}>
-              Weiter
+              {t('flashcardsPage.continue')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -537,10 +541,10 @@ const FlashcardsPage: React.FC = () => {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Alle Karten durch</AlertDialogTitle>
+            <AlertDialogTitle>{t('flashcardsPage.allDone')}</AlertDialogTitle>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogAction onClick={handleRestart}>Weiter</AlertDialogAction>
+            <AlertDialogAction onClick={handleRestart}>{t('flashcardsPage.continue')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

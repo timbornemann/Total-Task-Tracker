@@ -162,5 +162,82 @@
   "releaseNotes": {
     "title": "Release Notes",
     "none": "Keine Release Notes gefunden."
+  },
+  "flashcardManager": {
+    "title": "Decks",
+    "newDeck": "Neues Deck",
+    "none": "Noch keine Decks vorhanden."
+  },
+  "flashcardStats": {
+    "title": "Karten Statistiken",
+    "totalCards": "Gesamt Karten",
+    "due": "Fällig",
+    "avgInterval": "Ø Intervall",
+    "difficulty": "Schwierigkeiten",
+    "upcoming": "Fälligkeit nächste 7 Tage",
+    "deckDetails": "Decks im Detail",
+    "deck": "Deck",
+    "total": "Gesamt",
+    "dueShare": "Fälligkeitsanteil",
+    "cards": "Karten",
+    "easy": "Leicht",
+    "medium": "Mittel",
+    "hard": "Schwer"
+  },
+  "flashcardsPage": {
+    "title": "Karteikarten",
+    "mode": "Modus",
+    "spaced": "Spaced Repetition",
+    "training": "Training",
+    "random": "Random",
+    "typing": "Eingabe",
+    "timed": "Timed",
+    "useSpaced": "Spaced Repetition",
+    "noDue": "Keine fälligen Karten.",
+    "check": "Check",
+    "hard": "Schwer",
+    "medium": "Mittel",
+    "easy": "Leicht",
+    "nextCard": "Nächste Karte",
+    "timerStart": "Timer starten?",
+    "start": "Start",
+    "trainingDone": "Training beendet",
+    "sessionDone": "Session beendet",
+    "continue": "Weiter",
+    "allDone": "Alle Karten durch",
+    "correct": "Richtig!",
+    "wrong": "Falsch",
+    "description": {
+      "training": "Im Training-Modus werden Karten zufällig wiederholt, bis sie richtig beantwortet wurden. Bewertungen beeinflussen den Spaced-Repetition-Algorithmus nicht.",
+      "random": "Im Random-Modus werden alle ausgewählten Karten in zufälliger Reihenfolge angezeigt. Bewertungen wirken sich nicht auf den Algorithmus aus.",
+      "typingSpaced": "Im Eingabe-Modus tippst du die Antwort ein. Bewertungen beeinflussen den Algorithmus.",
+      "typing": "Im Eingabe-Modus tippst du die Antwort ein. Bewertungen beeinflussen den Algorithmus nicht.",
+      "timedSpaced": "Im Timed-Modus hast du ein Zeitlimit pro Karte. Bewertungen beeinflussen den Algorithmus.",
+      "timed": "Im Timed-Modus hast du ein Zeitlimit pro Karte. Bewertungen beeinflussen den Algorithmus nicht.",
+      "spaced": "Spaced Repetition zeigt nur fällige Karten entsprechend deinem Lernfortschritt an."
+    }
+  },
+  "surprise": {
+    "navbar": "Überraschung",
+    "title": "Ich hab dich lieb",
+    "poem": "Für dich, mein Schatz, ein kleines Wort,\nVersteckt im Code, wo nur du es findest.\nEin Funke Licht in dunkler Nacht,\nEin Zeichen dafür, dass ich immer an dich wach’.\n\nDein Lächeln strahlt wie Sonnenschein,\nDa schlägt mein Herz im schönsten Takt.\nDoch mehr als Code und süße Zeilen –\nBist du die Liebe, die ich nie verlier’.\n\nDies ist erst der Anfang unserer Magie,\nDenn mit dir wird Glück ganz leicht geschrieben.\nLass uns die Welt, die nur uns gehört,\nMit Küssen, Lachen und Sternen verzieren.",
+    "toast": "Geheime Liebesbotschaft entdeckt!"
+  },
+  "timeBlocking": {
+    "title": "Zeitplan",
+    "day": "Tag",
+    "week": "Woche",
+    "month": "Monat"
+  },
+  "kanban": {
+    "todo": "To Do",
+    "inprogress": "In Bearbeitung",
+    "done": "Erledigt",
+    "created": "Task erstellt",
+    "updated": "Task aktualisiert",
+    "deleted": "Task gelöscht",
+    "completed": "Task abgeschlossen",
+    "reactivated": "Task reaktiviert",
+    "deleteConfirm": "Sind Sie sicher, dass Sie \"{{title}}\" löschen möchten?"
   }
 }

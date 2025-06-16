@@ -6,6 +6,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { ChevronLeft, ChevronRight, Move, GripVertical } from 'lucide-react';
 import TaskModal from '@/components/TaskModal';
 import { TaskFormData, Task } from '@/types';
+import { useTranslation } from 'react-i18next';
 
 const parseMinutes = (time?: string) => {
   if (!time) return null;
@@ -40,6 +41,7 @@ const snap = (m: number) => {
 
 const TimeBlockingPage = () => {
   const { tasks, categories, addTask, updateTask } = useTaskStore()
+  const { t } = useTranslation()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalDefaults, setModalDefaults] = useState<{
     start?: string
@@ -515,16 +517,16 @@ const TimeBlockingPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar title="Zeitplan" />
+      <Navbar title={t('timeBlocking.title')} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         <ToggleGroup
           type="single"
           value={view}
           onValueChange={v => v && setView(v as 'day' | 'week' | 'month')}
         >
-          <ToggleGroupItem value="day">Tag</ToggleGroupItem>
-          <ToggleGroupItem value="week">Woche</ToggleGroupItem>
-          <ToggleGroupItem value="month">Monat</ToggleGroupItem>
+          <ToggleGroupItem value="day">{t('timeBlocking.day')}</ToggleGroupItem>
+          <ToggleGroupItem value="week">{t('timeBlocking.week')}</ToggleGroupItem>
+          <ToggleGroupItem value="month">{t('timeBlocking.month')}</ToggleGroupItem>
         </ToggleGroup>
       <div className="mt-4">
         {view === 'day' && renderDay()}
