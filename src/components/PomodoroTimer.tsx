@@ -228,7 +228,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
         pip.document.write('<!DOCTYPE html><html><head></head><body></body></html>');
         pip.document.close();
       }
-      pip.document.title = 'Pomodoro';
+        pip.document.title = t('navbar.pomodoro');
       pip.document.documentElement.className = document.documentElement.className;
       document.querySelectorAll('style, link[rel="stylesheet"]').forEach(el => {
         const clone = el.cloneNode(true) as HTMLElement;
