@@ -609,7 +609,7 @@ const SettingsPage: React.FC = () => {
                 <Input
                   value={syncFolder}
                   onChange={e => updateSyncFolder(e.target.value)}
-                  placeholder="/Pfad/zum/Ordner"
+                  placeholder={t('settingsPage.syncFolderPlaceholder')}
                 />
                 <Button variant="outline" onClick={selectFolder}>{t('settingsPage.selectFolder')}</Button>
               </div>
