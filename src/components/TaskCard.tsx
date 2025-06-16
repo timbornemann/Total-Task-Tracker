@@ -110,7 +110,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
                     className="text-xs flex-shrink-0 text-center leading-snug"
                   >
                     <span className="hidden sm:block">
-                      Wiederholt
+                      {t('taskCard.recurring')}
                       <br />
                       {task.recurrencePattern}
                     </span>
