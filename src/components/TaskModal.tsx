@@ -164,7 +164,10 @@ const TaskModal: React.FC<TaskModalProps> = ({
     }
   };
 
-  const handleChange = (field: keyof TaskFormData, value: any) => {
+  const handleChange = <K extends keyof TaskFormData>(
+    field: K,
+    value: TaskFormData[K]
+  ) => {
     setFormData(prev => {
       const updated: TaskFormData = { ...prev, [field]: value };
       if (field === 'recurrencePattern' && value) {
@@ -310,7 +313,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
         {formData.isRecurring && (
           <div>
             <Label>{t('taskModal.recurrence')}</Label>
-            <Select value={formData.dueOption} onValueChange={(v) => handleChange('dueOption', v as any)}>
+              <Select
+                value={formData.dueOption}
+                onValueChange={(v: 'days' | 'weekEnd' | 'monthEnd') =>
+                  handleChange('dueOption', v)
+                }
+              >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -392,7 +400,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
               </div>
               <div className="mt-2">
                 <Label>{t('taskModal.start')}</Label>
-                <Select value={formData.startOption} onValueChange={(v) => handleChange('startOption', v as any)}>
+                  <Select
+                    value={formData.startOption}
+                    onValueChange={(v: 'today' | 'weekday' | 'date') =>
+                      handleChange('startOption', v)
+                    }
+                  >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>

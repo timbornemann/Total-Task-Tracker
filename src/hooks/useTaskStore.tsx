@@ -38,8 +38,8 @@ const useTaskStoreImpl = () => {
         } = await res.json();
 
         if (savedTasks) {
-          setTasks(
-            savedTasks.map((task: any, idx: number) => ({
+            setTasks(
+              savedTasks.map((task: Task, idx: number) => ({
               ...task,
               createdAt: new Date(task.createdAt),
               updatedAt: new Date(task.updatedAt),
@@ -58,8 +58,8 @@ const useTaskStoreImpl = () => {
 
         if (savedNotes) {
           setNotes(
-            sortNotes(
-              savedNotes.map((note: any, idx: number) => ({
+              sortNotes(
+                savedNotes.map((note: Note, idx: number) => ({
                 ...note,
                 createdAt: new Date(note.createdAt),
                 updatedAt: new Date(note.updatedAt),
@@ -71,8 +71,8 @@ const useTaskStoreImpl = () => {
         }
 
         if (savedRecurring) {
-          setRecurring(
-            savedRecurring.map((t: any, idx: number) => ({
+            setRecurring(
+              savedRecurring.map((t: Task, idx: number) => ({
               ...t,
               createdAt: new Date(t.createdAt),
               updatedAt: new Date(t.updatedAt),
@@ -91,8 +91,8 @@ const useTaskStoreImpl = () => {
         }
 
         if (savedCategories && savedCategories.length) {
-          setCategories(
-            savedCategories.map((category: any, idx: number) => ({
+            setCategories(
+              savedCategories.map((category: Category, idx: number) => ({
               ...category,
               createdAt: new Date(category.createdAt),
               updatedAt: new Date(category.updatedAt),

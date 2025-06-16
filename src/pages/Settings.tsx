@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Navbar from '@/components/Navbar'
 import { useSettings, themePresets } from '@/hooks/useSettings'
+import { Task, Category, Note, Flashcard, Deck } from '@/types'
 import { Input } from '@/components/ui/input'
 import KeyInput from '@/components/KeyInput'
 import { Label } from '@/components/ui/label'
@@ -92,7 +93,7 @@ const SettingsPage: React.FC = () => {
     reorderHomeSections(result.source.index, result.destination.index)
   }
 
-  const download = (data: any, name: string) => {
+  const download = (data: unknown, name: string) => {
     const blob = new Blob([JSON.stringify(data, null, 2)], {
       type: 'application/json'
     })
@@ -150,11 +151,11 @@ const SettingsPage: React.FC = () => {
       ? await res.json()
       : { tasks: [], categories: [], notes: [] }
 
-    const taskMap = new Map<string, any>()
+    const taskMap = new Map<string, Task>()
     for (const t of current.tasks || []) taskMap.set(t.id, t)
     for (const t of incoming.tasks || []) if (!taskMap.has(t.id)) taskMap.set(t.id, t)
 
-    const catMap = new Map<string, any>()
+    const catMap = new Map<string, Category>()
     for (const c of current.categories || []) catMap.set(c.id, c)
     for (const c of incoming.categories || []) if (!catMap.has(c.id)) catMap.set(c.id, c)
 
@@ -178,7 +179,7 @@ const SettingsPage: React.FC = () => {
     const res = await fetch('/api/notes')
     const current = res.ok ? await res.json() : []
 
-    const noteMap = new Map<string, any>()
+    const noteMap = new Map<string, Note>()
     for (const n of current) noteMap.set(n.id, n)
     for (const n of incoming || []) if (!noteMap.has(n.id)) noteMap.set(n.id, n)
 
@@ -203,11 +204,11 @@ const SettingsPage: React.FC = () => {
     const currentCards = cardsRes.ok ? await cardsRes.json() : []
     const currentDecks = decksRes.ok ? await decksRes.json() : []
 
-    const cardMap = new Map<string, any>()
+    const cardMap = new Map<string, Flashcard>()
     for (const c of currentCards) cardMap.set(c.id, c)
     for (const c of data.flashcards || []) if (!cardMap.has(c.id)) cardMap.set(c.id, c)
 
-    const deckMap = new Map<string, any>()
+    const deckMap = new Map<string, Deck>()
     for (const d of currentDecks) deckMap.set(d.id, d)
     for (const d of data.decks || []) if (!deckMap.has(d.id)) deckMap.set(d.id, d)
 
@@ -235,8 +236,8 @@ const SettingsPage: React.FC = () => {
       ? await res.json()
       : { tasks: [], categories: [], notes: [], flashcards: [], decks: [] }
 
-    const merge = (curr: any[], inc: any[]) => {
-      const map = new Map<string, any>()
+    const merge = <T extends { id: string }>(curr: T[], inc: T[]) => {
+      const map = new Map<string, T>()
       for (const item of curr || []) map.set(item.id, item)
       for (const item of inc || []) if (!map.has(item.id)) map.set(item.id, item)
       return Array.from(map.values())

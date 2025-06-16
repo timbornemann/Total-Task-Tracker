@@ -154,7 +154,9 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
     try {
       const stored = localStorage.getItem('pomodoroFloatPos');
       if (stored) return JSON.parse(stored);
-    } catch {}
+    } catch {
+      // ignore storage errors
+    }
     const sizePx = size * 2 + 24;
     return {
       x: window.innerWidth - sizePx - 16,
@@ -166,7 +168,9 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
   useEffect(() => {
     try {
       localStorage.setItem('pomodoroFloatPos', JSON.stringify(position));
-    } catch {}
+    } catch {
+      // ignore storage errors
+    }
   }, [position]);
 
   const handlePointerMove = (e: PointerEvent) => {
@@ -213,15 +217,17 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
       return;
     }
     try {
-      let pip: Window | null = null;
-      if ((window as any).documentPictureInPicture) {
-        pip = await (window as any).documentPictureInPicture.requestWindow({
-          width: 200,
-          height: 200
-        });
-      } else {
-        pip = window.open('', '', 'width=200,height=200');
-      }
+    let pip: Window | null = null;
+    const w = window as unknown as {
+      documentPictureInPicture?: {
+        requestWindow: (opts: { width: number; height: number }) => Promise<Window | null>;
+      };
+    };
+    if (w.documentPictureInPicture) {
+      pip = await w.documentPictureInPicture.requestWindow({ width: 200, height: 200 });
+    } else {
+      pip = window.open('', '', 'width=200,height=200');
+    }
       if (!pip) return;
       pipWindowRef.current = pip;
       if (!pip.document.body) {

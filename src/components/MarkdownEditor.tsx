@@ -205,7 +205,10 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     }
     
     // Handle empty line markers
-    let processedContent = content.replace(/<div class="empty-line-marker"><\/div>/g, '<div class="empty-line"></div>');
+    const processedContent = content.replace(
+      /<div class="empty-line-marker"><\/div>/g,
+      '<div class="empty-line"></div>'
+    );
     
     // Split by the special marker
     const parts = processedContent.split(/<div class="active-line-marker">(.*?)<\/div>/);

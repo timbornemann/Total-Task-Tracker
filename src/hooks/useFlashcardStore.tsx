@@ -14,16 +14,16 @@ const useFlashcardStoreImpl = () => {
         const res = await fetch(API_URL);
         if (res.ok) {
           const data = await res.json();
-          setFlashcards(
-            (data || []).map((c: any) => ({
-              ...c,
-              dueDate: new Date(c.dueDate),
-              easyCount: c.easyCount ?? 0,
-              mediumCount: c.mediumCount ?? 0,
-              hardCount: c.hardCount ?? 0,
-              typedCorrect: c.typedCorrect ?? 0,
-              typedTotal: c.typedTotal ?? 0
-            }))
+            setFlashcards(
+              (data || []).map((c: Omit<Flashcard, 'dueDate'> & { dueDate: string }) => ({
+                ...c,
+                dueDate: new Date(c.dueDate),
+                easyCount: c.easyCount ?? 0,
+                mediumCount: c.mediumCount ?? 0,
+                hardCount: c.hardCount ?? 0,
+                typedCorrect: c.typedCorrect ?? 0,
+                typedTotal: c.typedTotal ?? 0
+              }))
           );
         }
       } catch (err) {
