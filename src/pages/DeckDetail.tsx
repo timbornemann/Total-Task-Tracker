@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,7 @@ import { useFlashcardStore } from '@/hooks/useFlashcardStore';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 
 const DeckDetailPage: React.FC = () => {
+  const { t } = useTranslation();
   const { deckId } = useParams<{ deckId: string }>();
   const navigate = useNavigate();
   const {
@@ -26,7 +28,7 @@ const DeckDetailPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
-  if (!deck) return <div className="p-4">Deck nicht gefunden.</div>;
+  if (!deck) return <div className="p-4">{t('deckDetail.notFound')}</div>;
 
   const handleSave = (data: { front: string; back: string; deckId: string }) => {
     const payload = { ...data, deckId: deckId! };
@@ -48,11 +50,11 @@ const DeckDetailPage: React.FC = () => {
             {dueCount}/{totalCount} fällig
           </span>
           <Button size="sm" onClick={() => setIsModalOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" /> Neue Karte
+            <Plus className="h-4 w-4 mr-2" /> {t('deckDetail.newCard')}
           </Button>
         </div>
         {cards.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Noch keine Karten vorhanden.</p>
+          <p className="text-sm text-muted-foreground">{t('deckDetail.noCards')}</p>
         ) : (
           <div className="space-y-4">
             {cards.map((card, index) => (

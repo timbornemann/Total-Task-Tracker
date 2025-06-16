@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Task, TaskFormData, Category } from '@/types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -63,6 +64,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
   defaultStartTime,
   defaultEndTime
 }) => {
+  const { t } = useTranslation();
   const { defaultTaskPriority } = useSettings()
   const [formData, setFormData] = useState<TaskFormData>({
     title: '',
@@ -191,37 +193,41 @@ const TaskModal: React.FC<TaskModalProps> = ({
       <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {task ? 'Task bearbeiten' : parentTask ? 'Unteraufgabe erstellen' : 'Neue Task erstellen'}
+            {task
+              ? t('taskModal.editTitle')
+              : parentTask
+              ? t('taskModal.newSubtaskTitle')
+              : t('taskModal.newTitle')}
           </DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="title">Titel *</Label>
+            <Label htmlFor="title">{t('taskModal.title')}</Label>
             <Input
               id="title"
               value={formData.title}
               onChange={(e) => handleChange('title', e.target.value)}
-              placeholder="Task-Titel eingeben..."
+              placeholder={t('taskModal.title')}
               required
               autoFocus
             />
           </div>
 
           <div>
-            <Label htmlFor="description">Beschreibung</Label>
+            <Label htmlFor="description">{t('taskModal.description')}</Label>
             <Textarea
               id="description"
               value={formData.description}
               onChange={(e) => handleChange('description', e.target.value)}
-              placeholder="Optionale Beschreibung..."
+              placeholder={t('taskModal.description')}
               rows={3}
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="priority">Priorität</Label>
+              <Label htmlFor="priority">{t('taskModal.priority')}</Label>
               <Select value={formData.priority} onValueChange={(value) => handleChange('priority', value)}>
                 <SelectTrigger>
                   <SelectValue />
@@ -229,17 +235,17 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 <SelectContent>
                   <SelectItem value="low">
                     <span className={`px-2 py-1 rounded text-sm ${getPriorityColor('low')}`}>
-                      🟢 Niedrig
+                      🟢 {t('taskModal.low')}
                     </span>
                   </SelectItem>
                   <SelectItem value="medium">
                     <span className={`px-2 py-1 rounded text-sm ${getPriorityColor('medium')}`}>
-                      🟡 Mittel
+                      🟡 {t('taskModal.medium')}
                     </span>
                   </SelectItem>
                   <SelectItem value="high">
                     <span className={`px-2 py-1 rounded text-sm ${getPriorityColor('high')}`}>
-                      🔴 Hoch
+                      🔴 {t('taskModal.high')}
                     </span>
                   </SelectItem>
                 </SelectContent>
@@ -247,7 +253,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
             </div>
 
             <div>
-              <Label htmlFor="category">Kategorie</Label>
+              <Label htmlFor="category">{t('taskModal.category')}</Label>
               <Select value={formData.categoryId} onValueChange={(value) => handleChange('categoryId', value)}>
                 <SelectTrigger>
                   <SelectValue />
@@ -271,7 +277,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
         {!formData.isRecurring && (
           <div>
-            <Label htmlFor="dueDate">Fällig am</Label>
+            <Label htmlFor="dueDate">{t('taskModal.dueDate')}</Label>
             <Input
               id="dueDate"
               type="date"
@@ -280,7 +286,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
             />
             <div className="mt-2 grid grid-cols-2 gap-2">
               <div>
-                <Label htmlFor="startTime">Startzeit</Label>
+                <Label htmlFor="startTime">{t('taskModal.startTime')}</Label>
                 <Input
                   id="startTime"
                   type="time"
@@ -289,7 +295,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 />
               </div>
               <div>
-                <Label htmlFor="endTime">Endzeit</Label>
+                <Label htmlFor="endTime">{t('taskModal.endTime')}</Label>
                 <Input
                   id="endTime"
                   type="time"
@@ -303,15 +309,15 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
         {formData.isRecurring && (
           <div>
-            <Label>Fälligkeit</Label>
+            <Label>{t('taskModal.recurrence')}</Label>
             <Select value={formData.dueOption} onValueChange={(v) => handleChange('dueOption', v as any)}>
               <SelectTrigger>
-                <SelectValue placeholder="Fälligkeit wählen..." />
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="days">Nach Tagen</SelectItem>
-                <SelectItem value="weekEnd">Ende der Woche</SelectItem>
-                <SelectItem value="monthEnd">Ende des Monats</SelectItem>
+                <SelectItem value="days">{t('taskModal.customDays')}</SelectItem>
+                <SelectItem value="weekEnd">{t('taskModal.weekEnd')}</SelectItem>
+                <SelectItem value="monthEnd">{t('taskModal.monthEnd')}</SelectItem>
               </SelectContent>
             </Select>
             {formData.dueOption === 'days' && (
@@ -328,7 +334,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
         )}
 
         <div>
-          <Label>Farbe</Label>
+          <Label>{t('taskModal.color')}</Label>
           <div className="flex space-x-2 mt-2">
             {colorOptions.map(color => (
                 <button
@@ -347,7 +353,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
           {allowRecurring && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <Label htmlFor="recurring">Wiederkehrende Aufgabe</Label>
+                <Label htmlFor="recurring">{t('taskModal.recurring')}</Label>
                 <Switch
                   id="recurring"
                   checked={formData.isRecurring}
@@ -357,23 +363,23 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
               {formData.isRecurring && (
                 <div>
-                  <Label htmlFor="recurrence">Wiederholung</Label>
+                  <Label htmlFor="recurrence">{t('taskModal.recurrence')}</Label>
                   <Select
                     value={formData.recurrencePattern}
                     onValueChange={(value) => handleChange('recurrencePattern', value)}
                   >
                   <SelectTrigger>
-                    <SelectValue placeholder="Wiederholung auswählen..." />
+                    <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="daily">Täglich</SelectItem>
-                    <SelectItem value="weekly">Wöchentlich</SelectItem>
-                    <SelectItem value="monthly">Monatlich</SelectItem>
-                <SelectItem value="yearly">Jährlich</SelectItem>
+                    <SelectItem value="daily">{t('taskModal.daily')}</SelectItem>
+                    <SelectItem value="weekly">{t('taskModal.weekly')}</SelectItem>
+                    <SelectItem value="monthly">{t('taskModal.monthly')}</SelectItem>
+                    <SelectItem value="yearly">{t('taskModal.yearly')}</SelectItem>
                 </SelectContent>
               </Select>
               <div className="mt-2">
-                <Label htmlFor="customDays">Benutzerdefinierte Tage</Label>
+                <Label htmlFor="customDays">{t('taskModal.customDays')}</Label>
                 <Input
                   id="customDays"
                   type="number"
@@ -385,15 +391,15 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 />
               </div>
               <div className="mt-2">
-                <Label>Start</Label>
+                <Label>{t('taskModal.start')}</Label>
                 <Select value={formData.startOption} onValueChange={(v) => handleChange('startOption', v as any)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="today">Heute</SelectItem>
-                    <SelectItem value="weekday">Wochentag</SelectItem>
-                    <SelectItem value="date">Festes Datum</SelectItem>
+                    <SelectItem value="today">{t('taskModal.today')}</SelectItem>
+                    <SelectItem value="weekday">{t('taskModal.weekday')}</SelectItem>
+                    <SelectItem value="date">{t('taskModal.date')}</SelectItem>
                   </SelectContent>
                 </Select>
                 {formData.startOption === 'weekday' && (
@@ -403,7 +409,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     className="mt-2"
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Wochentag wählen..." />
+                      <SelectValue placeholder={t('taskModal.weekday')} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="0">Sonntag</SelectItem>
@@ -426,12 +432,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 )}
               </div>
               <div className="mt-2">
-                <Label htmlFor="titleTemplate">Dynamischer Titel</Label>
+                <Label htmlFor="titleTemplate">{t('taskModal.titleTemplate')}</Label>
                 <Input
                   id="titleTemplate"
                   value={formData.titleTemplate || ''}
                   onChange={(e) => handleChange('titleTemplate', e.target.value)}
-                  placeholder="{date} oder {counter} nutzen"
+                  placeholder="{date} / {counter}"
                 />
               </div>
                 </div>
@@ -441,10 +447,10 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
           <div className="flex justify-end space-x-2 pt-4">
             <Button type="button" variant="outline" onClick={onClose}>
-              Abbrechen
+              {t('common.cancel')}
             </Button>
             <Button type="submit">
-              {task ? 'Speichern' : 'Erstellen'}
+              {task ? t('common.save') : t('common.create')}
             </Button>
           </div>
         </form>

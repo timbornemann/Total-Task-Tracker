@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Flashcard, Deck } from '@/types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -15,6 +16,7 @@ interface FlashcardModalProps {
 }
 
 const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose, onSave, decks, card }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({ front: '', back: '', deckId: '' });
 
   useEffect(() => {
@@ -42,14 +44,16 @@ const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose, onSave
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{card ? 'Karte bearbeiten' : 'Neue Karte'}</DialogTitle>
+          <DialogTitle>
+            {card ? t('flashcardModal.editTitle') : t('flashcardModal.newTitle')}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="deck">Deck</Label>
+            <Label htmlFor="deck">{t('flashcardModal.deck')}</Label>
             <Select value={formData.deckId} onValueChange={v => handleChange('deckId', v)}>
               <SelectTrigger id="deck">
-                <SelectValue placeholder="Deck wählen" />
+                <SelectValue placeholder={t('flashcardModal.chooseDeck')} />
               </SelectTrigger>
               <SelectContent>
                 {decks.map(d => (
@@ -59,7 +63,7 @@ const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose, onSave
             </Select>
           </div>
           <div>
-            <Label htmlFor="front">Vorderseite *</Label>
+            <Label htmlFor="front">{t('flashcardModal.front')}</Label>
             <Textarea
               id="front"
               value={formData.front}
@@ -69,7 +73,7 @@ const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose, onSave
             />
           </div>
           <div>
-            <Label htmlFor="back">Rückseite *</Label>
+            <Label htmlFor="back">{t('flashcardModal.back')}</Label>
             <Textarea
               id="back"
               value={formData.back}
@@ -80,9 +84,11 @@ const FlashcardModal: React.FC<FlashcardModalProps> = ({ isOpen, onClose, onSave
           </div>
           <div className="flex justify-end space-x-2 pt-4">
             <Button type="button" variant="outline" onClick={onClose}>
-              Abbrechen
+              {t('common.cancel')}
             </Button>
-            <Button type="submit">{card ? 'Speichern' : 'Erstellen'}</Button>
+            <Button type="submit">
+              {card ? t('common.save') : t('common.create')}
+            </Button>
           </div>
         </form>
       </DialogContent>

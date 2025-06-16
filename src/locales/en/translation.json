@@ -67,5 +67,73 @@
     "notes": "Notes",
     "recurring": "Recurring",
     "settings": "Settings"
+  },
+  "categoryModal": {
+    "editTitle": "Edit Category",
+    "newTitle": "New Category",
+    "name": "Name *",
+    "description": "Description",
+    "color": "Color",
+    "placeholderName": "Enter category name...",
+    "placeholderDescription": "Optional description..."
+  },
+  "taskModal": {
+    "editTitle": "Edit Task",
+    "newTitle": "New Task",
+    "newSubtaskTitle": "Create Subtask",
+    "title": "Title *",
+    "description": "Description",
+    "priority": "Priority",
+    "category": "Category",
+    "dueDate": "Due Date",
+    "startTime": "Start Time",
+    "endTime": "End Time",
+    "recurring": "Recurring Task",
+    "recurrence": "Recurrence",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "customDays": "Custom days",
+    "weekEnd": "End of week",
+    "monthEnd": "End of month",
+    "start": "Start",
+    "today": "Today",
+    "weekday": "Weekday",
+    "date": "Fixed date",
+    "titleTemplate": "Dynamic Title",
+    "color": "Color"
+  },
+  "deckModal": {
+    "editTitle": "Edit Deck",
+    "newTitle": "New Deck",
+    "name": "Name *",
+    "placeholderName": "Enter deck name..."
+  },
+  "flashcardModal": {
+    "editTitle": "Edit Card",
+    "newTitle": "New Card",
+    "deck": "Deck",
+    "front": "Front *",
+    "back": "Back *",
+    "chooseDeck": "Choose deck"
+  },
+  "notFound": {
+    "title": "404",
+    "message": "Oops! Page not found",
+    "backHome": "Return to Home"
+  },
+  "notes": {
+    "newNote": "New Note",
+    "none": "No notes available."
+  },
+  "recurring": {
+    "template": "Template",
+    "none": "No templates available."
+  },
+  "deckDetail": {
+    "newCard": "New Card",
+    "noCards": "No cards available.",
+    "notFound": "Deck not found."
   }
 }
