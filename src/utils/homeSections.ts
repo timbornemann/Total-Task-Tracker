@@ -13,21 +13,21 @@ import {
 
 export interface HomeSection {
   key: string
-  label: string
+  labelKey: string
   path: string
   icon: LucideIcon
 }
 
 export const allHomeSections: HomeSection[] = [
-  { key: 'tasks', label: 'Tasks', path: '/tasks', icon: ClipboardList },
-  { key: 'kanban', label: 'Kanban', path: '/kanban', icon: Columns },
-  { key: 'timeblocks', label: 'Zeitplan', path: '/timeblocks', icon: CalendarIcon },
-  { key: 'statistics', label: 'Task-Statistiken', path: '/statistics', icon: BarChart3 },
-  { key: 'flashcards', label: 'Karten', path: '/flashcards', icon: BookOpen },
-  { key: 'decks', label: 'Decks', path: '/flashcards/manage', icon: Pencil },
-  { key: 'flashcard-stats', label: 'Karten-Statistik', path: '/flashcards/stats', icon: BarChart3 },
-  { key: 'pomodoro', label: 'Pomodoro', path: '/pomodoro', icon: Timer },
-  { key: 'notes', label: 'Notizen', path: '/notes', icon: List },
-  { key: 'recurring', label: 'Wiederkehrend', path: '/recurring', icon: List },
-  { key: 'settings', label: 'Einstellungen', path: '/settings', icon: Cog }
+  { key: 'tasks', labelKey: 'homeSections.tasks', path: '/tasks', icon: ClipboardList },
+  { key: 'kanban', labelKey: 'homeSections.kanban', path: '/kanban', icon: Columns },
+  { key: 'timeblocks', labelKey: 'homeSections.schedule', path: '/timeblocks', icon: CalendarIcon },
+  { key: 'statistics', labelKey: 'homeSections.statistics', path: '/statistics', icon: BarChart3 },
+  { key: 'flashcards', labelKey: 'homeSections.cards', path: '/flashcards', icon: BookOpen },
+  { key: 'decks', labelKey: 'homeSections.decks', path: '/flashcards/manage', icon: Pencil },
+  { key: 'flashcard-stats', labelKey: 'homeSections.cardStats', path: '/flashcards/stats', icon: BarChart3 },
+  { key: 'pomodoro', labelKey: 'homeSections.pomodoro', path: '/pomodoro', icon: Timer },
+  { key: 'notes', labelKey: 'homeSections.notes', path: '/notes', icon: List },
+  { key: 'recurring', labelKey: 'homeSections.recurring', path: '/recurring', icon: List },
+  { key: 'settings', labelKey: 'homeSections.settings', path: '/settings', icon: Cog }
 ]

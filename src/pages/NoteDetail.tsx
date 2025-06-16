@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import { useTaskStore } from '@/hooks/useTaskStore';
@@ -11,6 +12,7 @@ import ReactMarkdown from 'react-markdown';
 const NoteDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { notes, updateNote, deleteNote } = useTaskStore();
   const note = notes.find(n => n.id === id);
 
@@ -39,11 +41,11 @@ const NoteDetailPage: React.FC = () => {
     }
   };
 
-  if (!note) return <div className="p-4">Notiz nicht gefunden.</div>;
+  if (!note) return <div className="p-4">{t('noteDetail.notFound')}</div>;
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar title="Notiz" onHomeClick={() => navigate('/notes')} />
+      <Navbar title={t('noteDetail.title')} onHomeClick={() => navigate('/notes')} />
       <div className="py-8 px-4 w-full flex justify-center">
         <div className="w-full max-w-4xl space-y-4">
           <Button
@@ -51,7 +53,7 @@ const NoteDetailPage: React.FC = () => {
             size="sm"
             onClick={() => navigate('/notes')}
           >
-            <ArrowLeft className="h-4 w-4 mr-2" /> Zurück
+            <ArrowLeft className="h-4 w-4 mr-2" /> {t('common.back')}
           </Button>
         {isEditing ? (
           <form
@@ -63,7 +65,7 @@ const NoteDetailPage: React.FC = () => {
           >
             <Input
               id="title"
-              placeholder="Titel *"
+              placeholder={t('noteModal.title')}
               value={formData.title}
               onChange={e => handleChange('title', e.target.value)}
               required
@@ -94,9 +96,9 @@ const NoteDetailPage: React.FC = () => {
             </div>
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
-                Abbrechen
+                {t('common.cancel')}
               </Button>
-              <Button type="submit">Speichern</Button>
+              <Button type="submit">{t('common.save')}</Button>
             </div>
           </form>
         ) : (
@@ -107,7 +109,7 @@ const NoteDetailPage: React.FC = () => {
             <ReactMarkdown className="prose mx-auto">{note.text}</ReactMarkdown>
             <div className="flex justify-end space-x-2 pt-4">
               <Button variant="outline" onClick={() => setIsEditing(true)}>
-                Bearbeiten
+                {t('common.edit')}
               </Button>
               <Button
                 variant="destructive"
@@ -116,7 +118,7 @@ const NoteDetailPage: React.FC = () => {
                   navigate('/notes');
                 }}
               >
-                Löschen
+                {t('common.delete')}
               </Button>
             </div>
           </div>

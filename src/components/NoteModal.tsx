@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Note } from '@/types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -16,6 +17,7 @@ interface NoteModalProps {
 }
 
 const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, onSave, note }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     title: '',
     text: '',
@@ -52,11 +54,11 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, onSave, note }) 
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{note ? 'Notiz bearbeiten' : 'Neue Notiz'}</DialogTitle>
+          <DialogTitle>{note ? t('noteModal.editTitle') : t('noteModal.newTitle')}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="title">Titel *</Label>
+            <Label htmlFor="title">{t('noteModal.title')}</Label>
             <Input
               id="title"
               value={formData.title}
@@ -66,7 +68,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, onSave, note }) 
             />
           </div>
           <div>
-            <Label htmlFor="text">Text (Markdown)</Label>
+            <Label htmlFor="text">{t('noteModal.text')}</Label>
             <MarkdownEditor
               value={formData.text}
               onChange={val => handleChange('text', val)}
@@ -74,7 +76,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, onSave, note }) 
             />
           </div>
           <div>
-            <Label>Farbe</Label>
+            <Label>{t('noteModal.color')}</Label>
             <div className="flex space-x-2 mt-2">
               {colorOptions.map(color => (
                 <button
@@ -91,9 +93,11 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, onSave, note }) 
           </div>
           <div className="flex justify-end space-x-2 pt-4">
             <Button type="button" variant="outline" onClick={onClose}>
-              Abbrechen
+              {t('common.cancel')}
             </Button>
-            <Button type="submit">{note ? 'Speichern' : 'Erstellen'}</Button>
+            <Button type="submit">
+              {note ? t('common.save') : t('common.create')}
+            </Button>
           </div>
         </form>
       </DialogContent>

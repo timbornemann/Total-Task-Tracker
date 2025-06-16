@@ -35,5 +35,37 @@
     "languageLabel": "App Language",
     "english": "English",
     "german": "German"
+  },
+  "noteModal": {
+    "editTitle": "Edit Note",
+    "newTitle": "New Note",
+    "title": "Title *",
+    "text": "Text (Markdown)",
+    "color": "Color"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "create": "Create",
+    "edit": "Edit",
+    "delete": "Delete",
+    "back": "Back"
+  },
+  "noteDetail": {
+    "notFound": "Note not found.",
+    "title": "Note"
+  },
+  "homeSections": {
+    "tasks": "Tasks",
+    "kanban": "Kanban",
+    "schedule": "Schedule",
+    "statistics": "Task Statistics",
+    "cards": "Cards",
+    "decks": "Decks",
+    "cardStats": "Card Statistics",
+    "pomodoro": "Pomodoro",
+    "notes": "Notes",
+    "recurring": "Recurring",
+    "settings": "Settings"
   }
 }

@@ -35,5 +35,37 @@
     "languageLabel": "Sprache der Anwendung",
     "english": "Englisch",
     "german": "Deutsch"
+  },
+  "noteModal": {
+    "editTitle": "Notiz bearbeiten",
+    "newTitle": "Neue Notiz",
+    "title": "Titel *",
+    "text": "Text (Markdown)",
+    "color": "Farbe"
+  },
+  "common": {
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "create": "Erstellen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "back": "Zurück"
+  },
+  "noteDetail": {
+    "notFound": "Notiz nicht gefunden.",
+    "title": "Notiz"
+  },
+  "homeSections": {
+    "tasks": "Tasks",
+    "kanban": "Kanban",
+    "schedule": "Zeitplan",
+    "statistics": "Task-Statistiken",
+    "cards": "Karten",
+    "decks": "Decks",
+    "cardStats": "Karten-Statistik",
+    "pomodoro": "Pomodoro",
+    "notes": "Notizen",
+    "recurring": "Wiederkehrend",
+    "settings": "Einstellungen"
   }
 }

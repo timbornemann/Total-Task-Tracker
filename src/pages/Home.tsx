@@ -48,7 +48,7 @@ const Home: React.FC = () => {
                 <Card className="hover:shadow-md transition-all text-center">
                   <CardContent className="py-8">
                     <sec.icon className="h-8 w-8 mx-auto mb-2" />
-                    <CardTitle>{sec.label}</CardTitle>
+                    <CardTitle>{t(sec.labelKey)}</CardTitle>
                   </CardContent>
                 </Card>
               </Link>
