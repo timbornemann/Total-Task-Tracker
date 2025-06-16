@@ -54,6 +54,7 @@ const Dashboard: React.FC = () => {
     findTaskById,
     reorderCategories,
     reorderTasks,
+    moveTaskToSubtask,
     undoDeleteCategory
   } = useTaskStore();
 
@@ -339,7 +340,14 @@ const Dashboard: React.FC = () => {
   };
 
   const handleTaskDragEnd = (result: DropResult) => {
-    if (!result.destination || !selectedCategory) return;
+    if (!selectedCategory) return;
+
+    if (result.combine) {
+      moveTaskToSubtask(result.draggableId, result.combine.draggableId);
+      return;
+    }
+
+    if (!result.destination) return;
     reorderTasks(selectedCategory.id, result.source.index, result.destination.index);
   };
 
@@ -597,7 +605,7 @@ const Dashboard: React.FC = () => {
               </Card>
             ) : (
               <DragDropContext onDragEnd={handleTaskDragEnd}>
-                <Droppable droppableId="tasks">
+                <Droppable droppableId="tasks" isCombineEnabled>
                   {provided => (
                     <div
                       className="space-y-3 sm:space-y-4"

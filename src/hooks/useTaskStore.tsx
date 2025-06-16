@@ -535,6 +535,64 @@ const useTaskStoreImpl = () => {
     });
   };
 
+  const moveTaskToSubtask = (taskId: string, parentId: string) => {
+    setTasks(prev => {
+      let taskToMove: Task | null = null;
+
+      const removeTask = (list: Task[]): Task[] => {
+        return list.filter(t => {
+          if (t.id === taskId) {
+            taskToMove = { ...t };
+            return false;
+          }
+          if (t.subtasks.length > 0) {
+            t.subtasks = removeTask(t.subtasks);
+          }
+          return true;
+        });
+      };
+
+      let updated = removeTask([...prev]);
+      if (!taskToMove) return prev;
+
+      const addToParent = (list: Task[]): Task[] => {
+        return list.map(t => {
+          if (t.id === parentId) {
+            const newSubtask = {
+              ...taskToMove!,
+              parentId: parentId,
+              categoryId: t.categoryId,
+              order: t.subtasks.length,
+              updatedAt: new Date()
+            };
+            return {
+              ...t,
+              subtasks: [...t.subtasks, newSubtask],
+              updatedAt: new Date()
+            };
+          }
+          if (t.subtasks.length > 0) {
+            return { ...t, subtasks: addToParent(t.subtasks) };
+          }
+          return t;
+        });
+      };
+
+      updated = addToParent(updated);
+
+      const reorderRoot = (list: Task[]) => {
+        const grouped: { [key: string]: Task[] } = {};
+        list.filter(t => !t.parentId).forEach(t => {
+          grouped[t.categoryId] = grouped[t.categoryId] || [];
+          grouped[t.categoryId].push(t);
+        });
+        return Object.values(grouped).flatMap(ls => ls.map((t, idx) => ({ ...t, order: idx })));
+      };
+
+      return reorderRoot(updated);
+    });
+  };
+
   const addNote = (
     data: Omit<Note, 'id' | 'createdAt' | 'updatedAt' | 'order'>
   ) => {
@@ -609,6 +667,7 @@ const useTaskStoreImpl = () => {
     findTaskById,
     reorderCategories,
     reorderTasks,
+    moveTaskToSubtask,
     addNote,
     updateNote,
     deleteNote,
