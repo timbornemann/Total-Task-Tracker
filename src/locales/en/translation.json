@@ -401,7 +401,27 @@
       "high": "High",
       "medium": "Medium",
       "low": "Low"
-    }
+    },
+    "taskCreated": "Task created",
+    "taskCreatedDesc": "\"{{title}}\" was successfully created.",
+    "taskUpdated": "Task updated",
+    "taskUpdatedDesc": "\"{{title}}\" was successfully updated.",
+    "taskDeleted": "Task deleted",
+    "taskDeletedDesc": "The task was successfully deleted.",
+    "taskCompleted": "Task completed",
+    "taskCompletedDesc": "\"{{title}}\" was marked as completed.",
+    "taskReactivated": "Task reactivated",
+    "taskReactivatedDesc": "\"{{title}}\" was reactivated.",
+    "taskDeleteConfirm": "Are you sure you want to delete \"{{title}}\"?",
+    "categoryCreated": "Category created",
+    "categoryCreatedDesc": "\"{{name}}\" was successfully created.",
+    "categoryUpdated": "Category updated",
+    "categoryUpdatedDesc": "\"{{name}}\" was successfully updated.",
+    "categoryDeleted": "Category deleted",
+    "categoryDeletedDesc": "The category was successfully deleted.",
+    "categoryDeleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
+    "categoryDeleteLastConfirm": "You are about to delete the last remaining category. Delete \"{{name}}\"?",
+    "undo": "Undo"
   },
   "categoryCard": {
     "deleteTooltip": "Delete (undo possible)",

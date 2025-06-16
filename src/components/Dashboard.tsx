@@ -208,8 +208,8 @@ const Dashboard: React.FC = () => {
       completed: false
     });
     toast({
-      title: 'Task erstellt',
-      description: `"${taskData.title}" wurde erfolgreich erstellt.`
+      title: t('dashboard.taskCreated'),
+      description: t('dashboard.taskCreatedDesc', { title: taskData.title })
     });
     setParentTask(null);
   };
@@ -221,8 +221,8 @@ const Dashboard: React.FC = () => {
         completed: editingTask.completed
       });
       toast({
-        title: 'Task aktualisiert',
-        description: `"${taskData.title}" wurde erfolgreich aktualisiert.`
+        title: t('dashboard.taskUpdated'),
+        description: t('dashboard.taskUpdatedDesc', { title: taskData.title })
       });
       setEditingTask(null);
     }
@@ -230,11 +230,11 @@ const Dashboard: React.FC = () => {
 
   const handleDeleteTask = (taskId: string) => {
     const task = findTaskById(taskId);
-    if (task && window.confirm(`Sind Sie sicher, dass Sie "${task.title}" löschen möchten?`)) {
+    if (task && window.confirm(t('dashboard.taskDeleteConfirm', { title: task.title }))) {
       deleteTask(taskId);
       toast({
-        title: 'Task gelöscht',
-        description: 'Die Task wurde erfolgreich gelöscht.'
+        title: t('dashboard.taskDeleted'),
+        description: t('dashboard.taskDeletedDesc')
       });
     }
   };
@@ -243,16 +243,18 @@ const Dashboard: React.FC = () => {
     updateTask(taskId, { completed });
     const task = findTaskById(taskId);
     toast({
-      title: completed ? 'Task abgeschlossen' : 'Task reaktiviert',
-      description: `"${task?.title}" wurde ${completed ? 'als erledigt markiert' : 'reaktiviert'}.`
+      title: completed ? t('dashboard.taskCompleted') : t('dashboard.taskReactivated'),
+      description: completed
+        ? t('dashboard.taskCompletedDesc', { title: task?.title })
+        : t('dashboard.taskReactivatedDesc', { title: task?.title })
     });
   };
 
   const handleCreateCategory = (categoryData: CategoryFormData) => {
     addCategory(categoryData);
     toast({
-      title: 'Kategorie erstellt',
-      description: `"${categoryData.name}" wurde erfolgreich erstellt.`
+      title: t('dashboard.categoryCreated'),
+      description: t('dashboard.categoryCreatedDesc', { name: categoryData.name })
     });
   };
 
@@ -260,8 +262,8 @@ const Dashboard: React.FC = () => {
     if (editingCategory) {
       updateCategory(editingCategory.id, categoryData);
       toast({
-        title: 'Kategorie aktualisiert',
-        description: `"${categoryData.name}" wurde erfolgreich aktualisiert.`
+        title: t('dashboard.categoryUpdated'),
+        description: t('dashboard.categoryUpdatedDesc', { name: categoryData.name })
       });
       setEditingCategory(null);
     }
@@ -274,17 +276,17 @@ const Dashboard: React.FC = () => {
     const nonDefaultCount = categories.filter(c => c.id !== 'default').length;
     const confirmText =
       nonDefaultCount === 1 && category.id !== 'default'
-        ? `Sie sind dabei, die letzte verbleibende Kategorie zu löschen. "${category.name}" wirklich löschen?`
-        : `Sind Sie sicher, dass Sie "${category.name}" löschen möchten?`;
+        ? t('dashboard.categoryDeleteLastConfirm', { name: category.name })
+        : t('dashboard.categoryDeleteConfirm', { name: category.name });
 
     if (window.confirm(confirmText)) {
       deleteCategory(categoryId);
       toast({
-        title: 'Kategorie gelöscht',
-        description: 'Die Kategorie wurde erfolgreich gelöscht.',
+        title: t('dashboard.categoryDeleted'),
+        description: t('dashboard.categoryDeletedDesc'),
         action: (
           <ToastAction altText="Undo" onClick={() => undoDeleteCategory(categoryId)}>
-            Rückgängig
+            {t('dashboard.undo')}
           </ToastAction>
         )
       });
