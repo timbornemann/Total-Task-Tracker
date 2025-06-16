@@ -285,8 +285,11 @@ const Dashboard: React.FC = () => {
         title: t('category.deleted'),
         description: t('dashboard.categoryDeletedDesc'),
         action: (
-          <ToastAction altText="Undo" onClick={() => undoDeleteCategory(categoryId)}>
-            {t('common.undo')}
+          <ToastAction
+            altText={t('dashboard.undo')}
+            onClick={() => undoDeleteCategory(categoryId)}
+          >
+            {t('dashboard.undo')}
           </ToastAction>
         )
       });
