@@ -83,6 +83,7 @@
     "dataTitle": "Datenexport / -import",
     "syncFolder": "Sync-Ordner",
     "selectFolder": "Ordner wählen",
+    "syncFolderPlaceholder": "/Pfad/zum/Ordner",
     "syncInterval": "Sync-Intervall (Minuten)",
     "tasksAndCategories": "Tasks & Kategorien",
     "notes": "Notizen",

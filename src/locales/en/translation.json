@@ -83,6 +83,7 @@
     "dataTitle": "Data export / import",
     "syncFolder": "Sync folder",
     "selectFolder": "Choose folder",
+    "syncFolderPlaceholder": "/path/to/folder",
     "syncInterval": "Sync interval (minutes)",
     "tasksAndCategories": "Tasks & Categories",
     "notes": "Notes",
