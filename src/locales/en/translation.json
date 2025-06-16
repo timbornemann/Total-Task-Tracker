@@ -171,7 +171,24 @@
   },
   "releaseNotes": {
     "title": "Release Notes",
-    "none": "No release notes found."
+    "none": "No release notes found.",
+    "modalTitle": "New in version {{version}}"
+  },
+  "markdownEditor": {
+    "bold": "Bold",
+    "italic": "Italic",
+    "strikethrough": "Strikethrough",
+    "heading1": "Heading 1",
+    "heading2": "Heading 2",
+    "heading3": "Heading 3",
+    "link": "Link",
+    "image": "Image",
+    "bulletList": "Bullet List",
+    "numberedList": "Numbered List",
+    "quote": "Quote",
+    "inlineCode": "Inline Code",
+    "codeBlock": "Code Block",
+    "horizontalRule": "Horizontal Rule"
   },
   "flashcardManager": {
     "title": "Decks",

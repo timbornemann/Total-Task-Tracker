@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import {
@@ -68,6 +69,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
   rows = 5,
   className,
 }) => {
+  const { t } = useTranslation();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
   const [cursorPosition, setCursorPosition] = useState<number | null>(null);
@@ -265,7 +267,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
               <Bold />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Bold</TooltipContent>
+          <TooltipContent>{t('markdownEditor.bold')}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -278,7 +280,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
               <Italic />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Italic</TooltipContent>
+          <TooltipContent>{t('markdownEditor.italic')}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -291,7 +293,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
               <Strikethrough />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Strikethrough</TooltipContent>
+          <TooltipContent>{t('markdownEditor.strikethrough')}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -304,7 +306,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
               <Heading1 />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Heading 1</TooltipContent>
+          <TooltipContent>{t('markdownEditor.heading1')}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -317,7 +319,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
               <Heading2 />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Heading 2</TooltipContent>
+          <TooltipContent>{t('markdownEditor.heading2')}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -330,7 +332,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
               <Heading3 />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Heading 3</TooltipContent>
+          <TooltipContent>{t('markdownEditor.heading3')}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -343,7 +345,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
               <LinkIcon />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Link</TooltipContent>
+          <TooltipContent>{t('markdownEditor.link')}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -356,7 +358,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
               <ImageIcon />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Image</TooltipContent>
+          <TooltipContent>{t('markdownEditor.image')}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -369,7 +371,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
               <List />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Bullet List</TooltipContent>
+          <TooltipContent>{t('markdownEditor.bulletList')}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -382,7 +384,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
               <ListOrdered />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Numbered List</TooltipContent>
+          <TooltipContent>{t('markdownEditor.numberedList')}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -395,7 +397,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
               <Quote />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Quote</TooltipContent>
+          <TooltipContent>{t('markdownEditor.quote')}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -408,7 +410,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
               <Code />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Inline Code</TooltipContent>
+          <TooltipContent>{t('markdownEditor.inlineCode')}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -421,7 +423,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
               <Code2 />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Code Block</TooltipContent>
+          <TooltipContent>{t('markdownEditor.codeBlock')}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -434,7 +436,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
               <Minus />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Horizontal Rule</TooltipContent>
+          <TooltipContent>{t('markdownEditor.horizontalRule')}</TooltipContent>
         </Tooltip>
       </div>
       <div className="relative">

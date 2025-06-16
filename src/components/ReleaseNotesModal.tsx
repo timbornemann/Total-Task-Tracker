@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -8,6 +9,7 @@ import {
 import ReactMarkdown from 'react-markdown';
 
 const ReleaseNotesModal: React.FC = () => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [notes, setNotes] = useState('');
 
@@ -36,7 +38,7 @@ const ReleaseNotesModal: React.FC = () => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="max-w-xl">
         <DialogHeader>
-          <DialogTitle>Neu in Version {__APP_VERSION__}</DialogTitle>
+          <DialogTitle>{t('releaseNotes.modalTitle', { version: __APP_VERSION__ })}</DialogTitle>
         </DialogHeader>
         <div className="prose dark:prose-invert max-h-[60vh] overflow-y-auto">
           <ReactMarkdown>{notes}</ReactMarkdown>

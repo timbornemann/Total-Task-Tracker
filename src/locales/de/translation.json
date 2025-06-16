@@ -171,7 +171,24 @@
   },
   "releaseNotes": {
     "title": "Release Notes",
-    "none": "Keine Release Notes gefunden."
+    "none": "Keine Release Notes gefunden.",
+    "modalTitle": "Neu in Version {{version}}"
+  },
+  "markdownEditor": {
+    "bold": "Fett",
+    "italic": "Kursiv",
+    "strikethrough": "Durchgestrichen",
+    "heading1": "Überschrift 1",
+    "heading2": "Überschrift 2",
+    "heading3": "Überschrift 3",
+    "link": "Link",
+    "image": "Bild",
+    "bulletList": "Aufzählung",
+    "numberedList": "Nummerierte Liste",
+    "quote": "Zitat",
+    "inlineCode": "Inline-Code",
+    "codeBlock": "Code-Block",
+    "horizontalRule": "Trennlinie"
   },
   "flashcardManager": {
     "title": "Decks",
