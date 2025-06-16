@@ -1,17 +1,17 @@
 
 import { useMemo } from 'react';
 import { useTaskStore } from './useTaskStore';
-import { TaskStats } from '@/types';
+import { TaskStats, Task } from '@/types';
 import i18n from '@/lib/i18n';
 
 export const useStatistics = (): TaskStats => {
   const { tasks, categories } = useTaskStore();
 
   return useMemo(() => {
-    const allTasks: any[] = [];
-    
+    const allTasks: Task[] = [];
+
     // Flatten all tasks including subtasks
-    const flattenTasks = (taskList: any[]) => {
+    const flattenTasks = (taskList: Task[]) => {
       taskList.forEach(task => {
         allTasks.push(task);
         if (task.subtasks && task.subtasks.length > 0) {

@@ -6,6 +6,7 @@ import TaskModal from '@/components/TaskModal';
 import TaskCard from '@/components/TaskCard';
 import { Button } from '@/components/ui/button';
 import { useTaskStore } from '@/hooks/useTaskStore';
+import { Task, TaskFormData } from '@/types';
 
 const RecurringTasksPage = () => {
   const {
@@ -17,9 +18,9 @@ const RecurringTasksPage = () => {
   } = useTaskStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { t } = useTranslation();
-  const [editingTask, setEditingTask] = useState<any | null>(null);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
-  const handleSave = (data: any) => {
+  const handleSave = (data: TaskFormData) => {
     if (editingTask) {
       updateRecurringTask(editingTask.id, data);
     } else {

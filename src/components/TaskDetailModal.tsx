@@ -50,10 +50,9 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   canGoBack,
   onBack
 }) => {
-  if (!task) return null;
   const { t, i18n } = useTranslation();
-
   const { updateTask } = useTaskStore();
+  if (!task) return null;
 
   const isCompleted = calculateTaskCompletion(task);
   const progress = getTaskProgress(task);
