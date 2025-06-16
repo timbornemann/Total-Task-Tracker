@@ -131,9 +131,36 @@
     "template": "Template",
     "none": "No templates available."
   },
+  "statistics": {
+    "title": "Task Statistics",
+    "totalTasks": "Total Tasks",
+    "completed": "Completed",
+    "open": "Open",
+    "overdue": "Overdue",
+    "completed7Days": "Completed 7 Days",
+    "recurring": "Recurring",
+    "created7Days": "Created 7 Days",
+    "priorityDistribution": "Tasks by Priority",
+    "categoryProgress": "Progress by Category",
+    "activityTrend": "Activity Trend (Last 7 Days)",
+    "categoryDetails": "Category Details",
+    "priority": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "category": "Category",
+    "total": "Total",
+    "progress": "Progress"
+  },
   "deckDetail": {
     "newCard": "New Card",
     "noCards": "No cards available.",
-    "notFound": "Deck not found."
+    "notFound": "Deck not found.",
+    "cardNumber": "Card {{number}}"
+  },
+  "releaseNotes": {
+    "title": "Release Notes",
+    "none": "No release notes found."
   }
 }
