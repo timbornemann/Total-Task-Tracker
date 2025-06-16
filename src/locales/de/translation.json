@@ -1,0 +1,39 @@
+{
+  "navbar": {
+    "tasks": "Tasks",
+    "overview": "Übersicht",
+    "kanban": "Kanban",
+    "schedule": "Zeitplan",
+    "recurring": "Wiederkehrend",
+    "statistics": "Task-Statistiken",
+    "learning": "Lernen",
+    "cards": "Karten",
+    "decks": "Decks",
+    "pomodoro": "Pomodoro",
+    "cardStatistics": "Statistiken",
+    "notes": "Notizen",
+    "settings": "Einstellungen",
+    "search": "Suche"
+  },
+  "home": {
+    "pinnedTasks": "Gepinnte Tasks",
+    "pinnedNotes": "Gepinnte Notizen"
+  },
+  "settings": {
+    "tabs": {
+      "shortcuts": "Shortcuts",
+      "pomodoro": "Pomodoro",
+      "flashcards": "Karten",
+      "tasks": "Tasks",
+      "home": "Startseite",
+      "theme": "Theme",
+      "data": "Daten",
+      "server": "Server",
+      "info": "Info",
+      "language": "Sprache"
+    },
+    "languageLabel": "Sprache der Anwendung",
+    "english": "Englisch",
+    "german": "Deutsch"
+  }
+}

@@ -65,7 +65,9 @@
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.3",
     "zod": "^3.23.8",
-    "zustand": "^4.5.2"
+    "zustand": "^4.5.2",
+    "i18next": "^23.10.1",
+    "react-i18next": "^13.2.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",

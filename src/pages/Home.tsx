@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
@@ -10,6 +11,7 @@ import NoteCard from '@/components/NoteCard';
 import { flattenTasks } from '@/utils/taskUtils';
 
 const Home: React.FC = () => {
+  const { t } = useTranslation();
   const { notes, tasks } = useTaskStore();
   const {
     homeSections,
@@ -56,7 +58,7 @@ const Home: React.FC = () => {
         {showPinnedTasks && pinnedTasks.length > 0 && (
           <div className="mb-6">
             <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-3">
-              Gepinnte Tasks
+              {t('home.pinnedTasks')}
             </h2>
             <div className="space-y-3">
               {pinnedTasks.map(item => (
@@ -84,7 +86,7 @@ const Home: React.FC = () => {
         {showPinnedNotes && pinnedNotes.length > 0 && (
           <div>
             <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-3">
-              Gepinnte Notizen
+              {t('home.pinnedNotes')}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {pinnedNotes.map(note => (

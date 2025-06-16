@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import Navbar from '@/components/Navbar'
 import { useSettings, themePresets } from '@/hooks/useSettings'
 import { Input } from '@/components/ui/input'
@@ -62,8 +63,12 @@ const SettingsPage: React.FC = () => {
     syncInterval,
     updateSyncInterval,
     syncFolder,
-    updateSyncFolder
+    updateSyncFolder,
+    language,
+    updateLanguage
   } = useSettings()
+
+  const { t } = useTranslation()
 
   const [serverInfo, setServerInfo] = useState<ServerInfo | null>(null)
 
@@ -265,20 +270,21 @@ const SettingsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar title="Einstellungen" />
+      <Navbar title={t('navbar.settings')} />
       <div className="max-w-2xl mx-auto px-4 py-6">
         <Tabs defaultValue="shortcuts" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-9">
-            <TabsTrigger value="shortcuts">Shortcuts</TabsTrigger>
-            <TabsTrigger value="pomodoro">Pomodoro</TabsTrigger>
-            <TabsTrigger value="flashcards">Karten</TabsTrigger>
-            <TabsTrigger value="tasks">Tasks</TabsTrigger>
-            <TabsTrigger value="home">Startseite</TabsTrigger>
-            <TabsTrigger value="theme">Theme</TabsTrigger>
-            <TabsTrigger value="data">Daten</TabsTrigger>
-            <TabsTrigger value="server">Server</TabsTrigger>
-            <TabsTrigger value="info">Info</TabsTrigger>
-          </TabsList>
+        <TabsList className="grid w-full grid-cols-10">
+          <TabsTrigger value="shortcuts">{t('settings.tabs.shortcuts')}</TabsTrigger>
+          <TabsTrigger value="pomodoro">{t('settings.tabs.pomodoro')}</TabsTrigger>
+          <TabsTrigger value="flashcards">{t('settings.tabs.flashcards')}</TabsTrigger>
+          <TabsTrigger value="tasks">{t('settings.tabs.tasks')}</TabsTrigger>
+          <TabsTrigger value="home">{t('settings.tabs.home')}</TabsTrigger>
+          <TabsTrigger value="theme">{t('settings.tabs.theme')}</TabsTrigger>
+          <TabsTrigger value="language">{t('settings.tabs.language')}</TabsTrigger>
+          <TabsTrigger value="data">{t('settings.tabs.data')}</TabsTrigger>
+          <TabsTrigger value="server">{t('settings.tabs.server')}</TabsTrigger>
+          <TabsTrigger value="info">{t('settings.tabs.info')}</TabsTrigger>
+        </TabsList>
           <TabsContent value="shortcuts" className="space-y-4">
             <div>
               <Label htmlFor="open">Command Palette</Label>
@@ -576,9 +582,26 @@ const SettingsPage: React.FC = () => {
                 value={hslToHex(theme['pomodoro-break-ring'])}
                 onChange={e => updateTheme('pomodoro-break-ring', hexToHsl(e.target.value))}
               />
-            </div>
-          </TabsContent>
-          <TabsContent value="data" className="space-y-4">
+          </div>
+        </TabsContent>
+        <TabsContent value="language" className="space-y-4">
+          <div>
+            <Label htmlFor="languageSelect">{t('settings.languageLabel')}</Label>
+            <Select
+              value={language}
+              onValueChange={updateLanguage}
+            >
+              <SelectTrigger id="languageSelect">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="de">{t('settings.german')}</SelectItem>
+                <SelectItem value="en">{t('settings.english')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </TabsContent>
+        <TabsContent value="data" className="space-y-4">
             <h2 className="font-semibold">Datenexport / -import</h2>
             <div className="space-y-2">
               <p className="font-medium">Sync-Ordner</p>
