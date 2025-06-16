@@ -1,5 +1,6 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Task, Category, TaskFormData, CategoryFormData, Note } from '@/types';
 import { useTaskStore } from '@/hooks/useTaskStore';
 import { useCurrentCategory } from '@/hooks/useCurrentCategory';
@@ -40,6 +41,7 @@ import Navbar from './Navbar';
 import { usePomodoroStore } from './PomodoroTimer';
 
 const Dashboard: React.FC = () => {
+  const { t } = useTranslation();
   const {
     tasks,
     categories,
@@ -367,7 +369,7 @@ const Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Gesamt Tasks</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">{t('dashboard.totalTasks')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-xl sm:text-2xl font-bold text-foreground">{totalTasks}</div>
@@ -375,18 +377,18 @@ const Dashboard: React.FC = () => {
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Abgeschlossen</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">{t('dashboard.completed')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-xl sm:text-2xl font-bold text-accent">{completedTasks}</div>
               <div className="text-xs sm:text-sm text-muted-foreground">
-                {totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0}% erledigt
+                {totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0}% {t('statistics.ofTasks')}
               </div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Offen</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">{t('dashboard.pending')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-xl sm:text-2xl font-bold text-primary">{pendingTasks}</div>
@@ -394,7 +396,7 @@ const Dashboard: React.FC = () => {
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Kategorien</CardTitle>
+              <CardTitle className="text-sm font-medium text-muted-foreground">{t('dashboard.categories')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-xl sm:text-2xl font-bold text-primary">{totalCategories}</div>
@@ -407,14 +409,14 @@ const Dashboard: React.FC = () => {
         {viewMode === 'categories' ? (
           <div>
             <div className="flex items-center justify-between mb-4 sm:mb-6">
-              <h2 className="text-lg sm:text-xl font-semibold text-foreground">Kategorien</h2>
-              <Badge variant="secondary">{filteredCategories.length} Kategorien</Badge>
+              <h2 className="text-lg sm:text-xl font-semibold text-foreground">{t('dashboard.categories')}</h2>
+              <Badge variant="secondary">{t('dashboard.categoriesBadge', { count: filteredCategories.length })}</Badge>
             </div>
             <div className="flex items-center gap-2 mb-4 sm:mb-6">
               <div className="relative flex-1 sm:max-w-xs">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
-                  placeholder="Kategorien suchen..."
+                  placeholder={t('dashboard.searchCategories')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 w-full"
@@ -437,7 +439,7 @@ const Dashboard: React.FC = () => {
               </div>
               <Button onClick={() => setIsCategoryModalOpen(true)} size="sm">
                 <Plus className="h-4 w-4 mr-2" />
-                Kategorie
+                {t('taskModal.category')}
               </Button>
             </div>
             
@@ -446,18 +448,17 @@ const Dashboard: React.FC = () => {
                 <CardContent>
                   <LayoutGrid className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">
-                    {searchTerm ? 'Keine Kategorien gefunden' : 'Keine Kategorien vorhanden'}
+                    {searchTerm ? t('dashboard.noCategoriesFound') : t('dashboard.noCategories')}
                   </h3>
                   <p className="text-sm sm:text-base text-gray-600 mb-4">
-                    {searchTerm 
-                      ? 'Versuchen Sie einen anderen Suchbegriff.'
-                      : 'Erstellen Sie Ihre erste Kategorie, um mit der Organisation Ihrer Tasks zu beginnen.'
-                    }
+                    {searchTerm
+                      ? t('dashboard.trySearch')
+                      : t('dashboard.createFirstCategory')}
                   </p>
                   {!searchTerm && (
                     <Button onClick={() => setIsCategoryModalOpen(true)} size="sm">
                       <Plus className="h-4 w-4 mr-2" />
-                      Erste Kategorie erstellen
+                      {t('dashboard.firstCategoryButton')}
                     </Button>
                   )}
                 </CardContent>
@@ -507,15 +508,15 @@ const Dashboard: React.FC = () => {
                 >
                   <ArrowLeft className="h-4 w-4" />
                 </Button>
-                <h2 className="text-lg sm:text-xl font-semibold text-foreground">Tasks</h2>
+                <h2 className="text-lg sm:text-xl font-semibold text-foreground">{t('dashboard.tasksTitle')}</h2>
               </div>
-              <Badge variant="secondary">{filteredTasks.length} Tasks</Badge>
+              <Badge variant="secondary">{t('dashboard.tasksBadge', { count: filteredTasks.length })}</Badge>
             </div>
             <div className="flex items-center gap-2 mb-4 sm:mb-6">
               <div className="relative flex-1 sm:max-w-xs">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
-                  placeholder="Tasks suchen..."
+                  placeholder={t('dashboard.searchTasks')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 w-full"
@@ -578,7 +579,7 @@ const Dashboard: React.FC = () => {
               </div>
               <Button onClick={() => setIsTaskModalOpen(true)} size="sm">
                 <Plus className="h-4 w-4 mr-2" />
-                Task
+                {t('taskModal.newTitle')}
               </Button>
             </div>
             
@@ -587,18 +588,17 @@ const Dashboard: React.FC = () => {
                 <CardContent>
                   <List className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">
-                    {searchTerm ? 'Keine Tasks gefunden' : 'Keine Tasks vorhanden'}
+                    {searchTerm ? t('dashboard.noTasksFound') : t('dashboard.noTasks')}
                   </h3>
                   <p className="text-sm sm:text-base text-gray-600 mb-4">
-                    {searchTerm 
-                      ? 'Versuchen Sie einen anderen Suchbegriff.'
-                      : `Erstellen Sie Ihre erste Task in der Kategorie "${selectedCategory?.name}".`
-                    }
+                    {searchTerm
+                      ? t('dashboard.trySearch')
+                      : t('dashboard.createFirstTask', { category: selectedCategory?.name })}
                   </p>
                   {!searchTerm && (
                     <Button onClick={() => setIsTaskModalOpen(true)} size="sm">
                       <Plus className="h-4 w-4 mr-2" />
-                      Erste Task erstellen
+                      {t('dashboard.firstTaskButton')}
                     </Button>
                   )}
                 </CardContent>

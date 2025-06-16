@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   CommandDialog,
   CommandInput,
@@ -36,6 +37,7 @@ const CommandPalette: React.FC = () => {
   const { flashcards, decks, addFlashcard } = useFlashcardStore()
   const { shortcuts, defaultTaskPriority } = useSettings()
   const { toast } = useToast()
+  const { t } = useTranslation()
   const { currentCategoryId, setCurrentCategoryId } = useCurrentCategory()
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
@@ -111,14 +113,14 @@ const CommandPalette: React.FC = () => {
         categoryId: currentCategoryId || 'default',
         isRecurring: false
       })
-      toast({ description: 'Task erstellt' })
+      toast({ description: t('commandPalette.taskCreated') })
     } else if (mode === 'note') {
       addNote({ title, text: '', color: '#F59E0B' })
-      toast({ description: 'Notiz erstellt' })
+      toast({ description: t('commandPalette.noteCreated') })
     } else if (mode === 'flashcard') {
       if (decks.length > 0) {
         addFlashcard({ front: title, back: '', deckId: decks[0].id })
-        toast({ description: 'Karte erstellt' })
+        toast({ description: t('commandPalette.cardCreated') })
       }
     }
     setValue('')
@@ -130,10 +132,10 @@ const CommandPalette: React.FC = () => {
       <CommandInput
         placeholder={
           mode === 'task'
-            ? 'Task-Titel eingeben...'
+            ? t('commandPalette.placeholderTask')
             : mode === 'note'
-              ? 'Notiz-Titel eingeben...'
-              : 'Vorderseite eingeben...'
+              ? t('commandPalette.placeholderNote')
+              : t('commandPalette.placeholderCard')
         }
         value={value}
         onValueChange={setValue}
@@ -146,7 +148,7 @@ const CommandPalette: React.FC = () => {
       />
       <CommandList>
         {filteredTasks.length > 0 && (
-          <CommandGroup heading="Tasks">
+          <CommandGroup heading={t('commandPalette.tasks')}>
             {filteredTasks.map(item => (
               <CommandItem
                 key={`task-${item.task.id}`}
@@ -165,7 +167,7 @@ const CommandPalette: React.FC = () => {
           </CommandGroup>
         )}
         {filteredNotes.length > 0 && (
-          <CommandGroup heading="Notizen">
+          <CommandGroup heading={t('commandPalette.notes')}>
             {filteredNotes.map(note => (
               <CommandItem
                 key={`note-${note.id}`}
@@ -181,7 +183,7 @@ const CommandPalette: React.FC = () => {
           </CommandGroup>
         )}
         {filteredCards.length > 0 && (
-          <CommandGroup heading="Karten">
+          <CommandGroup heading={t('commandPalette.cards')}>
             {filteredCards.map(card => {
               const deck = decks.find(d => d.id === card.deckId)
               return (
@@ -201,7 +203,7 @@ const CommandPalette: React.FC = () => {
         )}
         {filteredTasks.length === 0 &&
           filteredNotes.length === 0 &&
-          filteredCards.length === 0 && <CommandEmpty>Keine Ergebnisse</CommandEmpty>}
+          filteredCards.length === 0 && <CommandEmpty>{t('commandPalette.noResults')}</CommandEmpty>}
       </CommandList>
     </CommandDialog>
   )

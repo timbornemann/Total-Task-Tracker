@@ -653,12 +653,12 @@ const SettingsPage: React.FC = () => {
             </div>
           </TabsContent>
           <TabsContent value="server" className="space-y-4">
-            <h2 className="font-semibold">Server Info</h2>
+            <h2 className="font-semibold">{t('settings.serverInfo.title')}</h2>
             {serverInfo ? (
               <div className="space-y-2">
-                <p>Port: {serverInfo.port}</p>
+                <p>{t('settings.serverInfo.port')}: {serverInfo.port}</p>
                 <div>
-                  <p className="font-medium">IPs</p>
+                  <p className="font-medium">{t('settings.serverInfo.ips')}</p>
                   <ul className="list-disc list-inside space-y-1">
                     {serverInfo.ips.map(ip => (
                       <li key={ip}>{ip}</li>
@@ -666,7 +666,7 @@ const SettingsPage: React.FC = () => {
                   </ul>
                 </div>
                 <div>
-                  <p className="font-medium">URLs</p>
+                  <p className="font-medium">{t('settings.serverInfo.urls')}</p>
                   <ul className="list-disc list-inside space-y-1">
                     {serverInfo.urls.map(url => (
                       <li key={url}>{url}</li>
@@ -675,7 +675,7 @@ const SettingsPage: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <p>Lade...</p>
+              <p>{t('settings.serverInfo.loading')}</p>
             )}
           </TabsContent>
           <TabsContent value="info" className="space-y-4">
@@ -683,17 +683,17 @@ const SettingsPage: React.FC = () => {
               <ReactMarkdown>{readme}</ReactMarkdown>
             </div>
             <p className="text-sm text-muted-foreground">
-              Version {__APP_VERSION__}{' '}
+              {t('settings.version')} {__APP_VERSION__}{' '}
               <Link to="/release-notes" className="underline">
-                Release Notes
+                {t('releaseNotes.title')}
               </Link>
             </p>
           </TabsContent>
         </Tabs>
         <p className="text-xs text-muted-foreground mt-4">
-          Version {__APP_VERSION__}{' '}
+          {t('settings.version')} {__APP_VERSION__}{' '}
           <Link to="/release-notes" className="underline">
-            Release Notes
+            {t('releaseNotes.title')}
           </Link>
         </p>
       </div>

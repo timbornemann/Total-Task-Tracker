@@ -34,7 +34,15 @@
     },
     "languageLabel": "App Language",
     "english": "English",
-    "german": "German"
+    "german": "German",
+    "version": "Version",
+    "serverInfo": {
+      "title": "Server Info",
+      "port": "Port",
+      "ips": "IPs",
+      "urls": "URLs",
+      "loading": "Loading..."
+    }
   },
   "noteModal": {
     "editTitle": "Edit Note",
@@ -274,5 +282,40 @@
     "evening": "Evening",
     "night": "Night",
     "timesOfDayTotal": "Times of Day (Total)"
+  },
+  "commandPalette": {
+    "taskCreated": "Task created",
+    "noteCreated": "Note created",
+    "cardCreated": "Card created",
+    "placeholderTask": "Enter task title...",
+    "placeholderNote": "Enter note title...",
+    "placeholderCard": "Enter front text...",
+    "tasks": "Tasks",
+    "notes": "Notes",
+    "cards": "Cards",
+    "noResults": "No results"
+  },
+  "dashboard": {
+    "totalTasks": "Total Tasks",
+    "completed": "Completed",
+    "pending": "Open",
+    "categories": "Categories",
+    "categoriesBadge": "{{count}} Categories",
+    "tasksTitle": "Tasks",
+    "tasksBadge": "{{count}} Tasks",
+    "searchCategories": "Search categories...",
+    "searchTasks": "Search tasks...",
+    "noCategories": "No categories available",
+    "noCategoriesFound": "No categories found",
+    "trySearch": "Try another search term.",
+    "createFirstCategory": "Create your first category to start organizing your tasks.",
+    "firstCategoryButton": "Create First Category",
+    "noTasks": "No tasks available",
+    "noTasksFound": "No tasks found",
+    "createFirstTask": "Create your first task in the \"{{category}}\" category.",
+    "firstTaskButton": "Create First Task"
+  },
+  "taskDetail": {
+    "noSubtasks": "No subtasks available."
   }
 }
