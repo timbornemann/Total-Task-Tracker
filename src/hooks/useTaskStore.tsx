@@ -29,7 +29,7 @@ const useTaskStoreImpl = () => {
     const loadData = async () => {
       try {
         const res = await fetch(API_URL);
-        if (!res.ok) throw new Error('Serverfehler');
+        if (!res.ok) throw new Error('Server error');
         const {
           tasks: savedTasks,
           categories: savedCategories,
@@ -113,7 +113,7 @@ const useTaskStoreImpl = () => {
         }
         setLoaded(true);
       } catch (error) {
-        console.error('Fehler beim Laden der Daten:', error);
+        console.error('Error loading data:', error);
         setLoaded(true);
       }
     };
@@ -141,7 +141,7 @@ const useTaskStoreImpl = () => {
           body: JSON.stringify({ tasks, categories, notes, recurring })
         });
       } catch (error) {
-        console.error('Fehler beim Speichern der Daten:', error);
+        console.error('Error saving data:', error);
       }
     };
 

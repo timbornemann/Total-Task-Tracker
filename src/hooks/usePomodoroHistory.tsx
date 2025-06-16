@@ -15,7 +15,7 @@ const usePomodoroHistoryImpl = () => {
           setSessions(data || [])
         }
       } catch (err) {
-        console.error('Fehler beim Laden der Pomodoro-Sessions', err)
+        console.error('Error loading Pomodoro sessions', err)
       }
     }
     load()
@@ -30,7 +30,7 @@ const usePomodoroHistoryImpl = () => {
           body: JSON.stringify(sessions)
         })
       } catch (err) {
-        console.error('Fehler beim Speichern der Pomodoro-Sessions', err)
+        console.error('Error saving Pomodoro sessions', err)
       }
     }
     save()

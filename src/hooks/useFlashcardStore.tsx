@@ -27,7 +27,7 @@ const useFlashcardStoreImpl = () => {
           );
         }
       } catch (err) {
-        console.error('Fehler beim Laden der Karten', err);
+        console.error('Error loading flashcards', err);
       }
     };
 
@@ -43,7 +43,7 @@ const useFlashcardStoreImpl = () => {
           setDecks(data || []);
         }
       } catch (err) {
-        console.error('Fehler beim Laden der Decks', err);
+        console.error('Error loading decks', err);
       }
     };
 
@@ -59,7 +59,7 @@ const useFlashcardStoreImpl = () => {
           body: JSON.stringify(flashcards)
         });
       } catch (err) {
-        console.error('Fehler beim Speichern der Karten', err);
+        console.error('Error saving flashcards', err);
       }
     };
 
@@ -75,7 +75,7 @@ const useFlashcardStoreImpl = () => {
           body: JSON.stringify(decks)
         });
       } catch (err) {
-        console.error('Fehler beim Speichern der Decks', err);
+        console.error('Error saving decks', err);
       }
     };
 
