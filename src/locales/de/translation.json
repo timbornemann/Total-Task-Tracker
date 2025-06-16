@@ -401,7 +401,27 @@
       "high": "Hoch",
       "medium": "Mittel",
       "low": "Niedrig"
-    }
+    },
+    "taskCreated": "Task erstellt",
+    "taskCreatedDesc": "\"{{title}}\" wurde erfolgreich erstellt.",
+    "taskUpdated": "Task aktualisiert",
+    "taskUpdatedDesc": "\"{{title}}\" wurde erfolgreich aktualisiert.",
+    "taskDeleted": "Task gelöscht",
+    "taskDeletedDesc": "Die Task wurde erfolgreich gelöscht.",
+    "taskCompleted": "Task abgeschlossen",
+    "taskCompletedDesc": "\"{{title}}\" wurde als erledigt markiert.",
+    "taskReactivated": "Task reaktiviert",
+    "taskReactivatedDesc": "\"{{title}}\" wurde reaktiviert.",
+    "taskDeleteConfirm": "Sind Sie sicher, dass Sie \"{{title}}\" löschen möchten?",
+    "categoryCreated": "Kategorie erstellt",
+    "categoryCreatedDesc": "\"{{name}}\" wurde erfolgreich erstellt.",
+    "categoryUpdated": "Kategorie aktualisiert",
+    "categoryUpdatedDesc": "\"{{name}}\" wurde erfolgreich aktualisiert.",
+    "categoryDeleted": "Kategorie gelöscht",
+    "categoryDeletedDesc": "Die Kategorie wurde erfolgreich gelöscht.",
+    "categoryDeleteConfirm": "Sind Sie sicher, dass Sie \"{{name}}\" löschen möchten?",
+    "categoryDeleteLastConfirm": "Sie sind dabei, die letzte verbleibende Kategorie zu löschen. \"{{name}}\" wirklich löschen?",
+    "undo": "Rückgängig"
   },
   "categoryCard": {
     "deleteTooltip": "Löschen (rückgängig möglich)",
