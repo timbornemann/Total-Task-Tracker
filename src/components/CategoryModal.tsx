@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Category, CategoryFormData } from '@/types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -20,6 +21,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
   onSave,
   category
 }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<CategoryFormData>({
     name: '',
     description: '',
@@ -66,36 +68,36 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            {category ? 'Kategorie bearbeiten' : 'Neue Kategorie erstellen'}
+            {category ? t('categoryModal.editTitle') : t('categoryModal.newTitle')}
           </DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="name">Name *</Label>
+            <Label htmlFor="name">{t('categoryModal.name')}</Label>
             <Input
               id="name"
               value={formData.name}
               onChange={(e) => handleChange('name', e.target.value)}
-              placeholder="Kategorie-Name eingeben..."
+              placeholder={t('categoryModal.placeholderName')}
               required
               autoFocus
             />
           </div>
 
           <div>
-            <Label htmlFor="description">Beschreibung</Label>
+            <Label htmlFor="description">{t('categoryModal.description')}</Label>
             <Textarea
               id="description"
               value={formData.description}
               onChange={(e) => handleChange('description', e.target.value)}
-              placeholder="Optionale Beschreibung..."
+              placeholder={t('categoryModal.placeholderDescription')}
               rows={3}
             />
           </div>
 
           <div>
-            <Label>Farbe</Label>
+            <Label>{t('categoryModal.color')}</Label>
             <div className="flex space-x-2 mt-2">
               {colorOptions.map(color => (
                 <button
@@ -113,10 +115,10 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
 
           <div className="flex justify-end space-x-2 pt-4">
             <Button type="button" variant="outline" onClick={onClose}>
-              Abbrechen
+              {t('common.cancel')}
             </Button>
             <Button type="submit">
-              {category ? 'Speichern' : 'Erstellen'}
+              {category ? t('common.save') : t('common.create')}
             </Button>
           </div>
         </form>

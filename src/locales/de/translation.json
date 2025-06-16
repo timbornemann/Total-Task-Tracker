@@ -67,5 +67,73 @@
     "notes": "Notizen",
     "recurring": "Wiederkehrend",
     "settings": "Einstellungen"
+  },
+  "categoryModal": {
+    "editTitle": "Kategorie bearbeiten",
+    "newTitle": "Neue Kategorie",
+    "name": "Name *",
+    "description": "Beschreibung",
+    "color": "Farbe",
+    "placeholderName": "Kategorie-Name eingeben...",
+    "placeholderDescription": "Optionale Beschreibung..."
+  },
+  "taskModal": {
+    "editTitle": "Task bearbeiten",
+    "newTitle": "Neue Task",
+    "newSubtaskTitle": "Unteraufgabe erstellen",
+    "title": "Titel *",
+    "description": "Beschreibung",
+    "priority": "Priorität",
+    "category": "Kategorie",
+    "dueDate": "Fällig am",
+    "startTime": "Startzeit",
+    "endTime": "Endzeit",
+    "recurring": "Wiederkehrende Aufgabe",
+    "recurrence": "Wiederholung",
+    "daily": "Täglich",
+    "weekly": "Wöchentlich",
+    "monthly": "Monatlich",
+    "yearly": "Jährlich",
+    "customDays": "Benutzerdefinierte Tage",
+    "weekEnd": "Ende der Woche",
+    "monthEnd": "Ende des Monats",
+    "start": "Start",
+    "today": "Heute",
+    "weekday": "Wochentag",
+    "date": "Festes Datum",
+    "titleTemplate": "Dynamischer Titel",
+    "color": "Farbe"
+  },
+  "deckModal": {
+    "editTitle": "Deck bearbeiten",
+    "newTitle": "Neues Deck",
+    "name": "Name *",
+    "placeholderName": "Deck-Name eingeben..."
+  },
+  "flashcardModal": {
+    "editTitle": "Karte bearbeiten",
+    "newTitle": "Neue Karte",
+    "deck": "Deck",
+    "front": "Vorderseite *",
+    "back": "Rückseite *",
+    "chooseDeck": "Deck wählen"
+  },
+  "notFound": {
+    "title": "404",
+    "message": "Oops! Seite nicht gefunden",
+    "backHome": "Zur Startseite"
+  },
+  "notes": {
+    "newNote": "Neue Notiz",
+    "none": "Keine Notizen vorhanden."
+  },
+  "recurring": {
+    "template": "Vorlage",
+    "none": "Keine Vorlagen vorhanden."
+  },
+  "deckDetail": {
+    "newCard": "Neue Karte",
+    "noCards": "Noch keine Karten vorhanden.",
+    "notFound": "Deck nicht gefunden."
   }
 }
