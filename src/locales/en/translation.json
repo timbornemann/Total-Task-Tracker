@@ -103,7 +103,8 @@
     "create": "Create",
     "edit": "Edit",
     "delete": "Delete",
-    "back": "Back"
+    "back": "Back",
+    "undo": "Undo"
   },
   "noteDetail": {
     "notFound": "Note not found.",
@@ -450,5 +451,20 @@
     "created": "Created:",
     "updated": "Last updated:",
     "due": "Due on:"
+  },
+  "task": {
+    "created": "Task created",
+    "updated": "Task updated",
+    "deleted": "Task deleted",
+    "completed": "Task completed",
+    "reactivated": "Task reactivated",
+    "deleteConfirm": "Are you sure you want to delete \"{{title}}\"?"
+  },
+  "category": {
+    "created": "Category created",
+    "updated": "Category updated",
+    "deleted": "Category deleted",
+    "deleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
+    "deleteLastConfirm": "You are about to delete the last remaining category. Delete \"{{name}}\"?"
   }
 }
