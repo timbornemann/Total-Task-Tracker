@@ -60,7 +60,9 @@ const DeckDetailPage: React.FC = () => {
             {cards.map((card, index) => (
               <Card key={card.id}>
                 <CardHeader>
-                  <CardTitle className="text-sm font-medium">Karte {index + 1}</CardTitle>
+                  <CardTitle className="text-sm font-medium">
+                    {t('deckDetail.cardNumber', { number: index + 1 })}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div className="font-medium">{card.front}</div>

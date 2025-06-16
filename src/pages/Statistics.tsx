@@ -1,27 +1,42 @@
 
-import React from 'react';
-import { useStatistics } from '@/hooks/useStatistics';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
-import { TrendingUp, CheckCircle, Clock, Target } from 'lucide-react';
-import Navbar from '@/components/Navbar';
+import React from 'react'
+import { useTranslation } from 'react-i18next'
+import { useStatistics } from '@/hooks/useStatistics'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  Line
+} from 'recharts'
+import { TrendingUp, CheckCircle, Clock, Target } from 'lucide-react'
+import Navbar from '@/components/Navbar'
 
 const Statistics = () => {
-  const stats = useStatistics();
+  const { t } = useTranslation()
+  const stats = useStatistics()
 
   const priorityData = [
     {
-      name: 'Hoch',
+      name: t('statistics.priority.high'),
       value: stats.tasksByPriority.high,
       color: 'hsl(var(--destructive))'
     },
     {
-      name: 'Mittel',
+      name: t('statistics.priority.medium'),
       value: stats.tasksByPriority.medium,
       color: 'hsl(var(--primary))'
     },
     {
-      name: 'Niedrig',
+      name: t('statistics.priority.low'),
       value: stats.tasksByPriority.low,
       color: 'hsl(var(--accent))'
     }
@@ -39,14 +54,14 @@ const Statistics = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <Navbar title="Task-Statistiken" />
+      <Navbar title={t('statistics.title')} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Overview Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-6 mb-6 sm:mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium">Gesamt Tasks</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">{t('statistics.totalTasks')}</CardTitle>
               <Target className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -56,7 +71,7 @@ const Statistics = () => {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium">Abgeschlossen</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">{t('statistics.completed')}</CardTitle>
               <CheckCircle className="h-4 w-4 text-accent" />
             </CardHeader>
             <CardContent>
@@ -67,7 +82,7 @@ const Statistics = () => {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium">Offen</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">{t('statistics.open')}</CardTitle>
               <Clock className="h-4 w-4 text-accent" />
             </CardHeader>
             <CardContent>
@@ -77,7 +92,7 @@ const Statistics = () => {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium">Überfällig</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">{t('statistics.overdue')}</CardTitle>
               <Clock className="h-4 w-4 text-accent" />
             </CardHeader>
             <CardContent>
@@ -87,7 +102,7 @@ const Statistics = () => {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium">Erledigt 7 Tage</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">{t('statistics.completed7Days')}</CardTitle>
               <CheckCircle className="h-4 w-4 text-accent" />
             </CardHeader>
             <CardContent>
@@ -97,7 +112,7 @@ const Statistics = () => {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium">Wiederkehrend</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">{t('statistics.recurring')}</CardTitle>
               <TrendingUp className="h-4 w-4 text-accent" />
             </CardHeader>
             <CardContent>
@@ -107,7 +122,7 @@ const Statistics = () => {
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs sm:text-sm font-medium">Erstellt 7 Tage</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium">{t('statistics.created7Days')}</CardTitle>
               <Target className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
@@ -121,7 +136,7 @@ const Statistics = () => {
           {/* Priority Distribution */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base sm:text-lg">Tasks nach Priorität</CardTitle>
+              <CardTitle className="text-base sm:text-lg">{t('statistics.priorityDistribution')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-48 sm:h-64">
@@ -161,7 +176,7 @@ const Statistics = () => {
           {/* Category Progress */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base sm:text-lg">Fortschritt nach Kategorie</CardTitle>
+              <CardTitle className="text-base sm:text-lg">{t('statistics.categoryProgress')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-48 sm:h-64">
@@ -180,12 +195,12 @@ const Statistics = () => {
                     <Bar
                       dataKey="completed"
                       fill="hsl(var(--stat-bar-primary))"
-                      name="Abgeschlossen"
+                      name={t('statistics.completed')}
                     />
                     <Bar
                       dataKey="total"
                       fill="hsl(var(--stat-bar-secondary))"
-                      name="Gesamt"
+                      name={t('statistics.total')}
                     />
                   </BarChart>
                 </ResponsiveContainer>
@@ -198,7 +213,7 @@ const Statistics = () => {
         {stats.completionTrend.length > 0 && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base sm:text-lg">Aktivitätstrend (Letzte 7 Tage)</CardTitle>
+              <CardTitle className="text-base sm:text-lg">{t('statistics.activityTrend')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-48 sm:h-64">
@@ -222,7 +237,7 @@ const Statistics = () => {
                       dataKey="completed"
                       stroke="hsl(var(--accent))"
                       strokeWidth={2}
-                      name="Abgeschlossen"
+                      name={t('statistics.completed')}
                     />
                     <Line
                       type="monotone"
@@ -241,17 +256,17 @@ const Statistics = () => {
         {/* Category Details Table */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base sm:text-lg">Kategorien im Detail</CardTitle>
+            <CardTitle className="text-base sm:text-lg">{t('statistics.categoryDetails')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full text-xs sm:text-sm">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left py-2 font-medium">Kategorie</th>
-                    <th className="text-right py-2 font-medium">Gesamt</th>
-                    <th className="text-right py-2 font-medium">Abgeschlossen</th>
-                    <th className="text-right py-2 font-medium">Fortschritt</th>
+                    <th className="text-left py-2 font-medium">{t('statistics.category')}</th>
+                    <th className="text-right py-2 font-medium">{t('statistics.total')}</th>
+                    <th className="text-right py-2 font-medium">{t('statistics.completed')}</th>
+                    <th className="text-right py-2 font-medium">{t('statistics.progress')}</th>
                   </tr>
                 </thead>
                 <tbody>

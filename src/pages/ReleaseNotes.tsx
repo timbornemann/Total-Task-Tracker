@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import Navbar from '@/components/Navbar';
-import ReactMarkdown from 'react-markdown';
+import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import Navbar from '@/components/Navbar'
+import ReactMarkdown from 'react-markdown'
 
 const ReleaseNotesPage: React.FC = () => {
-  const [notes, setNotes] = useState('');
+  const { t } = useTranslation()
+  const [notes, setNotes] = useState('')
 
   useEffect(() => {
     const load = async () => {
@@ -22,10 +24,10 @@ const ReleaseNotesPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar title="Release Notes" />
+      <Navbar title={t('releaseNotes.title')} />
       <div className="max-w-3xl mx-auto px-4 py-6">
         <ReactMarkdown className="prose dark:prose-invert">
-          {notes || 'Keine Release Notes gefunden.'}
+          {notes || t('releaseNotes.none')}
         </ReactMarkdown>
       </div>
     </div>
