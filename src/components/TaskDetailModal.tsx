@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Task, Category } from '@/types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -50,6 +51,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   onBack
 }) => {
   if (!task) return null;
+  const { t } = useTranslation();
 
   const { updateTask } = useTaskStore();
 
@@ -208,7 +210,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
 
             {task.subtasks.length === 0 && (
               <div className="text-center py-8 text-gray-500">
-                <p>Keine Unteraufgaben vorhanden.</p>
+                <p>{t('taskDetail.noSubtasks')}</p>
                 <Button
                   variant="outline"
                   size="sm"

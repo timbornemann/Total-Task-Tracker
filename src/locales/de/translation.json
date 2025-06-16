@@ -34,7 +34,15 @@
     },
     "languageLabel": "Sprache der Anwendung",
     "english": "Englisch",
-    "german": "Deutsch"
+    "german": "Deutsch",
+    "version": "Version",
+    "serverInfo": {
+      "title": "Server Info",
+      "port": "Port",
+      "ips": "IPs",
+      "urls": "URLs",
+      "loading": "Lade..."
+    }
   },
   "noteModal": {
     "editTitle": "Notiz bearbeiten",
@@ -274,5 +282,40 @@
     "evening": "Abend",
     "night": "Nacht",
     "timesOfDayTotal": "Tageszeiten (Gesamt)"
+  },
+  "commandPalette": {
+    "taskCreated": "Task erstellt",
+    "noteCreated": "Notiz erstellt",
+    "cardCreated": "Karte erstellt",
+    "placeholderTask": "Task-Titel eingeben...",
+    "placeholderNote": "Notiz-Titel eingeben...",
+    "placeholderCard": "Vorderseite eingeben...",
+    "tasks": "Tasks",
+    "notes": "Notizen",
+    "cards": "Karten",
+    "noResults": "Keine Ergebnisse"
+  },
+  "dashboard": {
+    "totalTasks": "Gesamt Tasks",
+    "completed": "Abgeschlossen",
+    "pending": "Offen",
+    "categories": "Kategorien",
+    "categoriesBadge": "{{count}} Kategorien",
+    "tasksTitle": "Tasks",
+    "tasksBadge": "{{count}} Tasks",
+    "searchCategories": "Kategorien suchen...",
+    "searchTasks": "Tasks suchen...",
+    "noCategories": "Keine Kategorien vorhanden",
+    "noCategoriesFound": "Keine Kategorien gefunden",
+    "trySearch": "Versuchen Sie einen anderen Suchbegriff.",
+    "createFirstCategory": "Erstellen Sie Ihre erste Kategorie, um mit der Organisation Ihrer Tasks zu beginnen.",
+    "firstCategoryButton": "Erste Kategorie erstellen",
+    "noTasks": "Keine Tasks vorhanden",
+    "noTasksFound": "Keine Tasks gefunden",
+    "createFirstTask": "Erstellen Sie Ihre erste Task in der Kategorie \"{{category}}\".",
+    "firstTaskButton": "Erste Task erstellen"
+  },
+  "taskDetail": {
+    "noSubtasks": "Keine Unteraufgaben vorhanden."
   }
 }
