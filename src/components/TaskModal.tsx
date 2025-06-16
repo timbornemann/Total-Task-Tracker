@@ -327,7 +327,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 type="number"
                 value={formData.dueAfterDays ?? ''}
                 onChange={(e) => handleChange('dueAfterDays', e.target.value ? Number(e.target.value) : undefined)}
-                placeholder="z.B. 3"
+                placeholder={t('taskModal.placeholderExample')}
               />
             )}
           </div>
@@ -387,7 +387,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   onChange={(e) =>
                     handleChange('customIntervalDays', e.target.value ? Number(e.target.value) : undefined)
                   }
-                  placeholder="z.B. 3"
+                  placeholder={t('taskModal.placeholderExample')}
                 />
               </div>
               <div className="mt-2">
@@ -412,13 +412,13 @@ const TaskModal: React.FC<TaskModalProps> = ({
                       <SelectValue placeholder={t('taskModal.weekday')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="0">Sonntag</SelectItem>
-                      <SelectItem value="1">Montag</SelectItem>
-                      <SelectItem value="2">Dienstag</SelectItem>
-                      <SelectItem value="3">Mittwoch</SelectItem>
-                      <SelectItem value="4">Donnerstag</SelectItem>
-                      <SelectItem value="5">Freitag</SelectItem>
-                      <SelectItem value="6">Samstag</SelectItem>
+                      <SelectItem value="0">{t('weekdays.sunday')}</SelectItem>
+                      <SelectItem value="1">{t('weekdays.monday')}</SelectItem>
+                      <SelectItem value="2">{t('weekdays.tuesday')}</SelectItem>
+                      <SelectItem value="3">{t('weekdays.wednesday')}</SelectItem>
+                      <SelectItem value="4">{t('weekdays.thursday')}</SelectItem>
+                      <SelectItem value="5">{t('weekdays.friday')}</SelectItem>
+                      <SelectItem value="6">{t('weekdays.saturday')}</SelectItem>
                     </SelectContent>
                   </Select>
                 )}

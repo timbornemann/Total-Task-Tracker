@@ -161,7 +161,8 @@
     "weekday": "Weekday",
     "date": "Fixed date",
     "titleTemplate": "Dynamic Title",
-    "color": "Color"
+    "color": "Color",
+    "placeholderExample": "e.g. 3"
   },
   "deckModal": {
     "editTitle": "Edit Deck",
@@ -472,5 +473,26 @@
   "taskStore": {
     "defaultCategoryName": "General",
     "defaultCategoryDescription": "Default category for all tasks"
+  },
+  "weekdays": {
+    "sunday": "Sunday",
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday"
+  },
+  "ui": {
+    "previous": "Previous",
+    "next": "Next",
+    "morePages": "More pages",
+    "previousSlide": "Previous slide",
+    "nextSlide": "Next slide",
+    "close": "Close",
+    "toggleSidebar": "Toggle Sidebar",
+    "more": "More",
+    "goPrevAria": "Go to previous page",
+    "goNextAria": "Go to next page"
   }
 }
