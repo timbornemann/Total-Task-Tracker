@@ -413,6 +413,7 @@
     "viewDetails": "View details",
     "addSubtask": "Add subtask",
     "progress": "Progress: {{completed}}/{{total}} subtasks",
+    "recurring": "Recurring",
     "due": "Due on {{date}}"
   },
   "taskDetail": {

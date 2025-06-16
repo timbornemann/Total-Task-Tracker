@@ -413,6 +413,7 @@
     "viewDetails": "Details anzeigen",
     "addSubtask": "Unteraufgabe hinzufügen",
     "progress": "Fortschritt: {{completed}}/{{total}} Unteraufgaben",
+    "recurring": "Wiederholt",
     "due": "Fällig am {{date}}"
   },
   "taskDetail": {
