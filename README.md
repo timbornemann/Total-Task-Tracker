@@ -152,10 +152,12 @@ npm start    # startet die gebaute App auf Port 3002
   Einstellungen mitgespeichert und abgeglichen, der Ordnerpfad
   selbst wird jedoch nicht in der Sync-Datei gespeichert.
 - Standard-Priorität für neue Tasks einstellbar
+- Mehrsprachige Oberfläche (Deutsch, Englisch) auswählbar
 - Mehrere Theme-Voreinstellungen (light, dark, ocean, dark-red, hacker,
   motivation) und ein eigenes "Custom"-Theme wählbar
 - Im Custom-Theme lassen sich Farben der Oberfläche und Karten individuell anpassen
 - Neuer "Info"-Reiter in den Einstellungen zeigt Versionsnummer, Release Notes und README
+- Im Reiter "Sprache" lässt sich Deutsch oder Englisch auswählen
 - Untermenü "Server Info" in den Einstellungen listet IP-Adressen, Port und fertige URLs auf
 
 ## Verwendung

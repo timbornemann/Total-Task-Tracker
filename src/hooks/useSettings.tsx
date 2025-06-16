@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { allHomeSections } from '@/utils/homeSections'
+import i18n from '@/lib/i18n'
 
 
 export type ShortcutKeys = {
@@ -29,6 +30,7 @@ const defaultFlashcardSettings = {
 }
 const defaultSyncInterval = 5
 const defaultTaskPriority: 'low' | 'medium' | 'high' = 'medium'
+const defaultLanguage = 'de'
 const defaultTheme = {
   background: '0 0% 100%',
   foreground: '222.2 84% 4.9%',
@@ -155,6 +157,8 @@ interface SettingsContextValue {
   updateSyncInterval: (value: number) => void
   syncFolder: string
   updateSyncFolder: (folder: string) => void
+  language: string
+  updateLanguage: (lang: string) => void
 }
 
 const SettingsContext = createContext<SettingsContextValue | undefined>(undefined)
@@ -188,6 +192,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [showPinnedNotes, setShowPinnedNotes] = useState(true)
   const [syncFolder, setSyncFolder] = useState('')
   const [syncInterval, setSyncInterval] = useState(defaultSyncInterval)
+  const [language, setLanguage] = useState(defaultLanguage)
 
   useEffect(() => {
     const load = async () => {
@@ -256,6 +261,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           if (typeof data.syncInterval === 'number') {
             setSyncInterval(data.syncInterval)
           }
+          if (typeof data.language === 'string') {
+            setLanguage(data.language)
+            i18n.changeLanguage(data.language)
+          }
         }
       } catch (err) {
         console.error('Fehler beim Laden der Einstellungen', err)
@@ -284,7 +293,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           flashcardSessionSize,
           flashcardDefaultMode,
           syncFolder,
-          syncInterval
+          syncInterval,
+          language
         })
       })
       } catch (err) {
@@ -307,7 +317,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     flashcardSessionSize,
     flashcardDefaultMode,
     syncFolder,
-    syncInterval
+    syncInterval,
+    language
   ])
 
   useEffect(() => {
@@ -367,6 +378,11 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setSyncInterval(value)
   }
 
+  const updateLanguage = (lang: string) => {
+    setLanguage(lang)
+    i18n.changeLanguage(lang)
+  }
+
   const toggleHomeSection = (section: string) => {
     setHomeSections(prev =>
       prev.includes(section)
@@ -422,7 +438,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         syncInterval,
         updateSyncInterval,
         syncFolder,
-        updateSyncFolder
+        updateSyncFolder,
+        language,
+        updateLanguage
       }}
     >
       {children}
