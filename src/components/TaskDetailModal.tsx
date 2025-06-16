@@ -51,7 +51,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   onBack
 }) => {
   if (!task) return null;
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const { updateTask } = useTaskStore();
 
@@ -104,7 +104,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                       style={{ backgroundColor: task.color }}
                     />
                     <span className="text-sm text-gray-600">
-                      {category?.name || 'Unbekannte Kategorie'}
+                      {category?.name || t('taskDetail.unknownCategory')}
                     </span>
                   </div>
                 </div>
@@ -121,7 +121,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                 ) : (
                   <StarOff className="h-4 w-4 mr-2" />
                 )}
-                {task.pinned ? 'Lösen' : 'Anheften'}
+                {task.pinned ? t('taskDetail.unpin') : t('taskDetail.pin')}
               </Button>
               <Button
                 variant="outline"
@@ -129,7 +129,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                 onClick={() => onAddSubtask(task)}
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Unteraufgabe
+                {t('taskDetail.addSubtask')}
               </Button>
               <Button
                 variant="outline"
@@ -137,7 +137,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                 onClick={() => onEdit(task)}
               >
                 <Edit className="h-4 w-4 mr-2" />
-                Bearbeiten
+                {t('common.edit')}
               </Button>
               <Button
                 variant="outline"
@@ -145,7 +145,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                 onClick={() => onStartPomodoro(task)}
               >
                 <Timer className="h-4 w-4 mr-2" />
-                Pomodoro
+                {t('navbar.pomodoro')}
               </Button>
               <Button
                 variant="outline"
@@ -157,7 +157,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                 className="text-destructive hover:text-destructive/80"
               >
                 <Trash2 className="h-4 w-4 mr-2" />
-                Löschen
+                {t('common.delete')}
               </Button>
             </div>
           </div>
@@ -167,7 +167,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
           <div className="space-y-6">
             {task.description && (
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Beschreibung</h3>
+                <h3 className="font-semibold text-gray-900 mb-2">{t('taskDetail.description')}</h3>
                 <p className="text-gray-700 leading-relaxed">{task.description}</p>
               </div>
             )}
@@ -176,16 +176,16 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-semibold text-gray-900">
-                    Unteraufgaben ({task.subtasks.length})
+                    {t('taskDetail.subtasks', { count: task.subtasks.length })}
                   </h3>
                   <div className="text-sm text-gray-600">
-                    {progress.completed} von {progress.total} abgeschlossen
+                    {t('taskDetail.progressInfo', { completed: progress.completed, total: progress.total })}
                   </div>
                 </div>
                 
                 <div className="mb-4">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-700">Gesamtfortschritt</span>
+                    <span className="text-sm font-medium text-gray-700">{t('taskDetail.totalProgress')}</span>
                     <span className="text-sm text-gray-500">{Math.round(progressPercentage)}%</span>
                   </div>
                   <Progress value={progressPercentage} className="h-3" />
@@ -218,7 +218,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                   className="mt-2"
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  Erste Unteraufgabe hinzufügen
+                  {t('taskDetail.addFirst')}
                 </Button>
               </div>
             )}
@@ -226,17 +226,17 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
             <div className="pt-4 border-t border-gray-200">
               <div className="grid grid-cols-2 gap-4 text-sm text-gray-500">
                 <div>
-                  <span className="font-medium">Erstellt:</span>{' '}
-                  {new Date(task.createdAt).toLocaleDateString('de-DE')}
+                  <span className="font-medium">{t('taskDetail.created')}</span>{' '}
+                  {new Date(task.createdAt).toLocaleDateString(i18n.language)}
                 </div>
                 <div>
-                  <span className="font-medium">Zuletzt geändert:</span>{' '}
-                  {new Date(task.updatedAt).toLocaleDateString('de-DE')}
+                  <span className="font-medium">{t('taskDetail.updated')}</span>{' '}
+                  {new Date(task.updatedAt).toLocaleDateString(i18n.language)}
                 </div>
                 {task.dueDate && (
                   <div>
-                    <span className="font-medium">Fällig am:</span>{' '}
-                    {new Date(task.dueDate).toLocaleDateString('de-DE')}
+                    <span className="font-medium">{t('taskDetail.due')}</span>{' '}
+                    {new Date(task.dueDate).toLocaleDateString(i18n.language)}
                   </div>
                 )}
               </div>

@@ -423,17 +423,17 @@ const Dashboard: React.FC = () => {
                 />
               </div>
               <div className="flex items-center gap-1">
-                <Label className="text-sm">Sortierung:</Label>
+                <Label className="text-sm">{t('dashboard.sortLabel')}</Label>
                 <Select value={sortCriteria} onValueChange={setSortCriteria}>
                   <SelectTrigger className="w-32">
-                    <SelectValue placeholder="Sortierung" />
+                    <SelectValue placeholder={t('dashboard.sortLabel')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="order">Manuell</SelectItem>
-                    <SelectItem value="created-desc">Neueste zuerst</SelectItem>
-                    <SelectItem value="created-asc">Älteste zuerst</SelectItem>
-                    <SelectItem value="title-asc">Titel A-Z</SelectItem>
-                    <SelectItem value="title-desc">Titel Z-A</SelectItem>
+                    <SelectItem value="order">{t('dashboard.sort.manual')}</SelectItem>
+                    <SelectItem value="created-desc">{t('dashboard.sort.createdDesc')}</SelectItem>
+                    <SelectItem value="created-asc">{t('dashboard.sort.createdAsc')}</SelectItem>
+                    <SelectItem value="title-asc">{t('dashboard.sort.titleAsc')}</SelectItem>
+                    <SelectItem value="title-desc">{t('dashboard.sort.titleDesc')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -523,46 +523,46 @@ const Dashboard: React.FC = () => {
                 />
               </div>
               <div className="flex items-center gap-1">
-                <Label className="text-sm">Sortierung:</Label>
+                <Label className="text-sm">{t('dashboard.sortLabel')}</Label>
                 <Select value={sortCriteria} onValueChange={setSortCriteria}>
                   <SelectTrigger className="w-36">
-                    <SelectValue placeholder="Sortierung" />
+                    <SelectValue placeholder={t('dashboard.sortLabel')} />
                   </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="order">Manuell</SelectItem>
-                    <SelectItem value="created-desc">Neueste zuerst</SelectItem>
-                    <SelectItem value="created-asc">Älteste zuerst</SelectItem>
-                    <SelectItem value="title-asc">Titel A-Z</SelectItem>
-                    <SelectItem value="title-desc">Titel Z-A</SelectItem>
-                    <SelectItem value="priority-asc">Priorität ↑</SelectItem>
-                    <SelectItem value="priority-desc">Priorität ↓</SelectItem>
-                    <SelectItem value="due-asc">Fälligkeitsdatum ↑</SelectItem>
-                    <SelectItem value="due-desc">Fälligkeitsdatum ↓</SelectItem>
+                    <SelectItem value="order">{t('dashboard.sort.manual')}</SelectItem>
+                    <SelectItem value="created-desc">{t('dashboard.sort.createdDesc')}</SelectItem>
+                    <SelectItem value="created-asc">{t('dashboard.sort.createdAsc')}</SelectItem>
+                    <SelectItem value="title-asc">{t('dashboard.sort.titleAsc')}</SelectItem>
+                    <SelectItem value="title-desc">{t('dashboard.sort.titleDesc')}</SelectItem>
+                    <SelectItem value="priority-asc">{t('dashboard.sort.priorityAsc')}</SelectItem>
+                    <SelectItem value="priority-desc">{t('dashboard.sort.priorityDesc')}</SelectItem>
+                    <SelectItem value="due-asc">{t('dashboard.sort.dueAsc')}</SelectItem>
+                    <SelectItem value="due-desc">{t('dashboard.sort.dueDesc')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="flex items-center gap-1">
-                <Label className="text-sm">Priorität:</Label>
+                <Label className="text-sm">{t('dashboard.priorityLabel')}</Label>
                 <Select value={filterPriority} onValueChange={setFilterPriority}>
                   <SelectTrigger className="w-32">
-                    <SelectValue placeholder="Priorität" />
+                    <SelectValue placeholder={t('dashboard.priorityLabel')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Alle</SelectItem>
-                    <SelectItem value="high">Hoch</SelectItem>
-                    <SelectItem value="medium">Mittel</SelectItem>
-                    <SelectItem value="low">Niedrig</SelectItem>
+                    <SelectItem value="all">{t('dashboard.filter.all')}</SelectItem>
+                    <SelectItem value="high">{t('dashboard.filter.high')}</SelectItem>
+                    <SelectItem value="medium">{t('dashboard.filter.medium')}</SelectItem>
+                    <SelectItem value="low">{t('dashboard.filter.low')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="flex items-center gap-1">
-                <Label className="text-sm">Farbe:</Label>
+                <Label className="text-sm">{t('dashboard.colorLabel')}</Label>
                 <Select value={filterColor} onValueChange={setFilterColor}>
                   <SelectTrigger className="w-32">
-                    <SelectValue placeholder="Farbe" />
+                    <SelectValue placeholder={t('dashboard.colorLabel')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Alle</SelectItem>
+                    <SelectItem value="all">{t('dashboard.filter.all')}</SelectItem>
                     {colorOptions.map(color => (
                       <SelectItem key={color} value={color}>
                         <div className="flex items-center space-x-2">

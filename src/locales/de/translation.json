@@ -313,9 +313,53 @@
     "noTasks": "Keine Tasks vorhanden",
     "noTasksFound": "Keine Tasks gefunden",
     "createFirstTask": "Erstellen Sie Ihre erste Task in der Kategorie \"{{category}}\".",
-    "firstTaskButton": "Erste Task erstellen"
+    "firstTaskButton": "Erste Task erstellen",
+    "sortLabel": "Sortierung:",
+    "priorityLabel": "Priorität:",
+    "colorLabel": "Farbe:",
+    "sort": {
+      "manual": "Manuell",
+      "createdDesc": "Neueste zuerst",
+      "createdAsc": "Älteste zuerst",
+      "titleAsc": "Titel A-Z",
+      "titleDesc": "Titel Z-A",
+      "priorityAsc": "Priorität ↑",
+      "priorityDesc": "Priorität ↓",
+      "dueAsc": "Fälligkeitsdatum ↑",
+      "dueDesc": "Fälligkeitsdatum ↓"
+    },
+    "filter": {
+      "all": "Alle",
+      "high": "Hoch",
+      "medium": "Mittel",
+      "low": "Niedrig"
+    }
+  },
+  "categoryCard": {
+    "deleteTooltip": "Löschen (rückgängig möglich)",
+    "deleteMenu": "Löschen (Undo möglich)",
+    "percentDone": "{{percent}}% erledigt",
+    "completedOfTotal": "{{completed}} von {{total}} abgeschlossen"
+  },
+  "taskCard": {
+    "viewDetails": "Details anzeigen",
+    "addSubtask": "Unteraufgabe hinzufügen",
+    "progress": "Fortschritt: {{completed}}/{{total}} Unteraufgaben",
+    "due": "Fällig am {{date}}"
   },
   "taskDetail": {
-    "noSubtasks": "Keine Unteraufgaben vorhanden."
+    "noSubtasks": "Keine Unteraufgaben vorhanden.",
+    "unknownCategory": "Unbekannte Kategorie",
+    "unpin": "Lösen",
+    "pin": "Anheften",
+    "addSubtask": "Unteraufgabe",
+    "description": "Beschreibung",
+    "subtasks": "Unteraufgaben ({{count}})",
+    "progressInfo": "{{completed}} von {{total}} abgeschlossen",
+    "totalProgress": "Gesamtfortschritt",
+    "addFirst": "Erste Unteraufgabe hinzufügen",
+    "created": "Erstellt:",
+    "updated": "Zuletzt geändert:",
+    "due": "Fällig am:"
   }
 }

@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Task } from '@/types';
 import { calculateTaskCompletion, getTaskProgress, getPriorityColor, getPriorityIcon } from '@/utils/taskUtils';
 import { Button } from '@/components/ui/button';
@@ -49,6 +50,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
   const priorityClasses = getPriorityColor(task.priority);
   const priorityIcon = getPriorityIcon(task.priority);
   const { updateTask } = useTaskStore();
+  const { t, i18n } = useTranslation();
 
   const handleTogglePinned = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -123,7 +125,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
                         : 'text-muted-foreground'
                     }`}
                   >
-                    Fällig am {new Date(task.dueDate).toLocaleDateString('de-DE')}
+                    {t('taskCard.due', { date: new Date(task.dueDate).toLocaleDateString(i18n.language) })}
                     {task.startTime && (
                       <> {task.startTime}-{task.endTime || ''}</>
                     )}
@@ -196,26 +198,26 @@ const TaskCard: React.FC<TaskCardProps> = ({
               ) : (
                 <StarOff className="h-4 w-4 mr-2" />
               )}
-              {task.pinned ? 'Lösen' : 'Anheften'}
+              {task.pinned ? t('taskDetail.unpin') : t('taskDetail.pin')}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onViewDetails(task)}>
               <FolderOpen className="h-4 w-4 mr-2" />
-              Details anzeigen
+              {t('taskCard.viewDetails')}
             </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onAddSubtask(task)}>
                   <Plus className="h-4 w-4 mr-2" />
-                  Unteraufgabe hinzufügen
+                  {t('taskCard.addSubtask')}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onEdit(task)}>
                   <Edit className="h-4 w-4 mr-2" />
-                  Bearbeiten
+                  {t('common.edit')}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => onDelete(task.id)}
                   className="text-destructive"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
-                  Löschen
+                  {t('common.delete')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -233,7 +235,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs sm:text-sm font-medium text-gray-700">
-                  Fortschritt: {progress.completed}/{progress.total} Unteraufgaben
+                  {t('taskCard.progress', { completed: progress.completed, total: progress.total })}
                 </span>
                 <span className="text-xs sm:text-sm text-gray-500">
                   {Math.round(progressPercentage)}%
