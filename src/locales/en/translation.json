@@ -161,6 +161,7 @@
     "weekday": "Weekday",
     "date": "Fixed date",
     "titleTemplate": "Dynamic Title",
+    "titleTemplatePlaceholder": "{date} / {counter}",
     "color": "Color",
     "placeholderExample": "e.g. 3"
   },
