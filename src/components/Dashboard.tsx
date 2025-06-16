@@ -208,7 +208,7 @@ const Dashboard: React.FC = () => {
       completed: false
     });
     toast({
-      title: t('dashboard.taskCreated'),
+      title: t('task.created'),
       description: t('dashboard.taskCreatedDesc', { title: taskData.title })
     });
     setParentTask(null);
@@ -221,7 +221,7 @@ const Dashboard: React.FC = () => {
         completed: editingTask.completed
       });
       toast({
-        title: t('dashboard.taskUpdated'),
+        title: t('task.updated'),
         description: t('dashboard.taskUpdatedDesc', { title: taskData.title })
       });
       setEditingTask(null);
@@ -230,10 +230,10 @@ const Dashboard: React.FC = () => {
 
   const handleDeleteTask = (taskId: string) => {
     const task = findTaskById(taskId);
-    if (task && window.confirm(t('dashboard.taskDeleteConfirm', { title: task.title }))) {
+    if (task && window.confirm(t('task.deleteConfirm', { title: task.title }))) {
       deleteTask(taskId);
       toast({
-        title: t('dashboard.taskDeleted'),
+        title: t('task.deleted'),
         description: t('dashboard.taskDeletedDesc')
       });
     }
@@ -243,7 +243,7 @@ const Dashboard: React.FC = () => {
     updateTask(taskId, { completed });
     const task = findTaskById(taskId);
     toast({
-      title: completed ? t('dashboard.taskCompleted') : t('dashboard.taskReactivated'),
+      title: completed ? t('task.completed') : t('task.reactivated'),
       description: completed
         ? t('dashboard.taskCompletedDesc', { title: task?.title })
         : t('dashboard.taskReactivatedDesc', { title: task?.title })
@@ -253,7 +253,7 @@ const Dashboard: React.FC = () => {
   const handleCreateCategory = (categoryData: CategoryFormData) => {
     addCategory(categoryData);
     toast({
-      title: t('dashboard.categoryCreated'),
+      title: t('category.created'),
       description: t('dashboard.categoryCreatedDesc', { name: categoryData.name })
     });
   };
@@ -262,7 +262,7 @@ const Dashboard: React.FC = () => {
     if (editingCategory) {
       updateCategory(editingCategory.id, categoryData);
       toast({
-        title: t('dashboard.categoryUpdated'),
+        title: t('category.updated'),
         description: t('dashboard.categoryUpdatedDesc', { name: categoryData.name })
       });
       setEditingCategory(null);
@@ -276,17 +276,17 @@ const Dashboard: React.FC = () => {
     const nonDefaultCount = categories.filter(c => c.id !== 'default').length;
     const confirmText =
       nonDefaultCount === 1 && category.id !== 'default'
-        ? t('dashboard.categoryDeleteLastConfirm', { name: category.name })
-        : t('dashboard.categoryDeleteConfirm', { name: category.name });
+        ? t('category.deleteLastConfirm', { name: category.name })
+        : t('category.deleteConfirm', { name: category.name });
 
     if (window.confirm(confirmText)) {
       deleteCategory(categoryId);
       toast({
-        title: t('dashboard.categoryDeleted'),
+        title: t('category.deleted'),
         description: t('dashboard.categoryDeletedDesc'),
         action: (
           <ToastAction altText="Undo" onClick={() => undoDeleteCategory(categoryId)}>
-            {t('dashboard.undo')}
+            {t('common.undo')}
           </ToastAction>
         )
       });

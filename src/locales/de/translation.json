@@ -103,7 +103,8 @@
     "create": "Erstellen",
     "edit": "Bearbeiten",
     "delete": "Löschen",
-    "back": "Zurück"
+    "back": "Zurück",
+    "undo": "Rückgängig"
   },
   "noteDetail": {
     "notFound": "Notiz nicht gefunden.",
@@ -450,5 +451,20 @@
     "created": "Erstellt:",
     "updated": "Zuletzt geändert:",
     "due": "Fällig am:"
+  },
+  "task": {
+    "created": "Task erstellt",
+    "updated": "Task aktualisiert",
+    "deleted": "Task gelöscht",
+    "completed": "Task abgeschlossen",
+    "reactivated": "Task reaktiviert",
+    "deleteConfirm": "Sind Sie sicher, dass Sie \"{{title}}\" löschen möchten?"
+  },
+  "category": {
+    "created": "Kategorie erstellt",
+    "updated": "Kategorie aktualisiert",
+    "deleted": "Kategorie gelöscht",
+    "deleteConfirm": "Sind Sie sicher, dass Sie \"{{name}}\" löschen möchten?",
+    "deleteLastConfirm": "Sie sind dabei, die letzte verbleibende Kategorie zu löschen. \"{{name}}\" wirklich löschen?"
   }
 }
