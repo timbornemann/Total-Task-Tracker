@@ -267,7 +267,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           }
         }
       } catch (err) {
-        console.error('Fehler beim Laden der Einstellungen', err)
+        console.error('Error loading settings', err)
       }
     }
     load()
@@ -298,7 +298,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         })
       })
       } catch (err) {
-        console.error('Fehler beim Speichern der Einstellungen', err)
+        console.error('Error saving settings', err)
       }
     }
 
