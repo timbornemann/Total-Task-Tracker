@@ -198,6 +198,7 @@
     "overdue": "Overdue",
     "completed7Days": "Completed 7 Days",
     "recurring": "Recurring",
+    "created": "Created",
     "created7Days": "Created 7 Days",
     "priorityDistribution": "Tasks by Priority",
     "categoryProgress": "Progress by Category",

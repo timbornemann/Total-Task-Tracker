@@ -253,7 +253,7 @@ const Statistics = () => {
                       dataKey="created"
                       stroke="hsl(var(--primary))"
                       strokeWidth={2}
-                      name="Erstellt"
+                      name={t('statistics.created')}
                     />
                   </LineChart>
                 </ResponsiveContainer>
