@@ -103,8 +103,8 @@ const useTaskStoreImpl = () => {
           // Create default category if none exist
           const defaultCategory: Category = {
             id: 'default',
-            name: 'Allgemein',
-            description: 'Standard Kategorie für alle Tasks',
+            name: i18n.t('taskStore.defaultCategoryName'),
+            description: i18n.t('taskStore.defaultCategoryDescription'),
             color: '#3B82F6',
             createdAt: new Date(),
             updatedAt: new Date()
@@ -475,8 +475,8 @@ const useTaskStoreImpl = () => {
       if (remaining.length === 0) {
         const defaultCategory: Category = {
           id: 'default',
-          name: 'Allgemein',
-          description: 'Standard Kategorie für alle Tasks',
+          name: i18n.t('taskStore.defaultCategoryName'),
+          description: i18n.t('taskStore.defaultCategoryDescription'),
           color: '#3B82F6',
           createdAt: new Date(),
           updatedAt: new Date(),
