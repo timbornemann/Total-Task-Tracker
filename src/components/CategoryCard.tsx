@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Category, Task } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,6 +24,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   onDelete,
   onViewTasks
 }) => {
+  const { t } = useTranslation();
   const totalTasks = tasks.length;
   const completedTasks = tasks.filter(task => {
     const progress = getTaskProgress(task);
@@ -76,7 +78,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                   e.stopPropagation();
                   onDelete(category.id);
                 }}
-                title="Löschen (rückgängig möglich)"
+                title={t('categoryCard.deleteTooltip')}
                 className="h-8 w-8 p-0 text-destructive hover:text-destructive/80"
               >
                 <Trash2 className="h-4 w-4" />
@@ -100,7 +102,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
               <DropdownMenuContent align="end" className="bg-background z-50">
                 <DropdownMenuItem onClick={() => onEdit(category)}>
                   <Edit className="h-4 w-4 mr-2" />
-                  Bearbeiten
+                  {t('common.edit')}
                 </DropdownMenuItem>
                 {category.id !== 'default' && (
                   <DropdownMenuItem
@@ -108,7 +110,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                     className="text-destructive"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
-                    Löschen (Undo möglich)
+                    {t('categoryCard.deleteMenu')}
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
@@ -123,7 +125,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
             <div className="flex items-center space-x-2">
               <FolderOpen className="h-4 w-4 text-muted-foreground flex-shrink-0" />
               <span className="text-xs sm:text-sm text-muted-foreground">
-                {totalTasks} Task{totalTasks !== 1 ? 's' : ''}
+                {t('dashboard.tasksBadge', { count: totalTasks })}
               </span>
             </div>
             <Badge 
@@ -135,7 +137,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                 borderColor: `${category.color}40`
               }}
             >
-              {Math.round(completionPercentage)}% erledigt
+              {t('categoryCard.percentDone', { percent: Math.round(completionPercentage) })}
             </Badge>
           </div>
           
@@ -150,7 +152,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
           </div>
           
           <div className="text-xs text-muted-foreground text-center">
-            {completedTasks} von {totalTasks} abgeschlossen
+            {t('categoryCard.completedOfTotal', { completed: completedTasks, total: totalTasks })}
           </div>
         </div>
       </CardContent>

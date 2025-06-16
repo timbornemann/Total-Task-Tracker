@@ -313,9 +313,53 @@
     "noTasks": "No tasks available",
     "noTasksFound": "No tasks found",
     "createFirstTask": "Create your first task in the \"{{category}}\" category.",
-    "firstTaskButton": "Create First Task"
+    "firstTaskButton": "Create First Task",
+    "sortLabel": "Sort by:",
+    "priorityLabel": "Priority:",
+    "colorLabel": "Color:",
+    "sort": {
+      "manual": "Manual",
+      "createdDesc": "Newest first",
+      "createdAsc": "Oldest first",
+      "titleAsc": "Title A-Z",
+      "titleDesc": "Title Z-A",
+      "priorityAsc": "Priority ↑",
+      "priorityDesc": "Priority ↓",
+      "dueAsc": "Due date ↑",
+      "dueDesc": "Due date ↓"
+    },
+    "filter": {
+      "all": "All",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    }
+  },
+  "categoryCard": {
+    "deleteTooltip": "Delete (undo possible)",
+    "deleteMenu": "Delete (undo possible)",
+    "percentDone": "{{percent}}% done",
+    "completedOfTotal": "{{completed}} of {{total}} completed"
+  },
+  "taskCard": {
+    "viewDetails": "View details",
+    "addSubtask": "Add subtask",
+    "progress": "Progress: {{completed}}/{{total}} subtasks",
+    "due": "Due on {{date}}"
   },
   "taskDetail": {
-    "noSubtasks": "No subtasks available."
+    "noSubtasks": "No subtasks available.",
+    "unknownCategory": "Unknown category",
+    "unpin": "Unpin",
+    "pin": "Pin",
+    "addSubtask": "Add subtask",
+    "description": "Description",
+    "subtasks": "Subtasks ({{count}})",
+    "progressInfo": "{{completed}} of {{total}} completed",
+    "totalProgress": "Total progress",
+    "addFirst": "Add first subtask",
+    "created": "Created:",
+    "updated": "Last updated:",
+    "due": "Due on:"
   }
 }
