@@ -437,7 +437,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   id="titleTemplate"
                   value={formData.titleTemplate || ''}
                   onChange={(e) => handleChange('titleTemplate', e.target.value)}
-                  placeholder="{date} / {counter}"
+                  placeholder={t('taskModal.titleTemplatePlaceholder')}
                 />
               </div>
                 </div>
