@@ -501,7 +501,9 @@ const TimeBlockingPage = () => {
                       ))}
                       {getTasksFor(d).length > 3 && (
                         <div className="text-muted-foreground">
-                          +{getTasksFor(d).length - 3} mehr
+                          {t('timeBlocking.more', {
+                            count: getTasksFor(d).length - 3
+                          })}
                         </div>
                       )}
                     </>

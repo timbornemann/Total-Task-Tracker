@@ -74,39 +74,23 @@ const FlashcardsPage: React.FC = () => {
     ? 'timed'
     : 'spaced';
 
-  const modeLabel = useMemo(() => {
-    switch (mode) {
-      case 'training':
-        return 'Training';
-      case 'random':
-        return 'Random';
-      case 'typing':
-        return 'Eingabe';
-      case 'timed':
-        return 'Timed';
-      default:
-        return 'Spaced Repetition';
-    }
-  }, [mode]);
-
   const modeDescription = useMemo(() => {
-    switch (mode) {
-      case 'training':
-        return 'Im Training-Modus werden Karten zufällig wiederholt, bis sie richtig beantwortet wurden. Bewertungen beeinflussen den Spaced-Repetition-Algorithmus nicht.';
-      case 'random':
-        return 'Im Random-Modus werden alle ausgewählten Karten in zufälliger Reihenfolge angezeigt. Bewertungen wirken sich nicht auf den Algorithmus aus.';
-      case 'typing':
-        return useSpaced
-          ? 'Im Eingabe-Modus tippst du die Antwort ein. Bewertungen beeinflussen den Algorithmus.'
-          : 'Im Eingabe-Modus tippst du die Antwort ein. Bewertungen beeinflussen den Algorithmus nicht.';
-      case 'timed':
-        return useSpaced
-          ? 'Im Timed-Modus hast du ein Zeitlimit pro Karte. Bewertungen beeinflussen den Algorithmus.'
-          : 'Im Timed-Modus hast du ein Zeitlimit pro Karte. Bewertungen beeinflussen den Algorithmus nicht.';
-      default:
-        return 'Spaced Repetition zeigt nur fällige Karten entsprechend deinem Lernfortschritt an.';
+    if (mode === 'typing') {
+      return t(
+        useSpaced
+          ? 'flashcardsPage.description.typingSpaced'
+          : 'flashcardsPage.description.typing'
+      );
     }
-  }, [mode, useSpaced]);
+    if (mode === 'timed') {
+      return t(
+        useSpaced
+          ? 'flashcardsPage.description.timedSpaced'
+          : 'flashcardsPage.description.timed'
+      );
+    }
+    return t(`flashcardsPage.description.${mode}`);
+  }, [mode, useSpaced, t]);
   const handleModeChange = (
     value: 'spaced' | 'training' | 'random' | 'typing' | 'timed'
   ) => {
@@ -349,9 +333,17 @@ const FlashcardsPage: React.FC = () => {
               <div className="mt-2">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs text-muted-foreground">
-                    Karte {index + 1} / {sessionTotalCards}
+                    {t('flashcardsPage.cardProgress', {
+                      number: index + 1,
+                      total: sessionTotalCards
+                    })}
                     {trainingMode && (
-                      <> ({overallCardNumber} / {overallTotalCards})</>
+                      <> (
+                        {t('flashcardsPage.cardProgress', {
+                          number: overallCardNumber,
+                          total: overallTotalCards
+                        })}
+                      )</>
                     )}
                   </span>
                   <span className="text-xs text-muted-foreground">
@@ -368,12 +360,20 @@ const FlashcardsPage: React.FC = () => {
                     {Math.max(timeLeft, 0)}
                   </div>
                   {timerPaused ? (
-                    <Button size="sm" variant="outline" onClick={() => setTimerPaused(false)}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setTimerPaused(false)}
+                    >
                       {t('flashcardsPage.continue')}
                     </Button>
                   ) : (
-                    <Button size="sm" variant="outline" onClick={() => setTimerPaused(true)}>
-                      Pause
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setTimerPaused(true)}
+                    >
+                      {t('flashcardsPage.pause')}
                     </Button>
                   )}
                 </div>

@@ -54,8 +54,10 @@ const FlashcardManagerPage: React.FC = () => {
                     <CardTitle>{deck.name}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {total} Karte{total !== 1 ? 'n' : ''}
-                    <div className="text-sm text-muted-foreground">{due}/{total} fällig</div>
+                    {t('flashcardManager.cards', { count: total })}
+                    <div className="text-sm text-muted-foreground">
+                      {t('flashcardManager.dueProgress', { due, total })}
+                    </div>
                   </CardContent>
                   <CardFooter className="flex justify-end space-x-2">
                     <Button variant="outline" size="sm" onClick={e => { e.stopPropagation(); setEditingDeck(deck); setIsDeckModalOpen(true); }}>

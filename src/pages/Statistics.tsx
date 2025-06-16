@@ -76,7 +76,9 @@ const Statistics = () => {
             </CardHeader>
             <CardContent>
               <div className="text-lg sm:text-2xl font-bold text-accent">{stats.completedTasks}</div>
-              <p className="text-xs text-muted-foreground">{completionRate}% der Tasks</p>
+              <p className="text-xs text-muted-foreground">
+                {completionRate}% {t('statistics.ofTasks')}
+              </p>
             </CardContent>
           </Card>
 
