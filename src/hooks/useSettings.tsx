@@ -332,6 +332,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, [theme, themeName])
 
+  useEffect(() => {
+    document.documentElement.lang = language
+  }, [language])
+
   const updateShortcut = (key: keyof ShortcutKeys, value: string) => {
     setShortcuts(prev => ({ ...prev, [key]: value.toLowerCase() }))
   }
