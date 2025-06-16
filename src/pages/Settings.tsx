@@ -435,7 +435,7 @@ const SettingsPage: React.FC = () => {
                                   checked={homeSections.includes(sec.key)}
                                   onCheckedChange={() => toggleHomeSection(sec.key)}
                                 />
-                                <Label htmlFor={sec.key}>{sec.label}</Label>
+                                <Label htmlFor={sec.key}>{t(sec.labelKey)}</Label>
                               </div>
                               <GripVertical className="h-4 w-4 text-muted-foreground" />
                             </div>
