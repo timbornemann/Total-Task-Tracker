@@ -162,5 +162,82 @@
   "releaseNotes": {
     "title": "Release Notes",
     "none": "No release notes found."
+  },
+  "flashcardManager": {
+    "title": "Decks",
+    "newDeck": "New Deck",
+    "none": "No decks available."
+  },
+  "flashcardStats": {
+    "title": "Card Statistics",
+    "totalCards": "Total Cards",
+    "due": "Due",
+    "avgInterval": "Avg Interval",
+    "difficulty": "Difficulty",
+    "upcoming": "Due Next 7 Days",
+    "deckDetails": "Deck Details",
+    "deck": "Deck",
+    "total": "Total",
+    "dueShare": "Due Share",
+    "cards": "Cards",
+    "easy": "Easy",
+    "medium": "Medium",
+    "hard": "Hard"
+  },
+  "flashcardsPage": {
+    "title": "Flashcards",
+    "mode": "Mode",
+    "spaced": "Spaced Repetition",
+    "training": "Training",
+    "random": "Random",
+    "typing": "Typing",
+    "timed": "Timed",
+    "useSpaced": "Spaced Repetition",
+    "noDue": "No cards due.",
+    "check": "Check",
+    "hard": "Hard",
+    "medium": "Medium",
+    "easy": "Easy",
+    "nextCard": "Next Card",
+    "timerStart": "Start timer?",
+    "start": "Start",
+    "trainingDone": "Training completed",
+    "sessionDone": "Session ended",
+    "continue": "Continue",
+    "allDone": "All cards done",
+    "correct": "Correct!",
+    "wrong": "Wrong",
+    "description": {
+      "training": "In training mode cards repeat randomly until answered correctly. Ratings do not influence the spaced repetition algorithm.",
+      "random": "Random mode shows all selected cards in random order. Ratings do not affect the algorithm.",
+      "typingSpaced": "In typing mode you type the answer. Ratings influence the algorithm.",
+      "typing": "In typing mode you type the answer. Ratings do not influence the algorithm.",
+      "timedSpaced": "In timed mode you have a time limit per card. Ratings influence the algorithm.",
+      "timed": "In timed mode you have a time limit per card. Ratings do not influence the algorithm.",
+      "spaced": "Spaced Repetition only shows due cards according to your progress."
+    }
+  },
+  "surprise": {
+    "navbar": "Surprise",
+    "title": "I love you",
+    "poem": "For you, my dear, a little word,\nHidden in the code where only you can find it.\nA spark of light in the darkest night,\nA sign that I'm always awake for you.\n\nYour smile shines like sunshine,\nIt makes my heart beat in the finest rhythm.\nBut more than code and sweet lines –\nYou are the love that I never lose.\n\nThis is just the start of our magic,\nBecause with you happiness is easily written.\nLet's take the world that's only ours,\nAnd decorate it with kisses, laughter and stars.",
+    "toast": "Secret love message discovered!"
+  },
+  "timeBlocking": {
+    "title": "Schedule",
+    "day": "Day",
+    "week": "Week",
+    "month": "Month"
+  },
+  "kanban": {
+    "todo": "To Do",
+    "inprogress": "In Progress",
+    "done": "Done",
+    "created": "Task created",
+    "updated": "Task updated",
+    "deleted": "Task deleted",
+    "completed": "Task completed",
+    "reactivated": "Task reactivated",
+    "deleteConfirm": "Are you sure you want to delete \"{{title}}\"?"
   }
 }

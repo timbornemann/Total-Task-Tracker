@@ -2,6 +2,7 @@ import React from "react";
 import Navbar from "@/components/Navbar";
 import { useFlashcardStatistics } from "@/hooks/useFlashcardStatistics";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useTranslation } from 'react-i18next';
 import {
   ResponsiveContainer,
   PieChart,
@@ -18,34 +19,35 @@ import { BookOpen, Clock, TrendingUp } from "lucide-react";
 
 const FlashcardStatisticsPage: React.FC = () => {
   const stats = useFlashcardStatistics();
+  const { t } = useTranslation();
 
   const difficultyData = [
     {
-      name: "Leicht",
+      name: t('flashcardStats.easy'),
       value: stats.difficultyCounts.easy,
-      color: "hsl(var(--accent))",
+      color: 'hsl(var(--accent))',
     },
     {
-      name: "Mittel",
+      name: t('flashcardStats.medium'),
       value: stats.difficultyCounts.medium,
-      color: "hsl(var(--primary))",
+      color: 'hsl(var(--primary))',
     },
     {
-      name: "Schwer",
+      name: t('flashcardStats.hard'),
       value: stats.difficultyCounts.hard,
-      color: "hsl(var(--destructive))",
+      color: 'hsl(var(--destructive))',
     },
   ];
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar title="Karten Statistiken" />
+      <Navbar title={t('flashcardStats.title')} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-6 mb-6 sm:mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs sm:text-sm font-medium">
-                Gesamt Karten
+                {t('flashcardStats.totalCards')}
               </CardTitle>
               <BookOpen className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
@@ -58,7 +60,7 @@ const FlashcardStatisticsPage: React.FC = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs sm:text-sm font-medium">
-                Fällig
+                {t('flashcardStats.due')}
               </CardTitle>
               <Clock className="h-4 w-4 text-destructive" />
             </CardHeader>
@@ -71,7 +73,7 @@ const FlashcardStatisticsPage: React.FC = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs sm:text-sm font-medium">
-                Ø Intervall
+                {t('flashcardStats.avgInterval')}
               </CardTitle>
               <TrendingUp className="h-4 w-4 text-primary" />
             </CardHeader>
@@ -86,7 +88,7 @@ const FlashcardStatisticsPage: React.FC = () => {
           <Card>
             <CardHeader>
               <CardTitle className="text-base sm:text-lg">
-                Schwierigkeiten
+                {t('flashcardStats.difficulty')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -128,7 +130,7 @@ const FlashcardStatisticsPage: React.FC = () => {
           <Card>
             <CardHeader>
               <CardTitle className="text-base sm:text-lg">
-                Fälligkeit nächste 7 Tage
+                {t('flashcardStats.upcoming')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -145,7 +147,7 @@ const FlashcardStatisticsPage: React.FC = () => {
                     <Bar
                       dataKey="count"
                       fill="hsl(var(--stat-bar-primary))"
-                      name="Karten"
+                      name={t('flashcardStats.cards')}
                     />
                   </BarChart>
                 </ResponsiveContainer>
@@ -157,7 +159,7 @@ const FlashcardStatisticsPage: React.FC = () => {
           <Card className="mt-6">
             <CardHeader>
               <CardTitle className="text-base sm:text-lg">
-                Decks im Detail
+                {t('flashcardStats.deckDetails')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -165,11 +167,11 @@ const FlashcardStatisticsPage: React.FC = () => {
                 <table className="w-full text-xs sm:text-sm">
                   <thead>
                     <tr className="border-b">
-                      <th className="text-left py-2 font-medium">Deck</th>
-                      <th className="text-right py-2 font-medium">Gesamt</th>
-                      <th className="text-right py-2 font-medium">Fällig</th>
+                      <th className="text-left py-2 font-medium">{t('flashcardStats.deck')}</th>
+                      <th className="text-right py-2 font-medium">{t('flashcardStats.total')}</th>
+                      <th className="text-right py-2 font-medium">{t('flashcardStats.due')}</th>
                       <th className="text-right py-2 font-medium">
-                        Fälligkeitsanteil
+                        {t('flashcardStats.dueShare')}
                       </th>
                     </tr>
                   </thead>

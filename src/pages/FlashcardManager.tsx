@@ -7,6 +7,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import DeckModal from '@/components/DeckModal';
 import { useFlashcardStore } from '@/hooks/useFlashcardStore';
 import { Deck } from '@/types';
+import { useTranslation } from 'react-i18next';
 
 const FlashcardManagerPage: React.FC = () => {
   const {
@@ -18,6 +19,7 @@ const FlashcardManagerPage: React.FC = () => {
     countDueCardsForDeck
   } = useFlashcardStore();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [isDeckModalOpen, setIsDeckModalOpen] = useState(false);
   const [editingDeck, setEditingDeck] = useState<Deck | null>(null);
 
@@ -32,15 +34,15 @@ const FlashcardManagerPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar title="Decks" />
+      <Navbar title={t('flashcardManager.title')} />
       <div className="max-w-2xl mx-auto py-8 px-4 space-y-4">
         <div className="flex justify-end">
           <Button size="sm" onClick={() => setIsDeckModalOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" /> Neues Deck
+            <Plus className="h-4 w-4 mr-2" /> {t('flashcardManager.newDeck')}
           </Button>
         </div>
         {decks.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Noch keine Decks vorhanden.</p>
+          <p className="text-sm text-muted-foreground">{t('flashcardManager.none')}</p>
         ) : (
           <div className="space-y-4">
             {decks.map(deck => {

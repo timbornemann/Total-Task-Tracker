@@ -14,6 +14,7 @@ import {
   Draggable,
   DropResult
 } from '@hello-pangea/dnd';
+import { useTranslation } from 'react-i18next';
 
 const Kanban: React.FC = () => {
   const {
@@ -25,6 +26,7 @@ const Kanban: React.FC = () => {
     findTaskById
   } = useTaskStore();
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isTaskDetailModalOpen, setIsTaskDetailModalOpen] = useState(false);
@@ -52,8 +54,8 @@ const Kanban: React.FC = () => {
       completed: false
     });
     toast({
-      title: 'Task erstellt',
-      description: `"${taskData.title}" wurde erfolgreich erstellt.`
+      title: t('kanban.created'),
+      description: `"${taskData.title}" ${t('kanban.created')}`
     });
     setParentTask(null);
   };
@@ -65,8 +67,8 @@ const Kanban: React.FC = () => {
         completed: editingTask.completed
       });
       toast({
-        title: 'Task aktualisiert',
-        description: `"${taskData.title}" wurde erfolgreich aktualisiert.`
+        title: t('kanban.updated'),
+        description: `"${taskData.title}" ${t('kanban.updated')}`
       });
       setEditingTask(null);
     }
@@ -74,11 +76,11 @@ const Kanban: React.FC = () => {
 
   const handleDeleteTask = (taskId: string) => {
     const task = findTaskById(taskId);
-    if (task && window.confirm(`Sind Sie sicher, dass Sie "${task.title}" löschen möchten?`)) {
+    if (task && window.confirm(t('kanban.deleteConfirm', { title: task.title }))) {
       deleteTask(taskId);
       toast({
-        title: 'Task gelöscht',
-        description: 'Die Task wurde erfolgreich gelöscht.'
+        title: t('kanban.deleted'),
+        description: t('kanban.deleted')
       });
     }
   };
@@ -87,8 +89,8 @@ const Kanban: React.FC = () => {
     updateTask(taskId, { completed });
     const task = findTaskById(taskId);
     toast({
-      title: completed ? 'Task abgeschlossen' : 'Task reaktiviert',
-      description: `"${task?.title}" wurde ${completed ? 'als erledigt markiert' : 'reaktiviert'}.`
+      title: completed ? t('kanban.completed') : t('kanban.reactivated'),
+      description: `"${task?.title}" ${completed ? t('kanban.completed') : t('kanban.reactivated')}`
     });
   };
 
@@ -144,14 +146,14 @@ const Kanban: React.FC = () => {
   ];
 
   const labels: Record<'todo' | 'inprogress' | 'done', string> = {
-    todo: 'To Do',
-    inprogress: 'In Bearbeitung',
-    done: 'Erledigt'
+    todo: t('kanban.todo'),
+    inprogress: t('kanban.inprogress'),
+    done: t('kanban.done')
   };
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar title="Kanban" />
+      <Navbar title={t('navbar.kanban')} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         <DragDropContext onDragEnd={onDragEnd}>
