@@ -466,5 +466,9 @@
     "deleted": "Category deleted",
     "deleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
     "deleteLastConfirm": "You are about to delete the last remaining category. Delete \"{{name}}\"?"
+  },
+  "taskStore": {
+    "defaultCategoryName": "General",
+    "defaultCategoryDescription": "Default category for all tasks"
   }
 }

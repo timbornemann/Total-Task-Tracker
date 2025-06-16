@@ -466,5 +466,9 @@
     "deleted": "Kategorie gelöscht",
     "deleteConfirm": "Sind Sie sicher, dass Sie \"{{name}}\" löschen möchten?",
     "deleteLastConfirm": "Sie sind dabei, die letzte verbleibende Kategorie zu löschen. \"{{name}}\" wirklich löschen?"
+  },
+  "taskStore": {
+    "defaultCategoryName": "Allgemein",
+    "defaultCategoryDescription": "Standard Kategorie für alle Tasks"
   }
 }
