@@ -39,6 +39,8 @@ Die Anwendung legt ihre SQLite-Daten standardmäßig im Volume `total-task-track
 docker run -d --name total-task-tracker -p 3002:3002 -v ./server/data:/app/server/data ghcr.io/timbornemann/total-task-tracker:latest
 ```
 
+Soll in den Einstellungen eine bestimmte IP angezeigt werden (etwa bei der Docker-Nutzung), kannst du die Umgebungsvariable `SERVER_PUBLIC_IP` setzen. Dieser Wert wird unter "Server Info" zusätzlich ausgegeben.
+
 ## Docker-Compose: Image selbst bauen
 
 Die Anwendung kann auch komplett über `docker-compose` ausgeführt werden. Dabei wird automatisch ein Produktionsbuild erstellt.
