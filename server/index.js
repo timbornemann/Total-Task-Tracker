@@ -379,7 +379,10 @@ function setSyncRole(role) {
 }
 
 function setSyncServerUrl(url) {
-  syncServerUrl = url || '';
+  if (url && !/^https?:\/\//i.test(url)) {
+    url = 'http://' + url;
+  }
+  syncServerUrl = url ? url.replace(/\/$/, '') : '';
   startSyncTimer();
 }
 
@@ -691,6 +694,10 @@ const server = http.createServer((req, res) => {
         }
       }
     });
+    if (publicIp && !ips.includes(publicIp)) {
+      ips.push(publicIp);
+      if (!wifiIp) wifiIp = publicIp;
+    }
     const info = {
       ips,
       port,
@@ -725,6 +732,7 @@ const server = http.createServer((req, res) => {
 });
 
 const port = process.env.PORT || 3002;
+const publicIp = process.env.SERVER_PUBLIC_IP || null;
 server.listen(port, () => {
   console.log('Server listening on port', port);
 });
