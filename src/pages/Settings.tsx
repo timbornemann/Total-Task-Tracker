@@ -78,6 +78,7 @@ const SettingsPage: React.FC = () => {
   const { t } = useTranslation()
 
   const [serverInfo, setServerInfo] = useState<ServerInfo | null>(null)
+  const [syncStatus, setSyncStatus] = useState<{ last: number; error: string | null } | null>(null)
 
   useEffect(() => {
     const load = async () => {
@@ -92,6 +93,23 @@ const SettingsPage: React.FC = () => {
       }
     }
     load()
+  }, [])
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await fetch('/api/sync-status')
+        if (res.ok) {
+          const data = await res.json()
+          setSyncStatus(data)
+        }
+      } catch (err) {
+        console.error('Failed to load sync status', err)
+      }
+    }
+    load()
+    const id = setInterval(load, 10000)
+    return () => clearInterval(id)
   }, [])
 
   const handleHomeDrag = (result: DropResult) => {
@@ -706,6 +724,31 @@ const SettingsPage: React.FC = () => {
                   value={syncInterval}
                   onChange={e => updateSyncInterval(Number(e.target.value))}
                 />
+              </div>
+              <div className="space-y-2">
+                <p className="font-medium">{t('settingsPage.syncStatus')}</p>
+                {syncStatus ? (
+                  syncStatus.last ? (
+                    syncStatus.error ? (
+                      <p className="text-red-500 text-sm">
+                        {t('settingsPage.syncError', {
+                          time: new Date(syncStatus.last).toLocaleString(),
+                          error: syncStatus.error
+                        })}
+                      </p>
+                    ) : (
+                      <p className="text-sm">
+                        {t('settingsPage.syncSuccess', {
+                          time: new Date(syncStatus.last).toLocaleString()
+                        })}
+                      </p>
+                    )
+                  ) : (
+                    <p className="text-sm">{t('settingsPage.syncNever')}</p>
+                  )
+                ) : (
+                  <p className="text-sm">{t('settingsPage.syncLoading')}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <p className="font-medium">{t('settingsPage.tasksAndCategories')}</p>
