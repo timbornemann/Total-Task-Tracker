@@ -26,7 +26,7 @@ const useTaskStoreImpl = () => {
     useState<{ category: Category; taskIds: string[] }[]>([]);
 
   const fetchData = async () => {
-      try {
+    try {
         const res = await fetch(API_URL);
         if (!res.ok) throw new Error('Server error');
         const {
@@ -135,6 +135,7 @@ const useTaskStoreImpl = () => {
       }
     };
 
+  useEffect(() => {
     fetchData();
   }, []);
 
