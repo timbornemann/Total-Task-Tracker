@@ -32,6 +32,15 @@
       "info": "Info",
       "language": "Sprache"
     },
+    "groups": {
+      "general": "Allgemein",
+      "productivity": "Produktivität",
+      "flashcards": "Karten",
+      "appearance": "Aussehen",
+      "data": "Daten",
+      "server": "Server",
+      "info": "Info"
+    },
     "languageLabel": "Sprache der Anwendung",
     "english": "Englisch",
     "german": "Deutsch",
