@@ -34,6 +34,7 @@ import {
 } from '@/components/ui/accordion'
 import ReactMarkdown from 'react-markdown'
 import readme from '../../README.md?raw'
+import { useToast } from '@/hooks/use-toast'
 
 interface ServerInfo {
   ips: string[]
@@ -76,6 +77,7 @@ const SettingsPage: React.FC = () => {
   } = useSettings()
 
   const { t } = useTranslation()
+  const { toast } = useToast()
 
   const [serverInfo, setServerInfo] = useState<ServerInfo | null>(null)
   const [syncStatus, setSyncStatus] = useState<{ last: number; error: string | null } | null>(null)
@@ -284,13 +286,25 @@ const SettingsPage: React.FC = () => {
   }
 
   const selectFolder = async () => {
-    const res = await fetch('/api/select-folder')
-    if (res.ok) {
-      const data = await res.json()
-      if (data.folder) {
-        updateSyncFolder(data.folder)
+    try {
+      const res = await fetch('/api/select-folder')
+      if (res.ok) {
+        const data = await res.json()
+        if (data.folder) {
+          updateSyncFolder(data.folder)
+          return
+        }
       }
+      toast({ title: t('settingsPage.folderDialogFailed') })
+    } catch (err) {
+      console.error('Failed to open folder dialog', err)
+      toast({ title: t('settingsPage.folderDialogFailed') })
     }
+  }
+
+  const stopSync = () => {
+    updateSyncFolder('')
+    updateSyncInterval(0)
   }
 
   return (
@@ -714,6 +728,7 @@ const SettingsPage: React.FC = () => {
                     placeholder={t('settingsPage.syncFolderPlaceholder')}
                   />
                   <Button variant="outline" onClick={selectFolder}>{t('settingsPage.selectFolder')}</Button>
+                  <Button variant="outline" onClick={stopSync}>{t('settingsPage.stopSync')}</Button>
                 </div>
               </div>
               <div className="space-y-2">
