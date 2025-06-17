@@ -68,10 +68,12 @@ const SettingsPage: React.FC = () => {
     updateFlashcardSessionSize,
     flashcardDefaultMode,
     updateFlashcardDefaultMode,
+    syncRole,
+    updateSyncRole,
+    syncServerUrl,
+    updateSyncServerUrl,
     syncInterval,
     updateSyncInterval,
-    syncFolder,
-    updateSyncFolder,
     language,
     updateLanguage
   } = useSettings()
@@ -81,6 +83,7 @@ const SettingsPage: React.FC = () => {
 
   const [serverInfo, setServerInfo] = useState<ServerInfo | null>(null)
   const [syncStatus, setSyncStatus] = useState<{ last: number; error: string | null } | null>(null)
+  const [syncLog, setSyncLog] = useState<{ time: number; ip: string; method: string }[] | null>(null)
 
   useEffect(() => {
     const load = async () => {
@@ -113,6 +116,24 @@ const SettingsPage: React.FC = () => {
     const id = setInterval(load, 10000)
     return () => clearInterval(id)
   }, [])
+
+  useEffect(() => {
+    if (syncRole !== 'server') return
+    const load = async () => {
+      try {
+        const res = await fetch('/api/sync-log')
+        if (res.ok) {
+          const data = await res.json()
+          setSyncLog(data)
+        }
+      } catch (err) {
+        console.error('Failed to load sync log', err)
+      }
+    }
+    load()
+    const id = setInterval(load, 5000)
+    return () => clearInterval(id)
+  }, [syncRole])
 
   const handleHomeDrag = (result: DropResult) => {
     if (!result.destination) return
@@ -285,25 +306,8 @@ const SettingsPage: React.FC = () => {
     window.location.reload()
   }
 
-  const selectFolder = async () => {
-    try {
-      const res = await fetch('/api/select-folder')
-      if (res.ok) {
-        const data = await res.json()
-        if (data.folder) {
-          updateSyncFolder(data.folder)
-          return
-        }
-      }
-      toast({ title: t('settingsPage.folderDialogFailed') })
-    } catch (err) {
-      console.error('Failed to open folder dialog', err)
-      toast({ title: t('settingsPage.folderDialogFailed') })
-    }
-  }
-
   const stopSync = () => {
-    updateSyncFolder('')
+    updateSyncServerUrl('')
     updateSyncInterval(0)
   }
 
@@ -720,26 +724,39 @@ const SettingsPage: React.FC = () => {
             <TabsContent value="data" className="space-y-4">
               <h2 className="font-semibold">{t('settingsPage.dataTitle')}</h2>
               <div className="space-y-2">
-                <p className="font-medium">{t('settingsPage.syncFolder')}</p>
-                <div className="flex items-center gap-2">
+                <p className="font-medium">{t('settingsPage.syncRole')}</p>
+                <Select value={syncRole} onValueChange={updateSyncRole}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="server">{t('settingsPage.roleServer')}</SelectItem>
+                    <SelectItem value="client">{t('settingsPage.roleClient')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {syncRole === 'client' && (
+                <div className="space-y-2">
+                  <p className="font-medium">{t('settingsPage.serverUrl')}</p>
                   <Input
-                    value={syncFolder}
-                    onChange={e => updateSyncFolder(e.target.value)}
-                    placeholder={t('settingsPage.syncFolderPlaceholder')}
+                    value={syncServerUrl}
+                    onChange={e => updateSyncServerUrl(e.target.value)}
+                    placeholder="http://server:3002"
                   />
-                  <Button variant="outline" onClick={selectFolder}>{t('settingsPage.selectFolder')}</Button>
                   <Button variant="outline" onClick={stopSync}>{t('settingsPage.stopSync')}</Button>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <p className="font-medium">{t('settingsPage.syncInterval')}</p>
-                <Input
-                  type="number"
-                  min={1}
-                  value={syncInterval}
-                  onChange={e => updateSyncInterval(Number(e.target.value))}
-                />
-              </div>
+              )}
+              {syncRole === 'client' && (
+                <div className="space-y-2">
+                  <p className="font-medium">{t('settingsPage.syncInterval')}</p>
+                  <Input
+                    type="number"
+                    min={1}
+                    value={syncInterval}
+                    onChange={e => updateSyncInterval(Number(e.target.value))}
+                  />
+                </div>
+              )}
               <div className="space-y-2">
                 <p className="font-medium">{t('settingsPage.syncStatus')}</p>
                 {syncStatus ? (
@@ -815,6 +832,16 @@ const SettingsPage: React.FC = () => {
                       ))}
                     </ul>
                   </div>
+                  {syncRole === 'server' && syncLog && (
+                    <div>
+                      <p className="font-medium">{t('settingsPage.syncLog')}</p>
+                      <ul className="list-disc list-inside space-y-1 text-sm max-h-40 overflow-y-auto">
+                        {syncLog.map((entry, idx) => (
+                          <li key={idx}>{new Date(entry.time).toLocaleString()} - {entry.ip} - {entry.method}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <p>{t('settings.serverInfo.loading')}</p>

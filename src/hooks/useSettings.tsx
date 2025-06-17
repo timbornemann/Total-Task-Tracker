@@ -153,10 +153,12 @@ interface SettingsContextValue {
   updateFlashcardDefaultMode: (
     value: 'spaced' | 'training' | 'random' | 'typing' | 'timed'
   ) => void
+  syncRole: 'server' | 'client'
+  updateSyncRole: (role: 'server' | 'client') => void
+  syncServerUrl: string
+  updateSyncServerUrl: (url: string) => void
   syncInterval: number
   updateSyncInterval: (value: number) => void
-  syncFolder: string
-  updateSyncFolder: (folder: string) => void
   language: string
   updateLanguage: (lang: string) => void
 }
@@ -190,7 +192,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   ])
   const [showPinnedTasks, setShowPinnedTasks] = useState(true)
   const [showPinnedNotes, setShowPinnedNotes] = useState(true)
-  const [syncFolder, setSyncFolder] = useState('')
+  const [syncRole, setSyncRole] = useState<'server' | 'client'>('client')
+  const [syncServerUrl, setSyncServerUrl] = useState('')
   const [syncInterval, setSyncInterval] = useState(defaultSyncInterval)
   const [language, setLanguage] = useState(defaultLanguage)
   const [loaded, setLoaded] = useState(false)
@@ -256,8 +259,11 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           if (typeof data.flashcardDefaultMode === 'string') {
             setFlashcardDefaultMode(data.flashcardDefaultMode)
           }
-          if (typeof data.syncFolder === 'string') {
-            setSyncFolder(data.syncFolder)
+          if (typeof data.syncRole === 'string') {
+            setSyncRole(data.syncRole)
+          }
+          if (typeof data.syncServerUrl === 'string') {
+            setSyncServerUrl(data.syncServerUrl)
           }
           if (typeof data.syncInterval === 'number') {
             setSyncInterval(data.syncInterval)
@@ -295,7 +301,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             flashcardTimer,
             flashcardSessionSize,
             flashcardDefaultMode,
-            syncFolder,
+            syncRole,
+            syncServerUrl,
             syncInterval,
             language
           })
@@ -320,7 +327,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     flashcardTimer,
     flashcardSessionSize,
     flashcardDefaultMode,
-    syncFolder,
+    syncRole,
+    syncServerUrl,
     syncInterval,
     language
   ])
@@ -378,8 +386,12 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setFlashcardDefaultMode(value)
   }
 
-  const updateSyncFolder = (folder: string) => {
-    setSyncFolder(folder)
+  const updateSyncRole = (role: 'server' | 'client') => {
+    setSyncRole(role)
+  }
+
+  const updateSyncServerUrl = (url: string) => {
+    setSyncServerUrl(url)
   }
 
   const updateSyncInterval = (value: number) => {
@@ -443,10 +455,12 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         updateFlashcardSessionSize,
         flashcardDefaultMode,
         updateFlashcardDefaultMode,
+        syncRole,
+        updateSyncRole,
+        syncServerUrl,
+        updateSyncServerUrl,
         syncInterval,
         updateSyncInterval,
-        syncFolder,
-        updateSyncFolder,
         language,
         updateLanguage
       }}

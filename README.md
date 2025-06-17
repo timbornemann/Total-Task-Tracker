@@ -147,13 +147,11 @@ npm start    # startet die gebaute App auf Port 3002
 - Lern- und Pausendauer frei konfigurierbar (auch direkt im Timer anpassbar)
 - Daten können im Einstellungsbereich exportiert und importiert werden
   (inklusive Einstellungen)
-- Automatische Synchronisation mit optional wählbarem Ordner
-  und einstellbarem Sync-Intervall. Dabei werden nun auch die
-  Einstellungen mitgespeichert und abgeglichen, der Ordnerpfad
-  selbst wird jedoch nicht in der Sync-Datei gespeichert.
-- In den Einstellungen wird der Zeitpunkt der letzten Synchronisierung
-  angezeigt. Bei Fehlern wird die Fehlermeldung ausgegeben.
-- Synchronisierung kann über den Button "Sync stoppen" jederzeit deaktiviert werden.
+- Zentrale Synchronisation über HTTP. Ein Container kann als Sync-Server
+  betrieben werden, alle anderen senden ihre Daten regelmäßig dorthin.
+  Der Server listet seine IP-Adressen auf und führt ein Log über eingehende
+  Anfragen. Fällt der Server aus, speichern Clients lokal weiter und gleichen
+  die Daten ab, sobald der Server wieder erreichbar ist.
 - Standard-Priorität für neue Tasks einstellbar
 - Mehrsprachige Oberfläche (Deutsch, Englisch) auswählbar
 - Mehrere Theme-Voreinstellungen (light, dark, ocean, dark-red, hacker,
