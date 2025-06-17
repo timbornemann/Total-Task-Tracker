@@ -36,15 +36,19 @@ const useTaskStoreImpl = () => {
           recurring: savedRecurring,
           deletions: savedDeletions
         } = await res.json();
+        const serverDeletions: (Omit<Deletion, 'deletedAt'> & {
+          deletedAt: string;
+        })[] = savedDeletions || [];
+
         setDeletions(
-          (savedDeletions || []).map((d: any) => ({
+          serverDeletions.map(d => ({
             ...d,
             deletedAt: new Date(d.deletedAt)
           }))
         );
 
-        const isDeleted = (type: string, id: string) =>
-          savedDeletions?.some((d: any) => d.type === type && d.id === id);
+        const isDeleted = (type: Deletion['type'], id: string) =>
+          serverDeletions.some(d => d.type === type && d.id === id);
 
         if (savedTasks) {
             setTasks(
