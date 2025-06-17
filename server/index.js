@@ -386,7 +386,9 @@ function startSyncTimer() {
 }
 
 function setSyncRole(role) {
-  syncRole = role === 'server' ? 'server' : 'client';
+  const newRole = role === 'server' ? 'server' : 'client';
+  if (newRole === syncRole) return;
+  syncRole = newRole;
   log('Sync role set to', syncRole);
   startSyncTimer();
 }
@@ -395,13 +397,17 @@ function setSyncServerUrl(url) {
   if (url && !/^https?:\/\//i.test(url)) {
     url = 'http://' + url;
   }
-  syncServerUrl = url ? url.replace(/\/$/, '') : '';
+  const normalized = url ? url.replace(/\/$/, '') : '';
+  if (normalized === syncServerUrl) return;
+  syncServerUrl = normalized;
   log('Sync server URL set to', syncServerUrl || '(none)');
   startSyncTimer();
 }
 
 function setSyncInterval(minutes) {
-  syncInterval = minutes || 0;
+  const val = Number(minutes) || 0;
+  if (val === syncInterval) return;
+  syncInterval = val;
   log('Sync interval set to', syncInterval);
   startSyncTimer();
 }
