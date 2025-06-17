@@ -23,6 +23,7 @@ const useTaskStoreImpl = () => {
   const [deletions, setDeletions] = useState<Deletion[]>([]);
   const [loaded, setLoaded] = useState(false);
   const lastDataRef = useRef('');
+  const saveTimerRef = useRef<number | null>(null);
   const [recentlyDeletedCategories, setRecentlyDeletedCategories] =
     useState<{ category: Category; taskIds: string[] }[]>([]);
 
@@ -176,7 +177,8 @@ const useTaskStoreImpl = () => {
     if (dataString === lastDataRef.current) return;
     lastDataRef.current = dataString;
 
-    const save = async () => {
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = window.setTimeout(async () => {
       try {
         await fetch(API_URL, {
           method: 'PUT',
@@ -186,10 +188,14 @@ const useTaskStoreImpl = () => {
       } catch (error) {
         console.error('Error saving data:', error);
       }
-    };
-
-    save();
+    }, 500);
   }, [tasks, categories, notes, recurring, deletions, loaded]);
+
+  useEffect(() => {
+    return () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    };
+  }, []);
 
   const addTask = (
     taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'subtasks' | 'pinned'>
