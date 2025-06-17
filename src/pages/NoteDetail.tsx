@@ -71,28 +71,26 @@ const NoteDetailPage: React.FC = () => {
               required
               className="text-3xl font-bold border-none focus-visible:ring-0 focus-visible:outline-none p-0 bg-transparent"
             />
-            <div className="relative">
-              <MarkdownEditor
-                value={formData.text}
-                onChange={val => handleChange('text', val)}
-                rows={20}
-                className="min-h-[60vh]"
-              />
-              <div className="absolute top-20 right-4 flex space-x-2 bg-background/80 p-2 rounded-md shadow">
-                {colorOptions.map(color => (
-                  <button
-                    key={color}
-                    type="button"
-                    className={`w-8 h-8 rounded-full border-2 transition-all ${
-                      formData.color === color
-                        ? 'border-gray-800 scale-110'
-                        : 'border-gray-300 hover:scale-105'
-                    }`}
-                    style={{ backgroundColor: color }}
-                    onClick={() => handleChange('color', color)}
-                  />
-                ))}
-              </div>
+            <MarkdownEditor
+              value={formData.text}
+              onChange={val => handleChange('text', val)}
+              rows={20}
+              className="min-h-[60vh]"
+            />
+            <div className="flex flex-wrap gap-2">
+              {colorOptions.map(color => (
+                <button
+                  key={color}
+                  type="button"
+                  className={`w-8 h-8 rounded-full border-2 transition-all ${
+                    formData.color === color
+                      ? 'border-gray-800 scale-110'
+                      : 'border-gray-300 hover:scale-105'
+                  }`}
+                  style={{ backgroundColor: color }}
+                  onClick={() => handleChange('color', color)}
+                />
+              ))}
             </div>
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
