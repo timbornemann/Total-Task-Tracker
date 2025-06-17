@@ -15,6 +15,10 @@ const DIST_DIR = path.join(__dirname, '..', 'dist');
 
 fs.mkdirSync(DATA_DIR, { recursive: true });
 const db = new Database(DB_FILE);
+
+function log(...args) {
+  console.log(new Date().toISOString(), ...args);
+}
 db.exec(`
   CREATE TABLE IF NOT EXISTS tasks (
     id TEXT PRIMARY KEY,
@@ -72,6 +76,11 @@ if (initialSettings.syncRole) {
 if (initialSettings.syncServerUrl) {
   syncServerUrl = initialSettings.syncServerUrl;
 }
+log('Initial sync settings', {
+  role: syncRole,
+  url: syncServerUrl,
+  interval: syncInterval
+});
 startSyncTimer();
 
 function dateReviver(key, value) {
@@ -336,6 +345,7 @@ async function performSync() {
   if (syncRole !== 'client' || !syncServerUrl) return;
   const url = `${syncServerUrl.replace(/\/$/, '')}/api/sync`;
   try {
+    log('Starting sync with', url);
     const data = loadAllData();
     if (data.settings) {
       delete data.settings.syncServerUrl;
@@ -357,6 +367,7 @@ async function performSync() {
     saveAllData(merged);
     lastSyncTime = Date.now();
     lastSyncError = null;
+    log('Sync successful');
   } catch (err) {
     console.error('Sync error', err);
     lastSyncTime = Date.now();
@@ -368,6 +379,7 @@ function startSyncTimer() {
   if (syncTimer) clearInterval(syncTimer);
   syncTimer = null;
   if (syncRole === 'client' && syncServerUrl && syncInterval > 0) {
+    log('Sync timer started with interval', syncInterval, 'minutes');
     performSync();
     syncTimer = setInterval(performSync, syncInterval * 60 * 1000);
   }
@@ -375,6 +387,7 @@ function startSyncTimer() {
 
 function setSyncRole(role) {
   syncRole = role === 'server' ? 'server' : 'client';
+  log('Sync role set to', syncRole);
   startSyncTimer();
 }
 
@@ -383,11 +396,13 @@ function setSyncServerUrl(url) {
     url = 'http://' + url;
   }
   syncServerUrl = url ? url.replace(/\/$/, '') : '';
+  log('Sync server URL set to', syncServerUrl || '(none)');
   startSyncTimer();
 }
 
 function setSyncInterval(minutes) {
   syncInterval = minutes || 0;
+  log('Sync interval set to', syncInterval);
   startSyncTimer();
 }
 
@@ -409,6 +424,7 @@ function serveStatic(filePath, res) {
 }
 
 const server = http.createServer((req, res) => {
+  log(req.method, req.url, 'from', req.socket.remoteAddress);
   const parsed = parse(req.url, true);
 
   if (parsed.pathname === '/api/data') {
@@ -734,5 +750,5 @@ const server = http.createServer((req, res) => {
 const port = process.env.PORT || 3002;
 const publicIp = process.env.SERVER_PUBLIC_IP || null;
 server.listen(port, () => {
-  console.log('Server listening on port', port);
+  log('Server listening on port', port, 'DB', DB_FILE);
 });
