@@ -32,6 +32,15 @@
       "info": "Info",
       "language": "Language"
     },
+    "groups": {
+      "general": "General",
+      "productivity": "Productivity",
+      "flashcards": "Flashcards",
+      "appearance": "Appearance",
+      "data": "Data",
+      "server": "Server",
+      "info": "Info"
+    },
     "languageLabel": "App Language",
     "english": "English",
     "german": "German",
