@@ -118,6 +118,18 @@ export interface Deck {
   name: string;
 }
 
+export interface Deletion {
+  id: string;
+  type:
+    | 'task'
+    | 'category'
+    | 'note'
+    | 'recurring'
+    | 'flashcard'
+    | 'deck';
+  deletedAt: Date;
+}
+
 export interface TaskStats {
   totalTasks: number;
   completedTasks: number;

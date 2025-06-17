@@ -1,5 +1,5 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
-import { Task, Category, Note } from '@/types';
+import { Task, Category, Note, Deletion } from '@/types';
 import i18n from '@/lib/i18n';
 
 const API_URL = '/api/data';
@@ -20,26 +20,41 @@ const useTaskStoreImpl = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [notes, setNotes] = useState<Note[]>([]);
   const [recurring, setRecurring] = useState<Task[]>([]);
+  const [deletions, setDeletions] = useState<Deletion[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [recentlyDeletedCategories, setRecentlyDeletedCategories] =
     useState<{ category: Category; taskIds: string[] }[]>([]);
 
-  // Load data from the server on mount
-  useEffect(() => {
-    const loadData = async () => {
-      try {
+  const fetchData = async () => {
+    try {
         const res = await fetch(API_URL);
         if (!res.ok) throw new Error('Server error');
         const {
           tasks: savedTasks,
           categories: savedCategories,
           notes: savedNotes,
-          recurring: savedRecurring
+          recurring: savedRecurring,
+          deletions: savedDeletions
         } = await res.json();
+        const serverDeletions: (Omit<Deletion, 'deletedAt'> & {
+          deletedAt: string;
+        })[] = savedDeletions || [];
+
+        setDeletions(
+          serverDeletions.map(d => ({
+            ...d,
+            deletedAt: new Date(d.deletedAt)
+          }))
+        );
+
+        const isDeleted = (type: Deletion['type'], id: string) =>
+          serverDeletions.some(d => d.type === type && d.id === id);
 
         if (savedTasks) {
             setTasks(
-              savedTasks.map((task: Task, idx: number) => ({
+              savedTasks
+                .filter((t: Task) => !isDeleted('task', t.id))
+                .map((task: Task, idx: number) => ({
               ...task,
               createdAt: new Date(task.createdAt),
               updatedAt: new Date(task.updatedAt),
@@ -59,7 +74,9 @@ const useTaskStoreImpl = () => {
         if (savedNotes) {
           setNotes(
               sortNotes(
-                savedNotes.map((note: Note, idx: number) => ({
+                savedNotes
+                  .filter((n: Note) => !isDeleted('note', n.id))
+                  .map((note: Note, idx: number) => ({
                 ...note,
                 createdAt: new Date(note.createdAt),
                 updatedAt: new Date(note.updatedAt),
@@ -72,7 +89,9 @@ const useTaskStoreImpl = () => {
 
         if (savedRecurring) {
             setRecurring(
-              savedRecurring.map((t: Task, idx: number) => ({
+              savedRecurring
+                .filter((t: Task) => !isDeleted('recurring', t.id))
+                .map((t: Task, idx: number) => ({
               ...t,
               createdAt: new Date(t.createdAt),
               updatedAt: new Date(t.updatedAt),
@@ -92,7 +111,9 @@ const useTaskStoreImpl = () => {
 
         if (savedCategories && savedCategories.length) {
             setCategories(
-              savedCategories.map((category: Category, idx: number) => ({
+              savedCategories
+                .filter((c: Category) => !isDeleted('category', c.id))
+                .map((category: Category, idx: number) => ({
               ...category,
               createdAt: new Date(category.createdAt),
               updatedAt: new Date(category.updatedAt),
@@ -118,7 +139,8 @@ const useTaskStoreImpl = () => {
       }
     };
 
-    loadData();
+  useEffect(() => {
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -130,6 +152,12 @@ const useTaskStoreImpl = () => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const es = new EventSource('/api/updates');
+    es.onmessage = () => fetchData();
+    return () => es.close();
+  }, []);
+
   // Save to server whenever data changes after initial load
   useEffect(() => {
     if (!loaded) return;
@@ -138,7 +166,7 @@ const useTaskStoreImpl = () => {
         await fetch(API_URL, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ tasks, categories, notes, recurring })
+          body: JSON.stringify({ tasks, categories, notes, recurring, deletions })
         });
       } catch (error) {
         console.error('Error saving data:', error);
@@ -313,6 +341,7 @@ const useTaskStoreImpl = () => {
       );
       return [...reorderedMain, ...subs];
     });
+    setDeletions(prev => [...prev, { id: taskId, type: 'task', deletedAt: new Date() }]);
   };
 
   const addRecurringTask = (
@@ -381,6 +410,7 @@ const useTaskStoreImpl = () => {
 
   const deleteRecurringTask = (id: string) => {
     setRecurring(prev => prev.filter(t => t.id !== id));
+    setDeletions(prev => [...prev, { id, type: 'recurring', deletedAt: new Date() }]);
   };
 
   const generateTitle = (t: Task): string => {
@@ -491,6 +521,7 @@ const useTaskStoreImpl = () => {
       ...prev,
       { category: categoryToDelete, taskIds: affectedTaskIds }
     ]);
+    setDeletions(prev => [...prev, { id: categoryId, type: 'category', deletedAt: new Date() }]);
   };
 
   const undoDeleteCategory = (categoryId: string) => {
@@ -621,6 +652,7 @@ const useTaskStoreImpl = () => {
 
   const deleteNote = (noteId: string) => {
     setNotes(prev => sortNotes(prev.filter(n => n.id !== noteId)));
+    setDeletions(prev => [...prev, { id: noteId, type: 'note', deletedAt: new Date() }]);
   };
 
   const reorderNotes = (startIndex: number, endIndex: number) => {
@@ -658,6 +690,7 @@ const useTaskStoreImpl = () => {
     categories,
     notes,
     recentlyDeletedCategories,
+    deletions,
     addTask,
     updateTask,
     deleteTask,
