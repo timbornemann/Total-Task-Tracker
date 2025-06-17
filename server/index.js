@@ -4,7 +4,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { parse } from 'url';
 import Database from 'better-sqlite3';
-import dialog from 'node-file-dialog';
 import os from 'os';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -55,20 +54,25 @@ try {
   db.prepare('ALTER TABLE pomodoro_sessions ADD COLUMN breakEnd INTEGER').run();
 } catch {}
 
-let syncFolder = '';
+let syncRole = 'client'; // 'server' or 'client'
+let syncServerUrl = '';
 let syncInterval = 5; // minutes
 let syncTimer = null;
-let lastSyncMtime = 0;
 let lastSyncTime = 0;
 let lastSyncError = null;
+const syncLogs = [];
 
 const initialSettings = loadSettings();
 if (typeof initialSettings.syncInterval === 'number') {
   syncInterval = initialSettings.syncInterval;
 }
-if (initialSettings.syncFolder) {
-  setSyncFolder(initialSettings.syncFolder);
+if (initialSettings.syncRole) {
+  syncRole = initialSettings.syncRole;
 }
+if (initialSettings.syncServerUrl) {
+  syncServerUrl = initialSettings.syncServerUrl;
+}
+startSyncTimer();
 
 function dateReviver(key, value) {
   if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
@@ -288,8 +292,11 @@ function saveAllData(data) {
   if (data.recurring) saveRecurring(data.recurring);
   if (data.settings) {
     saveSettings(data.settings);
-    if (data.settings.syncFolder !== undefined) {
-      setSyncFolder(data.settings.syncFolder);
+    if (data.settings.syncRole !== undefined) {
+      setSyncRole(data.settings.syncRole);
+    }
+    if (data.settings.syncServerUrl !== undefined) {
+      setSyncServerUrl(data.settings.syncServerUrl);
     }
     if (data.settings.syncInterval !== undefined) {
       setSyncInterval(data.settings.syncInterval);
@@ -325,36 +332,30 @@ function mergeData(curr, inc) {
   };
 }
 
-function performSync() {
-  if (!syncFolder) return;
-  const file = path.join(syncFolder, 'total-task-tracker-sync.json');
+async function performSync() {
+  if (syncRole !== 'client' || !syncServerUrl) return;
+  const url = `${syncServerUrl.replace(/\/$/, '')}/api/sync`;
   try {
-    let incoming = null;
-    if (fs.existsSync(file)) {
-      const stat = fs.statSync(file);
-      if (stat.mtimeMs > lastSyncMtime) {
-        incoming = JSON.parse(fs.readFileSync(file, 'utf8'), dateReviver);
-        if (incoming.settings) delete incoming.settings.syncFolder;
-        lastSyncMtime = stat.mtimeMs;
-      }
-    }
-    if (incoming) {
-      const merged = mergeData(loadAllData(), incoming);
-      saveAllData(merged);
-    }
     const data = loadAllData();
-    if (data.settings) delete data.settings.syncFolder;
-    fs.mkdirSync(syncFolder, { recursive: true });
-    fs.writeFileSync(
-      file,
-      JSON.stringify(
+    if (data.settings) {
+      delete data.settings.syncServerUrl;
+      delete data.settings.syncRole;
+    }
+    const post = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(
         data,
-        (k, v) => (v instanceof Date ? v.toISOString() : v),
-        2
+        (k, v) => (v instanceof Date ? v.toISOString() : v)
       )
-    );
-    lastSyncMtime = Date.now();
-    lastSyncTime = lastSyncMtime;
+    });
+    if (!post.ok) throw new Error(`HTTP ${post.status}`);
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const incoming = await res.json();
+    const merged = mergeData(loadAllData(), incoming);
+    saveAllData(merged);
+    lastSyncTime = Date.now();
     lastSyncError = null;
   } catch (err) {
     console.error('Sync error', err);
@@ -363,24 +364,28 @@ function performSync() {
   }
 }
 
-function setSyncFolder(folder) {
-  syncFolder = folder || '';
+function startSyncTimer() {
   if (syncTimer) clearInterval(syncTimer);
   syncTimer = null;
-  if (syncFolder && syncInterval > 0) {
+  if (syncRole === 'client' && syncServerUrl && syncInterval > 0) {
     performSync();
     syncTimer = setInterval(performSync, syncInterval * 60 * 1000);
   }
 }
 
+function setSyncRole(role) {
+  syncRole = role === 'server' ? 'server' : 'client';
+  startSyncTimer();
+}
+
+function setSyncServerUrl(url) {
+  syncServerUrl = url || '';
+  startSyncTimer();
+}
+
 function setSyncInterval(minutes) {
   syncInterval = minutes || 0;
-  if (syncTimer) clearInterval(syncTimer);
-  syncTimer = null;
-  if (syncFolder && syncInterval > 0) {
-    performSync();
-    syncTimer = setInterval(performSync, syncInterval * 60 * 1000);
-  }
+  startSyncTimer();
 }
 
 function serveStatic(filePath, res) {
@@ -530,7 +535,10 @@ const server = http.createServer((req, res) => {
     if (req.method === 'GET') {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       const all = loadAllData();
-      if (all.settings) delete all.settings.syncFolder;
+      if (all.settings) {
+        delete all.settings.syncServerUrl;
+        delete all.settings.syncRole;
+      }
       res.end(
         JSON.stringify(
           all,
@@ -559,21 +567,6 @@ const server = http.createServer((req, res) => {
     }
   }
 
-  if (parsed.pathname === '/api/select-folder') {
-    if (req.method === 'GET') {
-      dialog({ type: 'directory' })
-        .then(paths => {
-          const folder = Array.isArray(paths) ? paths[0] : ''
-          res.writeHead(200, { 'Content-Type': 'application/json' })
-          res.end(JSON.stringify({ folder }))
-        })
-        .catch(() => {
-          res.writeHead(500)
-          res.end(JSON.stringify({ folder: '' }))
-        })
-      return
-    }
-  }
 
   if (parsed.pathname === '/api/settings') {
     if (req.method === 'GET') {
@@ -588,8 +581,11 @@ const server = http.createServer((req, res) => {
         try {
           const settings = JSON.parse(body || '{}');
           saveSettings(settings);
-          if (settings.syncFolder !== undefined) {
-            setSyncFolder(settings.syncFolder);
+          if (settings.syncRole !== undefined) {
+            setSyncRole(settings.syncRole);
+          }
+          if (settings.syncServerUrl !== undefined) {
+            setSyncServerUrl(settings.syncServerUrl);
           }
           if (settings.syncInterval !== undefined) {
             setSyncInterval(settings.syncInterval);
@@ -627,6 +623,58 @@ const server = http.createServer((req, res) => {
       });
       return;
     }
+  }
+
+  if (parsed.pathname === '/api/sync') {
+    if (syncRole !== 'server') {
+      res.writeHead(403);
+      res.end();
+      return;
+    }
+    if (req.method === 'GET') {
+      const data = loadAllData();
+      if (data.settings) {
+        delete data.settings.syncServerUrl;
+        delete data.settings.syncRole;
+      }
+      syncLogs.push({ time: Date.now(), ip: req.socket.remoteAddress, method: 'GET' });
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(data, (k, v) => (v instanceof Date ? v.toISOString() : v)));
+      return;
+    }
+    if (req.method === 'POST') {
+      let body = '';
+      req.on('data', chunk => { body += chunk; });
+      req.on('end', () => {
+        try {
+          const incoming = JSON.parse(body || '{}', dateReviver);
+          if (incoming.settings) {
+            delete incoming.settings.syncServerUrl;
+            delete incoming.settings.syncRole;
+          }
+          const merged = mergeData(loadAllData(), incoming);
+          saveAllData(merged);
+          syncLogs.push({ time: Date.now(), ip: req.socket.remoteAddress, method: 'POST' });
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ status: 'ok' }));
+        } catch {
+          res.writeHead(400);
+          res.end();
+        }
+      });
+      return;
+    }
+  }
+
+  if (parsed.pathname === '/api/sync-log') {
+    if (syncRole !== 'server') {
+      res.writeHead(403);
+      res.end();
+      return;
+    }
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(syncLogs, (k, v) => (v instanceof Date ? v.toISOString() : v)));
+    return;
   }
 
   if (parsed.pathname === '/api/server-info') {
