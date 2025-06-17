@@ -287,7 +287,7 @@ const SettingsPage: React.FC = () => {
                   {t('settings.groups.general')}
                 </AccordionTrigger>
                 <AccordionContent className="pl-2">
-                  <TabsList className="flex flex-col gap-1 bg-transparent p-0">
+                  <TabsList className="flex flex-col gap-1 bg-transparent p-0 h-auto">
                     <TabsTrigger className="justify-start" value="shortcuts">
                       {t('settings.tabs.shortcuts')}
                     </TabsTrigger>
@@ -302,7 +302,7 @@ const SettingsPage: React.FC = () => {
                   {t('settings.groups.customization')}
                 </AccordionTrigger>
                 <AccordionContent className="pl-2">
-                  <TabsList className="flex flex-col gap-1 bg-transparent p-0">
+                  <TabsList className="flex flex-col gap-1 bg-transparent p-0 h-auto">
                     <TabsTrigger className="justify-start" value="home">
                       {t('settings.tabs.home')}
                     </TabsTrigger>
@@ -317,7 +317,7 @@ const SettingsPage: React.FC = () => {
                   {t('settings.groups.productivity')}
                 </AccordionTrigger>
                 <AccordionContent className="pl-2">
-                  <TabsList className="flex flex-col gap-1 bg-transparent p-0">
+                  <TabsList className="flex flex-col gap-1 bg-transparent p-0 h-auto">
                     <TabsTrigger className="justify-start" value="pomodoro">
                       {t('settings.tabs.pomodoro')}
                     </TabsTrigger>
@@ -335,7 +335,7 @@ const SettingsPage: React.FC = () => {
                   {t('settings.groups.data')}
                 </AccordionTrigger>
                 <AccordionContent className="pl-2">
-                  <TabsList className="flex flex-col gap-1 bg-transparent p-0">
+                  <TabsList className="flex flex-col gap-1 bg-transparent p-0 h-auto">
                     <TabsTrigger className="justify-start" value="data">
                       {t('settings.tabs.data')}
                     </TabsTrigger>
@@ -347,7 +347,7 @@ const SettingsPage: React.FC = () => {
                   {t('settings.groups.server')}
                 </AccordionTrigger>
                 <AccordionContent className="pl-2">
-                  <TabsList className="flex flex-col gap-1 bg-transparent p-0">
+                  <TabsList className="flex flex-col gap-1 bg-transparent p-0 h-auto">
                     <TabsTrigger className="justify-start" value="server">
                       {t('settings.tabs.server')}
                     </TabsTrigger>
@@ -359,7 +359,7 @@ const SettingsPage: React.FC = () => {
                   {t('settings.groups.info')}
                 </AccordionTrigger>
                 <AccordionContent className="pl-2">
-                  <TabsList className="flex flex-col gap-1 bg-transparent p-0">
+                  <TabsList className="flex flex-col gap-1 bg-transparent p-0 h-auto">
                     <TabsTrigger className="justify-start" value="info">
                       {t('settings.tabs.info')}
                     </TabsTrigger>
