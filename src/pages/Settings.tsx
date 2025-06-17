@@ -40,6 +40,8 @@ interface ServerInfo {
   ips: string[]
   port: number
   urls: string[]
+  wifiIp: string | null
+  wifiUrl: string | null
 }
 
 const SettingsPage: React.FC = () => {
@@ -735,6 +737,12 @@ const SettingsPage: React.FC = () => {
                   </SelectContent>
                 </Select>
               </div>
+              {syncRole === 'server' && serverInfo?.wifiUrl && (
+                <div className="space-y-2">
+                  <p className="font-medium">{t('settings.serverInfo.wifiIp')}</p>
+                  <p className="text-sm break-all">{serverInfo.wifiUrl}</p>
+                </div>
+              )}
               {syncRole === 'client' && (
                 <div className="space-y-2">
                   <p className="font-medium">{t('settingsPage.serverUrl')}</p>
@@ -832,6 +840,12 @@ const SettingsPage: React.FC = () => {
                       ))}
                     </ul>
                   </div>
+                  {serverInfo.wifiUrl && (
+                    <div>
+                      <p className="font-medium">{t('settings.serverInfo.wifiIp')}</p>
+                      <p className="text-sm break-all">{serverInfo.wifiUrl}</p>
+                    </div>
+                  )}
                   {syncRole === 'server' && syncLog && (
                     <div>
                       <p className="font-medium">{t('settingsPage.syncLog')}</p>

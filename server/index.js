@@ -680,17 +680,23 @@ const server = http.createServer((req, res) => {
   if (parsed.pathname === '/api/server-info') {
     const ips = [];
     const ifaces = os.networkInterfaces();
-    Object.values(ifaces).forEach(list => {
+    let wifiIp = null;
+    Object.entries(ifaces).forEach(([name, list]) => {
       for (const iface of list || []) {
         if (iface.family === 'IPv4' && !iface.internal) {
           ips.push(iface.address);
+          if (!wifiIp && /^wl|wlan|wi-?fi/i.test(name)) {
+            wifiIp = iface.address;
+          }
         }
       }
     });
     const info = {
       ips,
       port,
-      urls: ips.map(ip => `http://${ip}:${port}/`)
+      urls: ips.map(ip => `http://${ip}:${port}/`),
+      wifiIp,
+      wifiUrl: wifiIp ? `http://${wifiIp}:${port}/` : null
     };
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(info));

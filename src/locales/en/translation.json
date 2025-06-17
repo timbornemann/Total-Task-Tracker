@@ -49,7 +49,8 @@
       "port": "Port",
       "ips": "IPs",
       "urls": "URLs",
-      "loading": "Loading..."
+      "loading": "Loading...",
+      "wifiIp": "WiFi IP"
     }
   },
   "settingsPage": {
