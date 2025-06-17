@@ -154,6 +154,8 @@ npm start    # startet die gebaute App auf Port 3002
   Der Server listet seine IP-Adressen auf und führt ein Log über eingehende
   Anfragen. Fällt der Server aus, speichern Clients lokal weiter und gleichen
   die Daten ab, sobald der Server wieder erreichbar ist.
+- Live-Updates per Server-Sent Events halten geöffnete Clients automatisch auf dem neuesten Stand.
+- Gelöschte Einträge werden über ein Deletion-Log abgeglichen und tauchen nicht wieder auf.
 - Standard-Priorität für neue Tasks einstellbar
 - Mehrsprachige Oberfläche (Deutsch, Englisch) auswählbar
 - Mehrere Theme-Voreinstellungen (light, dark, ocean, dark-red, hacker,

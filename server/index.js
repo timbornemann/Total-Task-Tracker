@@ -53,6 +53,12 @@ db.exec(`
     end INTEGER NOT NULL,
     breakEnd INTEGER
   );
+  CREATE TABLE IF NOT EXISTS deletions (
+    type TEXT NOT NULL,
+    id TEXT NOT NULL,
+    deletedAt TEXT NOT NULL,
+    PRIMARY KEY (type, id)
+  );
 `);
 try {
   db.prepare('ALTER TABLE pomodoro_sessions ADD COLUMN breakEnd INTEGER').run();
@@ -65,6 +71,12 @@ let syncTimer = null;
 let lastSyncTime = 0;
 let lastSyncError = null;
 const syncLogs = [];
+const sseClients = [];
+
+function notifyClients() {
+  const msg = 'data: update\n\n';
+  sseClients.forEach(res => res.write(msg));
+}
 
 const initialSettings = loadSettings();
 if (typeof initialSettings.syncInterval === 'number') {
@@ -142,13 +154,30 @@ function loadRecurring() {
   }
 }
 
+function loadDeletions() {
+  try {
+    return db
+      .prepare('SELECT type, id, deletedAt FROM deletions')
+      .all()
+      .map(row => ({
+        type: row.type,
+        id: row.id,
+        deletedAt: new Date(row.deletedAt)
+      }));
+  } catch {
+    return [];
+  }
+}
+
 function loadData() {
-  return {
+  const data = {
     tasks: loadTasks(),
     categories: loadCategories(),
     notes: loadNotes(),
-    recurring: loadRecurring()
+    recurring: loadRecurring(),
+    deletions: loadDeletions()
   };
+  return applyDeletions(data);
 }
 
 function saveTasks(tasks) {
@@ -201,6 +230,7 @@ function saveData(data) {
     saveCategories(data.categories || []);
     saveNotes(data.notes || []);
     saveRecurring(data.recurring || []);
+    saveDeletions(data.deletions || []);
   });
   tx();
 }
@@ -282,16 +312,29 @@ function saveDecks(decks) {
   tx();
 }
 
+function saveDeletions(list) {
+  const tx = db.transaction(() => {
+    db.exec('DELETE FROM deletions');
+    for (const d of list || []) {
+      db.prepare('INSERT INTO deletions (type, id, deletedAt) VALUES (?, ?, ?)')
+        .run(d.type, d.id, new Date(d.deletedAt).toISOString());
+    }
+  });
+  tx();
+}
+
 function loadAllData() {
-  return {
+  const data = {
     tasks: loadTasks(),
     categories: loadCategories(),
     notes: loadNotes(),
     recurring: loadRecurring(),
     flashcards: loadFlashcards(),
     decks: loadDecks(),
-    settings: loadSettings()
+    settings: loadSettings(),
+    deletions: loadDeletions()
   };
+  return applyDeletions(data);
 }
 
 function saveAllData(data) {
@@ -299,6 +342,7 @@ function saveAllData(data) {
   saveFlashcards(data.flashcards || []);
   saveDecks(data.decks || []);
   if (data.recurring) saveRecurring(data.recurring);
+  if (data.deletions) saveDeletions(data.deletions);
   if (data.settings) {
     saveSettings(data.settings);
     if (data.settings.syncRole !== undefined) {
@@ -311,6 +355,7 @@ function saveAllData(data) {
       setSyncInterval(data.settings.syncInterval);
     }
   }
+  notifyClients();
 }
 
 function mergeLists(curr = [], inc = [], compare = 'updatedAt') {
@@ -337,8 +382,33 @@ function mergeData(curr, inc) {
     recurring: mergeLists(curr.recurring, inc.recurring),
     flashcards: mergeLists(curr.flashcards, inc.flashcards, null),
     decks: mergeLists(curr.decks, inc.decks, null),
-    settings: { ...curr.settings, ...inc.settings }
+    settings: { ...curr.settings, ...inc.settings },
+    deletions: mergeLists(curr.deletions, inc.deletions, 'deletedAt')
   };
+}
+
+function applyDeletions(data) {
+  const maps = {};
+  for (const d of data.deletions || []) {
+    maps[d.type] = maps[d.type] || new Map();
+    const curr = maps[d.type].get(d.id);
+    const time = new Date(d.deletedAt);
+    if (!curr || time > curr) maps[d.type].set(d.id, time);
+  }
+  const shouldKeep = (type, item) => {
+    const m = maps[type];
+    if (!m) return true;
+    const t = m.get(item.id);
+    if (!t) return true;
+    return !(item.updatedAt && new Date(item.updatedAt) <= t);
+  };
+  data.tasks = (data.tasks || []).filter(t => shouldKeep('task', t));
+  data.categories = (data.categories || []).filter(c => shouldKeep('category', c));
+  data.notes = (data.notes || []).filter(n => shouldKeep('note', n));
+  data.recurring = (data.recurring || []).filter(r => shouldKeep('recurring', r));
+  data.flashcards = (data.flashcards || []).filter(f => shouldKeep('flashcard', f));
+  data.decks = (data.decks || []).filter(d => shouldKeep('deck', d));
+  return data;
 }
 
 async function performSync() {
@@ -363,7 +433,9 @@ async function performSync() {
     const res = await fetch(url);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const incoming = await res.json();
-    const merged = mergeData(loadAllData(), incoming);
+    const merged = applyDeletions(
+      mergeData(loadAllData(), incoming)
+    );
     saveAllData(merged);
     lastSyncTime = Date.now();
     lastSyncError = null;
@@ -433,6 +505,21 @@ const server = http.createServer((req, res) => {
   log(req.method, req.url, 'from', req.socket.remoteAddress);
   const parsed = parse(req.url, true);
 
+  if (parsed.pathname === '/api/updates') {
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive'
+    });
+    res.write('\n');
+    sseClients.push(res);
+    req.on('close', () => {
+      const idx = sseClients.indexOf(res);
+      if (idx !== -1) sseClients.splice(idx, 1);
+    });
+    return;
+  }
+
   if (parsed.pathname === '/api/data') {
     if (req.method === 'GET') {
       res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -446,6 +533,7 @@ const server = http.createServer((req, res) => {
         try {
           const data = JSON.parse(body || '{}');
           saveData(data);
+          notifyClients();
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ status: 'ok' }));
         } catch {
@@ -471,6 +559,7 @@ const server = http.createServer((req, res) => {
         try {
           const cards = JSON.parse(body || '[]');
           saveFlashcards(cards);
+          notifyClients();
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ status: 'ok' }));
         } catch {
@@ -495,6 +584,7 @@ const server = http.createServer((req, res) => {
         try {
           const decks = JSON.parse(body || '[]');
           saveDecks(decks);
+          notifyClients();
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ status: 'ok' }));
         } catch {
@@ -519,6 +609,7 @@ const server = http.createServer((req, res) => {
         try {
           const list = JSON.parse(body || '[]');
           saveRecurring(list);
+          notifyClients();
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ status: 'ok' }));
         } catch {
@@ -545,6 +636,7 @@ const server = http.createServer((req, res) => {
         try {
           const notes = JSON.parse(body || '[]');
           saveNotes(notes);
+          notifyClients();
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ status: 'ok' }));
         } catch {
@@ -581,6 +673,7 @@ const server = http.createServer((req, res) => {
         try {
           const data = JSON.parse(body || '{}');
           saveAllData(data);
+          notifyClients();
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ status: 'ok' }));
         } catch {
@@ -615,6 +708,7 @@ const server = http.createServer((req, res) => {
           if (settings.syncInterval !== undefined) {
             setSyncInterval(settings.syncInterval);
           }
+          notifyClients();
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ status: 'ok' }));
         } catch {
@@ -639,6 +733,7 @@ const server = http.createServer((req, res) => {
         try {
           const sessions = JSON.parse(body || '[]');
           savePomodoroSessions(sessions);
+          notifyClients();
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ status: 'ok' }));
         } catch {
@@ -677,7 +772,9 @@ const server = http.createServer((req, res) => {
             delete incoming.settings.syncServerUrl;
             delete incoming.settings.syncRole;
           }
-          const merged = mergeData(loadAllData(), incoming);
+          const merged = applyDeletions(
+            mergeData(loadAllData(), incoming)
+          );
           saveAllData(merged);
           syncLogs.push({ time: Date.now(), ip: req.socket.remoteAddress, method: 'POST' });
           res.writeHead(200, { 'Content-Type': 'application/json' });
