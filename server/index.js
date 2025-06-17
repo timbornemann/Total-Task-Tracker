@@ -59,6 +59,8 @@ let syncFolder = '';
 let syncInterval = 5; // minutes
 let syncTimer = null;
 let lastSyncMtime = 0;
+let lastSyncTime = 0;
+let lastSyncError = null;
 
 const initialSettings = loadSettings();
 if (typeof initialSettings.syncInterval === 'number') {
@@ -352,8 +354,12 @@ function performSync() {
       )
     );
     lastSyncMtime = Date.now();
+    lastSyncTime = lastSyncMtime;
+    lastSyncError = null;
   } catch (err) {
     console.error('Sync error', err);
+    lastSyncTime = Date.now();
+    lastSyncError = err.message || String(err);
   }
 }
 
@@ -637,6 +643,16 @@ const server = http.createServer((req, res) => {
       ips,
       port,
       urls: ips.map(ip => `http://${ip}:${port}/`)
+    };
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(info));
+    return;
+  }
+
+  if (parsed.pathname === '/api/sync-status') {
+    const info = {
+      last: lastSyncTime,
+      error: lastSyncError
     };
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(info));

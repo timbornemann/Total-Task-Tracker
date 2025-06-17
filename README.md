@@ -151,6 +151,8 @@ npm start    # startet die gebaute App auf Port 3002
   und einstellbarem Sync-Intervall. Dabei werden nun auch die
   Einstellungen mitgespeichert und abgeglichen, der Ordnerpfad
   selbst wird jedoch nicht in der Sync-Datei gespeichert.
+- In den Einstellungen wird der Zeitpunkt der letzten Synchronisierung
+  angezeigt. Bei Fehlern wird die Fehlermeldung ausgegeben.
 - Standard-Priorität für neue Tasks einstellbar
 - Mehrsprachige Oberfläche (Deutsch, Englisch) auswählbar
 - Mehrere Theme-Voreinstellungen (light, dark, ocean, dark-red, hacker,
