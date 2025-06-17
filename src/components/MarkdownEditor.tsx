@@ -24,6 +24,7 @@ import {
   TooltipContent,
 } from '@/components/ui/tooltip';
 import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
 import { cn } from '@/lib/utils';
 
 interface MarkdownEditorProps {
@@ -201,7 +202,11 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     
     if (!content.includes('<div class="active-line-marker">') && 
         !content.includes('<div class="empty-line-marker">')) {
-      return <ReactMarkdown>{content}</ReactMarkdown>;
+      return (
+        <ReactMarkdown rehypePlugins={[rehypeRaw]} skipHtml={false}>
+          {content}
+        </ReactMarkdown>
+      );
     }
     
     // Handle empty line markers
@@ -215,7 +220,11 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     
     if (parts.length < 3) {
       // If there's no active line marker but possibly empty lines
-      return <div dangerouslySetInnerHTML={{ __html: processedContent }} />;
+      return (
+        <ReactMarkdown rehypePlugins={[rehypeRaw]} skipHtml={false}>
+          {processedContent}
+        </ReactMarkdown>
+      );
     }
     
     // Process the active line to include the cursor indicator
@@ -224,7 +233,11 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
     
     return (
       <>
-        {parts[0] && <ReactMarkdown>{parts[0]}</ReactMarkdown>}
+        {parts[0] && (
+          <ReactMarkdown rehypePlugins={[rehypeRaw]} skipHtml={false}>
+            {parts[0]}
+          </ReactMarkdown>
+        )}
         <div className="active-line-editor bg-primary/10 -mx-2 px-2 py-1 border-l-2 border-primary relative">
           {cursorParts.length > 1 ? (
             <>
@@ -236,7 +249,11 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
             activeLine
           )}
         </div>
-        {parts[2] && <ReactMarkdown>{parts[2]}</ReactMarkdown>}
+        {parts[2] && (
+          <ReactMarkdown rehypePlugins={[rehypeRaw]} skipHtml={false}>
+            {parts[2]}
+          </ReactMarkdown>
+        )}
       </>
     );
   };
