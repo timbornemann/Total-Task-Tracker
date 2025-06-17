@@ -280,7 +280,7 @@ const SettingsPage: React.FC = () => {
       <Navbar title={t('navbar.settings')} />
       <div className="max-w-5xl mx-auto px-4 py-6">
         <Tabs defaultValue="shortcuts" className="flex gap-6">
-          <div className="w-48">
+          <div className="w-48 overflow-y-auto max-h-[calc(100vh-8rem)]">
             <Accordion type="multiple" className="space-y-2">
               <AccordionItem value="general">
                 <AccordionTrigger className="text-sm">
@@ -291,11 +291,23 @@ const SettingsPage: React.FC = () => {
                     <TabsTrigger className="justify-start" value="shortcuts">
                       {t('settings.tabs.shortcuts')}
                     </TabsTrigger>
+                    <TabsTrigger className="justify-start" value="language">
+                      {t('settings.tabs.language')}
+                    </TabsTrigger>
+                  </TabsList>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="customization">
+                <AccordionTrigger className="text-sm">
+                  {t('settings.groups.customization')}
+                </AccordionTrigger>
+                <AccordionContent className="pl-2">
+                  <TabsList className="flex flex-col gap-1 bg-transparent p-0">
                     <TabsTrigger className="justify-start" value="home">
                       {t('settings.tabs.home')}
                     </TabsTrigger>
-                    <TabsTrigger className="justify-start" value="language">
-                      {t('settings.tabs.language')}
+                    <TabsTrigger className="justify-start" value="theme">
+                      {t('settings.tabs.theme')}
                     </TabsTrigger>
                   </TabsList>
                 </AccordionContent>
@@ -312,29 +324,8 @@ const SettingsPage: React.FC = () => {
                     <TabsTrigger className="justify-start" value="tasks">
                       {t('settings.tabs.tasks')}
                     </TabsTrigger>
-                  </TabsList>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="flashcards">
-                <AccordionTrigger className="text-sm">
-                  {t('settings.groups.flashcards')}
-                </AccordionTrigger>
-                <AccordionContent className="pl-2">
-                  <TabsList className="flex flex-col gap-1 bg-transparent p-0">
                     <TabsTrigger className="justify-start" value="flashcards">
                       {t('settings.tabs.flashcards')}
-                    </TabsTrigger>
-                  </TabsList>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="appearance">
-                <AccordionTrigger className="text-sm">
-                  {t('settings.groups.appearance')}
-                </AccordionTrigger>
-                <AccordionContent className="pl-2">
-                  <TabsList className="flex flex-col gap-1 bg-transparent p-0">
-                    <TabsTrigger className="justify-start" value="theme">
-                      {t('settings.tabs.theme')}
                     </TabsTrigger>
                   </TabsList>
                 </AccordionContent>

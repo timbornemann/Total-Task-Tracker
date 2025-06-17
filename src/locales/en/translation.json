@@ -34,9 +34,8 @@
     },
     "groups": {
       "general": "General",
+      "customization": "Customization",
       "productivity": "Productivity",
-      "flashcards": "Flashcards",
-      "appearance": "Appearance",
       "data": "Data",
       "server": "Server",
       "info": "Info"

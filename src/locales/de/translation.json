@@ -34,9 +34,8 @@
     },
     "groups": {
       "general": "Allgemein",
-      "productivity": "Produktivität",
-      "flashcards": "Karten",
-      "appearance": "Aussehen",
+      "customization": "Anpassung",
+      "productivity": "Produktit\u00e4t",
       "data": "Daten",
       "server": "Server",
       "info": "Info"
