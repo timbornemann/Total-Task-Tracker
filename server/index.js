@@ -67,6 +67,7 @@ try {
 let syncRole = 'client'; // 'server' or 'client'
 let syncServerUrl = '';
 let syncInterval = 5; // minutes
+let syncEnabled = true;
 let syncTimer = null;
 let lastSyncTime = 0;
 let lastSyncError = null;
@@ -88,10 +89,14 @@ if (initialSettings.syncRole) {
 if (initialSettings.syncServerUrl) {
   syncServerUrl = initialSettings.syncServerUrl;
 }
+if (typeof initialSettings.syncEnabled === 'boolean') {
+  syncEnabled = initialSettings.syncEnabled;
+}
 log('Initial sync settings', {
   role: syncRole,
   url: syncServerUrl,
-  interval: syncInterval
+  interval: syncInterval,
+  enabled: syncEnabled
 });
 startSyncTimer();
 
@@ -354,6 +359,9 @@ function saveAllData(data) {
     if (data.settings.syncInterval !== undefined) {
       setSyncInterval(data.settings.syncInterval);
     }
+    if (data.settings.syncEnabled !== undefined) {
+      setSyncEnabled(data.settings.syncEnabled);
+    }
   }
   notifyClients();
 }
@@ -420,6 +428,7 @@ async function performSync() {
     if (data.settings) {
       delete data.settings.syncServerUrl;
       delete data.settings.syncRole;
+      delete data.settings.syncEnabled;
     }
     const post = await fetch(url, {
       method: 'POST',
@@ -450,7 +459,7 @@ async function performSync() {
 function startSyncTimer() {
   if (syncTimer) clearInterval(syncTimer);
   syncTimer = null;
-  if (syncRole === 'client' && syncServerUrl && syncInterval > 0) {
+  if (syncEnabled && syncRole === 'client' && syncServerUrl && syncInterval > 0) {
     log('Sync timer started with interval', syncInterval, 'minutes');
     performSync();
     syncTimer = setInterval(performSync, syncInterval * 60 * 1000);
@@ -481,6 +490,14 @@ function setSyncInterval(minutes) {
   if (val === syncInterval) return;
   syncInterval = val;
   log('Sync interval set to', syncInterval);
+  startSyncTimer();
+}
+
+function setSyncEnabled(val) {
+  const enabled = Boolean(val);
+  if (enabled === syncEnabled) return;
+  syncEnabled = enabled;
+  log('Sync enabled set to', syncEnabled);
   startSyncTimer();
 }
 
@@ -708,6 +725,9 @@ const server = http.createServer((req, res) => {
           if (settings.syncInterval !== undefined) {
             setSyncInterval(settings.syncInterval);
           }
+          if (settings.syncEnabled !== undefined) {
+            setSyncEnabled(settings.syncEnabled);
+          }
           notifyClients();
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ status: 'ok' }));
@@ -756,6 +776,7 @@ const server = http.createServer((req, res) => {
       if (data.settings) {
         delete data.settings.syncServerUrl;
         delete data.settings.syncRole;
+        delete data.settings.syncEnabled;
       }
       syncLogs.push({ time: Date.now(), ip: req.socket.remoteAddress, method: 'GET' });
       res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -771,6 +792,7 @@ const server = http.createServer((req, res) => {
           if (incoming.settings) {
             delete incoming.settings.syncServerUrl;
             delete incoming.settings.syncRole;
+            delete incoming.settings.syncEnabled;
           }
           const merged = applyDeletions(
             mergeData(loadAllData(), incoming)
@@ -807,7 +829,7 @@ const server = http.createServer((req, res) => {
       for (const iface of list || []) {
         if (iface.family === 'IPv4' && !iface.internal) {
           ips.push(iface.address);
-          if (!wifiIp && /^wl|wlan|wi-?fi/i.test(name)) {
+          if (!wifiIp && /^(wl|wlan|wi-?fi)/i.test(name)) {
             wifiIp = iface.address;
           }
         }
@@ -819,10 +841,10 @@ const server = http.createServer((req, res) => {
     }
     const info = {
       ips,
-      port,
-      urls: ips.map(ip => `http://${ip}:${port}/`),
+      port: activePort,
+      urls: ips.map(ip => `http://${ip}:${activePort}/`),
       wifiIp,
-      wifiUrl: wifiIp ? `http://${wifiIp}:${port}/` : null
+      wifiUrl: wifiIp ? `http://${wifiIp}:${activePort}/` : null
     };
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(info));
@@ -832,7 +854,8 @@ const server = http.createServer((req, res) => {
   if (parsed.pathname === '/api/sync-status') {
     const info = {
       last: lastSyncTime,
-      error: lastSyncError
+      error: lastSyncError,
+      enabled: syncEnabled
     };
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(info));
@@ -850,8 +873,10 @@ const server = http.createServer((req, res) => {
   });
 });
 
-const port = process.env.PORT || 3002;
+let port = Number(process.env.PORT) || 3002;
+let activePort = port;
 const publicIp = process.env.SERVER_PUBLIC_IP || null;
 server.listen(port, () => {
-  log('Server listening on port', port, 'DB', DB_FILE);
+  activePort = server.address().port;
+  log('Server listening on port', activePort, 'DB', DB_FILE);
 });

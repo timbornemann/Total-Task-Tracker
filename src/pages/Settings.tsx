@@ -76,6 +76,8 @@ const SettingsPage: React.FC = () => {
     updateSyncServerUrl,
     syncInterval,
     updateSyncInterval,
+    syncEnabled,
+    updateSyncEnabled,
     language,
     updateLanguage
   } = useSettings()
@@ -308,10 +310,6 @@ const SettingsPage: React.FC = () => {
     window.location.reload()
   }
 
-  const stopSync = () => {
-    updateSyncServerUrl('')
-    updateSyncInterval(0)
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -376,18 +374,6 @@ const SettingsPage: React.FC = () => {
                   <TabsList className="flex flex-col gap-1 bg-transparent p-0 h-auto">
                     <TabsTrigger className="justify-start" value="data">
                       {t('settings.tabs.data')}
-                    </TabsTrigger>
-                  </TabsList>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="server">
-                <AccordionTrigger className="text-sm">
-                  {t('settings.groups.server')}
-                </AccordionTrigger>
-                <AccordionContent className="pl-2">
-                  <TabsList className="flex flex-col gap-1 bg-transparent p-0 h-auto">
-                    <TabsTrigger className="justify-start" value="server">
-                      {t('settings.tabs.server')}
                     </TabsTrigger>
                   </TabsList>
                 </AccordionContent>
@@ -725,6 +711,14 @@ const SettingsPage: React.FC = () => {
             </TabsContent>
             <TabsContent value="data" className="space-y-4">
               <h2 className="font-semibold">{t('settingsPage.dataTitle')}</h2>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="syncEnabled"
+                  checked={syncEnabled}
+                  onCheckedChange={v => updateSyncEnabled(Boolean(v))}
+                />
+                <Label htmlFor="syncEnabled">{t('settingsPage.enableSync')}</Label>
+              </div>
               <div className="space-y-2">
                 <p className="font-medium">{t('settingsPage.syncRole')}</p>
                 <Select value={syncRole} onValueChange={updateSyncRole}>
@@ -743,7 +737,7 @@ const SettingsPage: React.FC = () => {
                   <p className="text-sm break-all">{serverInfo.wifiUrl}</p>
                 </div>
               )}
-              {syncRole === 'client' && (
+              {syncRole === 'client' && syncEnabled && (
                 <div className="space-y-2">
                   <p className="font-medium">{t('settingsPage.serverUrl')}</p>
                   <Input
@@ -751,10 +745,9 @@ const SettingsPage: React.FC = () => {
                     onChange={e => updateSyncServerUrl(e.target.value)}
                     placeholder="http://server:3002"
                   />
-                  <Button variant="outline" onClick={stopSync}>{t('settingsPage.stopSync')}</Button>
                 </div>
               )}
-              {syncRole === 'client' && (
+              {syncRole === 'client' && syncEnabled && (
                 <div className="space-y-2">
                   <p className="font-medium">{t('settingsPage.syncInterval')}</p>
                   <Input
@@ -818,11 +811,9 @@ const SettingsPage: React.FC = () => {
                   <Input type="file" accept="application/json" onChange={importAll} />
                 </div>
               </div>
-            </TabsContent>
-            <TabsContent value="server" className="space-y-4">
-              <h2 className="font-semibold">{t('settings.serverInfo.title')}</h2>
-              {serverInfo ? (
+              {serverInfo && (
                 <div className="space-y-2">
+                  <h3 className="font-medium">{t('settings.serverInfo.title')}</h3>
                   <p>{t('settings.serverInfo.port')}: {serverInfo.port}</p>
                   <div>
                     <p className="font-medium">{t('settings.serverInfo.ips')}</p>
@@ -857,8 +848,6 @@ const SettingsPage: React.FC = () => {
                     </div>
                   )}
                 </div>
-              ) : (
-                <p>{t('settings.serverInfo.loading')}</p>
               )}
             </TabsContent>
             <TabsContent value="info" className="space-y-4">
