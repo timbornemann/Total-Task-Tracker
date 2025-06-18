@@ -29,6 +29,7 @@ const defaultFlashcardSettings = {
     | 'timed'
 }
 const defaultSyncInterval = 5
+const defaultSyncEnabled = true
 const defaultTaskPriority: 'low' | 'medium' | 'high' = 'medium'
 const defaultLanguage = 'de'
 const defaultTheme = {
@@ -159,6 +160,8 @@ interface SettingsContextValue {
   updateSyncServerUrl: (url: string) => void
   syncInterval: number
   updateSyncInterval: (value: number) => void
+  syncEnabled: boolean
+  updateSyncEnabled: (value: boolean) => void
   language: string
   updateLanguage: (lang: string) => void
 }
@@ -195,6 +198,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [syncRole, setSyncRole] = useState<'server' | 'client'>('client')
   const [syncServerUrl, setSyncServerUrl] = useState('')
   const [syncInterval, setSyncInterval] = useState(defaultSyncInterval)
+  const [syncEnabled, setSyncEnabled] = useState(defaultSyncEnabled)
   const [language, setLanguage] = useState(defaultLanguage)
   const [loaded, setLoaded] = useState(false)
 
@@ -268,6 +272,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           if (typeof data.syncInterval === 'number') {
             setSyncInterval(data.syncInterval)
           }
+          if (typeof data.syncEnabled === 'boolean') {
+            setSyncEnabled(data.syncEnabled)
+          }
           if (typeof data.language === 'string') {
             setLanguage(data.language)
             i18n.changeLanguage(data.language)
@@ -304,6 +311,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             syncRole,
             syncServerUrl,
             syncInterval,
+            syncEnabled,
             language
           })
         })
@@ -330,6 +338,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     syncRole,
     syncServerUrl,
     syncInterval,
+    syncEnabled,
     language
   ])
 
@@ -398,6 +407,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setSyncInterval(value)
   }
 
+  const updateSyncEnabled = (value: boolean) => {
+    setSyncEnabled(value)
+  }
+
   const updateLanguage = (lang: string) => {
     setLanguage(lang)
     i18n.changeLanguage(lang)
@@ -461,6 +474,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         updateSyncServerUrl,
         syncInterval,
         updateSyncInterval,
+        syncEnabled,
+        updateSyncEnabled,
         language,
         updateLanguage
       }}
