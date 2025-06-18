@@ -35,7 +35,7 @@ const isMatching = (e: KeyboardEvent, shortcut: string) => {
 const CommandPalette: React.FC = () => {
   const { addTask, addNote, tasks, notes } = useTaskStore()
   const { flashcards, decks, addFlashcard } = useFlashcardStore()
-  const { shortcuts, defaultTaskPriority } = useSettings()
+  const { shortcuts, defaultTaskPriority, colorPalette } = useSettings()
   const { toast } = useToast()
   const { t } = useTranslation()
   const { currentCategoryId, setCurrentCategoryId } = useCurrentCategory()
@@ -109,13 +109,13 @@ const CommandPalette: React.FC = () => {
         title,
         description: '',
         priority: defaultTaskPriority,
-        color: '#3B82F6',
+        color: colorPalette[0] || '#3B82F6',
         categoryId: currentCategoryId || 'default',
         isRecurring: false
       })
       toast({ description: t('commandPalette.taskCreated') })
     } else if (mode === 'note') {
-      addNote({ title, text: '', color: '#F59E0B' })
+      addNote({ title, text: '', color: colorPalette[3] || '#F59E0B' })
       toast({ description: t('commandPalette.noteCreated') })
     } else if (mode === 'flashcard') {
       if (decks.length > 0) {

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import { useTaskStore } from '@/hooks/useTaskStore';
+import { useSettings } from '@/hooks/useSettings';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -14,21 +15,23 @@ const NoteDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { notes, updateNote, deleteNote } = useTaskStore();
+  const { colorPalette } = useSettings();
   const note = notes.find(n => n.id === id);
 
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({ title: '', text: '', color: '#F59E0B' });
+  const [formData, setFormData] = useState({
+    title: '',
+    text: '',
+    color: colorPalette[3] || '#F59E0B'
+  });
 
-  const colorOptions = [
-    '#3B82F6', '#EF4444', '#10B981', '#F59E0B',
-    '#8B5CF6', '#F97316', '#06B6D4', '#84CC16'
-  ];
+  const colorOptions = colorPalette;
 
   useEffect(() => {
     if (note) {
       setFormData({ title: note.title, text: note.text, color: note.color });
     }
-  }, [note]);
+  }, [note, colorPalette]);
 
   const handleChange = (field: 'title' | 'text' | 'color', value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));

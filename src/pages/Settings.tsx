@@ -79,7 +79,9 @@ const SettingsPage: React.FC = () => {
     syncEnabled,
     updateSyncEnabled,
     language,
-    updateLanguage
+    updateLanguage,
+    colorPalette,
+    updatePaletteColor
   } = useSettings()
 
   const { t } = useTranslation()
@@ -690,6 +692,20 @@ const SettingsPage: React.FC = () => {
                   value={hslToHex(theme['pomodoro-break-ring'])}
                   onChange={e => updateTheme('pomodoro-break-ring', hexToHsl(e.target.value))}
                 />
+              </div>
+              <div className="space-y-2">
+                <Label>{t('settingsPage.taskColors')}</Label>
+                <div className="flex flex-wrap gap-2">
+                  {colorPalette.map((c, idx) => (
+                    <Input
+                      key={idx}
+                      type="color"
+                      value={c}
+                      onChange={e => updatePaletteColor(idx, e.target.value)}
+                      className="w-10 h-10 p-0 border-none"
+                    />
+                  ))}
+                </div>
               </div>
             </TabsContent>
             <TabsContent value="language" className="space-y-4">

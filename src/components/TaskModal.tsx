@@ -65,12 +65,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
   defaultEndTime
 }) => {
   const { t } = useTranslation();
-  const { defaultTaskPriority } = useSettings()
+  const { defaultTaskPriority, colorPalette } = useSettings()
   const [formData, setFormData] = useState<TaskFormData>({
     title: '',
     description: '',
     priority: defaultTaskPriority,
-    color: '#3B82F6',
+    color: colorPalette[0] || '#3B82F6',
     categoryId: '',
     parentId: parentTask?.id,
     dueDate: undefined,
@@ -88,10 +88,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     template: false
   });
 
-  const colorOptions = [
-    '#3B82F6', '#EF4444', '#10B981', '#F59E0B', 
-    '#8B5CF6', '#F97316', '#06B6D4', '#84CC16'
-  ];
+  const colorOptions = colorPalette
 
   useEffect(() => {
     if (!isOpen) return;
@@ -123,7 +120,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
         title: '',
         description: '',
         priority: defaultTaskPriority,
-        color: '#3B82F6',
+        color: colorPalette[0] || '#3B82F6',
         categoryId:
           defaultCategoryId || parentTask?.categoryId || categories[0]?.id || '',
         parentId: parentTask?.id,
@@ -153,7 +150,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
     defaultIsRecurring,
     allowRecurring,
     defaultStartTime,
-    defaultEndTime
+    defaultEndTime,
+    colorPalette
   ]);
 
   const handleSubmit = (e: React.FormEvent) => {
