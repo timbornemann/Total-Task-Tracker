@@ -161,6 +161,8 @@ npm start    # startet die gebaute App auf Port 3002
 - Mehrere Theme-Voreinstellungen (light, dark, ocean, dark-red, hacker,
   motivation) und ein eigenes "Custom"-Theme wählbar
 - Im Custom-Theme lassen sich Farben der Oberfläche und Karten individuell anpassen
+- Jede Theme-Voreinstellung bringt nun eine passende Farbpalette für Kategorien,
+  Tasks und Notizen mit
 - Neuer "Info"-Reiter in den Einstellungen zeigt Versionsnummer, Release Notes und README
 - Im Reiter "Sprache" lässt sich Deutsch oder Englisch auswählen
 - Untermenü "Server Info" in den Einstellungen listet IP-Adressen, Port und fertige URLs auf

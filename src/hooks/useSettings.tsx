@@ -59,82 +59,142 @@ export const defaultColorPalette = [
   '#84CC16'
 ]
 
-export const themePresets: Record<string, typeof defaultTheme> = {
-  light: { ...defaultTheme },
+export const themePresets: Record<string, { theme: typeof defaultTheme; colorPalette: string[] }> = {
+  light: { theme: { ...defaultTheme }, colorPalette: [...defaultColorPalette] },
   dark: {
-    background: '222 47% 11%',
-    foreground: '210 40% 98%',
-    accent: '217 91% 60%',
-    card: '218 28% 17%',
-    popover: '218 28% 17%',
-    'card-foreground': '210 40% 98%',
-    'stat-bar-primary': '217 91% 60%',
-    'stat-bar-secondary': '218 14% 30%',
-    'kanban-todo': '218 14% 30%',
-    'kanban-inprogress': '217 91% 60%',
-    'kanban-done': '158 64% 52%',
-    'pomodoro-work-ring': '210 40% 98%',
-    'pomodoro-break-ring': '217 91% 60%'
+    theme: {
+      background: '222 47% 11%',
+      foreground: '210 40% 98%',
+      accent: '217 91% 60%',
+      card: '218 28% 17%',
+      popover: '218 28% 17%',
+      'card-foreground': '210 40% 98%',
+      'stat-bar-primary': '217 91% 60%',
+      'stat-bar-secondary': '218 14% 30%',
+      'kanban-todo': '218 14% 30%',
+      'kanban-inprogress': '217 91% 60%',
+      'kanban-done': '158 64% 52%',
+      'pomodoro-work-ring': '210 40% 98%',
+      'pomodoro-break-ring': '217 91% 60%'
+    },
+    colorPalette: [
+      '#60A5FA',
+      '#F87171',
+      '#34D399',
+      '#FBBF24',
+      '#A78BFA',
+      '#FB923C',
+      '#22D3EE',
+      '#A3E635'
+    ]
   },
   ocean: {
-    background: '210 60% 98%',
-    foreground: '222.2 47.4% 11.2%',
-    accent: '199 94% 48%',
-    card: '210 60% 96%',
-    popover: '210 60% 96%',
-    'card-foreground': '222.2 47.4% 11.2%',
-    'stat-bar-primary': '199 94% 48%',
-    'stat-bar-secondary': '214.3 31.8% 91.4%',
-    'kanban-todo': '210 40% 96.1%',
-    'kanban-inprogress': '210 80% 85%',
-    'kanban-done': '199 94% 48%',
-    'pomodoro-work-ring': '199 94% 48%',
-    'pomodoro-break-ring': '210 40% 96.1%'
+    theme: {
+      background: '210 60% 98%',
+      foreground: '222.2 47.4% 11.2%',
+      accent: '199 94% 48%',
+      card: '210 60% 96%',
+      popover: '210 60% 96%',
+      'card-foreground': '222.2 47.4% 11.2%',
+      'stat-bar-primary': '199 94% 48%',
+      'stat-bar-secondary': '214.3 31.8% 91.4%',
+      'kanban-todo': '210 40% 96.1%',
+      'kanban-inprogress': '210 80% 85%',
+      'kanban-done': '199 94% 48%',
+      'pomodoro-work-ring': '199 94% 48%',
+      'pomodoro-break-ring': '210 40% 96.1%'
+    },
+    colorPalette: [
+      '#0EA5E9',
+      '#06B6D4',
+      '#14B8A6',
+      '#3B82F6',
+      '#6366F1',
+      '#8B5CF6',
+      '#F59E0B',
+      '#84CC16'
+    ]
   },
   'dark-red': {
-    background: '0 0% 9%',
-    foreground: '0 0% 98%',
-    accent: '0 72% 51%',
-    card: '0 0% 15%',
-    popover: '0 0% 15%',
-    'card-foreground': '0 0% 98%',
-    'stat-bar-primary': '0 72% 51%',
-    'stat-bar-secondary': '0 0% 25%',
-    'kanban-todo': '0 0% 25%',
-    'kanban-inprogress': '0 72% 51%',
-    'kanban-done': '0 72% 51%',
-    'pomodoro-work-ring': '0 0% 98%',
-    'pomodoro-break-ring': '0 72% 51%'
+    theme: {
+      background: '0 0% 9%',
+      foreground: '0 0% 98%',
+      accent: '0 72% 51%',
+      card: '0 0% 15%',
+      popover: '0 0% 15%',
+      'card-foreground': '0 0% 98%',
+      'stat-bar-primary': '0 72% 51%',
+      'stat-bar-secondary': '0 0% 25%',
+      'kanban-todo': '0 0% 25%',
+      'kanban-inprogress': '0 72% 51%',
+      'kanban-done': '0 72% 51%',
+      'pomodoro-work-ring': '0 0% 98%',
+      'pomodoro-break-ring': '0 72% 51%'
+    },
+    colorPalette: [
+      '#F87171',
+      '#FB923C',
+      '#FBBF24',
+      '#F472B6',
+      '#C084FC',
+      '#F43F5E',
+      '#E11D48',
+      '#991B1B'
+    ]
   },
   hacker: {
-    background: '120 12% 8%',
-    foreground: '120 100% 80%',
-    accent: '120 70% 40%',
-    card: '120 10% 12%',
-    popover: '120 10% 12%',
-    'card-foreground': '120 100% 80%',
-    'stat-bar-primary': '120 70% 40%',
-    'stat-bar-secondary': '120 10% 20%',
-    'kanban-todo': '120 20% 20%',
-    'kanban-inprogress': '120 40% 30%',
-    'kanban-done': '120 70% 40%',
-    'pomodoro-work-ring': '120 100% 80%',
-    'pomodoro-break-ring': '120 70% 40%'
+    theme: {
+      background: '120 12% 8%',
+      foreground: '120 100% 80%',
+      accent: '120 70% 40%',
+      card: '120 10% 12%',
+      popover: '120 10% 12%',
+      'card-foreground': '120 100% 80%',
+      'stat-bar-primary': '120 70% 40%',
+      'stat-bar-secondary': '120 10% 20%',
+      'kanban-todo': '120 20% 20%',
+      'kanban-inprogress': '120 40% 30%',
+      'kanban-done': '120 70% 40%',
+      'pomodoro-work-ring': '120 100% 80%',
+      'pomodoro-break-ring': '120 70% 40%'
+    },
+    colorPalette: [
+      '#22C55E',
+      '#84CC16',
+      '#A3E635',
+      '#34D399',
+      '#06B6D4',
+      '#F59E0B',
+      '#EF4444',
+      '#3B82F6'
+    ]
   },
   motivation: {
-    background: '40 100% 98%',
-    foreground: '20 90% 10%',
-    accent: '30 100% 50%',
-    card: '0 0% 100%',
-    popover: '0 0% 100%',
-    'card-foreground': '20 90% 10%',
-    'stat-bar-primary': '30 100% 50%',
-    'stat-bar-secondary': '38 88% 80%',
-    'kanban-todo': '38 88% 80%',
-    'kanban-inprogress': '30 100% 50%',
-    'kanban-done': '88 50% 50%',
-    'pomodoro-work-ring': '20 90% 10%',
-    'pomodoro-break-ring': '30 100% 50%'
+    theme: {
+      background: '40 100% 98%',
+      foreground: '20 90% 10%',
+      accent: '30 100% 50%',
+      card: '0 0% 100%',
+      popover: '0 0% 100%',
+      'card-foreground': '20 90% 10%',
+      'stat-bar-primary': '30 100% 50%',
+      'stat-bar-secondary': '38 88% 80%',
+      'kanban-todo': '38 88% 80%',
+      'kanban-inprogress': '30 100% 50%',
+      'kanban-done': '88 50% 50%',
+      'pomodoro-work-ring': '20 90% 10%',
+      'pomodoro-break-ring': '30 100% 50%'
+    },
+    colorPalette: [
+      '#F97316',
+      '#F59E0B',
+      '#EF4444',
+      '#10B981',
+      '#8B5CF6',
+      '#EC4899',
+      '#FBBF24',
+      '#3B82F6'
+    ]
   }
 }
 
@@ -231,17 +291,25 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           if (data.defaultTaskPriority) {
             setPriority(data.defaultTaskPriority)
           }
-          if (data.theme) {
-            setTheme({ ...defaultTheme, ...data.theme })
-          }
           if (data.themeName) {
             setThemeName(data.themeName)
-            if (themePresets[data.themeName]) {
-              setTheme(themePresets[data.themeName])
+            const preset = themePresets[data.themeName]
+            if (preset) {
+              setTheme(preset.theme)
+              setColorPalette(preset.colorPalette)
+            } else if (data.theme) {
+              setTheme({ ...defaultTheme, ...data.theme })
             }
-          }
-          if (Array.isArray(data.colorPalette)) {
-            setColorPalette(data.colorPalette)
+            if (!preset && Array.isArray(data.colorPalette)) {
+              setColorPalette(data.colorPalette)
+            }
+          } else {
+            if (data.theme) {
+              setTheme({ ...defaultTheme, ...data.theme })
+            }
+            if (Array.isArray(data.colorPalette)) {
+              setColorPalette(data.colorPalette)
+            }
           }
           if (Array.isArray(data.homeSectionOrder)) {
             const order = data.homeSectionOrder as string[]
@@ -395,8 +463,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const updateThemeName = (name: string) => {
     setThemeName(name)
-    if (themePresets[name]) {
-      setTheme(themePresets[name])
+    const preset = themePresets[name]
+    if (preset) {
+      setTheme(preset.theme)
+      setColorPalette(preset.colorPalette)
     }
   }
 
@@ -406,6 +476,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       arr[index] = value
       return arr
     })
+    setThemeName('custom')
   }
 
   const updateFlashcardTimer = (value: number) => {
