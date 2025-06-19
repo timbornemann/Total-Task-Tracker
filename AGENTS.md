@@ -57,16 +57,19 @@ docker-compose up --build
 
 ## 5. Navigation & Feature-Integration
 
-* Neue Features **müssen** in die **Navigationsleiste** integriert werden.
+* Neue Features **sollen** in die **Navigationsleiste** integriert werden falls sie groß genug sind.
 * Die Navbar befindet sich unter `src/components/Navbar.tsx`.
 * Links werden über React Router konfiguriert.
+* Im Fall das neue Texte entstehen **müssen** sie in beide sprachen de und en in den translation.json Dateien angelegt und eingebunden werden.
+* Funktionen und Features sollen anpassbar sein, somit sollen anpassugnen in der Einstellungsseite einstellungen bekommen
+* Neue Grafische Elemente sollen mit den themes verknüpgt sein und somit vorhandene Farben nutzen oder im Fall von ganz Neuen Sachen neue Anpassungseinstellungen in den Einstellungen unter Theme anlegen.
 
 ---
 
 ## 6. Dokumentation & README
 
 * Bei **größeren Änderungen** (z. B. neue Features, API-Struktur, neue Befehle) **README.md aktualisieren**.
-* Neue Umgebungsvariablen, Setup-Anleitungen und Screenshots sollten dokumentiert werden.
+* Neue Umgebungsvariablen, Setup-Anleitungen sollten dokumentiert werden.
 
 ---
 
