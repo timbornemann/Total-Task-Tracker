@@ -87,6 +87,7 @@
     "kanbanDone": "Kanban Erledigt",
     "workRing": "Pomodoro Arbeit",
     "breakRing": "Pomodoro Pause",
+    "taskColors": "Task- und Notizfarben",
     "dataTitle": "Datenexport / -import",
     "syncRole": "Sync-Rolle",
     "roleServer": "Server",

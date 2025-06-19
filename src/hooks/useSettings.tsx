@@ -48,6 +48,17 @@ const defaultTheme = {
   'pomodoro-break-ring': '212 100% 47%'
 }
 
+const defaultColorPalette = [
+  '#3B82F6',
+  '#EF4444',
+  '#10B981',
+  '#F59E0B',
+  '#8B5CF6',
+  '#F97316',
+  '#06B6D4',
+  '#84CC16'
+]
+
 export const themePresets: Record<string, typeof defaultTheme> = {
   light: { ...defaultTheme },
   dark: {
@@ -138,6 +149,8 @@ interface SettingsContextValue {
   updateTheme: (key: keyof typeof defaultTheme, value: string) => void
   themeName: string
   updateThemeName: (name: string) => void
+  colorPalette: string[]
+  updatePaletteColor: (index: number, value: string) => void
   homeSections: string[]
   homeSectionOrder: string[]
   toggleHomeSection: (section: string) => void
@@ -185,6 +198,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   )
   const [theme, setTheme] = useState(defaultTheme)
   const [themeName, setThemeName] = useState('light')
+  const [colorPalette, setColorPalette] = useState<string[]>(defaultColorPalette)
   const [homeSectionOrder, setHomeSectionOrder] = useState<string[]>(
     allHomeSections.map(s => s.key)
   )
@@ -225,6 +239,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             if (themePresets[data.themeName]) {
               setTheme(themePresets[data.themeName])
             }
+          }
+          if (Array.isArray(data.colorPalette)) {
+            setColorPalette(data.colorPalette)
           }
           if (Array.isArray(data.homeSectionOrder)) {
             const order = data.homeSectionOrder as string[]
@@ -301,6 +318,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             defaultTaskPriority: priority,
             theme,
             themeName,
+            colorPalette,
             homeSections,
             homeSectionOrder,
             showPinnedTasks,
@@ -328,6 +346,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     priority,
     theme,
     themeName,
+    colorPalette,
     homeSections,
     homeSectionOrder,
     showPinnedTasks,
@@ -379,6 +398,14 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     if (themePresets[name]) {
       setTheme(themePresets[name])
     }
+  }
+
+  const updatePaletteColor = (index: number, value: string) => {
+    setColorPalette(prev => {
+      const arr = [...prev]
+      arr[index] = value
+      return arr
+    })
   }
 
   const updateFlashcardTimer = (value: number) => {
@@ -454,6 +481,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         updateTheme,
         themeName,
         updateThemeName,
+        colorPalette,
+        updatePaletteColor,
         homeSections,
         homeSectionOrder,
         toggleHomeSection,

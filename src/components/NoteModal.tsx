@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Note } from '@/types';
+import { useSettings } from '@/hooks/useSettings';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,25 +19,23 @@ interface NoteModalProps {
 
 const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, onSave, note }) => {
   const { t } = useTranslation();
+  const { colorPalette } = useSettings();
   const [formData, setFormData] = useState({
     title: '',
     text: '',
-    color: '#F59E0B'
+    color: colorPalette[3] || '#F59E0B'
   });
 
-  const colorOptions = [
-    '#3B82F6', '#EF4444', '#10B981', '#F59E0B',
-    '#8B5CF6', '#F97316', '#06B6D4', '#84CC16'
-  ];
+  const colorOptions = colorPalette;
 
   useEffect(() => {
     if (!isOpen) return;
     if (note) {
       setFormData({ title: note.title, text: note.text, color: note.color });
     } else {
-      setFormData({ title: '', text: '', color: '#F59E0B' });
+      setFormData({ title: '', text: '', color: colorPalette[3] || '#F59E0B' });
     }
-  }, [isOpen, note]);
+  }, [isOpen, note, colorPalette]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
