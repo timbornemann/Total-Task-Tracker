@@ -64,3 +64,17 @@ export const isColorDark = (hex: string): boolean => {
   const yiq = (r * 299 + g * 587 + b * 114) / 1000;
   return yiq < 128;
 };
+
+export const adjustColor = (hex: string, percent: number): string => {
+  let h = hex.replace('#', '')
+  if (h.length === 3) h = h.split('').map(c => c + c).join('')
+  let r = parseInt(h.slice(0, 2), 16)
+  let g = parseInt(h.slice(2, 4), 16)
+  let b = parseInt(h.slice(4, 6), 16)
+  const amt = Math.round(2.55 * percent)
+  r = Math.min(255, Math.max(0, r + amt))
+  g = Math.min(255, Math.max(0, g + amt))
+  b = Math.min(255, Math.max(0, b + amt))
+  const toHex = (x: number) => x.toString(16).padStart(2, '0')
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`
+}

@@ -56,6 +56,33 @@ export const getPriorityIcon = (priority: string): string => {
   }
 };
 
+export const getPriorityColors = (
+  priority: string
+): { bg: string; fg: string } => {
+  switch (priority) {
+    case 'high':
+      return {
+        bg: 'hsl(var(--destructive))',
+        fg: 'hsl(var(--destructive-foreground))'
+      };
+    case 'medium':
+      return {
+        bg: 'hsl(var(--primary))',
+        fg: 'hsl(var(--primary-foreground))'
+      };
+    case 'low':
+      return {
+        bg: 'hsl(var(--accent))',
+        fg: 'hsl(var(--accent-foreground))'
+      };
+    default:
+      return {
+        bg: 'hsl(var(--muted))',
+        fg: 'hsl(var(--muted-foreground))'
+      };
+  }
+};
+
 export interface FlattenedTask {
   task: Task;
   /** Array of parent tasks from root to immediate parent */
