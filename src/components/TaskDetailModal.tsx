@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useSettings } from '@/hooks/useSettings';
 import {
   Edit,
   Plus,
@@ -52,6 +53,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
 }) => {
   const { t, i18n } = useTranslation();
   const { updateTask } = useTaskStore();
+  const { colorPalette } = useSettings();
   if (!task) return null;
 
   const isCompleted = calculateTaskCompletion(task);
@@ -98,9 +100,9 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                     {priorityIcon} {task.priority.toUpperCase()}
                   </Badge>
                   <div className="flex items-center space-x-2">
-                    <div 
+                    <div
                       className="w-4 h-4 rounded-full border-2 border-gray-300"
-                      style={{ backgroundColor: task.color }}
+                      style={{ backgroundColor: colorPalette[task.color] }}
                     />
                     <span className="text-sm text-gray-600">
                       {category?.name || t('taskDetail.unknownCategory')}

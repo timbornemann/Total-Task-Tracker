@@ -22,7 +22,7 @@ const NoteDetailPage: React.FC = () => {
   const [formData, setFormData] = useState({
     title: '',
     text: '',
-    color: colorPalette[3] || '#F59E0B'
+    color: 3
   });
 
   const colorOptions = colorPalette;
@@ -33,7 +33,10 @@ const NoteDetailPage: React.FC = () => {
     }
   }, [note, colorPalette]);
 
-  const handleChange = (field: 'title' | 'text' | 'color', value: string) => {
+  const handleChange = (
+    field: 'title' | 'text' | 'color',
+    value: string | number
+  ) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -81,17 +84,17 @@ const NoteDetailPage: React.FC = () => {
               className="min-h-[60vh]"
             />
             <div className="flex flex-wrap gap-2">
-              {colorOptions.map(color => (
+              {colorOptions.map((color, idx) => (
                 <button
-                  key={color}
+                  key={idx}
                   type="button"
                   className={`w-8 h-8 rounded-full border-2 transition-all ${
-                    formData.color === color
+                    formData.color === idx
                       ? 'border-gray-800 scale-110'
                       : 'border-gray-300 hover:scale-105'
                   }`}
                   style={{ backgroundColor: color }}
-                  onClick={() => handleChange('color', color)}
+                  onClick={() => handleChange('color', idx)}
                 />
               ))}
             </div>
@@ -104,7 +107,7 @@ const NoteDetailPage: React.FC = () => {
           </form>
         ) : (
           <div className="space-y-6 text-center">
-            <h1 className="text-3xl font-bold" style={{ color: note.color }}>
+            <h1 className="text-3xl font-bold" style={{ color: colorPalette[note.color] }}>
               {note.title}
             </h1>
             <ReactMarkdown className="prose mx-auto">{note.text}</ReactMarkdown>

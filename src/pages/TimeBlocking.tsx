@@ -8,6 +8,7 @@ import TaskModal from '@/components/TaskModal';
 import { TaskFormData, Task } from '@/types';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/lib/i18n';
+import { useSettings } from '@/hooks/useSettings';
 
 const parseMinutes = (time?: string) => {
   if (!time) return null;
@@ -43,6 +44,7 @@ const snap = (m: number) => {
 const TimeBlockingPage = () => {
   const { tasks, categories, addTask, updateTask } = useTaskStore()
   const { t } = useTranslation()
+  const { colorPalette } = useSettings()
   const locale = i18n.language === 'de' ? 'de-DE' : 'en-US'
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalDefaults, setModalDefaults] = useState<{
@@ -316,7 +318,7 @@ const TimeBlockingPage = () => {
                   height: `${height}%`,
                   left: `${left}%`,
                   width: `${width}%`,
-                  backgroundColor: task.color
+                  backgroundColor: colorPalette[task.color]
                 }}
               >
                 <div
@@ -373,7 +375,7 @@ const TimeBlockingPage = () => {
                 <li key={task.id} className="flex items-center space-x-2">
                   <span
                     className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: task.color }}
+                    style={{ backgroundColor: colorPalette[task.color] }}
                   />
                   <span className="truncate">{task.title}</span>
                 </li>
@@ -425,7 +427,7 @@ const TimeBlockingPage = () => {
                     <li key={task.id} className="flex items-center space-x-1">
                       <span
                         className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: task.color }}
+                        style={{ backgroundColor: colorPalette[task.color] }}
                       />
                       <span className="truncate">{task.title}</span>
                     </li>
@@ -496,7 +498,7 @@ const TimeBlockingPage = () => {
                         >
                           <span
                             className="w-2 h-2 rounded-full"
-                            style={{ backgroundColor: task.color }}
+                            style={{ backgroundColor: colorPalette[task.color] }}
                           />
                           <span className="truncate">{task.title}</span>
                         </div>

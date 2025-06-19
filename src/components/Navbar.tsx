@@ -2,6 +2,7 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
+import { useSettings } from '@/hooks/useSettings'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,6 +34,7 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
   const { t } = useTranslation()
+  const { colorPalette } = useSettings()
   const [showMobileMenu, setShowMobileMenu] = React.useState(false)
   const [openMenu, setOpenMenu] = React.useState<string | null>(null)
   return (
@@ -54,7 +56,7 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
               <div className="hidden sm:flex items-center space-x-2">
                 <div
                   className="w-3 h-3 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: category.color }}
+                  style={{ backgroundColor: colorPalette[category.color] }}
                 />
                 <span className="font-medium text-foreground truncate text-sm">
                   {category.name}
@@ -289,7 +291,7 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
               <div className="flex items-center space-x-2 text-sm">
                 <div
                   className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: category.color }}
+                  style={{ backgroundColor: colorPalette[category.color] }}
                 />
                 <span className="font-medium text-foreground">{category.name}</span>
               </div>

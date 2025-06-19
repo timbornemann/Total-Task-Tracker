@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
+import { useSettings } from '@/hooks/useSettings';
 import {
   Plus,
   Search,
@@ -62,6 +63,7 @@ const Dashboard: React.FC = () => {
 
   const { toast } = useToast();
   const { setCurrentCategoryId } = useCurrentCategory();
+  const { colorPalette } = useSettings();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
@@ -115,7 +117,7 @@ const Dashboard: React.FC = () => {
     const tasksForColors = selectedCategory
       ? getTasksByCategory(selectedCategory.id)
       : tasks;
-    const colors = new Set<string>();
+    const colors = new Set<number>();
     tasksForColors.forEach(task => colors.add(task.color));
     return Array.from(colors);
   }, [selectedCategory, tasks]);
@@ -138,7 +140,7 @@ const Dashboard: React.FC = () => {
         const matchesPriority =
           filterPriority === 'all' || task.priority === filterPriority;
         const matchesColor =
-          filterColor === 'all' || task.color === filterColor;
+          filterColor === 'all' || task.color === Number(filterColor);
         return matchesSearch && matchesPriority && matchesColor;
       })
     : [];
@@ -569,13 +571,13 @@ const Dashboard: React.FC = () => {
                   <SelectContent>
                     <SelectItem value="all">{t('dashboard.filter.all')}</SelectItem>
                     {colorOptions.map(color => (
-                      <SelectItem key={color} value={color}>
+                      <SelectItem key={color} value={String(color)}>
                         <div className="flex items-center space-x-2">
                           <span
                             className="w-3 h-3 rounded-full"
-                            style={{ backgroundColor: color }}
+                            style={{ backgroundColor: colorPalette[color] }}
                           />
-                          <span>{color}</span>
+                          <span>{colorPalette[color]}</span>
                         </div>
                       </SelectItem>
                     ))}

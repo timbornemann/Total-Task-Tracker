@@ -48,7 +48,7 @@ const defaultTheme = {
   'pomodoro-break-ring': '212 100% 47%'
 }
 
-const defaultColorPalette = [
+export const defaultColorPalette = [
   '#3B82F6',
   '#EF4444',
   '#10B981',
