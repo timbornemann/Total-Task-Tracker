@@ -8,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useSettings } from '@/hooks/useSettings';
-import { isColorDark } from '@/utils/color';
 import {
   Edit,
   Trash2,
@@ -68,14 +67,10 @@ const TaskCard: React.FC<TaskCardProps> = ({
 
   return (
     <Card
-      className={`mb-3 sm:mb-4 transition-all duration-200 hover:shadow-md ${
-        depth > 0 ? 'ml-3 sm:ml-6 border-l-4' : ''
+      className={`mb-3 sm:mb-4 transition-all duration-200 hover:shadow-md border-l-4 ${
+        depth > 0 ? 'ml-3 sm:ml-6' : ''
       }`}
-      style={{
-        backgroundColor: colorPalette[task.color],
-        color: isColorDark(colorPalette[task.color]) ? '#fff' : '#000',
-        borderLeftColor: depth > 0 ? colorPalette[task.color] : undefined
-      }}
+      style={{ borderLeftColor: colorPalette[task.color] }}
     >
       <CardHeader className="pb-2 sm:pb-3">
         <div className="flex items-start justify-between">

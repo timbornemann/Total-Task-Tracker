@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Star, StarOff } from 'lucide-react';
 import { useTaskStore } from '@/hooks/useTaskStore';
 import { useSettings } from '@/hooks/useSettings';
-import { isColorDark } from '@/utils/color';
 
 interface NoteCardProps {
   note: Note;
@@ -23,11 +22,8 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, onClick }) => {
 
   return (
     <Card
-      className="cursor-pointer hover:shadow-md transition-all h-full flex flex-col"
-      style={{
-        backgroundColor: colorPalette[note.color],
-        color: isColorDark(colorPalette[note.color]) ? '#fff' : '#000'
-      }}
+      className="cursor-pointer hover:shadow-md transition-all h-full flex flex-col border-l-4"
+      style={{ borderLeftColor: colorPalette[note.color] }}
       onClick={onClick}
     >
       <CardHeader className="pb-2 flex items-center">

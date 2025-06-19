@@ -9,7 +9,6 @@ import { Edit, Trash2, FolderOpen, MoreVertical } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { getTaskProgress } from '@/utils/taskUtils';
 import { useSettings } from '@/hooks/useSettings';
-import { isColorDark } from '@/utils/color';
 
 interface CategoryCardProps {
   category: Category;
@@ -38,11 +37,8 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
 
   return (
     <Card
-      className="h-full transition-all duration-200 hover:shadow-lg cursor-pointer group"
-      style={{
-        backgroundColor: colorPalette[category.color],
-        color: isColorDark(colorPalette[category.color]) ? '#fff' : '#000'
-      }}
+      className="h-full transition-all duration-200 hover:shadow-lg cursor-pointer group border-l-4"
+      style={{ borderLeftColor: colorPalette[category.color] }}
     >
       <CardHeader 
         className="pb-2 sm:pb-3"
