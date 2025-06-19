@@ -9,7 +9,7 @@ import { Edit, Trash2, FolderOpen, MoreVertical } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { getTaskProgress } from '@/utils/taskUtils';
 import { useSettings } from '@/hooks/useSettings';
-import { isColorDark } from '@/utils/color';
+import { isColorDark, adjustColor } from '@/utils/color';
 
 interface CategoryCardProps {
   category: Category;
@@ -34,16 +34,34 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
     return progress.completed === progress.total;
   }).length;
 
-  const completionPercentage = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+  const completionPercentage =
+    totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+
+  const baseColor = colorPalette[category.color];
+  const textColor = isColorDark(baseColor) ? '#fff' : '#000';
+  const hoverColor = isColorDark(baseColor)
+    ? adjustColor(baseColor, 10)
+    : adjustColor(baseColor, -10);
+  const tabColor = isColorDark(baseColor)
+    ? adjustColor(baseColor, 15)
+    : adjustColor(baseColor, -15);
+  const progressBg = isColorDark(baseColor)
+    ? adjustColor(baseColor, -30)
+    : adjustColor(baseColor, 30);
 
   return (
     <Card
-      className="h-full transition-all duration-200 hover:shadow-lg cursor-pointer group"
+      className="relative h-full transition-all duration-200 hover:shadow-lg cursor-pointer group hover:[background-color:var(--hover-color)]"
       style={{
-        backgroundColor: colorPalette[category.color],
-        color: isColorDark(colorPalette[category.color]) ? '#fff' : '#000'
-      }}
+        backgroundColor: baseColor,
+        color: textColor,
+        '--hover-color': hoverColor
+      } as React.CSSProperties}
     >
+      <div
+        className="absolute -top-2 left-4 w-8 h-3 rounded-t"
+        style={{ backgroundColor: tabColor }}
+      />
       <CardHeader 
         className="pb-2 sm:pb-3"
         onClick={() => onViewTasks(category)}
@@ -133,25 +151,25 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                 {t('dashboard.tasksBadge', { count: totalTasks })}
               </span>
             </div>
-            <Badge 
-              variant="secondary" 
+            <Badge
+              variant="secondary"
               className="text-xs flex-shrink-0"
               style={{
-                backgroundColor: `${colorPalette[category.color]}20`,
-                color: colorPalette[category.color],
-                borderColor: `${colorPalette[category.color]}40`
+                backgroundColor: `${progressBg}80`,
+                color: textColor,
+                borderColor: `${progressBg}40`
               }}
             >
               {t('categoryCard.percentDone', { percent: Math.round(completionPercentage) })}
             </Badge>
           </div>
-          
-          <div className="w-full bg-muted rounded-full h-2">
-            <div 
+
+          <div className="w-full rounded-full h-2" style={{ backgroundColor: progressBg }}>
+            <div
               className="h-2 rounded-full transition-all duration-300"
               style={{
                 width: `${completionPercentage}%`,
-                backgroundColor: colorPalette[category.color]
+                backgroundColor: baseColor
               }}
             />
           </div>

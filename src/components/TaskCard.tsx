@@ -2,13 +2,17 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Task } from '@/types';
-import { calculateTaskCompletion, getTaskProgress, getPriorityColor, getPriorityIcon } from '@/utils/taskUtils';
+import {
+  calculateTaskCompletion,
+  getTaskProgress,
+  getPriorityColors
+} from '@/utils/taskUtils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useSettings } from '@/hooks/useSettings';
-import { isColorDark } from '@/utils/color';
+import { isColorDark, adjustColor } from '@/utils/color';
 import {
   Edit,
   Trash2,
@@ -49,11 +53,19 @@ const TaskCard: React.FC<TaskCardProps> = ({
   const isCompleted = calculateTaskCompletion(task);
   const progress = getTaskProgress(task);
   const progressPercentage = progress.total > 0 ? (progress.completed / progress.total) * 100 : 0;
-  const priorityClasses = getPriorityColor(task.priority);
-  const priorityIcon = getPriorityIcon(task.priority);
+  const priorityColors = getPriorityColors(task.priority);
   const { updateTask } = useTaskStore();
   const { t, i18n } = useTranslation();
   const { colorPalette } = useSettings();
+
+  const baseColor = colorPalette[task.color];
+  const textColor = isColorDark(baseColor) ? '#fff' : '#000';
+  const hoverColor = isColorDark(baseColor)
+    ? adjustColor(baseColor, 10)
+    : adjustColor(baseColor, -10);
+  const progressBg = isColorDark(baseColor)
+    ? adjustColor(baseColor, -30)
+    : adjustColor(baseColor, 30);
 
   const handleTogglePinned = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -69,13 +81,15 @@ const TaskCard: React.FC<TaskCardProps> = ({
   return (
     <Card
       className={`mb-3 sm:mb-4 transition-all duration-200 hover:shadow-md ${
-        depth > 0 ? 'ml-3 sm:ml-6 border-l-4' : ''
-      }`}
+        depth > 0 ? 'ml-3 sm:ml-6' : ''
+      } border-t-4 hover:[background-color:var(--hover-color)]`}
       style={{
-        backgroundColor: colorPalette[task.color],
-        color: isColorDark(colorPalette[task.color]) ? '#fff' : '#000',
-        borderLeftColor: depth > 0 ? colorPalette[task.color] : undefined
-      }}
+        backgroundColor: baseColor,
+        color: textColor,
+        borderLeftColor: depth > 0 ? baseColor : undefined,
+        borderTopColor: priorityColors.bg,
+        '--hover-color': hoverColor
+      } as React.CSSProperties}
     >
       <CardHeader className="pb-2 sm:pb-3">
         <div className="flex items-start justify-between">
@@ -103,9 +117,15 @@ const TaskCard: React.FC<TaskCardProps> = ({
                 </div>
               )}
               <div className="flex items-center space-x-2 mt-2 flex-wrap gap-1">
-                <Badge className={`text-xs px-2 py-1 border ${priorityClasses} flex-shrink-0`}>
-                  <span className="hidden sm:inline">{priorityIcon} </span>
-                  {task.priority.toUpperCase()}
+                <Badge
+                  className="text-xs px-2 py-1 border flex-shrink-0"
+                  style={{
+                    backgroundColor: priorityColors.bg,
+                    color: priorityColors.fg,
+                    borderColor: priorityColors.bg
+                  }}
+                >
+                  {t(`taskModal.${task.priority}`)}
                 </Badge>
                 {task.isRecurring && (
                   <Badge
@@ -244,7 +264,12 @@ const TaskCard: React.FC<TaskCardProps> = ({
                   {Math.round(progressPercentage)}%
                 </span>
               </div>
-              <Progress value={progressPercentage} className="h-2" />
+              <Progress
+                value={progressPercentage}
+                className="h-2"
+                backgroundColor={progressBg}
+                indicatorColor={baseColor}
+              />
               
               <div className="mt-4">
                 {task.subtasks.map(subtask => (
