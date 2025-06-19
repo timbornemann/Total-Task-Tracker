@@ -87,6 +87,34 @@ const SettingsPage: React.FC = () => {
   const { t } = useTranslation()
   const { toast } = useToast()
 
+  const coreColors = [
+    { key: 'background', label: 'bgColor', desc: 'bgColorDesc' },
+    { key: 'foreground', label: 'fgColor', desc: 'fgColorDesc' },
+    { key: 'accent', label: 'accentColor', desc: 'accentColorDesc' },
+    { key: 'primary', label: 'primaryColor', desc: 'primaryColorDesc' },
+    { key: 'primary-foreground', label: 'primaryFgColor', desc: 'primaryFgColorDesc' },
+    { key: 'destructive', label: 'destructiveColor', desc: 'destructiveColorDesc' },
+    { key: 'destructive-foreground', label: 'destructiveFgColor', desc: 'destructiveFgColorDesc' },
+    { key: 'muted', label: 'mutedColor', desc: 'mutedColorDesc' },
+    { key: 'muted-foreground', label: 'mutedFgColor', desc: 'mutedFgColorDesc' },
+    { key: 'card', label: 'cardBgColor', desc: 'cardBgColorDesc' },
+    { key: 'card-foreground', label: 'cardFgColor', desc: 'cardFgColorDesc' },
+    { key: 'popover', label: 'popoverColor', desc: 'popoverColorDesc' }
+  ] as const
+
+  const statsKanbanColors = [
+    { key: 'stat-bar-primary', label: 'statBarPrimary', desc: 'statBarPrimaryDesc' },
+    { key: 'stat-bar-secondary', label: 'statBarSecondary', desc: 'statBarSecondaryDesc' },
+    { key: 'kanban-todo', label: 'kanbanTodo', desc: 'kanbanTodoDesc' },
+    { key: 'kanban-inprogress', label: 'kanbanInprogress', desc: 'kanbanInprogressDesc' },
+    { key: 'kanban-done', label: 'kanbanDone', desc: 'kanbanDoneDesc' }
+  ] as const
+
+  const pomodoroColors = [
+    { key: 'pomodoro-work-ring', label: 'workRing', desc: 'workRingDesc' },
+    { key: 'pomodoro-break-ring', label: 'breakRing', desc: 'breakRingDesc' }
+  ] as const
+
   const [serverInfo, setServerInfo] = useState<ServerInfo | null>(null)
   const [syncStatus, setSyncStatus] = useState<{ last: number; error: string | null } | null>(null)
   const [syncLog, setSyncLog] = useState<{ time: number; ip: string; method: string }[] | null>(null)
@@ -576,191 +604,91 @@ const SettingsPage: React.FC = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="bgColor">{t('settingsPage.bgColor')}</Label>
-                <Input
-                  id="bgColor"
-                  type="color"
-                  value={hslToHex(theme.background)}
-                  onChange={e => updateTheme('background', hexToHsl(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="fgColor">{t('settingsPage.fgColor')}</Label>
-                <Input
-                  id="fgColor"
-                  type="color"
-                  value={hslToHex(theme.foreground)}
-                  onChange={e => updateTheme('foreground', hexToHsl(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="accentColor">{t('settingsPage.accentColor')}</Label>
-                <Input
-                  id="accentColor"
-                  type="color"
-                  value={hslToHex(theme.accent)}
-                  onChange={e => updateTheme('accent', hexToHsl(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="primaryColor">{t('settingsPage.primaryColor')}</Label>
-                <Input
-                  id="primaryColor"
-                  type="color"
-                  value={hslToHex(theme.primary)}
-                  onChange={e => updateTheme('primary', hexToHsl(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="primaryFgColor">{t('settingsPage.primaryFgColor')}</Label>
-                <Input
-                  id="primaryFgColor"
-                  type="color"
-                  value={hslToHex(theme['primary-foreground'])}
-                  onChange={e => updateTheme('primary-foreground', hexToHsl(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="destructiveColor">{t('settingsPage.destructiveColor')}</Label>
-                <Input
-                  id="destructiveColor"
-                  type="color"
-                  value={hslToHex(theme.destructive)}
-                  onChange={e => updateTheme('destructive', hexToHsl(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="destructiveFgColor">{t('settingsPage.destructiveFgColor')}</Label>
-                <Input
-                  id="destructiveFgColor"
-                  type="color"
-                  value={hslToHex(theme['destructive-foreground'])}
-                  onChange={e => updateTheme('destructive-foreground', hexToHsl(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="mutedColor">{t('settingsPage.mutedColor')}</Label>
-                <Input
-                  id="mutedColor"
-                  type="color"
-                  value={hslToHex(theme.muted)}
-                  onChange={e => updateTheme('muted', hexToHsl(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="mutedFgColor">{t('settingsPage.mutedFgColor')}</Label>
-                <Input
-                  id="mutedFgColor"
-                  type="color"
-                  value={hslToHex(theme['muted-foreground'])}
-                  onChange={e => updateTheme('muted-foreground', hexToHsl(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="cardBgColor">{t('settingsPage.cardBgColor')}</Label>
-                <Input
-                  id="cardBgColor"
-                  type="color"
-                  value={hslToHex(theme.card)}
-                  onChange={e => updateTheme('card', hexToHsl(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="cardFgColor">{t('settingsPage.cardFgColor')}</Label>
-                <Input
-                  id="cardFgColor"
-                  type="color"
-                  value={hslToHex(theme['card-foreground'])}
-                  onChange={e => updateTheme('card-foreground', hexToHsl(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="popoverColor">{t('settingsPage.popoverColor')}</Label>
-                <Input
-                  id="popoverColor"
-                  type="color"
-                  value={hslToHex(theme.popover)}
-                  onChange={e => updateTheme('popover', hexToHsl(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="statBarPrimary">{t('settingsPage.statBarPrimary')}</Label>
-                <Input
-                  id="statBarPrimary"
-                  type="color"
-                  value={hslToHex(theme['stat-bar-primary'])}
-                  onChange={e => updateTheme('stat-bar-primary', hexToHsl(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="statBarSecondary">{t('settingsPage.statBarSecondary')}</Label>
-                <Input
-                  id="statBarSecondary"
-                  type="color"
-                  value={hslToHex(theme['stat-bar-secondary'])}
-                  onChange={e => updateTheme('stat-bar-secondary', hexToHsl(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="kanbanTodo">{t('settingsPage.kanbanTodo')}</Label>
-                <Input
-                  id="kanbanTodo"
-                  type="color"
-                  value={hslToHex(theme['kanban-todo'])}
-                  onChange={e => updateTheme('kanban-todo', hexToHsl(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="kanbanInprogress">{t('settingsPage.kanbanInprogress')}</Label>
-                <Input
-                  id="kanbanInprogress"
-                  type="color"
-                  value={hslToHex(theme['kanban-inprogress'])}
-                  onChange={e => updateTheme('kanban-inprogress', hexToHsl(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="kanbanDone">{t('settingsPage.kanbanDone')}</Label>
-                <Input
-                  id="kanbanDone"
-                  type="color"
-                  value={hslToHex(theme['kanban-done'])}
-                  onChange={e => updateTheme('kanban-done', hexToHsl(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="workRing">{t('settingsPage.workRing')}</Label>
-                <Input
-                  id="workRing"
-                  type="color"
-                  value={hslToHex(theme['pomodoro-work-ring'])}
-                  onChange={e => updateTheme('pomodoro-work-ring', hexToHsl(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="breakRing">{t('settingsPage.breakRing')}</Label>
-                <Input
-                  id="breakRing"
-                  type="color"
-                  value={hslToHex(theme['pomodoro-break-ring'])}
-                  onChange={e => updateTheme('pomodoro-break-ring', hexToHsl(e.target.value))}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>{t('settingsPage.taskColors')}</Label>
-                <div className="flex flex-wrap gap-2">
-                  {colorPalette.map((c, idx) => (
-                    <Input
-                      key={idx}
-                      type="color"
-                      value={c}
-                      onChange={e => updatePaletteColor(idx, e.target.value)}
-                      className="w-10 h-10 p-0 border-none"
-                    />
-                  ))}
-                </div>
-              </div>
+              <Accordion type="multiple" className="space-y-2">
+                <AccordionItem value="core">
+                  <AccordionTrigger>{t('settingsPage.themeGroups.core')}</AccordionTrigger>
+                  <AccordionContent className="space-y-4">
+                    {coreColors.map(c => (
+                      <div key={c.key} className="space-y-1">
+                        <Label htmlFor={c.key}>{t(`settingsPage.${c.label}`)}</Label>
+                        <p className="text-xs text-muted-foreground">
+                          {t(`settingsPage.${c.desc}`)}
+                        </p>
+                        <Input
+                          id={c.key}
+                          type="color"
+                          value={hslToHex(theme[c.key as keyof typeof theme])}
+                          onChange={e =>
+                            updateTheme(c.key as keyof typeof theme, hexToHsl(e.target.value))
+                          }
+                        />
+                      </div>
+                    ))}
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="stats">
+                  <AccordionTrigger>{t('settingsPage.themeGroups.statsKanban')}</AccordionTrigger>
+                  <AccordionContent className="space-y-4">
+                    {statsKanbanColors.map(c => (
+                      <div key={c.key} className="space-y-1">
+                        <Label htmlFor={c.key}>{t(`settingsPage.${c.label}`)}</Label>
+                        <p className="text-xs text-muted-foreground">
+                          {t(`settingsPage.${c.desc}`)}
+                        </p>
+                        <Input
+                          id={c.key}
+                          type="color"
+                          value={hslToHex(theme[c.key as keyof typeof theme])}
+                          onChange={e =>
+                            updateTheme(c.key as keyof typeof theme, hexToHsl(e.target.value))
+                          }
+                        />
+                      </div>
+                    ))}
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="pomodoro">
+                  <AccordionTrigger>{t('settingsPage.themeGroups.pomodoro')}</AccordionTrigger>
+                  <AccordionContent className="space-y-4">
+                    {pomodoroColors.map(c => (
+                      <div key={c.key} className="space-y-1">
+                        <Label htmlFor={c.key}>{t(`settingsPage.${c.label}`)}</Label>
+                        <p className="text-xs text-muted-foreground">
+                          {t(`settingsPage.${c.desc}`)}
+                        </p>
+                        <Input
+                          id={c.key}
+                          type="color"
+                          value={hslToHex(theme[c.key as keyof typeof theme])}
+                          onChange={e =>
+                            updateTheme(c.key as keyof typeof theme, hexToHsl(e.target.value))
+                          }
+                        />
+                      </div>
+                    ))}
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="palette">
+                  <AccordionTrigger>{t('settingsPage.themeGroups.palette')}</AccordionTrigger>
+                  <AccordionContent className="space-y-4">
+                    <Label>{t('settingsPage.taskColors')}</Label>
+                    <p className="text-xs text-muted-foreground">
+                      {t('settingsPage.taskColorsDesc')}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {colorPalette.map((c, idx) => (
+                        <Input
+                          key={idx}
+                          type="color"
+                          value={c}
+                          onChange={e => updatePaletteColor(idx, e.target.value)}
+                          className="w-10 h-10 p-0 border-none"
+                        />
+                      ))}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </TabsContent>
             <TabsContent value="language" className="space-y-4">
               <div>

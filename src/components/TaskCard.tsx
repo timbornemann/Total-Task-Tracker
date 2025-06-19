@@ -56,7 +56,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
   const priorityColors = getPriorityColors(task.priority);
   const { updateTask } = useTaskStore();
   const { t, i18n } = useTranslation();
-  const { colorPalette } = useSettings();
+  const { colorPalette, theme } = useSettings();
 
   const baseColor = colorPalette[task.color];
   const depthOffset = depth * 8;
@@ -70,6 +70,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
   const progressBg = isColorDark(displayColor)
     ? adjustColor(displayColor, 50)
     : adjustColor(displayColor, -20);
+  const accentColor = `hsl(${theme.accent})`;
 
   const handleTogglePinned = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -272,7 +273,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
                 value={progressPercentage}
                 className="h-2"
                 backgroundColor={progressBg}
-                indicatorColor={baseColor}
+                indicatorColor={accentColor}
               />
               
               <div className="mt-4">
