@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useSettings } from '@/hooks/useSettings';
+import { isColorDark } from '@/utils/color';
 import {
   Edit,
   Trash2,
@@ -66,15 +67,19 @@ const TaskCard: React.FC<TaskCardProps> = ({
   };
 
   return (
-    <Card 
+    <Card
       className={`mb-3 sm:mb-4 transition-all duration-200 hover:shadow-md ${
         depth > 0 ? 'ml-3 sm:ml-6 border-l-4' : ''
-      } ${isCompleted ? 'bg-green-50 border-green-200' : ''}`}
-      style={{ borderLeftColor: depth > 0 ? colorPalette[task.color] : undefined }}
+      }`}
+      style={{
+        backgroundColor: colorPalette[task.color],
+        color: isColorDark(colorPalette[task.color]) ? '#fff' : '#000',
+        borderLeftColor: depth > 0 ? colorPalette[task.color] : undefined
+      }}
     >
       <CardHeader className="pb-2 sm:pb-3">
         <div className="flex items-start justify-between">
-          <div className="flex items-start space-x-2 sm:space-x-3 flex-1 min-w-0">
+          <div className="flex items-start flex-1 min-w-0">
             {task.subtasks.length === 0 && (
               <input
                 type="checkbox"
@@ -102,10 +107,6 @@ const TaskCard: React.FC<TaskCardProps> = ({
                   <span className="hidden sm:inline">{priorityIcon} </span>
                   {task.priority.toUpperCase()}
                 </Badge>
-                <div
-                  className="w-4 h-4 rounded-full border-2 border-gray-300 flex-shrink-0"
-                  style={{ backgroundColor: colorPalette[task.color] }}
-                />
                 {task.isRecurring && (
                   <Badge
                     variant="outline"
