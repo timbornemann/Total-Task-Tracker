@@ -59,13 +59,17 @@ const TaskCard: React.FC<TaskCardProps> = ({
   const { colorPalette } = useSettings();
 
   const baseColor = colorPalette[task.color];
-  const textColor = isColorDark(baseColor) ? '#fff' : '#000';
-  const hoverColor = isColorDark(baseColor)
-    ? adjustColor(baseColor, 10)
-    : adjustColor(baseColor, -10);
-  const progressBg = isColorDark(baseColor)
-    ? adjustColor(baseColor, -30)
-    : adjustColor(baseColor, 30);
+  const depthOffset = depth * 8;
+  const displayColor = depth > 0
+    ? adjustColor(baseColor, isColorDark(baseColor) ? depthOffset : -depthOffset)
+    : baseColor;
+  const textColor = isColorDark(displayColor) ? '#fff' : '#000';
+  const hoverColor = isColorDark(displayColor)
+    ? adjustColor(displayColor, 10)
+    : adjustColor(displayColor, -10);
+  const progressBg = isColorDark(displayColor)
+    ? adjustColor(displayColor, 50)
+    : adjustColor(displayColor, -20);
 
   const handleTogglePinned = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -84,7 +88,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
         depth > 0 ? 'ml-3 sm:ml-6' : ''
       } border-t-4 hover:[background-color:var(--hover-color)]`}
       style={{
-        backgroundColor: baseColor,
+        backgroundColor: displayColor,
         color: textColor,
         borderLeftColor: depth > 0 ? baseColor : undefined,
         borderTopColor: priorityColors.bg,
@@ -105,14 +109,14 @@ const TaskCard: React.FC<TaskCardProps> = ({
             <div className="flex-1 min-w-0">
               <CardTitle
                 className={`text-base sm:text-lg font-semibold cursor-pointer hover:text-primary transition-colors ${
-                  isCompleted ? 'line-through text-gray-500' : ''
+                  isCompleted ? 'line-through text-muted-foreground' : ''
                 } break-words`}
                 onClick={() => onViewDetails(task)}
               >
                 {task.title}
               </CardTitle>
               {parentPathTitles.length > 0 && (
-                <div className="text-xs text-gray-500 italic mt-1 break-words">
+                <div className="text-xs text-muted-foreground italic mt-1 break-words">
                   {parentPathTitles.join(' > ')}
                 </div>
               )}
@@ -251,16 +255,16 @@ const TaskCard: React.FC<TaskCardProps> = ({
       {(task.description || (showSubtasks && task.subtasks.length > 0)) && (
         <CardContent className="pt-0">
           {task.description && (
-            <p className="text-sm text-gray-600 mb-3 break-words">{task.description}</p>
+            <p className="text-sm text-muted-foreground mb-3 break-words">{task.description}</p>
           )}
 
           {showSubtasks && task.subtasks.length > 0 && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs sm:text-sm font-medium text-gray-700">
+                <span className="text-xs sm:text-sm font-medium text-foreground">
                   {t('taskCard.progress', { completed: progress.completed, total: progress.total })}
                 </span>
-                <span className="text-xs sm:text-sm text-gray-500">
+                <span className="text-xs sm:text-sm text-muted-foreground">
                   {Math.round(progressPercentage)}%
                 </span>
               </div>

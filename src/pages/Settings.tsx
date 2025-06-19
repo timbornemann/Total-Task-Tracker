@@ -604,6 +604,60 @@ const SettingsPage: React.FC = () => {
                 />
               </div>
               <div className="space-y-2">
+                <Label htmlFor="primaryColor">{t('settingsPage.primaryColor')}</Label>
+                <Input
+                  id="primaryColor"
+                  type="color"
+                  value={hslToHex(theme.primary)}
+                  onChange={e => updateTheme('primary', hexToHsl(e.target.value))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="primaryFgColor">{t('settingsPage.primaryFgColor')}</Label>
+                <Input
+                  id="primaryFgColor"
+                  type="color"
+                  value={hslToHex(theme['primary-foreground'])}
+                  onChange={e => updateTheme('primary-foreground', hexToHsl(e.target.value))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="destructiveColor">{t('settingsPage.destructiveColor')}</Label>
+                <Input
+                  id="destructiveColor"
+                  type="color"
+                  value={hslToHex(theme.destructive)}
+                  onChange={e => updateTheme('destructive', hexToHsl(e.target.value))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="destructiveFgColor">{t('settingsPage.destructiveFgColor')}</Label>
+                <Input
+                  id="destructiveFgColor"
+                  type="color"
+                  value={hslToHex(theme['destructive-foreground'])}
+                  onChange={e => updateTheme('destructive-foreground', hexToHsl(e.target.value))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="mutedColor">{t('settingsPage.mutedColor')}</Label>
+                <Input
+                  id="mutedColor"
+                  type="color"
+                  value={hslToHex(theme.muted)}
+                  onChange={e => updateTheme('muted', hexToHsl(e.target.value))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="mutedFgColor">{t('settingsPage.mutedFgColor')}</Label>
+                <Input
+                  id="mutedFgColor"
+                  type="color"
+                  value={hslToHex(theme['muted-foreground'])}
+                  onChange={e => updateTheme('muted-foreground', hexToHsl(e.target.value))}
+                />
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="cardBgColor">{t('settingsPage.cardBgColor')}</Label>
                 <Input
                   id="cardBgColor"

@@ -48,6 +48,9 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   const progressBg = isColorDark(baseColor)
     ? adjustColor(baseColor, -30)
     : adjustColor(baseColor, 30);
+  const titleHoverColor = isColorDark(baseColor)
+    ? adjustColor(baseColor, 60)
+    : adjustColor(baseColor, -60);
 
   return (
     <Card
@@ -69,7 +72,10 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
         <div className="flex items-start justify-between">
           <div className="flex items-start flex-1 min-w-0">
             <div className="flex-1 min-w-0">
-              <CardTitle className="text-base sm:text-lg font-semibold group-hover:text-primary transition-colors break-words">
+              <CardTitle
+                className="text-base sm:text-lg font-semibold transition-colors break-words group-hover:[color:var(--title-hover-color)]"
+                style={{ '--title-hover-color': titleHoverColor } as React.CSSProperties}
+              >
                 {category.name}
               </CardTitle>
               {category.description && (
