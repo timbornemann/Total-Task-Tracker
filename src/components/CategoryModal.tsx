@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { useSettings } from '@/hooks/useSettings';
 
 interface CategoryModalProps {
   isOpen: boolean;
@@ -22,16 +23,14 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
   category
 }) => {
   const { t } = useTranslation();
+  const { colorPalette } = useSettings();
   const [formData, setFormData] = useState<CategoryFormData>({
     name: '',
     description: '',
-    color: '#3B82F6'
+    color: colorPalette[0] || '#3B82F6'
   });
 
-  const colorOptions = [
-    '#3B82F6', '#EF4444', '#10B981', '#F59E0B', 
-    '#8B5CF6', '#F97316', '#06B6D4', '#84CC16'
-  ];
+  const colorOptions = colorPalette;
 
   useEffect(() => {
     if (!isOpen) return;
@@ -46,10 +45,10 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
       setFormData({
         name: '',
         description: '',
-        color: '#3B82F6'
+        color: colorPalette[0] || '#3B82F6'
       });
     }
-  }, [category, isOpen]);
+  }, [category, isOpen, colorPalette]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
