@@ -23,7 +23,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, onSave, note }) 
   const [formData, setFormData] = useState({
     title: '',
     text: '',
-    color: colorPalette[3] || '#F59E0B'
+    color: 3
   });
 
   const colorOptions = colorPalette;
@@ -33,7 +33,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, onSave, note }) 
     if (note) {
       setFormData({ title: note.title, text: note.text, color: note.color });
     } else {
-      setFormData({ title: '', text: '', color: colorPalette[3] || '#F59E0B' });
+      setFormData({ title: '', text: '', color: 3 });
     }
   }, [isOpen, note, colorPalette]);
 
@@ -45,7 +45,10 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, onSave, note }) 
     }
   };
 
-  const handleChange = (field: 'title' | 'text' | 'color', value: string) => {
+  const handleChange = (
+    field: 'title' | 'text' | 'color',
+    value: string | number
+  ) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -77,15 +80,15 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, onSave, note }) 
           <div>
             <Label>{t('noteModal.color')}</Label>
             <div className="flex space-x-2 mt-2">
-              {colorOptions.map(color => (
+              {colorOptions.map((color, idx) => (
                 <button
-                  key={color}
+                  key={idx}
                   type="button"
                   className={`w-8 h-8 rounded-full border-2 transition-all ${
-                    formData.color === color ? 'border-gray-800 scale-110' : 'border-gray-300 hover:scale-105'
+                    formData.color === idx ? 'border-gray-800 scale-110' : 'border-gray-300 hover:scale-105'
                   }`}
                   style={{ backgroundColor: color }}
-                  onClick={() => handleChange('color', color)}
+                  onClick={() => handleChange('color', idx)}
                 />
               ))}
             </div>

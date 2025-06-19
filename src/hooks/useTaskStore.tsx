@@ -1,6 +1,7 @@
 import React, { useState, useEffect, createContext, useContext, useRef } from 'react';
 import { Task, Category, Note, Deletion } from '@/types';
 import i18n from '@/lib/i18n';
+import { useSettings, defaultColorPalette } from '@/hooks/useSettings';
 
 const API_URL = '/api/data';
 
@@ -16,6 +17,7 @@ const useTaskStoreImpl = () => {
       .map((n, idx) => ({ ...n, order: idx }));
     return [...pinned, ...others];
   };
+  const { colorPalette } = useSettings();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [notes, setNotes] = useState<Note[]>([]);
@@ -51,6 +53,17 @@ const useTaskStoreImpl = () => {
       const isDeleted = (type: Deletion['type'], id: string) =>
         serverDeletions.some(d => d.type === type && d.id === id);
 
+      const mapColor = (c: unknown): number => {
+        if (typeof c === 'number') return c;
+        if (typeof c === 'string') {
+          const idx = colorPalette.indexOf(c);
+          if (idx !== -1) return idx;
+          const defIdx = defaultColorPalette.indexOf(c as string);
+          if (defIdx !== -1) return defIdx;
+        }
+        return 0;
+      };
+
       const tasksData = savedTasks
         ? savedTasks
             .filter((t: Task) => !isDeleted('task', t.id))
@@ -66,7 +79,8 @@ const useTaskStoreImpl = () => {
               status: task.status ?? (task.completed ? 'done' : 'todo'),
               pinned: task.pinned ?? false,
               startTime: task.startTime,
-              endTime: task.endTime
+              endTime: task.endTime,
+              color: mapColor(task.color)
             }))
         : [];
       setTasks(tasksData);
@@ -79,7 +93,8 @@ const useTaskStoreImpl = () => {
               createdAt: new Date(note.createdAt),
               updatedAt: new Date(note.updatedAt),
               pinned: note.pinned ?? false,
-              order: typeof note.order === 'number' ? note.order : idx
+              order: typeof note.order === 'number' ? note.order : idx,
+              color: mapColor(note.color)
             }))
         : [];
       setNotes(sortNotes(notesData));
@@ -100,7 +115,8 @@ const useTaskStoreImpl = () => {
               pinned: t.pinned ?? false,
               template: true,
               startTime: t.startTime,
-              endTime: t.endTime
+              endTime: t.endTime,
+              color: mapColor(t.color)
             }))
         : [];
       setRecurring(recurringData);
@@ -113,14 +129,15 @@ const useTaskStoreImpl = () => {
             ...category,
             createdAt: new Date(category.createdAt),
             updatedAt: new Date(category.updatedAt),
-            order: typeof category.order === 'number' ? category.order : idx
+            order: typeof category.order === 'number' ? category.order : idx,
+            color: mapColor(category.color)
           }));
       } else {
         const defaultCategory: Category = {
           id: 'default',
           name: i18n.t('taskStore.defaultCategoryName'),
           description: i18n.t('taskStore.defaultCategoryDescription'),
-          color: '#3B82F6',
+          color: 0,
           createdAt: new Date(),
           updatedAt: new Date(),
           order: 0
@@ -528,7 +545,7 @@ const useTaskStoreImpl = () => {
           id: 'default',
           name: i18n.t('taskStore.defaultCategoryName'),
           description: i18n.t('taskStore.defaultCategoryDescription'),
-          color: '#3B82F6',
+          color: 0,
           createdAt: new Date(),
           updatedAt: new Date(),
           order: 0

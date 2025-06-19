@@ -27,7 +27,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
   const [formData, setFormData] = useState<CategoryFormData>({
     name: '',
     description: '',
-    color: colorPalette[0] || '#3B82F6'
+    color: 0
   });
 
   const colorOptions = colorPalette;
@@ -45,7 +45,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
       setFormData({
         name: '',
         description: '',
-        color: colorPalette[0] || '#3B82F6'
+        color: 0
       });
     }
   }, [category, isOpen, colorPalette]);
@@ -58,7 +58,10 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
     }
   };
 
-  const handleChange = (field: keyof CategoryFormData, value: string) => {
+  const handleChange = (
+    field: keyof CategoryFormData,
+    value: string | number
+  ) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -98,15 +101,15 @@ const CategoryModal: React.FC<CategoryModalProps> = ({
           <div>
             <Label>{t('categoryModal.color')}</Label>
             <div className="flex space-x-2 mt-2">
-              {colorOptions.map(color => (
+              {colorOptions.map((color, idx) => (
                 <button
-                  key={color}
+                  key={idx}
                   type="button"
                   className={`w-8 h-8 rounded-full border-2 transition-all ${
-                    formData.color === color ? 'border-gray-800 scale-110' : 'border-gray-300 hover:scale-105'
+                    formData.color === idx ? 'border-gray-800 scale-110' : 'border-gray-300 hover:scale-105'
                   }`}
                   style={{ backgroundColor: color }}
-                  onClick={() => handleChange('color', color)}
+                  onClick={() => handleChange('color', idx)}
                 />
               ))}
             </div>

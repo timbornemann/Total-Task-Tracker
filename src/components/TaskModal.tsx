@@ -70,7 +70,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     title: '',
     description: '',
     priority: defaultTaskPriority,
-    color: colorPalette[0] || '#3B82F6',
+    color: 0,
     categoryId: '',
     parentId: parentTask?.id,
     dueDate: undefined,
@@ -120,7 +120,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
         title: '',
         description: '',
         priority: defaultTaskPriority,
-        color: colorPalette[0] || '#3B82F6',
+        color: 0,
         categoryId:
           defaultCategoryId || parentTask?.categoryId || categories[0]?.id || '',
         parentId: parentTask?.id,
@@ -263,9 +263,9 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   {categories.map(category => (
                     <SelectItem key={category.id} value={category.id}>
                       <div className="flex items-center space-x-2">
-                        <div 
+                        <div
                           className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: category.color }}
+                          style={{ backgroundColor: colorPalette[category.color] }}
                         />
                         <span>{category.name}</span>
                       </div>
@@ -342,15 +342,15 @@ const TaskModal: React.FC<TaskModalProps> = ({
         <div>
           <Label>{t('taskModal.color')}</Label>
           <div className="flex space-x-2 mt-2">
-            {colorOptions.map(color => (
+            {colorOptions.map((color, idx) => (
                 <button
-                  key={color}
+                  key={idx}
                   type="button"
                   className={`w-8 h-8 rounded-full border-2 transition-all ${
-                    formData.color === color ? 'border-gray-800 scale-110' : 'border-gray-300 hover:scale-105'
+                    formData.color === idx ? 'border-gray-800 scale-110' : 'border-gray-300 hover:scale-105'
                   }`}
                   style={{ backgroundColor: color }}
-                  onClick={() => handleChange('color', color)}
+                  onClick={() => handleChange('color', idx)}
                 />
               ))}
             </div>

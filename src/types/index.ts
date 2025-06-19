@@ -4,7 +4,7 @@ export interface Task {
   title: string;
   description: string;
   priority: 'low' | 'medium' | 'high';
-  color: string;
+  color: number;
   completed: boolean;
   /** Status for kanban workflow */
   status: 'todo' | 'inprogress' | 'done';
@@ -46,7 +46,7 @@ export interface Category {
   id: string;
   name: string;
   description: string;
-  color: string;
+  color: number;
   createdAt: Date;
   updatedAt: Date;
   /** Sort order within the category list */
@@ -57,7 +57,7 @@ export interface TaskFormData {
   title: string;
   description: string;
   priority: 'low' | 'medium' | 'high';
-  color: string;
+  color: number;
   categoryId: string;
   parentId?: string;
 
@@ -83,14 +83,14 @@ export interface TaskFormData {
 export interface CategoryFormData {
   name: string;
   description: string;
-  color: string;
+  color: number;
 }
 
 export interface Note {
   id: string;
   title: string;
   text: string;
-  color: string;
+  color: number;
   createdAt: Date;
   updatedAt: Date;
   /** Sort order within the notes list */

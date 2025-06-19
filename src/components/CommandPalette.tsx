@@ -109,13 +109,13 @@ const CommandPalette: React.FC = () => {
         title,
         description: '',
         priority: defaultTaskPriority,
-        color: colorPalette[0] || '#3B82F6',
+        color: 0,
         categoryId: currentCategoryId || 'default',
         isRecurring: false
       })
       toast({ description: t('commandPalette.taskCreated') })
     } else if (mode === 'note') {
-      addNote({ title, text: '', color: colorPalette[3] || '#F59E0B' })
+      addNote({ title, text: '', color: 3 })
       toast({ description: t('commandPalette.noteCreated') })
     } else if (mode === 'flashcard') {
       if (decks.length > 0) {

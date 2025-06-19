@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Edit, Trash2, FolderOpen, MoreVertical } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { getTaskProgress } from '@/utils/taskUtils';
+import { useSettings } from '@/hooks/useSettings';
 
 interface CategoryCardProps {
   category: Category;
@@ -25,6 +26,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   onViewTasks
 }) => {
   const { t } = useTranslation();
+  const { colorPalette } = useSettings();
   const totalTasks = tasks.length;
   const completedTasks = tasks.filter(task => {
     const progress = getTaskProgress(task);
@@ -43,7 +45,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
           <div className="flex items-start space-x-2 sm:space-x-3 flex-1 min-w-0">
             <div
               className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-muted flex-shrink-0 mt-1"
-              style={{ backgroundColor: category.color }}
+              style={{ backgroundColor: colorPalette[category.color] }}
             />
             <div className="flex-1 min-w-0">
               <CardTitle className="text-base sm:text-lg font-semibold group-hover:text-primary transition-colors break-words">
@@ -131,10 +133,10 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
             <Badge 
               variant="secondary" 
               className="text-xs flex-shrink-0"
-              style={{ 
-                backgroundColor: `${category.color}20`,
-                color: category.color,
-                borderColor: `${category.color}40`
+              style={{
+                backgroundColor: `${colorPalette[category.color]}20`,
+                color: colorPalette[category.color],
+                borderColor: `${colorPalette[category.color]}40`
               }}
             >
               {t('categoryCard.percentDone', { percent: Math.round(completionPercentage) })}
@@ -144,9 +146,9 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
           <div className="w-full bg-muted rounded-full h-2">
             <div 
               className="h-2 rounded-full transition-all duration-300"
-              style={{ 
+              style={{
                 width: `${completionPercentage}%`,
-                backgroundColor: category.color
+                backgroundColor: colorPalette[category.color]
               }}
             />
           </div>

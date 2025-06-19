@@ -4,6 +4,7 @@ import { Note } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Star, StarOff } from 'lucide-react';
 import { useTaskStore } from '@/hooks/useTaskStore';
+import { useSettings } from '@/hooks/useSettings';
 
 interface NoteCardProps {
   note: Note;
@@ -12,6 +13,7 @@ interface NoteCardProps {
 
 const NoteCard: React.FC<NoteCardProps> = ({ note, onClick }) => {
   const { updateNote } = useTaskStore();
+  const { colorPalette } = useSettings();
 
   const handleToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -26,7 +28,7 @@ const NoteCard: React.FC<NoteCardProps> = ({ note, onClick }) => {
       <CardHeader className="pb-2 flex items-center space-x-2">
         <div
           className="w-4 h-4 rounded-full flex-shrink-0"
-          style={{ backgroundColor: note.color }}
+          style={{ backgroundColor: colorPalette[note.color] }}
         />
         <CardTitle className="text-base font-medium truncate flex-1">
           {note.title}
