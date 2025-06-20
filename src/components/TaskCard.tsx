@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Task } from '@/types';
 import {
@@ -12,13 +12,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useSettings } from '@/hooks/useSettings';
-import { isColorDark, adjustColor } from '@/utils/color';
+import { isColorDark, adjustColor, complementaryColor } from '@/utils/color';
 import {
   Edit,
   Trash2,
   Plus,
   FolderOpen,
   MoreVertical,
+  ChevronDown,
+  ChevronRight,
   Star,
   StarOff
 } from 'lucide-react';
@@ -56,7 +58,13 @@ const TaskCard: React.FC<TaskCardProps> = ({
   const priorityColors = getPriorityColors(task.priority);
   const { updateTask } = useTaskStore();
   const { t, i18n } = useTranslation();
-  const { colorPalette, theme } = useSettings();
+  const { colorPalette, theme, collapseSubtasksByDefault } = useSettings();
+
+  const [collapsed, setCollapsed] = useState(collapseSubtasksByDefault);
+
+  React.useEffect(() => {
+    setCollapsed(collapseSubtasksByDefault);
+  }, [collapseSubtasksByDefault]);
 
   const baseColor = colorPalette[task.color];
   const depthOffset = depth * 8;
@@ -70,7 +78,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
   const progressBg = isColorDark(displayColor)
     ? adjustColor(displayColor, 50)
     : adjustColor(displayColor, -20);
-  const accentColor = `hsl(${theme.accent})`;
+  const progressColor = complementaryColor(displayColor);
 
   const handleTogglePinned = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -265,32 +273,47 @@ const TaskCard: React.FC<TaskCardProps> = ({
                 <span className="text-xs sm:text-sm font-medium text-foreground">
                   {t('taskCard.progress', { completed: progress.completed, total: progress.total })}
                 </span>
-                <span className="text-xs sm:text-sm text-muted-foreground">
-                  {Math.round(progressPercentage)}%
-                </span>
+                <div className="flex items-center space-x-2">
+                  <span className="text-xs sm:text-sm text-muted-foreground">
+                    {Math.round(progressPercentage)}%
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setCollapsed(!collapsed)}
+                    className="h-6 w-6 p-0"
+                  >
+                    {collapsed ? (
+                      <ChevronRight className="h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
               </div>
               <Progress
                 value={progressPercentage}
                 className="h-2"
                 backgroundColor={progressBg}
-                indicatorColor={accentColor}
+                indicatorColor={progressColor}
               />
-              
-              <div className="mt-4">
-                {task.subtasks.map(subtask => (
-                  <TaskCard
-                    key={subtask.id}
-                    task={subtask}
-                    onEdit={onEdit}
-                    onDelete={onDelete}
-                    onAddSubtask={onAddSubtask}
-                    onToggleComplete={onToggleComplete}
-                    onViewDetails={onViewDetails}
-                    depth={depth + 1}
-                    showSubtasks={showSubtasks}
-                  />
-                ))}
-              </div>
+              {!collapsed && (
+                <div className="mt-4">
+                  {task.subtasks.map(subtask => (
+                    <TaskCard
+                      key={subtask.id}
+                      task={subtask}
+                      onEdit={onEdit}
+                      onDelete={onDelete}
+                      onAddSubtask={onAddSubtask}
+                      onToggleComplete={onToggleComplete}
+                      onViewDetails={onViewDetails}
+                      depth={depth + 1}
+                      showSubtasks={showSubtasks}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </CardContent>

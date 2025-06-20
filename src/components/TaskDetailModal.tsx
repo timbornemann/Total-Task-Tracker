@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useSettings } from '@/hooks/useSettings';
+import { complementaryColor, adjustColor, isColorDark } from '@/utils/color';
 import {
   Edit,
   Plus,
@@ -61,6 +62,9 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   const progressPercentage = progress.total > 0 ? (progress.completed / progress.total) * 100 : 0;
   const priorityClasses = getPriorityColor(task.priority);
   const priorityIcon = getPriorityIcon(task.priority);
+  const baseColor = colorPalette[task.color];
+  const progressBg = isColorDark(baseColor) ? adjustColor(baseColor, 50) : adjustColor(baseColor, -20);
+  const progressColor = complementaryColor(baseColor);
 
   const handleTogglePinned = () => {
     updateTask(task.id, { pinned: !task.pinned });
@@ -189,7 +193,12 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                     <span className="text-sm font-medium text-gray-700">{t('taskDetail.totalProgress')}</span>
                     <span className="text-sm text-gray-500">{Math.round(progressPercentage)}%</span>
                   </div>
-                  <Progress value={progressPercentage} className="h-3" />
+                  <Progress
+                    value={progressPercentage}
+                    className="h-3"
+                    backgroundColor={progressBg}
+                    indicatorColor={progressColor}
+                  />
                 </div>
 
                 <div className="space-y-3">

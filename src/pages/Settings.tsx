@@ -64,6 +64,8 @@ const SettingsPage: React.FC = () => {
     toggleShowPinnedTasks,
     showPinnedNotes,
     toggleShowPinnedNotes,
+    collapseSubtasksByDefault,
+    toggleCollapseSubtasksByDefault,
     flashcardTimer,
     updateFlashcardTimer,
     flashcardSessionSize,
@@ -528,6 +530,14 @@ const SettingsPage: React.FC = () => {
                     <SelectItem value="high">{t('settingsPage.high')}</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="collapseSubtasks"
+                  checked={collapseSubtasksByDefault}
+                  onCheckedChange={toggleCollapseSubtasksByDefault}
+                />
+                <Label htmlFor="collapseSubtasks">{t('settingsPage.collapseSubtasks')}</Label>
               </div>
             </TabsContent>
             <TabsContent value="home" className="space-y-2">

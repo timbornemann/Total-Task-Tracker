@@ -70,6 +70,7 @@
     "low": "Low",
     "medium": "Medium",
     "high": "High",
+    "collapseSubtasks": "Collapse subtasks by default",
     "showPinnedTasks": "Show pinned tasks",
     "showPinnedNotes": "Show pinned notes",
     "themePreset": "Preset",
