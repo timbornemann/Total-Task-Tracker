@@ -75,6 +75,7 @@ const Dashboard: React.FC = () => {
 
   const [filterPriority, setFilterPriority] = useState<string>('all');
   const [filterColor, setFilterColor] = useState<string>('all');
+  const [taskLayout, setTaskLayout] = useState<'list' | 'grid'>('list');
 
 
   useEffect(() => {
@@ -242,7 +243,7 @@ const Dashboard: React.FC = () => {
   };
 
   const handleToggleTaskComplete = (taskId: string, completed: boolean) => {
-    updateTask(taskId, { completed });
+    updateTask(taskId, { completed, status: completed ? 'done' : 'todo' });
     const task = findTaskById(taskId);
     toast({
       title: completed ? t('task.completed') : t('task.reactivated'),
@@ -584,6 +585,25 @@ const Dashboard: React.FC = () => {
                   </SelectContent>
                 </Select>
               </div>
+              <div className="flex items-center gap-1">
+                <Label className="text-sm">{t('dashboard.viewLabel')}</Label>
+                <Button
+                  variant={taskLayout === 'list' ? 'secondary' : 'ghost'}
+                  size="icon"
+                  onClick={() => setTaskLayout('list')}
+                >
+                  <List className="h-4 w-4" />
+                  <span className="sr-only">{t('dashboard.listView')}</span>
+                </Button>
+                <Button
+                  variant={taskLayout === 'grid' ? 'secondary' : 'ghost'}
+                  size="icon"
+                  onClick={() => setTaskLayout('grid')}
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                  <span className="sr-only">{t('dashboard.gridView')}</span>
+                </Button>
+              </div>
               <Button onClick={() => setIsTaskModalOpen(true)} size="sm">
                 <Plus className="h-4 w-4 mr-2" />
                 {t('taskModal.newTitle')}
@@ -615,14 +635,23 @@ const Dashboard: React.FC = () => {
                 <Droppable droppableId="tasks" isCombineEnabled>
                   {provided => (
                     <div
-                      className="space-y-3 sm:space-y-4"
+                      className={
+                        taskLayout === 'grid'
+                          ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'
+                          : 'space-y-3 sm:space-y-4'
+                      }
                       ref={provided.innerRef}
                       {...provided.droppableProps}
                     >
                       {sortedTasks.map((task, index) => (
                         <Draggable key={task.id} draggableId={task.id} index={index}>
                           {prov => (
-                            <div ref={prov.innerRef} {...prov.draggableProps} {...prov.dragHandleProps}>
+                            <div
+                              ref={prov.innerRef}
+                              {...prov.draggableProps}
+                              {...prov.dragHandleProps}
+                              className={taskLayout === 'grid' ? 'h-full' : ''}
+                            >
                               <TaskCard
                                 task={task}
                                 onEdit={handleEditTask}
@@ -630,6 +659,7 @@ const Dashboard: React.FC = () => {
                                 onAddSubtask={handleAddSubtask}
                                 onToggleComplete={handleToggleTaskComplete}
                                 onViewDetails={handleViewTaskDetails}
+                                isGrid={taskLayout === 'grid'}
                               />
                             </div>
                           )}

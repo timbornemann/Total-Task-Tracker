@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useSettings } from '@/hooks/useSettings';
-import { complementaryColor, adjustColor, isColorDark } from '@/utils/color';
+import { complementaryColor, adjustColor, isColorDark, hslToHex } from '@/utils/color';
 import {
   Edit,
   Plus,
@@ -54,7 +54,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
 }) => {
   const { t, i18n } = useTranslation();
   const { updateTask } = useTaskStore();
-  const { colorPalette } = useSettings();
+  const { colorPalette, theme } = useSettings();
   if (!task) return null;
 
   const isCompleted = calculateTaskCompletion(task);
@@ -63,8 +63,9 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   const priorityClasses = getPriorityColor(task.priority);
   const priorityIcon = getPriorityIcon(task.priority);
   const baseColor = colorPalette[task.color];
-  const progressBg = isColorDark(baseColor) ? adjustColor(baseColor, 50) : adjustColor(baseColor, -20);
-  const progressColor = complementaryColor(baseColor);
+  const cardHex = hslToHex(theme.card);
+  const progressBg = isColorDark(cardHex) ? adjustColor(cardHex, 50) : adjustColor(cardHex, -20);
+  const progressColor = complementaryColor(cardHex);
 
   const handleTogglePinned = () => {
     updateTask(task.id, { pinned: !task.pinned });

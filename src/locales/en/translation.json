@@ -439,6 +439,9 @@
     "sortLabel": "Sort by:",
     "priorityLabel": "Priority:",
     "colorLabel": "Color:",
+    "viewLabel": "View:",
+    "listView": "List",
+    "gridView": "Grid",
     "sort": {
       "manual": "Manual",
       "createdDesc": "Newest first",
