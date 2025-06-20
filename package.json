@@ -9,7 +9,8 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "node server/index.js"
+    "start": "node server/index.js",
+    "test": "vitest"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
@@ -86,6 +87,10 @@
     "tailwindcss": "^3.4.11",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
-    "vite": "^5.4.1"
+    "vite": "^5.4.1",
+    "vitest": "^1.5.0",
+    "@testing-library/react": "^14.2.0",
+    "@testing-library/jest-dom": "^6.4.2",
+    "jsdom": "^24.0.0"
   }
 }
