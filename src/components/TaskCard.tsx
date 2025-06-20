@@ -67,7 +67,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
     setCollapsed(collapseSubtasksByDefault);
   }, [collapseSubtasksByDefault]);
 
-  const baseColor = colorPalette[task.color];
+  const baseColor = colorPalette[task.color] ?? colorPalette[0];
   const depthOffset = depth * 8;
   const displayColor = depth > 0
     ? adjustColor(baseColor, isColorDark(baseColor) ? depthOffset : -depthOffset)
@@ -99,7 +99,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
     const progress = getTaskProgress(st);
     const percentage =
       progress.total > 0 ? (progress.completed / progress.total) * 100 : 0;
-    const base = colorPalette[st.color];
+    const base = colorPalette[st.color] ?? colorPalette[0];
     const offset = level * 8;
     const color =
       level > 0

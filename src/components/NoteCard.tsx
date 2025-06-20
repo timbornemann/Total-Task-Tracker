@@ -15,7 +15,7 @@ interface NoteCardProps {
 const NoteCard: React.FC<NoteCardProps> = ({ note, onClick }) => {
   const { updateNote } = useTaskStore();
   const { colorPalette } = useSettings();
-  const baseColor = colorPalette[note.color];
+  const baseColor = colorPalette[note.color] ?? colorPalette[0];
   const textColor = isColorDark(baseColor) ? '#fff' : '#000';
   const hoverColor = isColorDark(baseColor)
     ? adjustColor(baseColor, 10)

@@ -37,7 +37,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   const completionPercentage =
     totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
 
-  const baseColor = colorPalette[category.color];
+  const baseColor = colorPalette[category.color] ?? colorPalette[0];
   const textColor = isColorDark(baseColor) ? '#fff' : '#000';
   const hoverColor = isColorDark(baseColor)
     ? adjustColor(baseColor, 10)

@@ -1,6 +1,12 @@
-export const hexToHsl = (hex: string): string => {
+const sanitizeHex = (hex?: string): string | null => {
+  if (!hex) return null;
   let h = hex.replace('#', '');
   if (h.length === 3) h = h.split('').map(c => c + c).join('');
+  return h.length === 6 ? h : null;
+};
+
+export const hexToHsl = (hex: string): string => {
+  const h = sanitizeHex(hex) || '000000';
   const r = parseInt(h.slice(0, 2), 16) / 255;
   const g = parseInt(h.slice(2, 4), 16) / 255;
   const b = parseInt(h.slice(4, 6), 16) / 255;
@@ -56,8 +62,8 @@ export const hslToHex = (hsl: string): string => {
 };
 
 export const isColorDark = (hex: string): boolean => {
-  let h = hex.replace('#', '');
-  if (h.length === 3) h = h.split('').map(c => c + c).join('');
+  const h = sanitizeHex(hex);
+  if (!h) return false;
   const r = parseInt(h.slice(0, 2), 16);
   const g = parseInt(h.slice(2, 4), 16);
   const b = parseInt(h.slice(4, 6), 16);
@@ -66,24 +72,23 @@ export const isColorDark = (hex: string): boolean => {
 };
 
 export const adjustColor = (hex: string, percent: number): string => {
-  let h = hex.replace('#', '')
-  if (h.length === 3) h = h.split('').map(c => c + c).join('')
-  let r = parseInt(h.slice(0, 2), 16)
-  let g = parseInt(h.slice(2, 4), 16)
-  let b = parseInt(h.slice(4, 6), 16)
-  const amt = Math.round(2.55 * percent)
-  r = Math.min(255, Math.max(0, r + amt))
-  g = Math.min(255, Math.max(0, g + amt))
-  b = Math.min(255, Math.max(0, b + amt))
-  const toHex = (x: number) => x.toString(16).padStart(2, '0')
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}`
-}
+  const h = sanitizeHex(hex) || '000000';
+  let r = parseInt(h.slice(0, 2), 16);
+  let g = parseInt(h.slice(2, 4), 16);
+  let b = parseInt(h.slice(4, 6), 16);
+  const amt = Math.round(2.55 * percent);
+  r = Math.min(255, Math.max(0, r + amt));
+  g = Math.min(255, Math.max(0, g + amt));
+  b = Math.min(255, Math.max(0, b + amt));
+  const toHex = (x: number) => x.toString(16).padStart(2, '0');
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+};
 
 export const complementaryColor = (hex: string): string => {
-  const [hStr, sStr, lStr] = hexToHsl(hex).split(/\s+/)
-  const h = (parseFloat(hStr) + 180) % 360
-  const s = parseFloat(sStr)
-  let l = parseFloat(lStr)
-  l = isColorDark(hex) ? Math.min(100, l + 40) : Math.max(0, l - 40)
-  return hslToHex(`${h} ${s}% ${l}%`)
-}
+  const [hStr, sStr, lStr] = hexToHsl(hex).split(/\s+/);
+  const h = (parseFloat(hStr) + 180) % 360;
+  const s = parseFloat(sStr);
+  let l = parseFloat(lStr);
+  l = isColorDark(hex) ? Math.min(100, l + 40) : Math.max(0, l - 40);
+  return hslToHex(`${h} ${s}% ${l}%`);
+};
