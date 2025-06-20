@@ -81,6 +81,15 @@ npm start
 
 Rufe anschließend im Browser `http://localhost:8081` auf.
 
+## Tests ausführen
+
+Die Anwendung verwendet [Vitest](https://vitest.dev/) und die React Testing Library.
+Nach der Installation der Abhängigkeiten kannst du die Tests mit folgendem Befehl starten:
+
+```bash
+npm test
+```
+
 ---
 
 ## Automatische Updates mit Watchtower
