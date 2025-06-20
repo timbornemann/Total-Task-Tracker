@@ -54,7 +54,9 @@ const useTaskStoreImpl = () => {
         serverDeletions.some(d => d.type === type && d.id === id);
 
       const mapColor = (c: unknown): number => {
-        if (typeof c === 'number') return c;
+        if (typeof c === 'number') {
+          return c >= 0 && c < colorPalette.length ? c : 0;
+        }
         if (typeof c === 'string') {
           const idx = colorPalette.indexOf(c);
           if (idx !== -1) return idx;
