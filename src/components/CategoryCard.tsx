@@ -9,7 +9,7 @@ import { Edit, Trash2, FolderOpen, MoreVertical } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { getTaskProgress } from '@/utils/taskUtils';
 import { useSettings } from '@/hooks/useSettings';
-import { isColorDark, adjustColor } from '@/utils/color';
+import { isColorDark, adjustColor, complementaryColor } from '@/utils/color';
 
 interface CategoryCardProps {
   category: Category;
@@ -48,6 +48,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   const progressBg = isColorDark(baseColor)
     ? adjustColor(baseColor, -30)
     : adjustColor(baseColor, 30);
+  const progressColor = complementaryColor(baseColor);
   const titleHoverColor = isColorDark(baseColor)
     ? adjustColor(baseColor, 60)
     : adjustColor(baseColor, -60);
@@ -175,7 +176,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
               className="h-2 rounded-full transition-all duration-300"
               style={{
                 width: `${completionPercentage}%`,
-                backgroundColor: baseColor
+                backgroundColor: progressColor
               }}
             />
           </div>

@@ -78,3 +78,12 @@ export const adjustColor = (hex: string, percent: number): string => {
   const toHex = (x: number) => x.toString(16).padStart(2, '0')
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`
 }
+
+export const complementaryColor = (hex: string): string => {
+  const [hStr, sStr, lStr] = hexToHsl(hex).split(/\s+/)
+  const h = (parseFloat(hStr) + 180) % 360
+  const s = parseFloat(sStr)
+  let l = parseFloat(lStr)
+  l = isColorDark(hex) ? Math.min(100, l + 40) : Math.max(0, l - 40)
+  return hslToHex(`${h} ${s}% ${l}%`)
+}
