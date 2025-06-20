@@ -12,7 +12,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useSettings } from '@/hooks/useSettings';
-import { isColorDark, adjustColor, complementaryColor } from '@/utils/color';
+import { isColorDark, adjustColor, complementaryColor, hslToHex } from '@/utils/color';
 import {
   Edit,
   Trash2,
@@ -40,6 +40,8 @@ interface TaskCardProps {
   parentPathTitles?: string[];
   /** Whether to render subtasks recursively */
   showSubtasks?: boolean;
+  /** Display card optimized for grid layout */
+  isGrid?: boolean;
 }
 
 const TaskCard: React.FC<TaskCardProps> = ({
@@ -51,7 +53,8 @@ const TaskCard: React.FC<TaskCardProps> = ({
   onViewDetails,
   depth = 0,
   parentPathTitles = [],
-  showSubtasks = true
+  showSubtasks = true,
+  isGrid = false
 }) => {
   const isCompleted = calculateTaskCompletion(task);
   const progress = getTaskProgress(task);
@@ -73,10 +76,11 @@ const TaskCard: React.FC<TaskCardProps> = ({
     ? adjustColor(baseColor, isColorDark(baseColor) ? depthOffset : -depthOffset)
     : baseColor;
   const headerTextColor = complementaryColor(displayColor);
-  const progressBg = isColorDark(displayColor)
-    ? adjustColor(displayColor, 50)
-    : adjustColor(displayColor, -20);
-  const progressColor = complementaryColor(displayColor);
+  const cardHex = hslToHex(theme.card);
+  const progressBg = isColorDark(cardHex)
+    ? adjustColor(cardHex, 50)
+    : adjustColor(cardHex, -20);
+  const progressColor = complementaryColor(cardHex);
 
   const handleTogglePinned = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -105,10 +109,10 @@ const TaskCard: React.FC<TaskCardProps> = ({
       level > 0
         ? adjustColor(base, isColorDark(base) ? offset : -offset)
         : base;
-    const progressBg = isColorDark(color)
-      ? adjustColor(color, 50)
-      : adjustColor(color, -20);
-    const progressColor = complementaryColor(color);
+    const progressBg = isColorDark(cardHex)
+      ? adjustColor(cardHex, 50)
+      : adjustColor(cardHex, -20);
+    const progressColor = complementaryColor(cardHex);
 
     return (
       <div
@@ -208,7 +212,9 @@ const TaskCard: React.FC<TaskCardProps> = ({
 
   return (
     <Card
-      className={`mb-3 sm:mb-4 rounded-xl ${depth > 0 ? 'ml-3 sm:ml-6' : ''}`}
+      className={`${isGrid ? 'h-full' : 'mb-3 sm:mb-4'} rounded-xl ${
+        depth > 0 ? 'ml-3 sm:ml-6' : ''
+      }`}
       style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}
     >
       <div

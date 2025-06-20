@@ -86,7 +86,7 @@ const Kanban: React.FC = () => {
   };
 
   const handleToggleTaskComplete = (taskId: string, completed: boolean) => {
-    updateTask(taskId, { completed });
+    updateTask(taskId, { completed, status: completed ? 'done' : 'todo' });
     const task = findTaskById(taskId);
     toast({
       title: completed ? t('kanban.completed') : t('kanban.reactivated'),
