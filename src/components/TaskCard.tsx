@@ -8,7 +8,7 @@ import {
   getPriorityColors
 } from '@/utils/taskUtils';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { useSettings } from '@/hooks/useSettings';
@@ -18,11 +18,12 @@ import {
   Trash2,
   Plus,
   FolderOpen,
-  MoreVertical,
+  Settings,
   ChevronDown,
   ChevronRight,
   Star,
-  StarOff
+  StarOff,
+  Calendar as CalendarIcon
 } from 'lucide-react';
 import { useTaskStore } from '@/hooks/useTaskStore';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -71,10 +72,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
   const displayColor = depth > 0
     ? adjustColor(baseColor, isColorDark(baseColor) ? depthOffset : -depthOffset)
     : baseColor;
-  const textColor = isColorDark(displayColor) ? '#fff' : '#000';
-  const hoverColor = isColorDark(displayColor)
-    ? adjustColor(displayColor, 10)
-    : adjustColor(displayColor, -10);
+  const headerTextColor = complementaryColor(displayColor);
   const progressBg = isColorDark(displayColor)
     ? adjustColor(displayColor, 50)
     : adjustColor(displayColor, -20);
@@ -91,142 +89,156 @@ const TaskCard: React.FC<TaskCardProps> = ({
     }
   };
 
-  return (
-    <Card
-      className={`mb-3 sm:mb-4 transition-all duration-200 hover:shadow-md ${
-        depth > 0 ? 'ml-3 sm:ml-6' : ''
-      } border-t-4 hover:[background-color:var(--hover-color)]`}
-      style={{
-        backgroundColor: displayColor,
-        color: textColor,
-        borderLeftColor: depth > 0 ? baseColor : undefined,
-        borderTopColor: priorityColors.bg,
-        '--hover-color': hoverColor
-      } as React.CSSProperties}
-    >
-      <CardHeader className="pb-2 sm:pb-3">
-        <div className="flex items-start justify-between">
-          <div className="flex items-start flex-1 min-w-0">
-            {task.subtasks.length === 0 && (
+  const [subtaskCollapse, setSubtaskCollapse] = useState<Record<string, boolean>>({});
+
+  const toggleSubtaskCollapse = (id: string) =>
+    setSubtaskCollapse(prev => ({ ...prev, [id]: !prev[id] }));
+
+  const renderSubtask = (st: Task, level: number) => {
+    const done = calculateTaskCompletion(st);
+    const progress = getTaskProgress(st);
+    const percentage =
+      progress.total > 0 ? (progress.completed / progress.total) * 100 : 0;
+    const base = colorPalette[st.color];
+    const offset = level * 8;
+    const color =
+      level > 0
+        ? adjustColor(base, isColorDark(base) ? offset : -offset)
+        : base;
+    const progressBg = isColorDark(color)
+      ? adjustColor(color, 50)
+      : adjustColor(color, -20);
+    const progressColor = complementaryColor(color);
+
+    return (
+      <div
+        key={st.id}
+        className="pl-4 border-l space-y-1"
+        style={{ marginLeft: level * 16 }}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 min-w-0">
+            {st.subtasks.length === 0 ? (
               <input
                 type="checkbox"
-                checked={task.completed}
-                onChange={handleToggleComplete}
-                className="mt-1 h-4 w-4 text-primary rounded border-gray-300 focus:ring-primary flex-shrink-0"
+                checked={st.completed}
+                onChange={() => onToggleComplete(st.id, !st.completed)}
+                className="h-4 w-4 rounded-full border-gray-300 text-primary"
               />
-            )}
-            <div className="flex-1 min-w-0">
-              <CardTitle
-                className={`text-base sm:text-lg font-semibold cursor-pointer hover:text-primary transition-colors ${
-                  isCompleted ? 'line-through text-muted-foreground' : ''
-                } break-words`}
-                onClick={() => onViewDetails(task)}
+            ) : (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-5 w-5 p-0"
+                onClick={() => toggleSubtaskCollapse(st.id)}
               >
-                {task.title}
-              </CardTitle>
-              {parentPathTitles.length > 0 && (
-                <div className="text-xs text-muted-foreground italic mt-1 break-words">
-                  {parentPathTitles.join(' > ')}
-                </div>
-              )}
-              <div className="flex items-center space-x-2 mt-2 flex-wrap gap-1">
-                <Badge
-                  className="text-xs px-2 py-1 border flex-shrink-0"
-                  style={{
-                    backgroundColor: priorityColors.bg,
-                    color: priorityColors.fg,
-                    borderColor: priorityColors.bg
-                  }}
-                >
-                  {t(`taskModal.${task.priority}`)}
-                </Badge>
-                {task.isRecurring && (
-                  <Badge
-                    variant="outline"
-                    className="text-xs flex-shrink-0 text-center leading-snug"
-                  >
-                    <span className="hidden sm:block">
-                      {t('taskCard.recurring')}
-                      <br />
-                      {task.recurrencePattern}
-                    </span>
-                    <span className="sm:hidden">{task.recurrencePattern}</span>
-                  </Badge>
+                {subtaskCollapse[st.id] ? (
+                  <ChevronRight className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
                 )}
-                {task.dueDate && (
-                  <span
-                    className={`text-xs flex-shrink-0 ${
-                      new Date(task.dueDate) < new Date() && !task.completed
-                        ? 'text-destructive'
-                        : 'text-muted-foreground'
-                    }`}
-                  >
-                    {t('taskCard.due', { date: new Date(task.dueDate).toLocaleDateString(i18n.language) })}
-                    {task.startTime && (
-                      <> {task.startTime}-{task.endTime || ''}</>
-                    )}
-                  </span>
-                )}
-              </div>
+              </Button>
+            )}
+            <span
+              className={`text-sm break-words ${
+                done ? 'line-through text-muted-foreground' : ''
+              }`}
+            >
+              {st.title}
+            </span>
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-5 w-5 p-0">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-background z-50">
+              <DropdownMenuItem onClick={() => onViewDetails(st)}>
+                <FolderOpen className="h-4 w-4 mr-2" />
+                {t('taskCard.viewDetails')}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onAddSubtask(st)}>
+                <Plus className="h-4 w-4 mr-2" />
+                {t('taskCard.addSubtask')}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onEdit(st)}>
+                <Edit className="h-4 w-4 mr-2" />
+                {t('common.edit')}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onDelete(st.id)}
+                className="text-destructive"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                {t('common.delete')}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        {st.subtasks.length > 0 && (
+          <div className="ml-4 space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-xs sm:text-sm font-medium text-foreground">
+                {t('taskCard.progress', {
+                  completed: progress.completed,
+                  total: progress.total
+                })}
+              </span>
+              <span className="text-xs sm:text-sm text-muted-foreground">
+                {Math.round(percentage)}%
+              </span>
             </div>
+            <Progress
+              value={percentage}
+              className="h-1.5"
+              backgroundColor={progressBg}
+              indicatorColor={progressColor}
+            />
+            {!subtaskCollapse[st.id] && (
+              <div className="space-y-1 mt-2">
+                {st.subtasks.map(child => renderSubtask(child, level + 1))}
+              </div>
+            )}
           </div>
-          
-          {/* Desktop Actions */}
-          <div className="hidden sm:flex space-x-1 flex-shrink-0">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleTogglePinned}
-              className="h-8 w-8 p-0"
-            >
-              {task.pinned ? (
-                <Star className="h-4 w-4 fill-current" />
-              ) : (
-                <StarOff className="h-4 w-4" />
-              )}
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onViewDetails(task)}
-              className="h-8 w-8 p-0"
-            >
-              <FolderOpen className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onAddSubtask(task)}
-              className="h-8 w-8 p-0"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onEdit(task)}
-              className="h-8 w-8 p-0"
-            >
-              <Edit className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onDelete(task.id)}
-              className="h-8 w-8 p-0 text-destructive hover:text-destructive/80"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
+        )}
+      </div>
+    );
+  };
 
-          {/* Mobile Actions Dropdown */}
-          <div className="sm:hidden flex-shrink-0">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
+  return (
+    <Card
+      className={`mb-3 sm:mb-4 rounded-xl ${depth > 0 ? 'ml-3 sm:ml-6' : ''}`}
+      style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}
+    >
+      <div
+        className="rounded-t-xl px-4 py-2 flex items-center justify-between"
+        style={{ backgroundColor: displayColor, color: headerTextColor }}
+      >
+        <div className="flex items-center gap-2 min-w-0">
+          {task.subtasks.length === 0 && (
+            <input
+              type="checkbox"
+              checked={task.completed}
+              onChange={handleToggleComplete}
+              className="h-4 w-4 rounded-full border-gray-300 text-primary"
+            />
+          )}
+          <h3
+            className={`font-semibold cursor-pointer text-sm sm:text-base break-words ${
+              isCompleted ? 'line-through opacity-70' : ''
+            }`}
+            onClick={() => onViewDetails(task)}
+          >
+            {task.title}
+          </h3>
+        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+              <Settings className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="bg-background z-50">
             <DropdownMenuItem onClick={handleTogglePinned}>
               {task.pinned ? (
@@ -240,31 +252,31 @@ const TaskCard: React.FC<TaskCardProps> = ({
               <FolderOpen className="h-4 w-4 mr-2" />
               {t('taskCard.viewDetails')}
             </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onAddSubtask(task)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  {t('taskCard.addSubtask')}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onEdit(task)}>
-                  <Edit className="h-4 w-4 mr-2" />
-                  {t('common.edit')}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => onDelete(task.id)}
-                  className="text-destructive"
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  {t('common.delete')}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-      </CardHeader>
-      
+            <DropdownMenuItem onClick={() => onAddSubtask(task)}>
+              <Plus className="h-4 w-4 mr-2" />
+              {t('taskCard.addSubtask')}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onEdit(task)}>
+              <Edit className="h-4 w-4 mr-2" />
+              {t('common.edit')}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => onDelete(task.id)}
+              className="text-destructive"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              {t('common.delete')}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
       {(task.description || (showSubtasks && task.subtasks.length > 0)) && (
-        <CardContent className="pt-0">
+        <CardContent className="pt-3">
           {task.description && (
-            <p className="text-sm text-muted-foreground mb-3 break-words">{task.description}</p>
+            <p className="text-sm text-muted-foreground mb-3 break-words">
+              {task.description}
+            </p>
           )}
 
           {showSubtasks && task.subtasks.length > 0 && (
@@ -298,26 +310,43 @@ const TaskCard: React.FC<TaskCardProps> = ({
                 indicatorColor={progressColor}
               />
               {!collapsed && (
-                <div className="mt-4">
-                  {task.subtasks.map(subtask => (
-                    <TaskCard
-                      key={subtask.id}
-                      task={subtask}
-                      onEdit={onEdit}
-                      onDelete={onDelete}
-                      onAddSubtask={onAddSubtask}
-                      onToggleComplete={onToggleComplete}
-                      onViewDetails={onViewDetails}
-                      depth={depth + 1}
-                      showSubtasks={showSubtasks}
-                    />
-                  ))}
+                <div className="space-y-2 mt-2">
+                  {task.subtasks.map(st => renderSubtask(st, 1))}
                 </div>
               )}
             </div>
           )}
         </CardContent>
       )}
+
+      <div className="border-t px-4 py-2 flex items-center justify-between text-xs">
+        <div className="flex items-center gap-1 text-muted-foreground">
+          {task.dueDate && (
+            <>
+              <CalendarIcon className="h-4 w-4" />
+              <span>
+                {new Date(task.dueDate).toLocaleDateString(i18n.language, {
+                  month: 'short',
+                  day: 'numeric'
+                })}
+              </span>
+            </>
+          )}
+        </div>
+        <Badge variant="outline" className="px-2 py-0.5">
+          {t(`kanban.${task.status}`)}
+        </Badge>
+        <Badge
+          className="px-2 py-0.5"
+          style={{
+            backgroundColor: priorityColors.bg,
+            color: priorityColors.fg,
+            borderColor: priorityColors.bg
+          }}
+        >
+          {t(`taskModal.${task.priority}`)}
+        </Badge>
+      </div>
     </Card>
   );
 };
