@@ -441,6 +441,7 @@
     "sortLabel": "Sort by:",
     "priorityLabel": "Priority:",
     "colorLabel": "Color:",
+    "showCompleted": "Show completed",
     "viewLabel": "View:",
     "listView": "List",
     "gridView": "Grid",

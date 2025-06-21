@@ -9,7 +9,9 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useSettings } from '@/hooks/useSettings';
+import { calculateTaskCompletion } from '@/utils/taskUtils';
 import {
   Plus,
   Search,
@@ -76,6 +78,7 @@ const Dashboard: React.FC = () => {
   const [filterPriority, setFilterPriority] = useState<string>('all');
   const [filterColor, setFilterColor] = useState<string>('all');
   const [taskLayout, setTaskLayout] = useState<'list' | 'grid'>('list');
+  const [showCompleted, setShowCompleted] = useState<boolean>(true);
 
 
   useEffect(() => {
@@ -142,7 +145,13 @@ const Dashboard: React.FC = () => {
           filterPriority === 'all' || task.priority === filterPriority;
         const matchesColor =
           filterColor === 'all' || task.color === Number(filterColor);
-        return matchesSearch && matchesPriority && matchesColor;
+        const matchesCompleted = showCompleted || !calculateTaskCompletion(task);
+        return (
+          matchesSearch &&
+          matchesPriority &&
+          matchesColor &&
+          matchesCompleted
+        );
       })
     : [];
 
@@ -251,6 +260,16 @@ const Dashboard: React.FC = () => {
         ? t('dashboard.taskCompletedDesc', { title: task?.title })
         : t('dashboard.taskReactivatedDesc', { title: task?.title })
     });
+    if (completed && task) {
+      setTimeout(() => {
+        const tasksInCategory = getTasksByCategory(task.categoryId);
+        const index = tasksInCategory.findIndex(t => t.id === taskId);
+        const lastIndex = tasksInCategory.length - 1;
+        if (index !== -1 && index !== lastIndex) {
+          reorderTasks(task.categoryId, index, lastIndex);
+        }
+      }, 1000);
+    }
   };
 
   const handleCreateCategory = (categoryData: CategoryFormData) => {
@@ -584,6 +603,18 @@ const Dashboard: React.FC = () => {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="flex items-center gap-1">
+                <Checkbox
+                  id="showCompleted"
+                  checked={showCompleted}
+                  onCheckedChange={checked =>
+                    setShowCompleted(Boolean(checked))
+                  }
+                />
+                <Label htmlFor="showCompleted" className="text-sm">
+                  {t('dashboard.showCompleted')}
+                </Label>
               </div>
               <div className="flex items-center gap-1">
                 <Label className="text-sm">{t('dashboard.viewLabel')}</Label>
