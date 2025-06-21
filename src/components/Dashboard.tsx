@@ -17,7 +17,8 @@ import {
   Search,
   LayoutGrid,
   List,
-  ArrowLeft
+  ArrowLeft,
+  SlidersHorizontal
 } from 'lucide-react';
 import { useSearchParams, Link } from 'react-router-dom';
 import {
@@ -32,6 +33,7 @@ import TaskCard from './TaskCard';
 import TaskModal from './TaskModal';
 import CategoryModal from './CategoryModal';
 import TaskDetailModal from './TaskDetailModal';
+import TaskFilterSheet from './TaskFilterSheet';
 import { useToast } from '@/hooks/use-toast';
 import { ToastAction } from '@/components/ui/toast';
 import {
@@ -110,6 +112,7 @@ const Dashboard: React.FC = () => {
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isTaskDetailModalOpen, setIsTaskDetailModalOpen] = useState(false);
+  const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -545,96 +548,14 @@ const Dashboard: React.FC = () => {
                 <Input
                   placeholder={t('dashboard.searchTasks')}
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={e => setSearchTerm(e.target.value)}
                   className="pl-10 w-full"
                 />
               </div>
-              <div className="flex items-center gap-1">
-                <Label className="text-sm">{t('dashboard.sortLabel')}</Label>
-                <Select value={sortCriteria} onValueChange={setSortCriteria}>
-                  <SelectTrigger className="w-36">
-                    <SelectValue placeholder={t('dashboard.sortLabel')} />
-                  </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="order">{t('dashboard.sort.manual')}</SelectItem>
-                    <SelectItem value="created-desc">{t('dashboard.sort.createdDesc')}</SelectItem>
-                    <SelectItem value="created-asc">{t('dashboard.sort.createdAsc')}</SelectItem>
-                    <SelectItem value="title-asc">{t('dashboard.sort.titleAsc')}</SelectItem>
-                    <SelectItem value="title-desc">{t('dashboard.sort.titleDesc')}</SelectItem>
-                    <SelectItem value="priority-asc">{t('dashboard.sort.priorityAsc')}</SelectItem>
-                    <SelectItem value="priority-desc">{t('dashboard.sort.priorityDesc')}</SelectItem>
-                    <SelectItem value="due-asc">{t('dashboard.sort.dueAsc')}</SelectItem>
-                    <SelectItem value="due-desc">{t('dashboard.sort.dueDesc')}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex items-center gap-1">
-                <Label className="text-sm">{t('dashboard.priorityLabel')}</Label>
-                <Select value={filterPriority} onValueChange={setFilterPriority}>
-                  <SelectTrigger className="w-32">
-                    <SelectValue placeholder={t('dashboard.priorityLabel')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">{t('dashboard.filter.all')}</SelectItem>
-                    <SelectItem value="high">{t('dashboard.filter.high')}</SelectItem>
-                    <SelectItem value="medium">{t('dashboard.filter.medium')}</SelectItem>
-                    <SelectItem value="low">{t('dashboard.filter.low')}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex items-center gap-1">
-                <Label className="text-sm">{t('dashboard.colorLabel')}</Label>
-                <Select value={filterColor} onValueChange={setFilterColor}>
-                  <SelectTrigger className="w-32">
-                    <SelectValue placeholder={t('dashboard.colorLabel')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">{t('dashboard.filter.all')}</SelectItem>
-                    {colorOptions.map(color => (
-                      <SelectItem key={color} value={String(color)}>
-                        <div className="flex items-center space-x-2">
-                          <span
-                            className="w-3 h-3 rounded-full"
-                            style={{ backgroundColor: colorPalette[color] }}
-                          />
-                          <span>{colorPalette[color]}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex items-center gap-1">
-                <Checkbox
-                  id="showCompleted"
-                  checked={showCompleted}
-                  onCheckedChange={checked =>
-                    setShowCompleted(Boolean(checked))
-                  }
-                />
-                <Label htmlFor="showCompleted" className="text-sm">
-                  {t('dashboard.showCompleted')}
-                </Label>
-              </div>
-              <div className="flex items-center gap-1">
-                <Label className="text-sm">{t('dashboard.viewLabel')}</Label>
-                <Button
-                  variant={taskLayout === 'list' ? 'secondary' : 'ghost'}
-                  size="icon"
-                  onClick={() => setTaskLayout('list')}
-                >
-                  <List className="h-4 w-4" />
-                  <span className="sr-only">{t('dashboard.listView')}</span>
-                </Button>
-                <Button
-                  variant={taskLayout === 'grid' ? 'secondary' : 'ghost'}
-                  size="icon"
-                  onClick={() => setTaskLayout('grid')}
-                >
-                  <LayoutGrid className="h-4 w-4" />
-                  <span className="sr-only">{t('dashboard.gridView')}</span>
-                </Button>
-              </div>
+              <Button variant="outline" size="sm" onClick={() => setIsFilterSheetOpen(true)}>
+                <SlidersHorizontal className="h-4 w-4 mr-2" />
+                {t('dashboard.openFilters')}
+              </Button>
               <Button onClick={() => setIsTaskModalOpen(true)} size="sm">
                 <Plus className="h-4 w-4 mr-2" />
                 {t('taskModal.newTitle')}
@@ -755,6 +676,23 @@ const Dashboard: React.FC = () => {
         onStartPomodoro={task => startPomodoro(task.id)}
         canGoBack={taskDetailStack.length > 0}
         onBack={handleTaskDetailBack}
+      />
+
+      <TaskFilterSheet
+        open={isFilterSheetOpen}
+        onOpenChange={setIsFilterSheetOpen}
+        sort={sortCriteria}
+        onSortChange={setSortCriteria}
+        filterPriority={filterPriority}
+        onFilterPriorityChange={setFilterPriority}
+        filterColor={filterColor}
+        onFilterColorChange={setFilterColor}
+        colorOptions={colorOptions}
+        colorPalette={colorPalette}
+        showCompleted={showCompleted}
+        onShowCompletedChange={setShowCompleted}
+        layout={taskLayout}
+        onLayoutChange={setTaskLayout}
       />
     </div>
   );
