@@ -378,7 +378,20 @@
     "deleted": "Task gelöscht",
     "completed": "Task abgeschlossen",
     "reactivated": "Task reaktiviert",
-    "deleteConfirm": "Sind Sie sicher, dass Sie \"{{title}}\" löschen möchten?"
+    "deleteConfirm": "Sind Sie sicher, dass Sie \"{{title}}\" löschen möchten?",
+    "search": "Suchen...",
+    "priorityLabel": "Priorität:",
+    "colorLabel": "Farbe:",
+    "categoryLabel": "Kategorie:",
+    "pinnedLabel": "Gepinnt:",
+    "filter": {
+      "all": "Alle",
+      "high": "Hoch",
+      "medium": "Mittel",
+      "low": "Niedrig",
+      "pinned": "Gepinnt",
+      "unpinned": "Nicht gepinnt"
+    }
   },
   "pomodoroTimer": {
     "start": "Start",

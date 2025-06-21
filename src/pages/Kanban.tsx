@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useTaskStore } from '@/hooks/useTaskStore';
 import TaskCard from '@/components/TaskCard';
 import Navbar from '@/components/Navbar';
@@ -8,6 +8,16 @@ import { usePomodoroStore } from '@/components/PomodoroTimer';
 import { useToast } from '@/hooks/use-toast';
 import { Task, TaskFormData } from '@/types';
 import { flattenTasks, FlattenedTask } from '@/utils/taskUtils';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem
+} from '@/components/ui/select';
+import { useSettings } from '@/hooks/useSettings';
 import {
   DragDropContext,
   Droppable,
@@ -35,6 +45,17 @@ const Kanban: React.FC = () => {
   const [parentTask, setParentTask] = useState<Task | null>(null);
   const [taskDetailStack, setTaskDetailStack] = useState<Task[]>([]);
   const { start: startPomodoro } = usePomodoroStore();
+  const { colorPalette } = useSettings();
+
+  const [filterCategory, setFilterCategory] = useState<string>('all');
+  const [filterPriority, setFilterPriority] = useState<string>('all');
+  const [filterColor, setFilterColor] = useState<string>('all');
+  const [filterPinned, setFilterPinned] = useState<string>('all');
+  const [columnSearch, setColumnSearch] = useState({
+    todo: '',
+    inprogress: '',
+    done: ''
+  });
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
@@ -127,6 +148,23 @@ const Kanban: React.FC = () => {
   };
 
   const flattened = flattenTasks(tasks);
+  const colorOptions = useMemo(
+    () => Array.from(new Set(tasks.map(t => t.color))),
+    [tasks]
+  );
+
+  const filtered = flattened.filter(item => {
+    const matchesCategory =
+      filterCategory === 'all' || item.task.categoryId === filterCategory;
+    const matchesPriority =
+      filterPriority === 'all' || item.task.priority === filterPriority;
+    const matchesColor =
+      filterColor === 'all' || item.task.color === Number(filterColor);
+    const matchesPinned =
+      filterPinned === 'all' ||
+      (filterPinned === 'pinned' ? item.task.pinned : !item.task.pinned);
+    return matchesCategory && matchesPriority && matchesColor && matchesPinned;
+  });
 
   const tasksByStatus: Record<'todo' | 'inprogress' | 'done', FlattenedTask[]> = {
     todo: [],
@@ -134,9 +172,15 @@ const Kanban: React.FC = () => {
     done: []
   };
 
-  flattened.forEach(item => {
+  filtered.forEach(item => {
     const status = item.task.status as 'todo' | 'inprogress' | 'done';
-    tasksByStatus[status].push(item);
+    const search = columnSearch[status].toLowerCase();
+    const matchesSearch =
+      item.task.title.toLowerCase().includes(search) ||
+      item.task.description.toLowerCase().includes(search);
+    if (matchesSearch) {
+      tasksByStatus[status].push(item);
+    }
   });
 
   const statuses: Array<'todo' | 'inprogress' | 'done'> = [
@@ -156,6 +200,71 @@ const Kanban: React.FC = () => {
       <Navbar title={t('navbar.kanban')} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          <div className="flex items-center gap-1">
+            <Label className="text-sm">{t('kanban.categoryLabel')}</Label>
+            <Select value={filterCategory} onValueChange={setFilterCategory}>
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder={t('kanban.categoryLabel')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t('kanban.filter.all')}</SelectItem>
+                {categories.map(c => (
+                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-1">
+            <Label className="text-sm">{t('kanban.priorityLabel')}</Label>
+            <Select value={filterPriority} onValueChange={setFilterPriority}>
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder={t('kanban.priorityLabel')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t('kanban.filter.all')}</SelectItem>
+                <SelectItem value="high">{t('kanban.filter.high')}</SelectItem>
+                <SelectItem value="medium">{t('kanban.filter.medium')}</SelectItem>
+                <SelectItem value="low">{t('kanban.filter.low')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-1">
+            <Label className="text-sm">{t('kanban.colorLabel')}</Label>
+            <Select value={filterColor} onValueChange={setFilterColor}>
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder={t('kanban.colorLabel')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t('kanban.filter.all')}</SelectItem>
+                {colorOptions.map(color => (
+                  <SelectItem key={color} value={String(color)}>
+                    <div className="flex items-center space-x-2">
+                      <span
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: colorPalette[color] }}
+                      />
+                      <span>{colorPalette[color]}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-1">
+            <Label className="text-sm">{t('kanban.pinnedLabel')}</Label>
+            <Select value={filterPinned} onValueChange={setFilterPinned}>
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder={t('kanban.pinnedLabel')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t('kanban.filter.all')}</SelectItem>
+                <SelectItem value="pinned">{t('kanban.filter.pinned')}</SelectItem>
+                <SelectItem value="unpinned">{t('kanban.filter.unpinned')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {statuses.map(status => (
@@ -170,6 +279,17 @@ const Kanban: React.FC = () => {
                     <h2 className="text-base font-semibold mb-2">
                       {labels[status]}
                     </h2>
+                    <Input
+                      value={columnSearch[status]}
+                      onChange={e =>
+                        setColumnSearch(prev => ({
+                          ...prev,
+                          [status]: e.target.value
+                        }))
+                      }
+                      placeholder={t('kanban.search')}
+                      className="mb-2 h-8"
+                    />
                     {tasksByStatus[status].map((item, index) => (
                       <Draggable
                         key={item.task.id}
