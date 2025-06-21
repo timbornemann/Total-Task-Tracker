@@ -94,6 +94,7 @@
     "kanbanDone": "Kanban Erledigt",
     "workRing": "Pomodoro Arbeit",
     "breakRing": "Pomodoro Pause",
+    "taskOverdue": "Überfällig Farbe",
     "taskColors": "Kategorie, Task & Notizfarben",
     "bgColorDesc": "Hintergrund der Anwendung",
     "fgColorDesc": "Standard Textfarbe",
@@ -114,6 +115,7 @@
     "kanbanDoneDesc": "Kanban-Spalte Erledigt",
     "workRingDesc": "Pomodoro Arbeitsring",
     "breakRingDesc": "Pomodoro Pausenring",
+    "taskOverdueDesc": "Farbe für überfällige Termine",
     "taskColorsDesc": "Palette für Tasks, Kategorien und Notizen",
     "themeGroups": {
       "core": "Grundfarben",

@@ -82,6 +82,13 @@ const TaskCard: React.FC<TaskCardProps> = ({
     : adjustColor(cardHex, -20);
   const progressColor = complementaryColor(cardHex);
 
+  const isOverdue = React.useMemo(() => {
+    if (!task.dueDate || task.completed) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return new Date(task.dueDate) < today;
+  }, [task.dueDate, task.completed]);
+
   const handleTogglePinned = (e: React.MouseEvent) => {
     e.stopPropagation();
     updateTask(task.id, { pinned: !task.pinned });
@@ -212,7 +219,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
 
   return (
     <Card
-      className={`${isGrid ? 'h-full' : 'mb-3 sm:mb-4'} rounded-xl ${
+      className={`${isGrid ? 'h-full flex flex-col' : 'mb-3 sm:mb-4'} rounded-xl ${
         depth > 0 ? 'ml-3 sm:ml-6' : ''
       }`}
       style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}
@@ -278,9 +285,11 @@ const TaskCard: React.FC<TaskCardProps> = ({
       </div>
 
       {(task.description || (showSubtasks && task.subtasks.length > 0)) && (
-        <CardContent className="pt-3">
+        <CardContent className={`pt-3 ${isGrid ? 'flex-1' : ''}`}>
           {task.description && (
-            <p className="text-sm text-muted-foreground mb-3 break-words">
+            <p className={`text-sm text-muted-foreground mb-3 break-words ${
+              isGrid ? 'line-clamp-3' : ''
+            }`}>
               {task.description}
             </p>
           )}
@@ -325,12 +334,17 @@ const TaskCard: React.FC<TaskCardProps> = ({
         </CardContent>
       )}
 
+      {!task.description && (!showSubtasks || task.subtasks.length === 0) &&
+        isGrid && <div className="flex-1" />}
+
       <div className="border-t px-4 py-2 flex items-center justify-between text-xs">
         <div className="flex items-center gap-1 text-muted-foreground">
           {task.dueDate && (
             <>
               <CalendarIcon className="h-4 w-4" />
-              <span>
+              <span
+                style={{ color: isOverdue ? 'hsl(var(--task-overdue))' : undefined }}
+              >
                 {new Date(task.dueDate).toLocaleDateString(i18n.language, {
                   month: 'short',
                   day: 'numeric'

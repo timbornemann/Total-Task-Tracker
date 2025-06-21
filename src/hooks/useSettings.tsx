@@ -54,7 +54,8 @@ const defaultTheme = {
   'kanban-inprogress': '215 28% 80%',
   'kanban-done': '158 55% 52%',
   'pomodoro-work-ring': '222.2 47.4% 11.2%',
-  'pomodoro-break-ring': '212 100% 47%'
+  'pomodoro-break-ring': '212 100% 47%',
+  'task-overdue': '0 84.2% 60.2%'
 }
 
 export const defaultColorPalette = [
@@ -93,7 +94,8 @@ export const themePresets: Record<string, { theme: typeof defaultTheme; colorPal
       'kanban-inprogress': '217 91% 60%',
       'kanban-done': '158 64% 52%',
       'pomodoro-work-ring': '210 40% 98%',
-      'pomodoro-break-ring': '217 91% 60%'
+      'pomodoro-break-ring': '217 91% 60%',
+      'task-overdue': '0 62.8% 30.6%'
     },
     colorPalette: [
       '#60A5FA',
@@ -129,7 +131,8 @@ export const themePresets: Record<string, { theme: typeof defaultTheme; colorPal
       'kanban-inprogress': '210 80% 85%',
       'kanban-done': '199 94% 48%',
       'pomodoro-work-ring': '199 94% 48%',
-      'pomodoro-break-ring': '210 40% 96.1%'
+      'pomodoro-break-ring': '210 40% 96.1%',
+      'task-overdue': '0 84.2% 60.2%'
     },
     colorPalette: [
       '#0EA5E9',
@@ -165,7 +168,8 @@ export const themePresets: Record<string, { theme: typeof defaultTheme; colorPal
       'kanban-inprogress': '0 72% 51%',
       'kanban-done': '0 72% 51%',
       'pomodoro-work-ring': '0 0% 98%',
-      'pomodoro-break-ring': '0 72% 51%'
+      'pomodoro-break-ring': '0 72% 51%',
+      'task-overdue': '0 72% 51%'
     },
     colorPalette: [
       '#F87171',
@@ -201,7 +205,8 @@ export const themePresets: Record<string, { theme: typeof defaultTheme; colorPal
       'kanban-inprogress': '120 40% 30%',
       'kanban-done': '120 70% 40%',
       'pomodoro-work-ring': '120 100% 80%',
-      'pomodoro-break-ring': '120 70% 40%'
+      'pomodoro-break-ring': '120 70% 40%',
+      'task-overdue': '0 62.8% 30.6%'
     },
     colorPalette: [
       '#22C55E',
@@ -237,7 +242,8 @@ export const themePresets: Record<string, { theme: typeof defaultTheme; colorPal
       'kanban-inprogress': '30 100% 50%',
       'kanban-done': '88 50% 50%',
       'pomodoro-work-ring': '20 90% 10%',
-      'pomodoro-break-ring': '30 100% 50%'
+      'pomodoro-break-ring': '30 100% 50%',
+      'task-overdue': '0 84.2% 60.2%'
     },
     colorPalette: [
       '#F97316',

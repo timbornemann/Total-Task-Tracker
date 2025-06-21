@@ -94,6 +94,7 @@
     "kanbanDone": "Kanban Done",
     "workRing": "Pomodoro Work",
     "breakRing": "Pomodoro Break",
+    "taskOverdue": "Overdue date",
     "taskColors": "Category, Task & Note colors",
     "bgColorDesc": "Main application background",
     "fgColorDesc": "Default text color",
@@ -114,6 +115,7 @@
     "kanbanDoneDesc": "Kanban column Done",
     "workRingDesc": "Pomodoro work ring",
     "breakRingDesc": "Pomodoro break ring",
+    "taskOverdueDesc": "Highlight color for overdue dates",
     "taskColorsDesc": "Palette for tasks, categories and notes",
     "themeGroups": {
       "core": "Core Colors",
