@@ -101,7 +101,8 @@ const SettingsPage: React.FC = () => {
     { key: 'muted-foreground', label: 'mutedFgColor', desc: 'mutedFgColorDesc' },
     { key: 'card', label: 'cardBgColor', desc: 'cardBgColorDesc' },
     { key: 'card-foreground', label: 'cardFgColor', desc: 'cardFgColorDesc' },
-    { key: 'popover', label: 'popoverColor', desc: 'popoverColorDesc' }
+    { key: 'popover', label: 'popoverColor', desc: 'popoverColorDesc' },
+    { key: 'task-overdue', label: 'taskOverdue', desc: 'taskOverdueDesc' }
   ] as const
 
   const statsKanbanColors = [
