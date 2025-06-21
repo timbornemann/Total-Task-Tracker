@@ -458,6 +458,8 @@
     "viewLabel": "Ansicht:",
     "listView": "Liste",
     "gridView": "Raster",
+    "openFilters": "Filter",
+    "filterTitle": "Filter & Sortierung",
     "sort": {
       "manual": "Manuell",
       "createdDesc": "Neueste zuerst",
