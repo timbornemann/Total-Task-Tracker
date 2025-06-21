@@ -2,11 +2,11 @@ import en from '@/locales/en/translation.json';
 import de from '@/locales/de/translation.json';
 import { describe, it, expect } from 'vitest';
 
-function collectKeys(obj: Record<string, any>, prefix = ''): string[] {
+function collectKeys(obj: Record<string, unknown>, prefix = ''): string[] {
   return Object.entries(obj).flatMap(([key, value]) => {
     const newKey = prefix ? `${prefix}.${key}` : key;
     if (value && typeof value === 'object' && !Array.isArray(value)) {
-      return collectKeys(value, newKey);
+      return collectKeys(value as Record<string, unknown>, newKey);
     }
     return [newKey];
   });
