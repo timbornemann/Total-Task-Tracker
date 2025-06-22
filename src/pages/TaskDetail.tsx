@@ -166,6 +166,10 @@ const TaskDetailPage: React.FC = () => {
         <Button variant="ghost" size="sm" onClick={handleBack}>
           <ArrowLeft className="h-4 w-4 mr-2" /> {t('common.back')}
         </Button>
+        <div
+          className="w-full h-3 rounded-md shadow-inner"
+          style={{ backgroundColor: colorPalette[task.color] }}
+        />
         <div className="space-y-6">
           <div className="flex items-start justify-between">
             <div className="flex items-start space-x-3 flex-1">
@@ -193,7 +197,7 @@ const TaskDetailPage: React.FC = () => {
                   </Badge>
                   <div className="flex items-center space-x-2">
                     <div
-                      className="w-5 h-5 rounded-md border"
+                      className="h-8 w-8 rounded-md border shadow-inner"
                       style={{ backgroundColor: colorPalette[task.color] }}
                     />
                     <span className="text-sm text-gray-600">
