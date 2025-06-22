@@ -156,7 +156,7 @@ const CommandPalette: React.FC = () => {
                   setCurrentCategoryId(item.task.categoryId)
                   setOpen(false)
                   setValue('')
-                  navigate(`/tasks?taskId=${item.task.id}`)
+                  navigate(`/tasks/${item.task.id}`)
                 }}
               >
                 {item.path.length > 0

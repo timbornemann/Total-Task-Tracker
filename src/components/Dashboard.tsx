@@ -20,7 +20,7 @@ import {
   ArrowLeft,
   SlidersHorizontal
 } from 'lucide-react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import {
   Select,
   SelectTrigger,
@@ -32,7 +32,6 @@ import CategoryCard from './CategoryCard';
 import TaskCard from './TaskCard';
 import TaskModal from './TaskModal';
 import CategoryModal from './CategoryModal';
-import TaskDetailModal from './TaskDetailModal';
 import TaskFilterSheet from './TaskFilterSheet';
 import CategoryFilterSheet from './CategoryFilterSheet';
 import { useToast } from '@/hooks/use-toast';
@@ -93,34 +92,15 @@ const Dashboard: React.FC = () => {
     }
   }, [sortCriteria]);
 
-  useEffect(() => {
-    const id = searchParams.get('taskId');
-    if (id) {
-      const task = findTaskById(id);
-      if (task) {
-        const category = categories.find(c => c.id === task.categoryId) || null;
-        if (category) {
-          setSelectedCategory(category);
-          setCurrentCategoryId(category.id);
-          setViewMode('tasks');
-        }
-        setSelectedTask(task);
-        setIsTaskDetailModalOpen(true);
-      }
-    }
-  }, [searchParams, categories, findTaskById]);
   
   // Modal states
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
-  const [isTaskDetailModalOpen, setIsTaskDetailModalOpen] = useState(false);
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [isCategoryFilterSheetOpen, setIsCategoryFilterSheetOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [parentTask, setParentTask] = useState<Task | null>(null);
-  const [taskDetailStack, setTaskDetailStack] = useState<Task[]>([]);
   const { start: startPomodoro } = usePomodoroStore();
 
   const colorOptions = useMemo(() => {
@@ -370,24 +350,10 @@ const Dashboard: React.FC = () => {
     setIsTaskModalOpen(true);
   };
 
-  const handleViewTaskDetails = (task: Task) => {
-    setTaskDetailStack(prev => (selectedTask ? [...prev, selectedTask] : prev));
-    setSelectedTask(task);
-    setIsTaskDetailModalOpen(true);
-  };
+  const navigate = useNavigate();
 
-  const handleTaskDetailBack = () => {
-    setTaskDetailStack(prev => {
-      const stack = [...prev];
-      const parent = stack.pop();
-      if (parent) {
-        setSelectedTask(parent);
-      } else {
-        setIsTaskDetailModalOpen(false);
-        setSelectedTask(null);
-      }
-      return stack;
-    });
+  const handleViewTaskDetails = (task: Task) => {
+    navigate(`/tasks/${task.id}`);
   };
 
   const handleBackToCategories = () => {
@@ -678,29 +644,6 @@ const Dashboard: React.FC = () => {
         category={editingCategory || undefined}
       />
 
-      <TaskDetailModal
-        isOpen={isTaskDetailModalOpen}
-        onClose={() => {
-          setIsTaskDetailModalOpen(false);
-          setSelectedTask(null);
-          setTaskDetailStack([]);
-          const params = new URLSearchParams(searchParams)
-          if (params.has('taskId')) {
-            params.delete('taskId')
-            setSearchParams(params, { replace: true })
-          }
-        }}
-        task={selectedTask}
-        category={selectedTask ? categories.find(c => c.id === selectedTask.categoryId) || null : null}
-        onEdit={handleEditTask}
-        onDelete={handleDeleteTask}
-        onAddSubtask={handleAddSubtask}
-        onToggleComplete={handleToggleTaskComplete}
-        onViewDetails={handleViewTaskDetails}
-        onStartPomodoro={task => startPomodoro(task.id)}
-        canGoBack={taskDetailStack.length > 0}
-        onBack={handleTaskDetailBack}
-      />
 
       <TaskFilterSheet
         open={isFilterSheetOpen}
