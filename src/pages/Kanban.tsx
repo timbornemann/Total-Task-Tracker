@@ -9,14 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Task, TaskFormData } from '@/types';
 import { flattenTasks, FlattenedTask } from '@/utils/taskUtils';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem
-} from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import { useSettings } from '@/hooks/useSettings';
 import {
   DragDropContext,
@@ -25,6 +18,8 @@ import {
   DropResult
 } from '@hello-pangea/dnd';
 import { useTranslation } from 'react-i18next';
+import KanbanFilterSheet from '@/components/KanbanFilterSheet';
+import { SlidersHorizontal } from 'lucide-react';
 
 const Kanban: React.FC = () => {
   const {
@@ -40,6 +35,7 @@ const Kanban: React.FC = () => {
 
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isTaskDetailModalOpen, setIsTaskDetailModalOpen] = useState(false);
+  const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [parentTask, setParentTask] = useState<Task | null>(null);
@@ -242,88 +238,14 @@ const Kanban: React.FC = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         <div className="flex flex-wrap items-center gap-2 mb-4">
-          <div className="flex items-center gap-1">
-            <Label className="text-sm">{t('kanban.categoryLabel')}</Label>
-            <Select value={filterCategory} onValueChange={setFilterCategory}>
-              <SelectTrigger className="w-32">
-                <SelectValue placeholder={t('kanban.categoryLabel')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t('kanban.filter.all')}</SelectItem>
-                {categories.map(c => (
-                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center gap-1">
-            <Label className="text-sm">{t('kanban.sortLabel')}</Label>
-            <Select value={sortCriteria} onValueChange={setSortCriteria}>
-              <SelectTrigger className="w-32">
-                <SelectValue placeholder={t('kanban.sortLabel')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="order">{t('kanban.sort.manual')}</SelectItem>
-                <SelectItem value="created-desc">{t('kanban.sort.createdDesc')}</SelectItem>
-                <SelectItem value="created-asc">{t('kanban.sort.createdAsc')}</SelectItem>
-                <SelectItem value="title-asc">{t('kanban.sort.titleAsc')}</SelectItem>
-                <SelectItem value="title-desc">{t('kanban.sort.titleDesc')}</SelectItem>
-                <SelectItem value="priority-asc">{t('kanban.sort.priorityAsc')}</SelectItem>
-                <SelectItem value="priority-desc">{t('kanban.sort.priorityDesc')}</SelectItem>
-                <SelectItem value="due-asc">{t('kanban.sort.dueAsc')}</SelectItem>
-                <SelectItem value="due-desc">{t('kanban.sort.dueDesc')}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center gap-1">
-            <Label className="text-sm">{t('kanban.priorityLabel')}</Label>
-            <Select value={filterPriority} onValueChange={setFilterPriority}>
-              <SelectTrigger className="w-32">
-                <SelectValue placeholder={t('kanban.priorityLabel')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t('kanban.filter.all')}</SelectItem>
-                <SelectItem value="high">{t('kanban.filter.high')}</SelectItem>
-                <SelectItem value="medium">{t('kanban.filter.medium')}</SelectItem>
-                <SelectItem value="low">{t('kanban.filter.low')}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center gap-1">
-            <Label className="text-sm">{t('kanban.colorLabel')}</Label>
-            <Select value={filterColor} onValueChange={setFilterColor}>
-              <SelectTrigger className="w-32">
-                <SelectValue placeholder={t('kanban.colorLabel')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t('kanban.filter.all')}</SelectItem>
-                {colorOptions.map(color => (
-                  <SelectItem key={color} value={String(color)}>
-                    <div className="flex items-center space-x-2">
-                      <span
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: colorPalette[color] }}
-                      />
-                      <span>{colorPalette[color]}</span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center gap-1">
-            <Label className="text-sm">{t('kanban.pinnedLabel')}</Label>
-            <Select value={filterPinned} onValueChange={setFilterPinned}>
-              <SelectTrigger className="w-32">
-                <SelectValue placeholder={t('kanban.pinnedLabel')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t('kanban.filter.all')}</SelectItem>
-                <SelectItem value="pinned">{t('kanban.filter.pinned')}</SelectItem>
-                <SelectItem value="unpinned">{t('kanban.filter.unpinned')}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsFilterSheetOpen(true)}
+          >
+            <SlidersHorizontal className="h-4 w-4 mr-2" />
+            {t('dashboard.openFilters')}
+          </Button>
         </div>
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -417,6 +339,23 @@ const Kanban: React.FC = () => {
         onStartPomodoro={task => startPomodoro(task.id)}
         canGoBack={taskDetailStack.length > 0}
         onBack={handleTaskDetailBack}
+      />
+      <KanbanFilterSheet
+        open={isFilterSheetOpen}
+        onOpenChange={setIsFilterSheetOpen}
+        sort={sortCriteria}
+        onSortChange={setSortCriteria}
+        filterCategory={filterCategory}
+        onFilterCategoryChange={setFilterCategory}
+        filterPriority={filterPriority}
+        onFilterPriorityChange={setFilterPriority}
+        filterColor={filterColor}
+        onFilterColorChange={setFilterColor}
+        filterPinned={filterPinned}
+        onFilterPinnedChange={setFilterPinned}
+        categories={categories}
+        colorOptions={colorOptions}
+        colorPalette={colorPalette}
       />
     </div>
   );

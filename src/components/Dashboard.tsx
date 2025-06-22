@@ -34,6 +34,7 @@ import TaskModal from './TaskModal';
 import CategoryModal from './CategoryModal';
 import TaskDetailModal from './TaskDetailModal';
 import TaskFilterSheet from './TaskFilterSheet';
+import CategoryFilterSheet from './CategoryFilterSheet';
 import { useToast } from '@/hooks/use-toast';
 import { ToastAction } from '@/components/ui/toast';
 import {
@@ -79,6 +80,7 @@ const Dashboard: React.FC = () => {
 
   const [filterPriority, setFilterPriority] = useState<string>('all');
   const [filterColor, setFilterColor] = useState<string>('all');
+  const [categoryFilterColor, setCategoryFilterColor] = useState<string>('all');
   const [taskLayout, setTaskLayout] = useState<'list' | 'grid'>('list');
   const [showCompleted, setShowCompleted] = useState<boolean>(true);
 
@@ -113,6 +115,7 @@ const Dashboard: React.FC = () => {
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isTaskDetailModalOpen, setIsTaskDetailModalOpen] = useState(false);
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
+  const [isCategoryFilterSheetOpen, setIsCategoryFilterSheetOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -129,15 +132,43 @@ const Dashboard: React.FC = () => {
     return Array.from(colors);
   }, [selectedCategory, tasks]);
 
+  const categoryColorOptions = useMemo(() => {
+    const colors = new Set<number>();
+    categories.forEach(cat => colors.add(cat.color));
+    return Array.from(colors);
+  }, [categories]);
+
 
   // Filter categories and tasks based on search
-  const filteredCategories = categories
-    .filter(
-      category =>
-        category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        category.description.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .sort((a, b) => a.order - b.order);
+  const filteredCategories = categories.filter(category => {
+    const matchesSearch =
+      category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      category.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesColor =
+      categoryFilterColor === 'all' || category.color === Number(categoryFilterColor);
+    return matchesSearch && matchesColor;
+  });
+
+  const sortedCategories = useMemo(() => {
+    const cats = [...filteredCategories];
+    cats.sort((a, b) => {
+      switch (sortCriteria) {
+        case 'order':
+          return a.order - b.order;
+        case 'title-asc':
+          return a.name.localeCompare(b.name);
+        case 'title-desc':
+          return b.name.localeCompare(a.name);
+        case 'created-asc':
+          return a.createdAt.getTime() - b.createdAt.getTime();
+        case 'created-desc':
+          return b.createdAt.getTime() - a.createdAt.getTime();
+        default:
+          return 0;
+      }
+    });
+    return cats;
+  }, [filteredCategories, sortCriteria]);
 
   const filteredTasks = selectedCategory
     ? getTasksByCategory(selectedCategory.id).filter(task => {
@@ -452,21 +483,14 @@ const Dashboard: React.FC = () => {
                   className="pl-10 w-full"
                 />
               </div>
-              <div className="flex items-center gap-1">
-                <Label className="text-sm">{t('dashboard.sortLabel')}</Label>
-                <Select value={sortCriteria} onValueChange={setSortCriteria}>
-                  <SelectTrigger className="w-32">
-                    <SelectValue placeholder={t('dashboard.sortLabel')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="order">{t('dashboard.sort.manual')}</SelectItem>
-                    <SelectItem value="created-desc">{t('dashboard.sort.createdDesc')}</SelectItem>
-                    <SelectItem value="created-asc">{t('dashboard.sort.createdAsc')}</SelectItem>
-                    <SelectItem value="title-asc">{t('dashboard.sort.titleAsc')}</SelectItem>
-                    <SelectItem value="title-desc">{t('dashboard.sort.titleDesc')}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsCategoryFilterSheetOpen(true)}
+              >
+                <SlidersHorizontal className="h-4 w-4 mr-2" />
+                {t('dashboard.openFilters')}
+              </Button>
               <Button onClick={() => setIsCategoryModalOpen(true)} size="sm">
                 <Plus className="h-4 w-4 mr-2" />
                 {t('taskModal.category')}
@@ -502,7 +526,7 @@ const Dashboard: React.FC = () => {
                       ref={provided.innerRef}
                       {...provided.droppableProps}
                     >
-                      {filteredCategories.map((category, index) => (
+                      {sortedCategories.map((category, index) => (
                         <Draggable key={category.id} draggableId={category.id} index={index}>
                           {prov => (
                             <div ref={prov.innerRef} {...prov.draggableProps} {...prov.dragHandleProps}>
@@ -693,6 +717,16 @@ const Dashboard: React.FC = () => {
         onShowCompletedChange={setShowCompleted}
         layout={taskLayout}
         onLayoutChange={setTaskLayout}
+      />
+      <CategoryFilterSheet
+        open={isCategoryFilterSheetOpen}
+        onOpenChange={setIsCategoryFilterSheetOpen}
+        sort={sortCriteria}
+        onSortChange={setSortCriteria}
+        filterColor={categoryFilterColor}
+        onFilterColorChange={setCategoryFilterColor}
+        colorOptions={categoryColorOptions}
+        colorPalette={colorPalette}
       />
     </div>
   );
