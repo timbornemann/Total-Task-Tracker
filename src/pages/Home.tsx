@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { useSettings } from '@/hooks/useSettings';
+import { isColorDark, adjustColor } from '@/utils/color';
 import { allHomeSections, HomeSection } from '@/utils/homeSections';
 import TaskCard from '@/components/TaskCard';
 import { useTaskStore } from '@/hooks/useTaskStore';
@@ -16,6 +17,8 @@ const Home: React.FC = () => {
   const {
     homeSections,
     homeSectionOrder,
+    homeSectionColors,
+    colorPalette,
     showPinnedTasks,
     showPinnedNotes
   } = useSettings();
@@ -42,18 +45,33 @@ const Home: React.FC = () => {
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-          {orderedSections.map(sec => (
-            <div key={sec.key}>
-              <Link to={sec.path}>
-                <Card className="hover:shadow-md transition-all text-center">
-                  <CardContent className="py-8">
-                    <sec.icon className="h-8 w-8 mx-auto mb-2" />
-                    <CardTitle>{t(sec.labelKey)}</CardTitle>
-                  </CardContent>
-                </Card>
-              </Link>
-            </div>
-          ))}
+          {orderedSections.map(sec => {
+            const idx = homeSectionColors[sec.key] ?? 0
+            const base = colorPalette[idx] ?? colorPalette[0]
+            const text = isColorDark(base) ? '#fff' : '#000'
+            const hover = isColorDark(base)
+              ? adjustColor(base, 10)
+              : adjustColor(base, -10)
+            return (
+              <div key={sec.key}>
+                <Link to={sec.path}>
+                  <Card
+                    className="hover:shadow-md transition-all text-center hover:[background-color:var(--hover-color)]"
+                    style={{
+                      backgroundColor: base,
+                      color: text,
+                      '--hover-color': hover
+                    } as React.CSSProperties}
+                  >
+                    <CardContent className="py-8">
+                      <sec.icon className="h-8 w-8 mx-auto mb-2" />
+                      <CardTitle>{t(sec.labelKey)}</CardTitle>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </div>
+            )
+          })}
         </div>
         {showPinnedTasks && pinnedTasks.length > 0 && (
           <div className="mb-6">

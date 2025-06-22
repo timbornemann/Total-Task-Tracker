@@ -258,6 +258,14 @@ export const themePresets: Record<string, { theme: typeof defaultTheme; colorPal
   }
 }
 
+export const defaultHomeSectionColors: Record<string, number> = allHomeSections.reduce(
+  (acc, sec, idx) => {
+    acc[sec.key] = idx % defaultColorPalette.length
+    return acc
+  },
+  {} as Record<string, number>
+)
+
 interface SettingsContextValue {
   shortcuts: ShortcutKeys
   updateShortcut: (key: keyof ShortcutKeys, value: string) => void
@@ -271,6 +279,8 @@ interface SettingsContextValue {
   updateThemeName: (name: string) => void
   colorPalette: string[]
   updatePaletteColor: (index: number, value: string) => void
+  homeSectionColors: Record<string, number>
+  updateHomeSectionColor: (section: string, color: number) => void
   homeSections: string[]
   homeSectionOrder: string[]
   toggleHomeSection: (section: string) => void
@@ -321,6 +331,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [theme, setTheme] = useState(defaultTheme)
   const [themeName, setThemeName] = useState('light')
   const [colorPalette, setColorPalette] = useState<string[]>(defaultColorPalette)
+  const [homeSectionColors, setHomeSectionColors] = useState<Record<string, number>>(
+    { ...defaultHomeSectionColors }
+  )
   const [homeSectionOrder, setHomeSectionOrder] = useState<string[]>(
     allHomeSections.map(s => s.key)
   )
@@ -393,6 +406,12 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             )
             setHomeSections(data.homeSections)
           }
+          if (data.homeSectionColors && typeof data.homeSectionColors === 'object') {
+            setHomeSectionColors({
+              ...defaultHomeSectionColors,
+              ...data.homeSectionColors
+            })
+          }
           if (Array.isArray(data.homeSections)) {
             setHomeSections(data.homeSections)
           }
@@ -453,6 +472,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             theme,
             themeName,
             colorPalette,
+            homeSectionColors,
             homeSections,
             homeSectionOrder,
             showPinnedTasks,
@@ -482,6 +502,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     theme,
     themeName,
     colorPalette,
+    homeSectionColors,
     homeSections,
     homeSectionOrder,
     showPinnedTasks,
@@ -545,6 +566,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       return arr
     })
     setThemeName('custom')
+  }
+
+  const updateHomeSectionColor = (section: string, color: number) => {
+    setHomeSectionColors(prev => ({ ...prev, [section]: color }))
   }
 
   const updateFlashcardTimer = (value: number) => {
@@ -626,6 +651,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         updateThemeName,
         colorPalette,
         updatePaletteColor,
+        homeSectionColors,
+        updateHomeSectionColor,
         homeSections,
         homeSectionOrder,
         toggleHomeSection,
