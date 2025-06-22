@@ -123,7 +123,7 @@ const Kanban: React.FC = () => {
   };
 
   const handleViewTaskDetails = (task: Task) => {
-    navigate(`/tasks/${task.id}`);
+    navigate(`/tasks/${task.id}?categoryId=${task.categoryId}`);
   };
 
   const flattened = flattenTasks(tasks);

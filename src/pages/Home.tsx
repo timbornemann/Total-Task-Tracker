@@ -62,7 +62,11 @@ const Home: React.FC = () => {
             </h2>
             <div className="space-y-3">
               {pinnedTasks.map(item => (
-                <Link key={item.task.id} to={`/tasks/${item.task.id}`} className="block">
+                <Link
+                  key={item.task.id}
+                  to={`/tasks/${item.task.id}?categoryId=${item.task.categoryId}`}
+                  className="block"
+                >
                   <TaskCard
                     task={item.task}
                     parentPathTitles={item.path.map(p => p.title)}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Navbar from '@/components/Navbar';
 import TaskCard from '@/components/TaskCard';
@@ -37,12 +37,13 @@ const TaskDetailPage: React.FC = () => {
     categories,
     updateTask,
     deleteTask,
-    addTask
+    addTask,
+    findTaskById
   } = useTaskStore();
   const { colorPalette, theme } = useSettings();
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const task = tasks.find(t => t.id === taskId) || null;
+  const task = findTaskById(taskId || '') || null;
   const category = task ? categories.find(c => c.id === task.categoryId) || null : null;
 
   if (!task) return <div className="p-4">{t('taskDetail.notFound')}</div>;
@@ -69,7 +70,11 @@ const TaskDetailPage: React.FC = () => {
   const handleDelete = () => {
     if (window.confirm(t('task.deleteConfirm', { title: task.title }))) {
       deleteTask(task.id);
-      navigate(-1);
+      if (task.parentId) {
+        navigate(`/tasks/${task.parentId}`);
+      } else {
+        navigate(`/tasks?categoryId=${task.categoryId}`);
+      }
     }
   };
 
@@ -87,11 +92,22 @@ const TaskDetailPage: React.FC = () => {
     navigate(`/pomodoro?taskId=${task.id}`);
   };
 
+  const handleBack = () => {
+    if (task.parentId) {
+      navigate(`/tasks/${task.parentId}`);
+    } else {
+      navigate(`/tasks?categoryId=${task.categoryId}`);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      <Navbar title={task.title} onHomeClick={() => navigate('/tasks')} />
+      <Navbar
+        title={task.title}
+        onHomeClick={() => navigate(`/tasks?categoryId=${task.categoryId}`)}
+      />
       <div className="max-w-4xl mx-auto py-8 px-4 space-y-4">
-        <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
+        <Button variant="ghost" size="sm" onClick={handleBack}>
           <ArrowLeft className="h-4 w-4 mr-2" /> {t('common.back')}
         </Button>
         <div className="space-y-6">
@@ -169,18 +185,25 @@ const TaskDetailPage: React.FC = () => {
                   </div>
 
                   <div className="space-y-3">
-                    {task.subtasks.map(subtask => (
+                    {task.subtasks
+                      .slice()
+                      .sort((a, b) => a.order - b.order)
+                      .map(subtask => (
                       <TaskCard
                         key={subtask.id}
                         task={subtask}
-                        onEdit={() => navigate(`/tasks/${subtask.id}`)}
+                        onEdit={() =>
+                          navigate(`/tasks/${subtask.id}?categoryId=${task.categoryId}`)
+                        }
                         onDelete={deleteTask}
                         onAddSubtask={() => {
                           setEditingTask(null);
                           setIsTaskModalOpen(true);
                         }}
                         onToggleComplete={(id, completed) => updateTask(id, { completed })}
-                        onViewDetails={st => navigate(`/tasks/${st.id}`)}
+                        onViewDetails={st =>
+                          navigate(`/tasks/${st.id}?categoryId=${task.categoryId}`)
+                        }
                         depth={0}
                       />
                     ))}

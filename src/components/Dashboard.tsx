@@ -92,6 +92,21 @@ const Dashboard: React.FC = () => {
     }
   }, [sortCriteria]);
 
+  useEffect(() => {
+    const catId = searchParams.get('categoryId');
+    if (catId && catId !== selectedCategory?.id) {
+      const cat = categories.find(c => c.id === catId);
+      if (cat) {
+        setSelectedCategory(cat);
+        setCurrentCategoryId(cat.id);
+        setViewMode('tasks');
+      }
+    } else if (!catId && selectedCategory) {
+      setSelectedCategory(null);
+      setCurrentCategoryId(null);
+      setViewMode('categories');
+    }
+  }, [searchParams, categories]);
   
   // Modal states
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -336,6 +351,9 @@ const Dashboard: React.FC = () => {
     setSelectedCategory(category);
     setCurrentCategoryId(category.id);
     setViewMode('tasks');
+    const params = new URLSearchParams(searchParams);
+    params.set('categoryId', category.id);
+    setSearchParams(params, { replace: true });
   };
 
   const handleAddSubtask = (parent: Task) => {
@@ -353,7 +371,8 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate();
 
   const handleViewTaskDetails = (task: Task) => {
-    navigate(`/tasks/${task.id}`);
+    const catId = selectedCategory?.id || task.categoryId;
+    navigate(`/tasks/${task.id}?categoryId=${catId}`);
   };
 
   const handleBackToCategories = () => {
@@ -361,6 +380,9 @@ const Dashboard: React.FC = () => {
     setCurrentCategoryId(null);
     setViewMode('categories');
     setSearchTerm('');
+    const params = new URLSearchParams(searchParams);
+    params.delete('categoryId');
+    setSearchParams(params, { replace: true });
   };
 
   const handleCategoryDragEnd = (result: DropResult) => {
