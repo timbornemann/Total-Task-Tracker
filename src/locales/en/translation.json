@@ -534,6 +534,8 @@
     "progressInfo": "{{completed}} of {{total}} completed",
     "totalProgress": "Total progress",
     "addFirst": "Add first subtask",
+    "notFound": "Task not found.",
+    "title": "Task",
     "created": "Created:",
     "updated": "Last updated:",
     "due": "Due on:"
