@@ -23,6 +23,7 @@ import SettingsPage from "./pages/Settings";
 import ReleaseNotesPage from "./pages/ReleaseNotes";
 import NotFound from "./pages/NotFound";
 import PomodoroPage from "./pages/Pomodoro";
+import PomodoroHistoryPage from "./pages/PomodoroHistory";
 import PomodoroTimer from "@/components/PomodoroTimer";
 import PomodoroTicker from "@/components/PomodoroTicker";
 import { PomodoroHistoryProvider } from "@/hooks/usePomodoroHistory.tsx";
@@ -65,6 +66,7 @@ const App = () => (
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/release-notes" element={<ReleaseNotesPage />} />
               <Route path="/pomodoro" element={<PomodoroPage />} />
+              <Route path="/pomodoro/history" element={<PomodoroHistoryPage />} />
               <Route path="/surprise" element={<SurprisePage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

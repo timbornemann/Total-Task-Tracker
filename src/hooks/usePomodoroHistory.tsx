@@ -5,6 +5,7 @@ const API_URL = '/api/pomodoro-sessions'
 
 const usePomodoroHistoryImpl = () => {
   const [sessions, setSessions] = useState<PomodoroSession[]>([])
+  const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
     const load = async () => {
@@ -16,12 +17,15 @@ const usePomodoroHistoryImpl = () => {
         }
       } catch (err) {
         console.error('Error loading Pomodoro sessions', err)
+      } finally {
+        setLoaded(true)
       }
     }
     load()
   }, [])
 
   useEffect(() => {
+    if (!loaded) return
     const save = async () => {
       try {
         await fetch(API_URL, {
@@ -34,7 +38,7 @@ const usePomodoroHistoryImpl = () => {
       }
     }
     save()
-  }, [sessions])
+  }, [sessions, loaded])
 
   const addSession = (start: number, end: number) => {
     setSessions(prev => [...prev, { start, end }])
@@ -49,7 +53,20 @@ const usePomodoroHistoryImpl = () => {
     })
   }
 
-  return { sessions, addSession, endBreak }
+  const updateSession = (
+    index: number,
+    data: Partial<PomodoroSession>
+  ) => {
+    setSessions(prev =>
+      prev.map((s, i) => (i === index ? { ...s, ...data } : s))
+    )
+  }
+
+  const deleteSession = (index: number) => {
+    setSessions(prev => prev.filter((_, i) => i !== index))
+  }
+
+  return { sessions, addSession, endBreak, updateSession, deleteSession }
 }
 
 type Store = ReturnType<typeof usePomodoroHistoryImpl>
