@@ -10,7 +10,6 @@
     "cards": "Karten",
     "decks": "Decks",
     "pomodoro": "Pomodoro",
-    "pomodoroSessions": "Einheiten",
     "cardStatistics": "Statistiken",
     "notes": "Notizen",
     "settings": "Einstellungen",
@@ -438,6 +437,9 @@
     "end": "Ende",
     "delete": "Löschen",
     "none": "Keine Einheiten aufgezeichnet."
+  },
+  "pomodoroPage": {
+    "viewSessions": "Einheiten anzeigen"
   },
   "commandPalette": {
     "title": "Command Palette",

@@ -10,7 +10,6 @@
     "cards": "Cards",
     "decks": "Decks",
     "pomodoro": "Pomodoro",
-    "pomodoroSessions": "Sessions",
     "cardStatistics": "Statistics",
     "notes": "Notes",
     "settings": "Settings",
@@ -438,6 +437,9 @@
     "end": "End",
     "delete": "Delete",
     "none": "No sessions recorded."
+  },
+  "pomodoroPage": {
+    "viewSessions": "View Sessions"
   },
   "commandPalette": {
     "title": "Command Palette",
