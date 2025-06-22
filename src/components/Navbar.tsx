@@ -163,11 +163,6 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/pomodoro/history" className="flex items-center">
-                    <Timer className="h-4 w-4 mr-2" /> {t('navbar.pomodoroSessions')}
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
                   <Link to="/flashcards/stats" className="flex items-center">
                     <BarChart3 className="h-4 w-4 mr-2" /> {t('navbar.cardStatistics')}
                   </Link>
@@ -243,12 +238,6 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                   <Button variant="outline" size="sm" className="w-full">
                     <Timer className="h-4 w-4 mr-2" />
                     {t('navbar.pomodoro')}
-                  </Button>
-                </Link>
-                <Link to="/pomodoro/history" className="flex-1">
-                  <Button variant="outline" size="sm" className="w-full">
-                    <Timer className="h-4 w-4 mr-2" />
-                    {t('navbar.pomodoroSessions')}
                   </Button>
                 </Link>
                 <Link to="/flashcards/stats" className="flex-1">
