@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Input } from '@/components/ui/input';
+import SubtaskFilterSheet from '@/components/SubtaskFilterSheet';
 import { useTaskStore } from '@/hooks/useTaskStore';
 import { useSettings } from '@/hooks/useSettings';
 import { Task } from '@/types';
@@ -16,15 +18,18 @@ import {
   Edit,
   Plus,
   Trash2,
-  Timer,
   Star,
-  StarOff
+  StarOff,
+  ArrowUp,
+  ArrowRight,
+  ArrowDown,
+  Search,
+  SlidersHorizontal
 } from 'lucide-react';
 import {
   calculateTaskCompletion,
   getTaskProgress,
-  getPriorityColor,
-  getPriorityIcon
+  getPriorityColors
 } from '@/utils/taskUtils';
 import { complementaryColor, adjustColor, isColorDark, hslToHex } from '@/utils/color';
 
@@ -43,6 +48,12 @@ const TaskDetailPage: React.FC = () => {
   const { colorPalette, theme } = useSettings();
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortCriteria, setSortCriteria] = useState('order');
+  const [filterPriority, setFilterPriority] = useState('all');
+  const [filterColor, setFilterColor] = useState('all');
+  const [subtaskLayout, setSubtaskLayout] = useState<'list' | 'grid'>('list');
+  const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const task = findTaskById(taskId || '') || null;
   const category = task ? categories.find(c => c.id === task.categoryId) || null : null;
 
@@ -51,8 +62,12 @@ const TaskDetailPage: React.FC = () => {
   const isCompleted = calculateTaskCompletion(task);
   const progress = getTaskProgress(task);
   const progressPercentage = progress.total > 0 ? (progress.completed / progress.total) * 100 : 0;
-  const priorityClasses = getPriorityColor(task.priority);
-  const priorityIcon = getPriorityIcon(task.priority);
+  const priorityColors = getPriorityColors(task.priority);
+  let priorityIconEl: React.ReactNode;
+  if (task.priority === 'high') priorityIconEl = <ArrowUp className="h-4 w-4 mr-1" />;
+  else if (task.priority === 'medium') priorityIconEl = <ArrowRight className="h-4 w-4 mr-1" />;
+  else priorityIconEl = <ArrowDown className="h-4 w-4 mr-1" />;
+  const colorOptions = Array.from(new Set(task.subtasks.map(st => st.color)));
   const cardHex = hslToHex(theme.card);
   const progressBg = isColorDark(cardHex) ? adjustColor(cardHex, 50) : adjustColor(cardHex, -20);
   const progressColor = complementaryColor(cardHex);
@@ -88,9 +103,6 @@ const TaskDetailPage: React.FC = () => {
     setIsTaskModalOpen(true);
   };
 
-  const handleStartPomodoro = () => {
-    navigate(`/pomodoro?taskId=${task.id}`);
-  };
 
   const handleBack = () => {
     if (task.parentId) {
@@ -99,6 +111,50 @@ const TaskDetailPage: React.FC = () => {
       navigate(`/tasks?categoryId=${task.categoryId}`);
     }
   };
+
+  const filteredSubtasks = task.subtasks.filter(st => {
+    const matchesSearch =
+      st.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      st.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesPriority =
+      filterPriority === 'all' || st.priority === filterPriority;
+    const matchesColor = filterColor === 'all' || st.color === Number(filterColor);
+    return matchesSearch && matchesPriority && matchesColor;
+  });
+
+  const priorityValue = (p: string) =>
+    p === 'high' ? 3 : p === 'medium' ? 2 : 1;
+
+  const sortedSubtasks = filteredSubtasks.slice().sort((a, b) => {
+    switch (sortCriteria) {
+      case 'order':
+        return a.order - b.order;
+      case 'title-asc':
+        return a.title.localeCompare(b.title);
+      case 'title-desc':
+        return b.title.localeCompare(a.title);
+      case 'created-asc':
+        return a.createdAt.getTime() - b.createdAt.getTime();
+      case 'created-desc':
+        return b.createdAt.getTime() - a.createdAt.getTime();
+      case 'priority-asc':
+        return priorityValue(a.priority) - priorityValue(b.priority);
+      case 'priority-desc':
+        return priorityValue(b.priority) - priorityValue(a.priority);
+      case 'due-asc':
+        return (
+          (a.nextDue ? a.nextDue.getTime() : Infinity) -
+          (b.nextDue ? b.nextDue.getTime() : Infinity)
+        );
+      case 'due-desc':
+        return (
+          (b.nextDue ? b.nextDue.getTime() : -Infinity) -
+          (a.nextDue ? a.nextDue.getTime() : -Infinity)
+        );
+      default:
+        return 0;
+    }
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -124,10 +180,25 @@ const TaskDetailPage: React.FC = () => {
               <div className="flex-1">
                 <h1 className={`text-xl font-bold ${isCompleted ? 'line-through text-gray-500' : ''}`}>{task.title}</h1>
                 <div className="flex items-center space-x-3 mt-2">
-                  <Badge className={`text-sm px-3 py-1 border ${priorityClasses}`}>{priorityIcon} {task.priority.toUpperCase()}</Badge>
+                  <Badge
+                    className="text-sm px-3 py-1 flex items-center border"
+                    style={{
+                      backgroundColor: priorityColors.bg,
+                      color: priorityColors.fg,
+                      borderColor: priorityColors.bg
+                    }}
+                  >
+                    {priorityIconEl}
+                    {t(`taskModal.${task.priority}`)}
+                  </Badge>
                   <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 rounded-full border-2 border-gray-300" style={{ backgroundColor: colorPalette[task.color] }} />
-                    <span className="text-sm text-gray-600">{category?.name || t('taskDetail.unknownCategory')}</span>
+                    <div
+                      className="w-5 h-5 rounded-md border"
+                      style={{ backgroundColor: colorPalette[task.color] }}
+                    />
+                    <span className="text-sm text-gray-600">
+                      {category?.name || t('taskDetail.unknownCategory')}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -145,10 +216,6 @@ const TaskDetailPage: React.FC = () => {
                 <Edit className="h-4 w-4 mr-2" />
                 {t('common.edit')}
               </Button>
-              <Button variant="outline" size="sm" onClick={handleStartPomodoro}>
-                <Timer className="h-4 w-4 mr-2" />
-                {t('navbar.pomodoro')}
-              </Button>
               <Button variant="outline" size="sm" onClick={handleDelete} className="text-destructive hover:text-destructive/80">
                 <Trash2 className="h-4 w-4 mr-2" />
                 {t('common.delete')}
@@ -156,7 +223,7 @@ const TaskDetailPage: React.FC = () => {
             </div>
           </div>
 
-          <ScrollArea className="max-h-[60vh] pr-4">
+          <ScrollArea className="pr-4">
             <div className="space-y-6">
               {task.description && (
                 <div>
@@ -184,11 +251,30 @@ const TaskDetailPage: React.FC = () => {
                     <Progress value={progressPercentage} className="h-3" backgroundColor={progressBg} indicatorColor={progressColor} />
                   </div>
 
-                  <div className="space-y-3">
-                    {task.subtasks
-                      .slice()
-                      .sort((a, b) => a.order - b.order)
-                      .map(subtask => (
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="relative flex-1 max-w-xs">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Input
+                        placeholder={t('dashboard.searchTasks')}
+                        value={searchTerm}
+                        onChange={e => setSearchTerm(e.target.value)}
+                        className="pl-8 w-full"
+                      />
+                    </div>
+                    <Button variant="outline" size="sm" onClick={() => setIsFilterSheetOpen(true)}>
+                      <SlidersHorizontal className="h-4 w-4 mr-2" />
+                      {t('dashboard.openFilters')}
+                    </Button>
+                  </div>
+
+                  <div
+                    className={
+                      subtaskLayout === 'grid'
+                        ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'
+                        : 'space-y-3'
+                    }
+                  >
+                    {sortedSubtasks.map(subtask => (
                       <TaskCard
                         key={subtask.id}
                         task={subtask}
@@ -205,6 +291,7 @@ const TaskDetailPage: React.FC = () => {
                           navigate(`/tasks/${st.id}?categoryId=${task.categoryId}`)
                         }
                         depth={0}
+                        isGrid={subtaskLayout === 'grid'}
                       />
                     ))}
                   </div>
@@ -261,6 +348,20 @@ const TaskDetailPage: React.FC = () => {
         parentTask={editingTask ? undefined : task}
         defaultDueDate={undefined}
         allowRecurring={false}
+      />
+      <SubtaskFilterSheet
+        open={isFilterSheetOpen}
+        onOpenChange={setIsFilterSheetOpen}
+        sort={sortCriteria}
+        onSortChange={setSortCriteria}
+        filterPriority={filterPriority}
+        onFilterPriorityChange={setFilterPriority}
+        filterColor={filterColor}
+        onFilterColorChange={setFilterColor}
+        colorOptions={colorOptions}
+        colorPalette={colorPalette}
+        layout={subtaskLayout}
+        onLayoutChange={setSubtaskLayout}
       />
     </div>
   );
