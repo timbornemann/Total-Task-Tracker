@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Navbar from '@/components/Navbar';
@@ -6,9 +6,16 @@ import TaskCard from '@/components/TaskCard';
 import TaskModal from '@/components/TaskModal';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from '@/components/ui/tooltip';
 import SubtaskFilterSheet from '@/components/SubtaskFilterSheet';
 import { useTaskStore } from '@/hooks/useTaskStore';
 import { useSettings } from '@/hooks/useSettings';
@@ -24,14 +31,29 @@ import {
   ArrowRight,
   ArrowDown,
   Search,
-  SlidersHorizontal
+  SlidersHorizontal,
+  ChevronRight,
+  Calendar as CalendarIcon
 } from 'lucide-react';
 import {
   calculateTaskCompletion,
   getTaskProgress,
-  getPriorityColors
+  getPriorityColors,
+  flattenTasks
 } from '@/utils/taskUtils';
 import { complementaryColor, adjustColor, isColorDark, hslToHex } from '@/utils/color';
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  Line,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip as RechartTooltip
+} from 'recharts';
 
 const TaskDetailPage: React.FC = () => {
   const { taskId } = useParams<{ taskId: string }>();
@@ -71,6 +93,69 @@ const TaskDetailPage: React.FC = () => {
   const cardHex = hslToHex(theme.card);
   const progressBg = isColorDark(cardHex) ? adjustColor(cardHex, 50) : adjustColor(cardHex, -20);
   const progressColor = complementaryColor(cardHex);
+
+  const flattened = useMemo(() => flattenTasks(tasks), [tasks]);
+  const pathInfo = useMemo(() => flattened.find(f => f.task.id === task.id), [flattened, task.id]);
+  const parentPath = pathInfo ? pathInfo.path : [];
+
+  const breadcrumbs = [
+    {
+      label: category?.name || t('taskDetail.unknownCategory'),
+      onClick: () => navigate(`/tasks?categoryId=${task.categoryId}`)
+    },
+    ...parentPath.map(p => ({
+      label: p.title,
+      onClick: () => navigate(`/tasks/${p.id}?categoryId=${p.categoryId}`)
+    }))
+  ];
+
+  const textColor = complementaryColor(colorPalette[task.color]);
+
+  const flattenedSubtasks = useMemo(
+    () => flattenTasks(task.subtasks).map(f => f.task),
+    [task.subtasks]
+  );
+
+  const statusData = useMemo(() => {
+    const counts = { todo: 0, inprogress: 0, done: 0 };
+    flattenedSubtasks.forEach(st => {
+      counts[st.status]++;
+    });
+    return [
+      { name: t('kanban.todo'), value: counts.todo, color: 'hsl(var(--kanban-todo))' },
+      { name: t('kanban.inprogress'), value: counts.inprogress, color: 'hsl(var(--kanban-inprogress))' },
+      { name: t('kanban.done'), value: counts.done, color: 'hsl(var(--kanban-done))' }
+    ];
+  }, [flattenedSubtasks, t]);
+
+  const priorityData = useMemo(() => {
+    const counts = { high: 0, medium: 0, low: 0 };
+    flattenedSubtasks.forEach(st => {
+      counts[st.priority]++;
+    });
+    return [
+      { name: t('statistics.priority.high'), value: counts.high, color: 'hsl(var(--destructive))' },
+      { name: t('statistics.priority.medium'), value: counts.medium, color: 'hsl(var(--primary))' },
+      { name: t('statistics.priority.low'), value: counts.low, color: 'hsl(var(--accent))' }
+    ];
+  }, [flattenedSubtasks, t]);
+
+  const trendData = useMemo(() => {
+    const result: { date: string; created: number; completed: number }[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      const created = flattenedSubtasks.filter(st => new Date(st.createdAt).toISOString().split('T')[0] === dateStr).length;
+      const completed = flattenedSubtasks.filter(st => st.completed && new Date(st.updatedAt).toISOString().split('T')[0] === dateStr).length;
+      result.push({
+        date: date.toLocaleDateString(i18n.language === 'de' ? 'de-DE' : 'en-US', { month: 'short', day: 'numeric' }),
+        created,
+        completed
+      });
+    }
+    return result;
+  }, [flattenedSubtasks, i18n.language]);
 
   const handleTogglePinned = () => {
     updateTask(task.id, { pinned: !task.pinned });
@@ -162,70 +247,89 @@ const TaskDetailPage: React.FC = () => {
         title={task.title}
         onHomeClick={() => navigate(`/tasks?categoryId=${task.categoryId}`)}
       />
-      <div className="max-w-4xl mx-auto py-8 px-4 space-y-4">
-        <Button variant="ghost" size="sm" onClick={handleBack}>
-          <ArrowLeft className="h-4 w-4 mr-2" /> {t('common.back')}
-        </Button>
-        <div
-          className="w-full h-3 rounded-md shadow-inner"
-          style={{ backgroundColor: colorPalette[task.color] }}
-        />
-        <div className="space-y-6">
-          <div className="flex items-start justify-between">
-            <div className="flex items-start space-x-3 flex-1">
-              {task.subtasks.length === 0 && (
-                <input
-                  type="checkbox"
-                  checked={task.completed}
-                  onChange={handleToggleComplete}
-                  className="mt-1 h-5 w-5 text-primary rounded border-gray-300 focus:ring-primary"
-                />
-              )}
-              <div className="flex-1">
-                <h1 className={`text-xl font-bold ${isCompleted ? 'line-through text-gray-500' : ''}`}>{task.title}</h1>
-                <div className="flex items-center space-x-3 mt-2">
-                  <Badge
-                    className="text-sm px-3 py-1 flex items-center border"
-                    style={{
-                      backgroundColor: priorityColors.bg,
-                      color: priorityColors.fg,
-                      borderColor: priorityColors.bg
-                    }}
-                  >
-                    {priorityIconEl}
-                    {t(`taskModal.${task.priority}`)}
-                  </Badge>
-                  <div className="flex items-center space-x-2">
-                    <div
-                      className="h-8 w-8 rounded-md border shadow-inner"
-                      style={{ backgroundColor: colorPalette[task.color] }}
-                    />
-                    <span className="text-sm text-gray-600">
-                      {category?.name || t('taskDetail.unknownCategory')}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex space-x-2">
-              <Button variant="outline" size="sm" onClick={handleTogglePinned}>
-                {task.pinned ? <Star className="h-4 w-4 mr-2" /> : <StarOff className="h-4 w-4 mr-2" />}
-                {task.pinned ? t('taskDetail.unpin') : t('taskDetail.pin')}
-              </Button>
-              <Button variant="outline" size="sm" onClick={handleAddSubtask}>
-                <Plus className="h-4 w-4 mr-2" />
-                {t('taskDetail.addSubtask')}
-              </Button>
-              <Button variant="outline" size="sm" onClick={handleEdit}>
-                <Edit className="h-4 w-4 mr-2" />
-                {t('common.edit')}
-              </Button>
-              <Button variant="outline" size="sm" onClick={handleDelete} className="text-destructive hover:text-destructive/80">
-                <Trash2 className="h-4 w-4 mr-2" />
-                {t('common.delete')}
-              </Button>
-            </div>
+      <div
+        className="py-6"
+        style={{ backgroundColor: colorPalette[task.color], color: textColor }}
+      >
+        <div className="max-w-4xl mx-auto px-4 space-y-2">
+          <Button variant="ghost" size="sm" onClick={handleBack} className="text-current">
+            <ArrowLeft className="h-4 w-4 mr-2" /> {t('common.back')}
+          </Button>
+          <h1 className={`text-2xl font-bold ${isCompleted ? 'line-through opacity-70' : ''}`}>{task.title}</h1>
+          <div className="flex items-center text-sm flex-wrap">
+            <span className="mr-2 font-medium">{t('taskDetail.path')}</span>
+            {breadcrumbs.map((b, idx) => (
+              <React.Fragment key={idx}>
+                {idx > 0 && <ChevronRight className="mx-1 h-3 w-3" />}
+                <button onClick={b.onClick} className="underline">
+                  {b.label}
+                </button>
+              </React.Fragment>
+            ))}
           </div>
+          <div className="flex items-center space-x-4">
+            <Badge
+              className="text-sm px-3 py-1 flex items-center border"
+              style={{
+                backgroundColor: priorityColors.bg,
+                color: priorityColors.fg,
+                borderColor: priorityColors.bg
+              }}
+            >
+              {priorityIconEl}
+              {t(`taskModal.${task.priority}`)}
+            </Badge>
+            {task.dueDate && (
+              <div className="flex items-center text-sm">
+                <CalendarIcon className="h-4 w-4 mr-1" />
+                {new Date(task.dueDate).toLocaleDateString(i18n.language)}
+              </div>
+            )}
+          </div>
+          <div className="flex space-x-2 pt-2">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" onClick={handleTogglePinned} className="border text-current">
+                    {task.pinned ? <Star className="h-4 w-4" /> : <StarOff className="h-4 w-4" />}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{task.pinned ? t('taskDetail.unpin') : t('taskDetail.pin')}</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" onClick={handleAddSubtask} className="border text-current">
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{t('taskDetail.addSubtask')}</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" onClick={handleEdit} className="border text-current">
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{t('common.edit')}</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleDelete}
+                    className="border text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{t('common.delete')}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        </div>
+      </div>
+      <div className="max-w-4xl mx-auto py-8 px-4">
 
           <ScrollArea className="pr-4">
             <div className="space-y-6">
@@ -253,6 +357,90 @@ const TaskDetailPage: React.FC = () => {
                       <span className="text-sm text-gray-500">{Math.round(progressPercentage)}%</span>
                     </div>
                     <Progress value={progressPercentage} className="h-3" backgroundColor={progressBg} indicatorColor={progressColor} />
+                  </div>
+
+                  <div className="space-y-4 mb-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-base sm:text-lg">
+                            {t('taskDetail.statsStatus')}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="h-48">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <PieChart>
+                                <Pie data={statusData} cx="50%" cy="50%" innerRadius={30} outerRadius={60} paddingAngle={5} dataKey="value">
+                                  {statusData.map((entry, index) => (
+                                    <Cell key={`status-${index}`} fill={entry.color} />
+                                  ))}
+                                </Pie>
+                                <RechartTooltip />
+                              </PieChart>
+                            </ResponsiveContainer>
+                          </div>
+                          <div className="flex justify-center space-x-4 mt-4">
+                            {statusData.map((item, index) => (
+                              <div key={index} className="flex items-center">
+                                <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: item.color }} />
+                                <span className="text-xs">{item.name}: {item.value}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-base sm:text-lg">
+                            {t('taskDetail.statsPriority')}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="h-48">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <PieChart>
+                                <Pie data={priorityData} cx="50%" cy="50%" innerRadius={30} outerRadius={60} paddingAngle={5} dataKey="value">
+                                  {priorityData.map((entry, index) => (
+                                    <Cell key={`priority-${index}`} fill={entry.color} />
+                                  ))}
+                                </Pie>
+                                <RechartTooltip />
+                              </PieChart>
+                            </ResponsiveContainer>
+                          </div>
+                          <div className="flex justify-center space-x-4 mt-4">
+                            {priorityData.map((item, index) => (
+                              <div key={index} className="flex items-center">
+                                <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: item.color }} />
+                                <span className="text-xs">{item.name}: {item.value}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-base sm:text-lg">
+                          {t('taskDetail.statsTrend')}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="h-48">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={trendData} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis dataKey="date" fontSize={12} />
+                              <YAxis fontSize={12} />
+                              <RechartTooltip />
+                              <Line type="monotone" dataKey="created" stroke="hsl(var(--primary))" strokeWidth={2} name={t('statistics.created')} />
+                              <Line type="monotone" dataKey="completed" stroke="hsl(var(--accent))" strokeWidth={2} name={t('statistics.completed')} />
+                            </LineChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </CardContent>
+                    </Card>
                   </div>
 
                   <div className="flex items-center gap-2 mb-4">

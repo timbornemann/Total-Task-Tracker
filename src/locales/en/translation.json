@@ -538,7 +538,11 @@
     "title": "Task",
     "created": "Created:",
     "updated": "Last updated:",
-    "due": "Due on:"
+    "due": "Due on:",
+    "path": "Path:",
+    "statsStatus": "Status Overview",
+    "statsPriority": "Priorities",
+    "statsTrend": "Created vs Completed"
   },
   "task": {
     "created": "Task created",
