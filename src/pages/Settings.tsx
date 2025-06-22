@@ -83,7 +83,9 @@ const SettingsPage: React.FC = () => {
     language,
     updateLanguage,
     colorPalette,
-    updatePaletteColor
+    updatePaletteColor,
+    homeSectionColors,
+    updateHomeSectionColor
   } = useSettings()
 
   const { t } = useTranslation()
@@ -585,6 +587,21 @@ const SettingsPage: React.FC = () => {
                                     onCheckedChange={() => toggleHomeSection(sec.key)}
                                   />
                                   <Label htmlFor={sec.key}>{t(sec.labelKey)}</Label>
+                                  <div className="flex ml-2 space-x-1">
+                                    {colorPalette.map((c, idx) => (
+                                      <button
+                                        key={idx}
+                                        type="button"
+                                        className={`w-4 h-4 rounded-full border-2 transition-all ${
+                                          homeSectionColors[sec.key] === idx
+                                            ? 'border-foreground scale-110'
+                                            : 'border-gray-300 hover:scale-105'
+                                        }`}
+                                        style={{ backgroundColor: c }}
+                                        onClick={() => updateHomeSectionColor(sec.key, idx)}
+                                      />
+                                    ))}
+                                  </div>
                                 </div>
                                 <GripVertical className="h-4 w-4 text-muted-foreground" />
                               </div>
