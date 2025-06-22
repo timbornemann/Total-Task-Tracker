@@ -108,7 +108,9 @@ const TaskDetailPage: React.FC = () => {
     })),
   ];
 
-  const textColor = complementaryColor(colorPalette[task.color]);
+  const textColor = complementaryColor(
+    colorPalette[task.color] ?? colorPalette[0],
+  );
   const [backHover, setBackHover] = useState(false);
 
   const flattenedSubtasks = useMemo(
@@ -298,7 +300,7 @@ const TaskDetailPage: React.FC = () => {
         <div
           className="px-4 pt-4 pb-2 mt-4 rounded-t-lg"
           style={{
-            backgroundColor: colorPalette[task.color],
+            backgroundColor: colorPalette[task.color] ?? colorPalette[0],
             color: textColor,
           }}
         >
@@ -310,24 +312,34 @@ const TaskDetailPage: React.FC = () => {
               onMouseEnter={() => setBackHover(true)}
               onMouseLeave={() => setBackHover(false)}
               style={{
-                color: backHover ? colorPalette[task.color] : textColor,
+                color: backHover
+                  ? colorPalette[task.color] ?? colorPalette[0]
+                  : textColor,
                 backgroundColor: backHover ? textColor : "transparent",
               }}
               className="border"
             >
               <ArrowLeft className="h-4 w-4 mr-2" /> {t("common.back")}
             </Button>
-            <Badge
-              className="text-sm px-3 py-1 flex items-center border"
-              style={{
-                backgroundColor: priorityColors.bg,
-                color: priorityColors.fg,
-                borderColor: priorityColors.bg,
-              }}
-            >
-              {priorityIconEl}
-              {t(`taskModal.${task.priority}`)}
-            </Badge>
+            <div className="flex items-center space-x-2">
+              <Badge
+                className="text-sm px-3 py-1 flex items-center border"
+                style={{
+                  backgroundColor: priorityColors.bg,
+                  color: priorityColors.fg,
+                  borderColor: priorityColors.bg,
+                }}
+              >
+                {priorityIconEl}
+                {t(`taskModal.${task.priority}`)}
+              </Badge>
+              {task.dueDate && (
+                <div className="flex items-center text-sm">
+                  <CalendarIcon className="h-4 w-4 mr-1" />
+                  {new Date(task.dueDate).toLocaleDateString(i18n.language)}
+                </div>
+              )}
+            </div>
             <div className="flex space-x-2">
               <TooltipProvider>
                 <Tooltip>
@@ -410,12 +422,6 @@ const TaskDetailPage: React.FC = () => {
                 </React.Fragment>
               ))}
             </div>
-            {task.dueDate && (
-              <div className="flex items-center text-sm">
-                <CalendarIcon className="h-4 w-4 mr-1" />
-                {new Date(task.dueDate).toLocaleDateString(i18n.language)}
-              </div>
-            )}
           </div>
           <div className="py-8 px-4">
             <ScrollArea className="pr-4">
@@ -447,22 +453,6 @@ const TaskDetailPage: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="mb-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-gray-700">
-                          {t("taskDetail.totalProgress")}
-                        </span>
-                        <span className="text-sm text-gray-500">
-                          {Math.round(progressPercentage)}%
-                        </span>
-                      </div>
-                      <Progress
-                        value={progressPercentage}
-                        className="h-3"
-                        backgroundColor={progressBg}
-                        indicatorColor={progressColor}
-                      />
-                    </div>
 
                     <div className="space-y-4 mb-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -597,7 +587,24 @@ const TaskDetailPage: React.FC = () => {
                             </ResponsiveContainer>
                           </div>
                         </CardContent>
-                      </Card>
+                    </Card>
+                  </div>
+
+                    <div className="mb-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-gray-700">
+                          {t("taskDetail.totalProgress")}
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          {Math.round(progressPercentage)}%
+                        </span>
+                      </div>
+                      <Progress
+                        value={progressPercentage}
+                        className="h-3"
+                        backgroundColor={progressBg}
+                        indicatorColor={progressColor}
+                      />
                     </div>
 
                     <div className="flex items-center gap-2 mb-4">
@@ -685,24 +692,6 @@ const TaskDetailPage: React.FC = () => {
                         i18n.language,
                       )}
                     </div>
-                    <div>
-                      <span className="font-medium">
-                        {t("taskDetail.updated")}
-                      </span>{" "}
-                      {new Date(task.updatedAt).toLocaleDateString(
-                        i18n.language,
-                      )}
-                    </div>
-                    {task.dueDate && (
-                      <div>
-                        <span className="font-medium">
-                          {t("taskDetail.due")}
-                        </span>{" "}
-                        {new Date(task.dueDate).toLocaleDateString(
-                          i18n.language,
-                        )}
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
