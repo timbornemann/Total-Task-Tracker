@@ -9,7 +9,12 @@ import { Edit, Trash2, FolderOpen, MoreVertical } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { getTaskProgress } from '@/utils/taskUtils';
 import { useSettings } from '@/hooks/useSettings';
-import { isColorDark, adjustColor, complementaryColor } from '@/utils/color';
+import {
+  isColorDark,
+  adjustColor,
+  complementaryColor,
+  hslToHex
+} from '@/utils/color';
 
 interface CategoryCardProps {
   category: Category;
@@ -27,7 +32,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   onViewTasks
 }) => {
   const { t } = useTranslation();
-  const { colorPalette } = useSettings();
+  const { colorPalette, theme } = useSettings();
   const totalTasks = tasks.length;
   const completedTasks = tasks.filter(task => {
     const progress = getTaskProgress(task);
@@ -52,6 +57,13 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   const titleHoverColor = isColorDark(baseColor)
     ? adjustColor(baseColor, 60)
     : adjustColor(baseColor, -60);
+  const destructiveHex = hslToHex(theme.destructive);
+  const deleteColor = isColorDark(baseColor)
+    ? adjustColor(destructiveHex, 20)
+    : adjustColor(destructiveHex, -20);
+  const deleteHoverColor = isColorDark(baseColor)
+    ? adjustColor(destructiveHex, 40)
+    : adjustColor(destructiveHex, -40);
 
   return (
     <Card
@@ -109,7 +121,11 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                   onDelete(category.id);
                 }}
                 title={t('categoryCard.deleteTooltip')}
-                className="h-8 w-8 p-0 text-destructive hover:text-destructive/80"
+                className="h-8 w-8 p-0 hover:[color:var(--delete-hover-color)]"
+                style={{
+                  color: deleteColor,
+                  '--delete-hover-color': deleteHoverColor
+                } as React.CSSProperties}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -137,9 +153,13 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                 {category.id !== 'default' && (
                   <DropdownMenuItem
                     onClick={() => onDelete(category.id)}
-                    className="text-destructive"
+                    className="group"
+                    style={{
+                      color: deleteColor,
+                      '--delete-hover-color': deleteHoverColor
+                    } as React.CSSProperties}
                   >
-                    <Trash2 className="h-4 w-4 mr-2" />
+                    <Trash2 className="h-4 w-4 mr-2 group-hover:[color:var(--delete-hover-color)]" />
                     {t('categoryCard.deleteMenu')}
                   </DropdownMenuItem>
                 )}
@@ -153,7 +173,10 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <FolderOpen className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              <FolderOpen
+                className="h-4 w-4 flex-shrink-0"
+                style={{ color: textColor }}
+              />
               <span className="text-xs sm:text-sm">
                 {t('dashboard.tasksBadge', { count: totalTasks })}
               </span>
