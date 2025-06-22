@@ -10,6 +10,7 @@
     "cards": "Karten",
     "decks": "Decks",
     "pomodoro": "Pomodoro",
+    "pomodoroSessions": "Einheiten",
     "cardStatistics": "Statistiken",
     "notes": "Notizen",
     "settings": "Einstellungen",
@@ -430,6 +431,13 @@
     "evening": "Abend",
     "night": "Nacht",
     "timesOfDayTotal": "Tageszeiten (Gesamt)"
+  },
+  "pomodoroSessions": {
+    "title": "Pomodoro-Einheiten",
+    "start": "Start",
+    "end": "Ende",
+    "delete": "Löschen",
+    "none": "Keine Einheiten aufgezeichnet."
   },
   "commandPalette": {
     "title": "Command Palette",

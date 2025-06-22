@@ -36,11 +36,11 @@ export const usePomodoroStats = (): PomodoroStats => {
     const month = sessions.filter(s => s.start >= monthStart.getTime());
     const year = sessions.filter(s => s.start >= yearStart.getTime());
 
+    const fmt = (t: number) =>
+      new Date(t).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })
+
     const todayData = today.map(s => ({
-      time: new Date(s.start).toLocaleTimeString(locale, {
-        hour: '2-digit',
-        minute: '2-digit'
-      }),
+      time: `${fmt(s.start)}-${fmt(s.end)}`,
       work: minutes(s.start, s.end),
       break: minutes(s.end, s.breakEnd ?? s.end)
     }));
