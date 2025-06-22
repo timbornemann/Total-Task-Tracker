@@ -51,6 +51,7 @@ const Kanban: React.FC = () => {
   const [filterPriority, setFilterPriority] = useState<string>('all');
   const [filterColor, setFilterColor] = useState<string>('all');
   const [filterPinned, setFilterPinned] = useState<string>('all');
+  const [sortCriteria, setSortCriteria] = useState<string>('order');
   const [columnSearch, setColumnSearch] = useState({
     todo: '',
     inprogress: '',
@@ -166,13 +167,53 @@ const Kanban: React.FC = () => {
     return matchesCategory && matchesPriority && matchesColor && matchesPinned;
   });
 
+  const priorityValue = (p: string) =>
+    p === 'high' ? 3 : p === 'medium' ? 2 : 1;
+
+  const sorted = useMemo(() => {
+    const tasksToSort = [...filtered];
+    tasksToSort.sort((a, b) => {
+      const at = a.task;
+      const bt = b.task;
+      switch (sortCriteria) {
+        case 'order':
+          return at.order - bt.order;
+        case 'title-asc':
+          return at.title.localeCompare(bt.title);
+        case 'title-desc':
+          return bt.title.localeCompare(at.title);
+        case 'created-asc':
+          return at.createdAt.getTime() - bt.createdAt.getTime();
+        case 'created-desc':
+          return bt.createdAt.getTime() - at.createdAt.getTime();
+        case 'priority-asc':
+          return priorityValue(at.priority) - priorityValue(bt.priority);
+        case 'priority-desc':
+          return priorityValue(bt.priority) - priorityValue(at.priority);
+        case 'due-asc':
+          return (
+            (at.nextDue ? at.nextDue.getTime() : Infinity) -
+            (bt.nextDue ? bt.nextDue.getTime() : Infinity)
+          );
+        case 'due-desc':
+          return (
+            (bt.nextDue ? bt.nextDue.getTime() : -Infinity) -
+            (at.nextDue ? at.nextDue.getTime() : -Infinity)
+          );
+        default:
+          return 0;
+      }
+    });
+    return tasksToSort;
+  }, [filtered, sortCriteria]);
+
   const tasksByStatus: Record<'todo' | 'inprogress' | 'done', FlattenedTask[]> = {
     todo: [],
     inprogress: [],
     done: []
   };
 
-  filtered.forEach(item => {
+  sorted.forEach(item => {
     const status = item.task.status as 'todo' | 'inprogress' | 'done';
     const search = columnSearch[status].toLowerCase();
     const matchesSearch =
@@ -212,6 +253,25 @@ const Kanban: React.FC = () => {
                 {categories.map(c => (
                   <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                 ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-1">
+            <Label className="text-sm">{t('kanban.sortLabel')}</Label>
+            <Select value={sortCriteria} onValueChange={setSortCriteria}>
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder={t('kanban.sortLabel')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="order">{t('kanban.sort.manual')}</SelectItem>
+                <SelectItem value="created-desc">{t('kanban.sort.createdDesc')}</SelectItem>
+                <SelectItem value="created-asc">{t('kanban.sort.createdAsc')}</SelectItem>
+                <SelectItem value="title-asc">{t('kanban.sort.titleAsc')}</SelectItem>
+                <SelectItem value="title-desc">{t('kanban.sort.titleDesc')}</SelectItem>
+                <SelectItem value="priority-asc">{t('kanban.sort.priorityAsc')}</SelectItem>
+                <SelectItem value="priority-desc">{t('kanban.sort.priorityDesc')}</SelectItem>
+                <SelectItem value="due-asc">{t('kanban.sort.dueAsc')}</SelectItem>
+                <SelectItem value="due-desc">{t('kanban.sort.dueDesc')}</SelectItem>
               </SelectContent>
             </Select>
           </div>

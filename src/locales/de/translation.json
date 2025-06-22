@@ -384,6 +384,18 @@
     "colorLabel": "Farbe:",
     "categoryLabel": "Kategorie:",
     "pinnedLabel": "Gepinnt:",
+    "sortLabel": "Sortierung:",
+    "sort": {
+      "manual": "Manuell",
+      "createdDesc": "Neueste zuerst",
+      "createdAsc": "Älteste zuerst",
+      "titleAsc": "Titel A-Z",
+      "titleDesc": "Titel Z-A",
+      "priorityAsc": "Priorität ↑",
+      "priorityDesc": "Priorität ↓",
+      "dueAsc": "Fälligkeitsdatum ↑",
+      "dueDesc": "Fälligkeitsdatum ↓"
+    },
     "filter": {
       "all": "Alle",
       "high": "Hoch",
