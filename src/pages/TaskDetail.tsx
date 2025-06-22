@@ -52,6 +52,7 @@ const TaskDetailPage: React.FC = () => {
   const [sortCriteria, setSortCriteria] = useState('order');
   const [filterPriority, setFilterPriority] = useState('all');
   const [filterColor, setFilterColor] = useState('all');
+  const [subtaskLayout, setSubtaskLayout] = useState<'list' | 'grid'>('list');
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const task = findTaskById(taskId || '') || null;
   const category = task ? categories.find(c => c.id === task.categoryId) || null : null;
@@ -266,7 +267,13 @@ const TaskDetailPage: React.FC = () => {
                     </Button>
                   </div>
 
-                  <div className="space-y-3">
+                  <div
+                    className={
+                      subtaskLayout === 'grid'
+                        ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'
+                        : 'space-y-3'
+                    }
+                  >
                     {sortedSubtasks.map(subtask => (
                       <TaskCard
                         key={subtask.id}
@@ -284,6 +291,7 @@ const TaskDetailPage: React.FC = () => {
                           navigate(`/tasks/${st.id}?categoryId=${task.categoryId}`)
                         }
                         depth={0}
+                        isGrid={subtaskLayout === 'grid'}
                       />
                     ))}
                   </div>
@@ -352,6 +360,8 @@ const TaskDetailPage: React.FC = () => {
         onFilterColorChange={setFilterColor}
         colorOptions={colorOptions}
         colorPalette={colorPalette}
+        layout={subtaskLayout}
+        onLayoutChange={setSubtaskLayout}
       />
     </div>
   );

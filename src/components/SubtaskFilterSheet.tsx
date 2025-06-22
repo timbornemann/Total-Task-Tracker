@@ -12,7 +12,9 @@ import {
   AccordionItem,
   AccordionTrigger
 } from '@/components/ui/accordion'
+import { Button } from '@/components/ui/button'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
+import { LayoutGrid, List } from 'lucide-react'
 
 interface SubtaskFilterSheetProps {
   open: boolean
@@ -25,6 +27,8 @@ interface SubtaskFilterSheetProps {
   onFilterColorChange: (value: string) => void
   colorOptions: number[]
   colorPalette: Record<number, string>
+  layout: 'list' | 'grid'
+  onLayoutChange: (val: 'list' | 'grid') => void
 }
 
 const SubtaskFilterSheet: React.FC<SubtaskFilterSheetProps> = ({
@@ -37,7 +41,9 @@ const SubtaskFilterSheet: React.FC<SubtaskFilterSheetProps> = ({
   filterColor,
   onFilterColorChange,
   colorOptions,
-  colorPalette
+  colorPalette,
+  layout,
+  onLayoutChange
 }) => {
   const { t } = useTranslation()
   return (
@@ -103,6 +109,29 @@ const SubtaskFilterSheet: React.FC<SubtaskFilterSheetProps> = ({
                   ))}
                 </SelectContent>
               </Select>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="view">
+            <AccordionTrigger>{t('dashboard.viewLabel')}</AccordionTrigger>
+            <AccordionContent>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant={layout === 'list' ? 'secondary' : 'ghost'}
+                  size="icon"
+                  onClick={() => onLayoutChange('list')}
+                >
+                  <List className="h-4 w-4" />
+                  <span className="sr-only">{t('dashboard.listView')}</span>
+                </Button>
+                <Button
+                  variant={layout === 'grid' ? 'secondary' : 'ghost'}
+                  size="icon"
+                  onClick={() => onLayoutChange('grid')}
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                  <span className="sr-only">{t('dashboard.gridView')}</span>
+                </Button>
+              </div>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
