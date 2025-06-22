@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Navbar from "@/components/Navbar";
 import TaskCard from "@/components/TaskCard";
@@ -41,12 +41,7 @@ import {
   getPriorityColors,
   flattenTasks,
 } from "@/utils/taskUtils";
-import {
-  complementaryColor,
-  adjustColor,
-  isColorDark,
-  hslToHex,
-} from "@/utils/color";
+import { complementaryColor } from "@/utils/color";
 import {
   ResponsiveContainer,
   PieChart,
@@ -92,11 +87,8 @@ const TaskDetailPage: React.FC = () => {
     priorityIconEl = <ArrowRight className="h-4 w-4 mr-1" />;
   else priorityIconEl = <ArrowDown className="h-4 w-4 mr-1" />;
   const colorOptions = Array.from(new Set(task.subtasks.map((st) => st.color)));
-  const cardHex = hslToHex(theme.card);
-  const progressBg = isColorDark(cardHex)
-    ? adjustColor(cardHex, 50)
-    : adjustColor(cardHex, -20);
-  const progressColor = complementaryColor(cardHex);
+  const progressBg = `hsl(var(--stat-bar-secondary))`;
+  const progressColor = `hsl(var(--stat-bar-primary))`;
 
   const flattened = useMemo(() => flattenTasks(tasks), [tasks]);
   const pathInfo = useMemo(
@@ -205,7 +197,10 @@ const TaskDetailPage: React.FC = () => {
 
   const handleToggleComplete = () => {
     if (task.subtasks.length === 0) {
-      updateTask(task.id, { completed: !task.completed });
+      updateTask(task.id, {
+        completed: !task.completed,
+        status: !task.completed ? "done" : "todo",
+      });
     }
   };
 
@@ -289,24 +284,28 @@ const TaskDetailPage: React.FC = () => {
         title={task.title}
         onHomeClick={() => navigate(`/tasks?categoryId=${task.categoryId}`)}
       />
-      <div
-        className="py-6"
-        style={{ backgroundColor: colorPalette[task.color], color: textColor }}
-      >
-        <div className="max-w-4xl mx-auto px-4 space-y-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleBack}
-            className="text-current"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" /> {t("common.back")}
-          </Button>
-          <h1
-            className={`text-2xl font-bold ${isCompleted ? "line-through opacity-70" : ""}`}
-          >
-            {task.title}
-          </h1>
+      <div className="max-w-4xl mx-auto">
+        <div
+          className="px-4 py-4"
+          style={{ backgroundColor: colorPalette[task.color], color: textColor }}
+        >
+          <div className="flex items-center justify-between">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleBack}
+              className="text-current"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" /> {t("common.back")}
+            </Button>
+            <h1
+              className={`text-2xl font-bold ${isCompleted ? "line-through opacity-70" : ""}`}
+            >
+              {task.title}
+            </h1>
+          </div>
+        </div>
+        <div className="px-4 py-2 flex items-center justify-between space-x-4">
           <div className="flex items-center text-sm flex-wrap">
             <span className="mr-2 font-medium">{t("taskDetail.path")}</span>
             {breadcrumbs.map((b, idx) => (
@@ -337,7 +336,7 @@ const TaskDetailPage: React.FC = () => {
               </div>
             )}
           </div>
-          <div className="flex space-x-2 pt-2">
+          <div className="flex space-x-2">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -400,7 +399,7 @@ const TaskDetailPage: React.FC = () => {
             </TooltipProvider>
           </div>
         </div>
-        <div className="max-w-4xl mx-auto py-8 px-4">
+        <div className="py-8 px-4">
           <ScrollArea className="pr-4">
             <div className="space-y-6">
               {task.description && (
@@ -625,7 +624,10 @@ const TaskDetailPage: React.FC = () => {
                           setIsTaskModalOpen(true);
                         }}
                         onToggleComplete={(id, completed) =>
-                          updateTask(id, { completed })
+                          updateTask(id, {
+                            completed,
+                            status: completed ? "done" : "todo",
+                          })
                         }
                         onViewDetails={(st) =>
                           navigate(

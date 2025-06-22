@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useSettings } from '@/hooks/useSettings';
-import { complementaryColor, adjustColor, isColorDark, hslToHex } from '@/utils/color';
+
 import {
   Edit,
   Plus,
@@ -63,9 +63,8 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   const priorityClasses = getPriorityColor(task.priority);
   const priorityIcon = getPriorityIcon(task.priority);
   const baseColor = colorPalette[task.color];
-  const cardHex = hslToHex(theme.card);
-  const progressBg = isColorDark(cardHex) ? adjustColor(cardHex, 50) : adjustColor(cardHex, -20);
-  const progressColor = complementaryColor(cardHex);
+  const progressBg = `hsl(var(--stat-bar-secondary))`;
+  const progressColor = `hsl(var(--stat-bar-primary))`;
 
   const handleTogglePinned = () => {
     updateTask(task.id, { pinned: !task.pinned });
