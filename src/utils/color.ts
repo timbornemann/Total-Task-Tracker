@@ -1,12 +1,16 @@
 const sanitizeHex = (hex?: string): string | null => {
   if (!hex) return null;
-  let h = hex.replace('#', '');
-  if (h.length === 3) h = h.split('').map(c => c + c).join('');
+  let h = hex.replace("#", "");
+  if (h.length === 3)
+    h = h
+      .split("")
+      .map((c) => c + c)
+      .join("");
   return h.length === 6 ? h : null;
 };
 
 export const hexToHsl = (hex: string): string => {
-  const h = sanitizeHex(hex) || '000000';
+  const h = sanitizeHex(hex) || "000000";
   const r = parseInt(h.slice(0, 2), 16) / 255;
   const g = parseInt(h.slice(2, 4), 16) / 255;
   const b = parseInt(h.slice(4, 6), 16) / 255;
@@ -57,7 +61,10 @@ export const hslToHex = (hsl: string): string => {
     g = hue2rgb(p, q, h);
     b = hue2rgb(p, q, h - 1 / 3);
   }
-  const toHex = (x: number) => Math.round(x * 255).toString(16).padStart(2, '0');
+  const toHex = (x: number) =>
+    Math.round(x * 255)
+      .toString(16)
+      .padStart(2, "0");
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 };
 
@@ -72,7 +79,7 @@ export const isColorDark = (hex: string): boolean => {
 };
 
 export const adjustColor = (hex: string, percent: number): string => {
-  const h = sanitizeHex(hex) || '000000';
+  const h = sanitizeHex(hex) || "000000";
   let r = parseInt(h.slice(0, 2), 16);
   let g = parseInt(h.slice(2, 4), 16);
   let b = parseInt(h.slice(4, 6), 16);
@@ -80,7 +87,7 @@ export const adjustColor = (hex: string, percent: number): string => {
   r = Math.min(255, Math.max(0, r + amt));
   g = Math.min(255, Math.max(0, g + amt));
   b = Math.min(255, Math.max(0, b + amt));
-  const toHex = (x: number) => x.toString(16).padStart(2, '0');
+  const toHex = (x: number) => x.toString(16).padStart(2, "0");
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 };
 
@@ -91,4 +98,18 @@ export const complementaryColor = (hex: string): string => {
   let l = parseFloat(lStr);
   l = isColorDark(hex) ? Math.min(100, l + 40) : Math.max(0, l - 40);
   return hslToHex(`${h} ${s}% ${l}%`);
+};
+
+export const colorContrast = (hex1: string, hex2: string): number => {
+  const h1 = sanitizeHex(hex1) || "000000";
+  const h2 = sanitizeHex(hex2) || "000000";
+  const r1 = parseInt(h1.slice(0, 2), 16);
+  const g1 = parseInt(h1.slice(2, 4), 16);
+  const b1 = parseInt(h1.slice(4, 6), 16);
+  const r2 = parseInt(h2.slice(0, 2), 16);
+  const g2 = parseInt(h2.slice(2, 4), 16);
+  const b2 = parseInt(h2.slice(4, 6), 16);
+  const yiq1 = (r1 * 299 + g1 * 587 + b1 * 114) / 1000;
+  const yiq2 = (r2 * 299 + g2 * 587 + b2 * 114) / 1000;
+  return Math.abs(yiq1 - yiq2);
 };

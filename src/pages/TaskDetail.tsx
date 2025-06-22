@@ -41,7 +41,7 @@ import {
   getPriorityColors,
   flattenTasks,
 } from "@/utils/taskUtils";
-import { complementaryColor } from "@/utils/color";
+import { complementaryColor, hslToHex, colorContrast } from "@/utils/color";
 import {
   ResponsiveContainer,
   PieChart,
@@ -109,6 +109,7 @@ const TaskDetailPage: React.FC = () => {
   ];
 
   const textColor = complementaryColor(colorPalette[task.color]);
+  const [backHover, setBackHover] = useState(false);
 
   const flattenedSubtasks = useMemo(
     () => flattenTasks(task ? task.subtasks : []).map((f) => f.task),
@@ -120,24 +121,33 @@ const TaskDetailPage: React.FC = () => {
     flattenedSubtasks.forEach((st) => {
       counts[st.status]++;
     });
-    return [
+    const cardHex = hslToHex(theme.card);
+    const statuses = [
       {
-        name: t("kanban.todo"),
-        value: counts.todo,
-        color: "hsl(var(--kanban-todo))",
+        key: "todo",
+        label: t("kanban.todo"),
+        color: hslToHex(theme["kanban-todo"]),
       },
       {
-        name: t("kanban.inprogress"),
-        value: counts.inprogress,
-        color: "hsl(var(--kanban-inprogress))",
+        key: "inprogress",
+        label: t("kanban.inprogress"),
+        color: hslToHex(theme["kanban-inprogress"]),
       },
       {
-        name: t("kanban.done"),
-        value: counts.done,
-        color: "hsl(var(--kanban-done))",
+        key: "done",
+        label: t("kanban.done"),
+        color: hslToHex(theme["kanban-done"]),
       },
     ];
-  }, [flattenedSubtasks, t]);
+    return statuses.map((s) => ({
+      name: s.label,
+      value: counts[s.key as keyof typeof counts],
+      color:
+        colorContrast(s.color, cardHex) < 80
+          ? complementaryColor(s.color)
+          : s.color,
+    }));
+  }, [flattenedSubtasks, t, theme]);
 
   const priorityData = useMemo(() => {
     const counts = { high: 0, medium: 0, low: 0 };
@@ -286,38 +296,27 @@ const TaskDetailPage: React.FC = () => {
       />
       <div className="max-w-4xl mx-auto">
         <div
-          className="px-4 py-4"
-          style={{ backgroundColor: colorPalette[task.color], color: textColor }}
+          className="px-4 pt-4 pb-2 mt-4 rounded-t-lg"
+          style={{
+            backgroundColor: colorPalette[task.color],
+            color: textColor,
+          }}
         >
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
               size="sm"
               onClick={handleBack}
-              className="text-current"
+              onMouseEnter={() => setBackHover(true)}
+              onMouseLeave={() => setBackHover(false)}
+              style={{
+                color: backHover ? colorPalette[task.color] : textColor,
+                backgroundColor: backHover ? textColor : "transparent",
+              }}
+              className="border"
             >
               <ArrowLeft className="h-4 w-4 mr-2" /> {t("common.back")}
             </Button>
-            <h1
-              className={`text-2xl font-bold ${isCompleted ? "line-through opacity-70" : ""}`}
-            >
-              {task.title}
-            </h1>
-          </div>
-        </div>
-        <div className="px-4 py-2 flex items-center justify-between space-x-4">
-          <div className="flex items-center text-sm flex-wrap">
-            <span className="mr-2 font-medium">{t("taskDetail.path")}</span>
-            {breadcrumbs.map((b, idx) => (
-              <React.Fragment key={idx}>
-                {idx > 0 && <ChevronRight className="mx-1 h-3 w-3" />}
-                <button onClick={b.onClick} className="underline">
-                  {b.label}
-                </button>
-              </React.Fragment>
-            ))}
-          </div>
-          <div className="flex items-center space-x-4">
             <Badge
               className="text-sm px-3 py-1 flex items-center border"
               style={{
@@ -329,6 +328,88 @@ const TaskDetailPage: React.FC = () => {
               {priorityIconEl}
               {t(`taskModal.${task.priority}`)}
             </Badge>
+            <div className="flex space-x-2">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleTogglePinned}
+                      className="border text-current"
+                    >
+                      {task.pinned ? (
+                        <Star className="h-4 w-4" />
+                      ) : (
+                        <StarOff className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {task.pinned ? t("taskDetail.unpin") : t("taskDetail.pin")}
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleAddSubtask}
+                      className="border text-current"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{t("taskDetail.addSubtask")}</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleEdit}
+                      className="border text-current"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{t("common.edit")}</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleDelete}
+                      className="border text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{t("common.delete")}</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          </div>
+          <h1
+            className={`mt-2 text-center text-2xl font-bold ${isCompleted ? "line-through opacity-70" : ""}`}
+          >
+            {task.title}
+          </h1>
+        </div>
+        <div className="bg-card shadow rounded-b-lg">
+          <div className="px-4 py-2 flex items-center justify-between space-x-4">
+            <div className="flex items-center text-sm flex-wrap">
+              <span className="mr-2 font-medium">{t("taskDetail.path")}</span>
+              {breadcrumbs.map((b, idx) => (
+                <React.Fragment key={idx}>
+                  {idx > 0 && <ChevronRight className="mx-1 h-3 w-3" />}
+                  <button onClick={b.onClick} className="underline">
+                    {b.label}
+                  </button>
+                </React.Fragment>
+              ))}
+            </div>
             {task.dueDate && (
               <div className="flex items-center text-sm">
                 <CalendarIcon className="h-4 w-4 mr-1" />
@@ -336,386 +417,332 @@ const TaskDetailPage: React.FC = () => {
               </div>
             )}
           </div>
-          <div className="flex space-x-2">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleTogglePinned}
-                    className="border text-current"
-                  >
-                    {task.pinned ? (
-                      <Star className="h-4 w-4" />
-                    ) : (
-                      <StarOff className="h-4 w-4" />
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {task.pinned ? t("taskDetail.unpin") : t("taskDetail.pin")}
-                </TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleAddSubtask}
-                    className="border text-current"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>{t("taskDetail.addSubtask")}</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleEdit}
-                    className="border text-current"
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>{t("common.edit")}</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleDelete}
-                    className="border text-destructive"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>{t("common.delete")}</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-        </div>
-        <div className="py-8 px-4">
-          <ScrollArea className="pr-4">
-            <div className="space-y-6">
-              {task.description && (
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">
-                    {t("taskDetail.description")}
-                  </h3>
-                  <p className="text-gray-700 leading-relaxed">
-                    {task.description}
-                  </p>
-                </div>
-              )}
-
-              {task.subtasks.length > 0 && (
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-semibold text-gray-900">
-                      {t("taskDetail.subtasks", {
-                        count: task.subtasks.length,
-                      })}
+          <div className="py-8 px-4">
+            <ScrollArea className="pr-4">
+              <div className="space-y-6">
+                {task.description && (
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2">
+                      {t("taskDetail.description")}
                     </h3>
-                    <div className="text-sm text-gray-600">
-                      {t("taskDetail.progressInfo", {
-                        completed: progress.completed,
-                        total: progress.total,
-                      })}
-                    </div>
+                    <p className="text-gray-700 leading-relaxed">
+                      {task.description}
+                    </p>
                   </div>
+                )}
 
-                  <div className="mb-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-gray-700">
-                        {t("taskDetail.totalProgress")}
-                      </span>
-                      <span className="text-sm text-gray-500">
-                        {Math.round(progressPercentage)}%
-                      </span>
+                {task.subtasks.length > 0 && (
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-semibold text-gray-900">
+                        {t("taskDetail.subtasks", {
+                          count: task.subtasks.length,
+                        })}
+                      </h3>
+                      <div className="text-sm text-gray-600">
+                        {t("taskDetail.progressInfo", {
+                          completed: progress.completed,
+                          total: progress.total,
+                        })}
+                      </div>
                     </div>
-                    <Progress
-                      value={progressPercentage}
-                      className="h-3"
-                      backgroundColor={progressBg}
-                      indicatorColor={progressColor}
-                    />
-                  </div>
 
-                  <div className="space-y-4 mb-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Card>
-                        <CardHeader>
-                          <CardTitle className="text-base sm:text-lg">
-                            {t("taskDetail.statsStatus")}
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="h-48">
-                            <ResponsiveContainer width="100%" height="100%">
-                              <PieChart>
-                                <Pie
-                                  data={statusData}
-                                  cx="50%"
-                                  cy="50%"
-                                  innerRadius={30}
-                                  outerRadius={60}
-                                  paddingAngle={5}
-                                  dataKey="value"
-                                >
-                                  {statusData.map((entry, index) => (
-                                    <Cell
-                                      key={`status-${index}`}
-                                      fill={entry.color}
-                                    />
-                                  ))}
-                                </Pie>
-                                <RechartTooltip />
-                              </PieChart>
-                            </ResponsiveContainer>
-                          </div>
-                          <div className="flex justify-center space-x-4 mt-4">
-                            {statusData.map((item, index) => (
-                              <div key={index} className="flex items-center">
-                                <div
-                                  className="w-3 h-3 rounded-full mr-2"
-                                  style={{ backgroundColor: item.color }}
-                                />
-                                <span className="text-xs">
-                                  {item.name}: {item.value}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </CardContent>
-                      </Card>
-                      <Card>
-                        <CardHeader>
-                          <CardTitle className="text-base sm:text-lg">
-                            {t("taskDetail.statsPriority")}
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="h-48">
-                            <ResponsiveContainer width="100%" height="100%">
-                              <PieChart>
-                                <Pie
-                                  data={priorityData}
-                                  cx="50%"
-                                  cy="50%"
-                                  innerRadius={30}
-                                  outerRadius={60}
-                                  paddingAngle={5}
-                                  dataKey="value"
-                                >
-                                  {priorityData.map((entry, index) => (
-                                    <Cell
-                                      key={`priority-${index}`}
-                                      fill={entry.color}
-                                    />
-                                  ))}
-                                </Pie>
-                                <RechartTooltip />
-                              </PieChart>
-                            </ResponsiveContainer>
-                          </div>
-                          <div className="flex justify-center space-x-4 mt-4">
-                            {priorityData.map((item, index) => (
-                              <div key={index} className="flex items-center">
-                                <div
-                                  className="w-3 h-3 rounded-full mr-2"
-                                  style={{ backgroundColor: item.color }}
-                                />
-                                <span className="text-xs">
-                                  {item.name}: {item.value}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="text-base sm:text-lg">
-                          {t("taskDetail.statsTrend")}
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="h-48">
-                          <ResponsiveContainer width="100%" height="100%">
-                            <LineChart
-                              data={trendData}
-                              margin={{
-                                top: 20,
-                                right: 30,
-                                left: 0,
-                                bottom: 0,
-                              }}
-                            >
-                              <CartesianGrid strokeDasharray="3 3" />
-                              <XAxis dataKey="date" fontSize={12} />
-                              <YAxis fontSize={12} />
-                              <RechartTooltip />
-                              <Line
-                                type="monotone"
-                                dataKey="created"
-                                stroke="hsl(var(--primary))"
-                                strokeWidth={2}
-                                name={t("statistics.created")}
-                              />
-                              <Line
-                                type="monotone"
-                                dataKey="completed"
-                                stroke="hsl(var(--accent))"
-                                strokeWidth={2}
-                                name={t("statistics.completed")}
-                              />
-                            </LineChart>
-                          </ResponsiveContainer>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="relative flex-1 max-w-xs">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                      <Input
-                        placeholder={t("dashboard.searchTasks")}
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-8 w-full"
+                    <div className="mb-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-gray-700">
+                          {t("taskDetail.totalProgress")}
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          {Math.round(progressPercentage)}%
+                        </span>
+                      </div>
+                      <Progress
+                        value={progressPercentage}
+                        className="h-3"
+                        backgroundColor={progressBg}
+                        indicatorColor={progressColor}
                       />
                     </div>
+
+                    <div className="space-y-4 mb-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-base sm:text-lg">
+                              {t("taskDetail.statsStatus")}
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="h-48">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                  <Pie
+                                    data={statusData}
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={30}
+                                    outerRadius={60}
+                                    paddingAngle={5}
+                                    dataKey="value"
+                                  >
+                                    {statusData.map((entry, index) => (
+                                      <Cell
+                                        key={`status-${index}`}
+                                        fill={entry.color}
+                                      />
+                                    ))}
+                                  </Pie>
+                                  <RechartTooltip />
+                                </PieChart>
+                              </ResponsiveContainer>
+                            </div>
+                            <div className="flex justify-center space-x-4 mt-4">
+                              {statusData.map((item, index) => (
+                                <div key={index} className="flex items-center">
+                                  <div
+                                    className="w-3 h-3 rounded-full mr-2"
+                                    style={{ backgroundColor: item.color }}
+                                  />
+                                  <span className="text-xs">
+                                    {item.name}: {item.value}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </CardContent>
+                        </Card>
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-base sm:text-lg">
+                              {t("taskDetail.statsPriority")}
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="h-48">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                  <Pie
+                                    data={priorityData}
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={30}
+                                    outerRadius={60}
+                                    paddingAngle={5}
+                                    dataKey="value"
+                                  >
+                                    {priorityData.map((entry, index) => (
+                                      <Cell
+                                        key={`priority-${index}`}
+                                        fill={entry.color}
+                                      />
+                                    ))}
+                                  </Pie>
+                                  <RechartTooltip />
+                                </PieChart>
+                              </ResponsiveContainer>
+                            </div>
+                            <div className="flex justify-center space-x-4 mt-4">
+                              {priorityData.map((item, index) => (
+                                <div key={index} className="flex items-center">
+                                  <div
+                                    className="w-3 h-3 rounded-full mr-2"
+                                    style={{ backgroundColor: item.color }}
+                                  />
+                                  <span className="text-xs">
+                                    {item.name}: {item.value}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-base sm:text-lg">
+                            {t("taskDetail.statsTrend")}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="h-48">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <LineChart
+                                data={trendData}
+                                margin={{
+                                  top: 20,
+                                  right: 30,
+                                  left: 0,
+                                  bottom: 0,
+                                }}
+                              >
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="date" fontSize={12} />
+                                <YAxis fontSize={12} />
+                                <RechartTooltip />
+                                <Line
+                                  type="monotone"
+                                  dataKey="created"
+                                  stroke="hsl(var(--primary))"
+                                  strokeWidth={2}
+                                  name={t("statistics.created")}
+                                />
+                                <Line
+                                  type="monotone"
+                                  dataKey="completed"
+                                  stroke="hsl(var(--accent))"
+                                  strokeWidth={2}
+                                  name={t("statistics.completed")}
+                                />
+                              </LineChart>
+                            </ResponsiveContainer>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="relative flex-1 max-w-xs">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Input
+                          placeholder={t("dashboard.searchTasks")}
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          className="pl-8 w-full"
+                        />
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setIsFilterSheetOpen(true)}
+                      >
+                        <SlidersHorizontal className="h-4 w-4 mr-2" />
+                        {t("dashboard.openFilters")}
+                      </Button>
+                    </div>
+
+                    <div
+                      className={
+                        subtaskLayout === "grid"
+                          ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+                          : "space-y-3"
+                      }
+                    >
+                      {sortedSubtasks.map((subtask) => (
+                        <TaskCard
+                          key={subtask.id}
+                          task={subtask}
+                          onEdit={() =>
+                            navigate(
+                              `/tasks/${subtask.id}?categoryId=${task.categoryId}`,
+                            )
+                          }
+                          onDelete={deleteTask}
+                          onAddSubtask={() => {
+                            setEditingTask(null);
+                            setIsTaskModalOpen(true);
+                          }}
+                          onToggleComplete={(id, completed) =>
+                            updateTask(id, {
+                              completed,
+                              status: completed ? "done" : "todo",
+                            })
+                          }
+                          onViewDetails={(st) =>
+                            navigate(
+                              `/tasks/${st.id}?categoryId=${task.categoryId}`,
+                            )
+                          }
+                          depth={0}
+                          isGrid={subtaskLayout === "grid"}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {task.subtasks.length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    <p>{t("taskDetail.noSubtasks")}</p>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setIsFilterSheetOpen(true)}
+                      onClick={handleAddSubtask}
+                      className="mt-2"
                     >
-                      <SlidersHorizontal className="h-4 w-4 mr-2" />
-                      {t("dashboard.openFilters")}
+                      <Plus className="h-4 w-4 mr-2" />
+                      {t("taskDetail.addFirst")}
                     </Button>
                   </div>
+                )}
 
-                  <div
-                    className={
-                      subtaskLayout === "grid"
-                        ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-                        : "space-y-3"
-                    }
-                  >
-                    {sortedSubtasks.map((subtask) => (
-                      <TaskCard
-                        key={subtask.id}
-                        task={subtask}
-                        onEdit={() =>
-                          navigate(
-                            `/tasks/${subtask.id}?categoryId=${task.categoryId}`,
-                          )
-                        }
-                        onDelete={deleteTask}
-                        onAddSubtask={() => {
-                          setEditingTask(null);
-                          setIsTaskModalOpen(true);
-                        }}
-                        onToggleComplete={(id, completed) =>
-                          updateTask(id, {
-                            completed,
-                            status: completed ? "done" : "todo",
-                          })
-                        }
-                        onViewDetails={(st) =>
-                          navigate(
-                            `/tasks/${st.id}?categoryId=${task.categoryId}`,
-                          )
-                        }
-                        depth={0}
-                        isGrid={subtaskLayout === "grid"}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {task.subtasks.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                  <p>{t("taskDetail.noSubtasks")}</p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleAddSubtask}
-                    className="mt-2"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    {t("taskDetail.addFirst")}
-                  </Button>
-                </div>
-              )}
-
-              <div className="pt-4 border-t border-gray-200">
-                <div className="grid grid-cols-2 gap-4 text-sm text-gray-500">
-                  <div>
-                    <span className="font-medium">
-                      {t("taskDetail.created")}
-                    </span>{" "}
-                    {new Date(task.createdAt).toLocaleDateString(i18n.language)}
-                  </div>
-                  <div>
-                    <span className="font-medium">
-                      {t("taskDetail.updated")}
-                    </span>{" "}
-                    {new Date(task.updatedAt).toLocaleDateString(i18n.language)}
-                  </div>
-                  {task.dueDate && (
+                <div className="pt-4 border-t border-gray-200">
+                  <div className="grid grid-cols-2 gap-4 text-sm text-gray-500">
                     <div>
-                      <span className="font-medium">{t("taskDetail.due")}</span>{" "}
-                      {new Date(task.dueDate).toLocaleDateString(i18n.language)}
+                      <span className="font-medium">
+                        {t("taskDetail.created")}
+                      </span>{" "}
+                      {new Date(task.createdAt).toLocaleDateString(
+                        i18n.language,
+                      )}
                     </div>
-                  )}
+                    <div>
+                      <span className="font-medium">
+                        {t("taskDetail.updated")}
+                      </span>{" "}
+                      {new Date(task.updatedAt).toLocaleDateString(
+                        i18n.language,
+                      )}
+                    </div>
+                    {task.dueDate && (
+                      <div>
+                        <span className="font-medium">
+                          {t("taskDetail.due")}
+                        </span>{" "}
+                        {new Date(task.dueDate).toLocaleDateString(
+                          i18n.language,
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          </ScrollArea>
+            </ScrollArea>
+          </div>
         </div>
+        <TaskModal
+          isOpen={isTaskModalOpen}
+          onClose={() => {
+            setIsTaskModalOpen(false);
+            setEditingTask(null);
+          }}
+          onSave={(data) => {
+            if (editingTask) {
+              updateTask(editingTask.id, data);
+            } else {
+              addTask({ ...data, parentId: task.id });
+            }
+          }}
+          task={editingTask || undefined}
+          categories={categories}
+          parentTask={editingTask ? undefined : task}
+          defaultDueDate={undefined}
+          allowRecurring={false}
+        />
+        <SubtaskFilterSheet
+          open={isFilterSheetOpen}
+          onOpenChange={setIsFilterSheetOpen}
+          sort={sortCriteria}
+          onSortChange={setSortCriteria}
+          filterPriority={filterPriority}
+          onFilterPriorityChange={setFilterPriority}
+          filterColor={filterColor}
+          onFilterColorChange={setFilterColor}
+          colorOptions={colorOptions}
+          colorPalette={colorPalette}
+          layout={subtaskLayout}
+          onLayoutChange={setSubtaskLayout}
+        />
       </div>
-      <TaskModal
-        isOpen={isTaskModalOpen}
-        onClose={() => {
-          setIsTaskModalOpen(false);
-          setEditingTask(null);
-        }}
-        onSave={(data) => {
-          if (editingTask) {
-            updateTask(editingTask.id, data);
-          } else {
-            addTask({ ...data, parentId: task.id });
-          }
-        }}
-        task={editingTask || undefined}
-        categories={categories}
-        parentTask={editingTask ? undefined : task}
-        defaultDueDate={undefined}
-        allowRecurring={false}
-      />
-      <SubtaskFilterSheet
-        open={isFilterSheetOpen}
-        onOpenChange={setIsFilterSheetOpen}
-        sort={sortCriteria}
-        onSortChange={setSortCriteria}
-        filterPriority={filterPriority}
-        onFilterPriorityChange={setFilterPriority}
-        filterColor={filterColor}
-        onFilterColorChange={setFilterColor}
-        colorOptions={colorOptions}
-        colorPalette={colorPalette}
-        layout={subtaskLayout}
-        onLayoutChange={setSubtaskLayout}
-      />
     </div>
   );
 };
