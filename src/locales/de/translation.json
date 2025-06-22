@@ -538,7 +538,11 @@
     "title": "Task",
     "created": "Erstellt:",
     "updated": "Zuletzt geändert:",
-    "due": "Fällig am:"
+    "due": "Fällig am:",
+    "path": "Pfad:",
+    "statsStatus": "Statusübersicht",
+    "statsPriority": "Prioritäten",
+    "statsTrend": "Erstellt vs. erledigt"
   },
   "task": {
     "created": "Task erstellt",
