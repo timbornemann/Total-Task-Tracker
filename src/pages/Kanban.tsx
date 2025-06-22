@@ -3,7 +3,7 @@ import { useTaskStore } from '@/hooks/useTaskStore';
 import TaskCard from '@/components/TaskCard';
 import Navbar from '@/components/Navbar';
 import TaskModal from '@/components/TaskModal';
-import TaskDetailModal from '@/components/TaskDetailModal';
+import { useNavigate } from 'react-router-dom';
 import { usePomodoroStore } from '@/components/PomodoroTimer';
 import { useToast } from '@/hooks/use-toast';
 import { Task, TaskFormData } from '@/types';
@@ -34,12 +34,10 @@ const Kanban: React.FC = () => {
   const { t } = useTranslation();
 
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-  const [isTaskDetailModalOpen, setIsTaskDetailModalOpen] = useState(false);
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [parentTask, setParentTask] = useState<Task | null>(null);
-  const [taskDetailStack, setTaskDetailStack] = useState<Task[]>([]);
+  const navigate = useNavigate();
   const { start: startPomodoro } = usePomodoroStore();
   const { colorPalette } = useSettings();
 
@@ -125,23 +123,7 @@ const Kanban: React.FC = () => {
   };
 
   const handleViewTaskDetails = (task: Task) => {
-    setTaskDetailStack(prev => (selectedTask ? [...prev, selectedTask] : prev));
-    setSelectedTask(task);
-    setIsTaskDetailModalOpen(true);
-  };
-
-  const handleTaskDetailBack = () => {
-    setTaskDetailStack(prev => {
-      const stack = [...prev];
-      const parent = stack.pop();
-      if (parent) {
-        setSelectedTask(parent);
-      } else {
-        setIsTaskDetailModalOpen(false);
-        setSelectedTask(null);
-      }
-      return stack;
-    });
+    navigate(`/tasks/${task.id}?categoryId=${task.categoryId}`);
   };
 
   const flattened = flattenTasks(tasks);
@@ -322,24 +304,6 @@ const Kanban: React.FC = () => {
         allowRecurring={false}
       />
 
-      <TaskDetailModal
-        isOpen={isTaskDetailModalOpen}
-        onClose={() => {
-          setIsTaskDetailModalOpen(false);
-          setSelectedTask(null);
-          setTaskDetailStack([]);
-        }}
-        task={selectedTask}
-        category={selectedTask ? categories.find(c => c.id === selectedTask.categoryId) || null : null}
-        onEdit={handleEditTask}
-        onDelete={handleDeleteTask}
-        onAddSubtask={handleAddSubtask}
-        onToggleComplete={handleToggleTaskComplete}
-        onViewDetails={handleViewTaskDetails}
-        onStartPomodoro={task => startPomodoro(task.id)}
-        canGoBack={taskDetailStack.length > 0}
-        onBack={handleTaskDetailBack}
-      />
       <KanbanFilterSheet
         open={isFilterSheetOpen}
         onOpenChange={setIsFilterSheetOpen}

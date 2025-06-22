@@ -31,6 +31,7 @@ import SurprisePage from "./pages/Surprise";
 import SurpriseListener from "@/components/SurpriseListener";
 import RecurringTasksPage from "./pages/RecurringTasks";
 import TimeBlockingPage from "./pages/TimeBlocking";
+import TaskDetailPage from "./pages/TaskDetail";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const App = () => (
               <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/tasks" element={<TasksPage />} />
+              <Route path="/tasks/:taskId" element={<TaskDetailPage />} />
               <Route path="/statistics" element={<Statistics />} />
               <Route path="/kanban" element={<Kanban />} />
               <Route path="/recurring" element={<RecurringTasksPage />} />

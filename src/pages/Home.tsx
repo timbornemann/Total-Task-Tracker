@@ -64,7 +64,7 @@ const Home: React.FC = () => {
               {pinnedTasks.map(item => (
                 <Link
                   key={item.task.id}
-                  to={`/tasks?taskId=${item.task.id}`}
+                  to={`/tasks/${item.task.id}?categoryId=${item.task.categoryId}`}
                   className="block"
                 >
                   <TaskCard
