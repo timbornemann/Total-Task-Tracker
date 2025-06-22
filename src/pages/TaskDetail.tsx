@@ -71,9 +71,9 @@ const TaskDetailPage: React.FC = () => {
   const [subtaskLayout, setSubtaskLayout] = useState<"list" | "grid">("list");
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const task = findTaskById(taskId || "") || null;
-  const category = task
-    ? categories.find((c) => c.id === task.categoryId) || null
-    : null;
+  if (!task) return <div className="p-4">{t("taskDetail.notFound")}</div>;
+  const category =
+    categories.find((c) => c.id === task.categoryId) || null;
 
   const isCompleted = calculateTaskCompletion(task);
   const progress = getTaskProgress(task);
