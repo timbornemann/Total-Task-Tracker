@@ -107,7 +107,6 @@ const Dashboard: React.FC = () => {
       setViewMode('categories');
     }
   }, [searchParams, categories]);
-
   
   // Modal states
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
