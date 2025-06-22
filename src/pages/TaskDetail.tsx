@@ -79,7 +79,23 @@ const TaskDetailPage: React.FC = () => {
   const progress = getTaskProgress(task);
   const progressPercentage =
     progress.total > 0 ? (progress.completed / progress.total) * 100 : 0;
-  const priorityColors = getPriorityColors(task.priority);
+  const headerBg = colorPalette[task.color] ?? colorPalette[0];
+  const basePriority =
+    task.priority === "high"
+      ? theme.destructive
+      : task.priority === "medium"
+        ? theme.primary
+        : theme.accent;
+  const baseBgHex = hslToHex(basePriority);
+  const finalBgHex =
+    colorContrast(baseBgHex, headerBg) < 80
+      ? complementaryColor(baseBgHex)
+      : baseBgHex;
+  const finalFgHex =
+    colorContrast(finalBgHex, "#000000") > colorContrast(finalBgHex, "#ffffff")
+      ? "#000000"
+      : "#ffffff";
+  const priorityColors = { bg: finalBgHex, fg: finalFgHex };
   let priorityIconEl: React.ReactNode;
   if (task.priority === "high")
     priorityIconEl = <ArrowUp className="h-4 w-4 mr-1" />;
@@ -304,7 +320,7 @@ const TaskDetailPage: React.FC = () => {
             color: textColor,
           }}
         >
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between relative">
             <Button
               variant="ghost"
               size="sm"
@@ -321,7 +337,7 @@ const TaskDetailPage: React.FC = () => {
             >
               <ArrowLeft className="h-4 w-4 mr-2" /> {t("common.back")}
             </Button>
-            <div className="flex items-center space-x-2">
+            <div className="absolute left-1/2 -translate-x-1/2 flex items-center space-x-2">
               <Badge
                 className="text-sm px-3 py-1 flex items-center border"
                 style={{
