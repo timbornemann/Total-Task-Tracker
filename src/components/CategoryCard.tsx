@@ -55,7 +55,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
 
   return (
     <Card
-      className="relative h-full transition-all duration-200 hover:shadow-lg cursor-pointer group hover:[background-color:var(--hover-color)]"
+      className="relative h-full transition-all duration-200 hover:shadow-lg cursor-pointer group hover:[background-color:var(--hover-color)] transform hover:-translate-y-1"
       style={{
         backgroundColor: baseColor,
         color: textColor,
@@ -80,7 +80,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                 {category.name}
               </CardTitle>
               {category.description && (
-                <p className="text-xs sm:text-sm text-muted-foreground mt-1 line-clamp-2 break-words">
+                <p className="text-xs sm:text-sm mt-1 line-clamp-2 break-words">
                   {category.description}
                 </p>
               )}
@@ -154,7 +154,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <FolderOpen className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-              <span className="text-xs sm:text-sm text-muted-foreground">
+              <span className="text-xs sm:text-sm">
                 {t('dashboard.tasksBadge', { count: totalTasks })}
               </span>
             </div>
@@ -181,7 +181,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
             />
           </div>
           
-          <div className="text-xs text-muted-foreground text-center">
+          <div className="text-xs text-center">
             {t('categoryCard.completedOfTotal', { completed: completedTasks, total: totalTasks })}
           </div>
         </div>
