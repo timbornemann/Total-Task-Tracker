@@ -7,15 +7,21 @@ const DECKS_URL = '/api/decks';
 const useFlashcardStoreImpl = () => {
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
   const [decks, setDecks] = useState<Deck[]>([]);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await fetch(API_URL);
-        if (res.ok) {
-          const data = await res.json();
-            setFlashcards(
-              (data || []).map((c: Omit<Flashcard, 'dueDate'> & { dueDate: string }) => ({
+        const [cardsRes, decksRes] = await Promise.all([
+          fetch(API_URL),
+          fetch(DECKS_URL)
+        ]);
+
+        if (cardsRes.ok) {
+          const data = await cardsRes.json();
+          setFlashcards(
+            (data || []).map(
+              (c: Omit<Flashcard, 'dueDate'> & { dueDate: string }) => ({
                 ...c,
                 dueDate: new Date(c.dueDate),
                 easyCount: c.easyCount ?? 0,
@@ -23,11 +29,19 @@ const useFlashcardStoreImpl = () => {
                 hardCount: c.hardCount ?? 0,
                 typedCorrect: c.typedCorrect ?? 0,
                 typedTotal: c.typedTotal ?? 0
-              }))
+              })
+            )
           );
         }
+
+        if (decksRes.ok) {
+          const data = await decksRes.json();
+          setDecks(data || []);
+        }
       } catch (err) {
-        console.error('Error loading flashcards', err);
+        console.error('Error loading flashcards and decks', err);
+      } finally {
+        setLoaded(true);
       }
     };
 
@@ -35,22 +49,7 @@ const useFlashcardStoreImpl = () => {
   }, []);
 
   useEffect(() => {
-    const loadDecks = async () => {
-      try {
-        const res = await fetch(DECKS_URL);
-        if (res.ok) {
-          const data = await res.json();
-          setDecks(data || []);
-        }
-      } catch (err) {
-        console.error('Error loading decks', err);
-      }
-    };
-
-    loadDecks();
-  }, []);
-
-  useEffect(() => {
+    if (!loaded) return;
     const save = async () => {
       try {
         await fetch(API_URL, {
@@ -64,9 +63,10 @@ const useFlashcardStoreImpl = () => {
     };
 
     save();
-  }, [flashcards]);
+  }, [flashcards, loaded]);
 
   useEffect(() => {
+    if (!loaded) return;
     const save = async () => {
       try {
         await fetch(DECKS_URL, {
@@ -80,7 +80,7 @@ const useFlashcardStoreImpl = () => {
     };
 
     save();
-  }, [decks]);
+  }, [decks, loaded]);
 
   const addFlashcard = (data: Omit<Flashcard, 'id' | 'interval' | 'dueDate'>) => {
     const newCard: Flashcard = {
