@@ -343,11 +343,12 @@ const useTaskStoreImpl = () => {
           if (
             typeof updates.completed === 'boolean' &&
             task.recurringId &&
-            task.dueDate
+            (task.dueDate || task.createdAt)
           ) {
+            const refDate = task.dueDate || task.createdAt;
             affected = {
               id: task.recurringId,
-              date: format(task.dueDate, 'yyyy-MM-dd'),
+              date: format(refDate, 'yyyy-MM-dd'),
               completed: updates.completed,
             };
           }
@@ -499,8 +500,10 @@ const useTaskStoreImpl = () => {
       prev.map(task => {
         if (
           task.recurringId === id &&
-          task.dueDate &&
-          format(task.dueDate, 'yyyy-MM-dd') === date
+          (
+            (task.dueDate && format(task.dueDate, 'yyyy-MM-dd') === date) ||
+            format(task.createdAt, 'yyyy-MM-dd') === date
+          )
         ) {
           return {
             ...task,
