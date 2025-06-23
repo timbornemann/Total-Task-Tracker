@@ -5,6 +5,7 @@
     "kanban": "Kanban",
     "schedule": "Schedule",
     "recurring": "Recurring",
+    "habits": "Habits",
     "statistics": "Task Statistics",
     "learning": "Learning",
     "cards": "Cards",
@@ -244,6 +245,11 @@
   "recurring": {
     "template": "Template",
     "none": "No templates available."
+  },
+  "habits": {
+    "title": "Habit Tracker",
+    "none": "No habits available.",
+    "clickToToggle": "Click to toggle completion"
   },
   "statistics": {
     "title": "Task Statistics",

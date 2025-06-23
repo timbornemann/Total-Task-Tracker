@@ -31,6 +31,7 @@ import ReleaseNotesModal from "@/components/ReleaseNotesModal";
 import SurprisePage from "./pages/Surprise";
 import SurpriseListener from "@/components/SurpriseListener";
 import RecurringTasksPage from "./pages/RecurringTasks";
+import HabitTrackerPage from "./pages/HabitTracker";
 import TimeBlockingPage from "./pages/TimeBlocking";
 import TaskDetailPage from "./pages/TaskDetail";
 
@@ -56,6 +57,7 @@ const App = () => (
               <Route path="/statistics" element={<Statistics />} />
               <Route path="/kanban" element={<Kanban />} />
               <Route path="/recurring" element={<RecurringTasksPage />} />
+              <Route path="/habits" element={<HabitTrackerPage />} />
               <Route path="/timeblocks" element={<TimeBlockingPage />} />
               <Route path="/flashcards/manage" element={<FlashcardManagerPage />} />
               <Route path="/flashcards/deck/:deckId" element={<DeckDetailPage />} />

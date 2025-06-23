@@ -40,6 +40,8 @@ export interface Task {
   template?: boolean;
   titleTemplate?: string;
   customIntervalDays?: number;
+  /** Dates completed when used as habit template */
+  habitHistory?: string[];
 }
 
 export interface Category {
