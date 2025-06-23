@@ -5,7 +5,7 @@ import { Category, Task } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Trash2, FolderOpen, MoreVertical } from 'lucide-react';
+import { Edit, Trash2, FolderOpen, MoreVertical, Star, StarOff } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { getTaskProgress } from '@/utils/taskUtils';
 import { useSettings } from '@/hooks/useSettings';
@@ -22,6 +22,7 @@ interface CategoryCardProps {
   onEdit: (category: Category) => void;
   onDelete: (categoryId: string) => void;
   onViewTasks: (category: Category) => void;
+  onTogglePinned: (categoryId: string, pinned: boolean) => void;
 }
 
 const CategoryCard: React.FC<CategoryCardProps> = ({
@@ -29,7 +30,8 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   tasks,
   onEdit,
   onDelete,
-  onViewTasks
+  onViewTasks,
+  onTogglePinned
 }) => {
   const { t } = useTranslation();
   const { colorPalette, theme } = useSettings();
@@ -104,6 +106,21 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
             <Button
               variant="ghost"
               size="sm"
+              onClick={e => {
+                e.stopPropagation();
+                onTogglePinned(category.id, !category.pinned);
+              }}
+              className="h-8 w-8 p-0"
+            >
+              {category.pinned ? (
+                <Star className="h-4 w-4" />
+              ) : (
+                <StarOff className="h-4 w-4" />
+              )}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={(e) => {
                 e.stopPropagation();
                 onEdit(category);
@@ -146,6 +163,16 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="bg-background z-50">
+                <DropdownMenuItem
+                  onClick={() => onTogglePinned(category.id, !category.pinned)}
+                >
+                  {category.pinned ? (
+                    <Star className="h-4 w-4 mr-2" />
+                  ) : (
+                    <StarOff className="h-4 w-4 mr-2" />
+                  )}
+                  {category.pinned ? t('taskDetail.unpin') : t('taskDetail.pin')}
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onEdit(category)}>
                   <Edit className="h-4 w-4 mr-2" />
                   {t('common.edit')}

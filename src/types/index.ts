@@ -51,6 +51,8 @@ export interface Category {
   updatedAt: Date;
   /** Sort order within the category list */
   order: number;
+  /** Whether the category is pinned */
+  pinned: boolean;
 }
 
 export interface TaskFormData {

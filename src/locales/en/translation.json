@@ -17,7 +17,8 @@
   },
   "home": {
     "pinnedTasks": "Pinned Tasks",
-    "pinnedNotes": "Pinned Notes"
+    "pinnedNotes": "Pinned Notes",
+    "pinnedCategories": "Pinned Categories"
   },
   "settings": {
     "tabs": {
@@ -73,6 +74,7 @@
     "collapseSubtasks": "Collapse subtasks by default",
     "showPinnedTasks": "Show pinned tasks",
     "showPinnedNotes": "Show pinned notes",
+    "showPinnedCategories": "Show pinned categories",
     "themePreset": "Preset",
     "custom": "custom",
     "bgColor": "Background (App)",

@@ -147,6 +147,7 @@ const Dashboard: React.FC = () => {
   const sortedCategories = useMemo(() => {
     const cats = [...filteredCategories];
     cats.sort((a, b) => {
+      if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
       switch (sortCriteria) {
         case 'order':
           return a.order - b.order;
@@ -347,6 +348,10 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const handleToggleCategoryPinned = (id: string, pinned: boolean) => {
+    updateCategory(id, { pinned });
+  };
+
   const handleViewCategoryTasks = (category: Category) => {
     setSelectedCategory(category);
     setCurrentCategoryId(category.id);
@@ -527,6 +532,7 @@ const Dashboard: React.FC = () => {
                                 }}
                                 onDelete={handleDeleteCategory}
                                 onViewTasks={handleViewCategoryTasks}
+                                onTogglePinned={handleToggleCategoryPinned}
                               />
                             </div>
                           )}
