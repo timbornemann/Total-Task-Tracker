@@ -10,7 +10,9 @@ import {
   getISOWeek,
   format,
   startOfISOWeekYear,
-  getISOWeeksInYear
+  getISOWeeksInYear,
+  isSameISOWeek,
+  isToday
 } from 'date-fns'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -130,37 +132,53 @@ const HabitTrackerPage: React.FC = () => {
                       <thead>
                           <tr>
                             <th className="w-8 text-xs" />
-                            {weeks.map(w => (
-                              <th
-                                key={w.toISOString()}
-                                className="text-center text-[10px]"
-                                style={{ width: `${100 / weekCount}%` }}
-                              >
-                                {getISOWeek(w)}
-                              </th>
-                            ))}
+                            {weeks.map(w => {
+                              const current = isSameISOWeek(w, today)
+                              return (
+                                <th
+                                  key={w.toISOString()}
+                                  className="text-center text-[10px]"
+                                  style={{
+                                    width: `${100 / weekCount}%`,
+                                    backgroundColor: current ? textColor : undefined,
+                                    color: current ? baseColor : undefined
+                                  }}
+                                >
+                                  {getISOWeek(w)}
+                                </th>
+                              )
+                            })}
                         </tr>
                       </thead>
                       <tbody>
                         {rows.map(r => (
                           <tr key={r} className="h-6">
-                            <td className="text-xs pr-1">
+                            <td
+                              className="text-xs pr-1"
+                              style={{
+                                backgroundColor:
+                                  r === today.getDay() ? textColor : undefined,
+                                color: r === today.getDay() ? baseColor : undefined
+                              }}
+                            >
                               {format(addDays(yearStart, r), 'EEE')}
                             </td>
                             {weeks.map(w => {
                               const date = addDays(w, r)
-                              if (date > today) return <td key={date.toISOString()} />
                               const dateStr = format(date, 'yyyy-MM-dd')
                               const done = habit.habitHistory?.includes(dateStr)
+                              const future = date > today
+                              const currentDay = isToday(date)
                               return (
                                 <td key={dateStr} className="p-0.5">
                                   <div
-                                    className="h-6 aspect-square w-full rounded cursor-pointer hover:opacity-80"
+                                    className={`h-6 aspect-square w-full rounded hover:opacity-80 ${future ? 'cursor-default opacity-50' : 'cursor-pointer'}`}
                                     style={{
-                                      backgroundColor: done ? doneColor : emptyColor
+                                      backgroundColor: done ? doneColor : emptyColor,
+                                      outline: currentDay ? `2px solid ${textColor}` : undefined
                                     }}
                                     onClick={() =>
-                                      toggleHabitCompletion(habit.id, dateStr)
+                                      !future && toggleHabitCompletion(habit.id, dateStr)
                                     }
                                   />
                                 </td>
