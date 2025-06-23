@@ -132,7 +132,8 @@ const useTaskStoreImpl = () => {
             createdAt: new Date(category.createdAt),
             updatedAt: new Date(category.updatedAt),
             order: typeof category.order === 'number' ? category.order : idx,
-            color: mapColor(category.color)
+            color: mapColor(category.color),
+            pinned: category.pinned ?? false
           }));
       } else {
         const defaultCategory: Category = {
@@ -142,7 +143,8 @@ const useTaskStoreImpl = () => {
           color: 0,
           createdAt: new Date(),
           updatedAt: new Date(),
-          order: 0
+          order: 0,
+          pinned: false
         };
         categoriesData = [defaultCategory];
       }
@@ -503,7 +505,8 @@ const useTaskStoreImpl = () => {
       id: Date.now().toString(),
       createdAt: new Date(),
       updatedAt: new Date(),
-      order: 0
+      order: 0,
+      pinned: categoryData.pinned ?? false
     };
     setCategories(prev => [...prev, { ...newCategory, order: prev.length }]);
   };

@@ -64,6 +64,8 @@ const SettingsPage: React.FC = () => {
     toggleShowPinnedTasks,
     showPinnedNotes,
     toggleShowPinnedNotes,
+    showPinnedCategories,
+    toggleShowPinnedCategories,
     collapseSubtasksByDefault,
     toggleCollapseSubtasksByDefault,
     flashcardTimer,
@@ -559,6 +561,14 @@ const SettingsPage: React.FC = () => {
                   onCheckedChange={toggleShowPinnedNotes}
                 />
                 <Label htmlFor="showPinnedNotes">{t('settingsPage.showPinnedNotes')}</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="showPinnedCategories"
+                  checked={showPinnedCategories}
+                  onCheckedChange={toggleShowPinnedCategories}
+                />
+                <Label htmlFor="showPinnedCategories">{t('settingsPage.showPinnedCategories')}</Label>
               </div>
               <DragDropContext onDragEnd={handleHomeDrag}>
                 <Droppable droppableId="homeOrder">

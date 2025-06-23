@@ -7,20 +7,22 @@ import { useSettings } from '@/hooks/useSettings';
 import { isColorDark, adjustColor } from '@/utils/color';
 import { allHomeSections, HomeSection } from '@/utils/homeSections';
 import TaskCard from '@/components/TaskCard';
+import CategoryCard from '@/components/CategoryCard';
 import { useTaskStore } from '@/hooks/useTaskStore';
 import NoteCard from '@/components/NoteCard';
 import { flattenTasks } from '@/utils/taskUtils';
 
 const Home: React.FC = () => {
   const { t } = useTranslation();
-  const { notes, tasks } = useTaskStore();
+  const { notes, tasks, categories, getTasksByCategory, updateCategory } = useTaskStore();
   const {
     homeSections,
     homeSectionOrder,
     homeSectionColors,
     colorPalette,
     showPinnedTasks,
-    showPinnedNotes
+    showPinnedNotes,
+    showPinnedCategories
   } = useSettings();
 
   const orderedSections: HomeSection[] = homeSectionOrder
@@ -38,6 +40,14 @@ const Home: React.FC = () => {
         .sort((a, b) => a.task.order - b.task.order)
         .slice(0, 3),
     [tasks]
+  );
+  const pinnedCategories = useMemo(
+    () =>
+      categories
+        .filter(c => c.pinned)
+        .sort((a, b) => a.order - b.order)
+        .slice(0, 3),
+    [categories]
   );
 
   return (
@@ -73,6 +83,31 @@ const Home: React.FC = () => {
             )
           })}
         </div>
+        {showPinnedCategories && pinnedCategories.length > 0 && (
+          <div className="mb-6">
+            <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-3">
+              {t('home.pinnedCategories')}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {pinnedCategories.map(cat => (
+                <Link
+                  key={cat.id}
+                  to={`/tasks?categoryId=${cat.id}`}
+                  className="block"
+                >
+                  <CategoryCard
+                    category={cat}
+                    tasks={getTasksByCategory(cat.id)}
+                    onEdit={() => {}}
+                    onDelete={() => {}}
+                    onViewTasks={() => {}}
+                    onTogglePinned={(id, val) => updateCategory(id, { pinned: val })}
+                  />
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
         {showPinnedTasks && pinnedTasks.length > 0 && (
           <div className="mb-6">
             <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-3">

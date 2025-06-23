@@ -289,6 +289,8 @@ interface SettingsContextValue {
   toggleShowPinnedTasks: () => void
   showPinnedNotes: boolean
   toggleShowPinnedNotes: () => void
+  showPinnedCategories: boolean
+  toggleShowPinnedCategories: () => void
   collapseSubtasksByDefault: boolean
   toggleCollapseSubtasksByDefault: () => void
   flashcardTimer: number
@@ -344,6 +346,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   ])
   const [showPinnedTasks, setShowPinnedTasks] = useState(true)
   const [showPinnedNotes, setShowPinnedNotes] = useState(true)
+  const [showPinnedCategories, setShowPinnedCategories] = useState(true)
   const [collapseSubtasksByDefault, setCollapseSubtasksByDefault] = useState(false)
   const [syncRole, setSyncRole] = useState<'server' | 'client'>('client')
   const [syncServerUrl, setSyncServerUrl] = useState('')
@@ -421,6 +424,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           if (typeof data.showPinnedNotes === 'boolean') {
             setShowPinnedNotes(data.showPinnedNotes)
           }
+          if (typeof data.showPinnedCategories === 'boolean') {
+            setShowPinnedCategories(data.showPinnedCategories)
+          }
           if (typeof data.collapseSubtasksByDefault === 'boolean') {
             setCollapseSubtasksByDefault(data.collapseSubtasksByDefault)
           }
@@ -477,6 +483,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             homeSectionOrder,
             showPinnedTasks,
             showPinnedNotes,
+            showPinnedCategories,
             collapseSubtasksByDefault,
             flashcardTimer,
             flashcardSessionSize,
@@ -507,6 +514,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     homeSectionOrder,
     showPinnedTasks,
     showPinnedNotes,
+    showPinnedCategories,
     collapseSubtasksByDefault,
     flashcardTimer,
     flashcardSessionSize,
@@ -632,6 +640,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setShowPinnedNotes(prev => !prev)
   }
 
+  const toggleShowPinnedCategories = () => {
+    setShowPinnedCategories(prev => !prev)
+  }
+
   const toggleCollapseSubtasksByDefault = () => {
     setCollapseSubtasksByDefault(prev => !prev)
   }
@@ -661,6 +673,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         toggleShowPinnedTasks,
         showPinnedNotes,
         toggleShowPinnedNotes,
+        showPinnedCategories,
+        toggleShowPinnedCategories,
         collapseSubtasksByDefault,
         toggleCollapseSubtasksByDefault,
         flashcardTimer,
