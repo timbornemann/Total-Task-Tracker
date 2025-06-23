@@ -5,6 +5,7 @@
     "kanban": "Kanban",
     "schedule": "Zeitplan",
     "recurring": "Wiederkehrend",
+    "habits": "Gewohnheiten",
     "statistics": "Task-Statistiken",
     "learning": "Lernen",
     "cards": "Karten",
@@ -244,6 +245,11 @@
   "recurring": {
     "template": "Vorlage",
     "none": "Keine Vorlagen vorhanden."
+  },
+  "habits": {
+    "title": "Gewohnheiten",
+    "none": "Keine Gewohnheiten vorhanden.",
+    "clickToToggle": "Klicke zum Umschalten"
   },
   "statistics": {
     "title": "Task-Statistiken",

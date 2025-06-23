@@ -413,6 +413,7 @@ const useTaskStoreImpl = () => {
       template: true,
       startTime: data.startTime,
       endTime: data.endTime,
+      habitHistory: [],
       nextDue: shouldCreateNow
         ? calculateNextDue(
             data.recurrencePattern,
@@ -447,6 +448,20 @@ const useTaskStoreImpl = () => {
   const updateRecurringTask = (id: string, updates: Partial<Task>) => {
     setRecurring(prev =>
       prev.map(t => (t.id === id ? { ...t, ...updates, updatedAt: new Date() } : t))
+    );
+  };
+
+  const toggleHabitCompletion = (id: string, date: string) => {
+    setRecurring(prev =>
+      prev.map(habit => {
+        if (habit.id !== id) return habit;
+        const history = habit.habitHistory || [];
+        const exists = history.includes(date);
+        const newHistory = exists
+          ? history.filter(d => d !== date)
+          : [...history, date];
+        return { ...habit, habitHistory: newHistory, updatedAt: new Date() };
+      })
     );
   };
 
@@ -753,7 +768,8 @@ const useTaskStoreImpl = () => {
     recurring,
     addRecurringTask,
     updateRecurringTask,
-    deleteRecurringTask
+    deleteRecurringTask,
+    toggleHabitCompletion
   };
 };
 
