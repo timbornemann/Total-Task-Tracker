@@ -75,15 +75,15 @@ const TaskDetailPage: React.FC = () => {
     ? categories.find((c) => c.id === task.categoryId) || null
     : null;
 
-  const isCompleted = calculateTaskCompletion(task);
-  const progress = getTaskProgress(task);
+  const isCompleted = task ? calculateTaskCompletion(task) : false;
+  const progress = task ? getTaskProgress(task) : { completed: 0, total: 0 };
   const progressPercentage =
     progress.total > 0 ? (progress.completed / progress.total) * 100 : 0;
-  const headerBg = colorPalette[task.color] ?? colorPalette[0];
+  const headerBg = colorPalette[task?.color ?? 0] ?? colorPalette[0];
   const basePriority =
-    task.priority === "high"
+    task?.priority === "high"
       ? theme.destructive
-      : task.priority === "medium"
+      : task?.priority === "medium"
         ? theme.primary
         : theme.accent;
   const baseBgHex = hslToHex(basePriority);
@@ -97,12 +97,14 @@ const TaskDetailPage: React.FC = () => {
       : "#ffffff";
   const priorityColors = { bg: finalBgHex, fg: finalFgHex };
   let priorityIconEl: React.ReactNode;
-  if (task.priority === "high")
+  if (task?.priority === "high")
     priorityIconEl = <ArrowUp className="h-4 w-4 mr-1" />;
-  else if (task.priority === "medium")
+  else if (task?.priority === "medium")
     priorityIconEl = <ArrowRight className="h-4 w-4 mr-1" />;
   else priorityIconEl = <ArrowDown className="h-4 w-4 mr-1" />;
-  const colorOptions = Array.from(new Set(task.subtasks.map((st) => st.color)));
+  const colorOptions = Array.from(
+    new Set((task?.subtasks ?? []).map((st) => st.color)),
+  );
   const progressBg = `hsl(var(--stat-bar-secondary))`;
   const progressColor = `hsl(var(--stat-bar-primary))`;
 
@@ -116,7 +118,7 @@ const TaskDetailPage: React.FC = () => {
   const breadcrumbs = [
     {
       label: category?.name || t("taskDetail.unknownCategory"),
-      onClick: () => navigate(`/tasks?categoryId=${task.categoryId}`),
+      onClick: () => navigate(`/tasks?categoryId=${task?.categoryId ?? ""}`),
     },
     ...parentPath.map((p) => ({
       label: p.title,
@@ -125,13 +127,13 @@ const TaskDetailPage: React.FC = () => {
   ];
 
   const textColor = complementaryColor(
-    colorPalette[task.color] ?? colorPalette[0],
+    colorPalette[task?.color ?? 0] ?? colorPalette[0],
   );
   const [backHover, setBackHover] = useState(false);
 
   const flattenedSubtasks = useMemo(
     () => flattenTasks(task ? task.subtasks : []).map((f) => f.task),
-    [task?.subtasks],
+    [task],
   );
 
   const statusData = useMemo(() => {
