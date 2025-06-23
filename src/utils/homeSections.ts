@@ -7,6 +7,7 @@ import {
   Pencil,
   Timer,
   List,
+  Flame,
   Cog,
   LucideIcon
 } from 'lucide-react'
@@ -29,5 +30,6 @@ export const allHomeSections: HomeSection[] = [
   { key: 'pomodoro', labelKey: 'homeSections.pomodoro', path: '/pomodoro', icon: Timer },
   { key: 'notes', labelKey: 'homeSections.notes', path: '/notes', icon: List },
   { key: 'recurring', labelKey: 'homeSections.recurring', path: '/recurring', icon: List },
+  { key: 'habits', labelKey: 'homeSections.habits', path: '/habits', icon: Flame },
   { key: 'settings', labelKey: 'homeSections.settings', path: '/settings', icon: Cog }
 ]
