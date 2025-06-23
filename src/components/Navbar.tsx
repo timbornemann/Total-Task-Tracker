@@ -16,6 +16,7 @@ import {
   Columns,
   LayoutGrid,
   List,
+  Flame,
   Cog,
   Timer,
   BookOpen,
@@ -122,7 +123,7 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to="/habits" className="flex items-center">
-                    <List className="h-4 w-4 mr-2" /> {t('navbar.habits')}
+                    <Flame className="h-4 w-4 mr-2" /> {t('navbar.habits')}
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
@@ -218,7 +219,7 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                 </Link>
                 <Link to="/habits" className="flex-1">
                   <Button variant="outline" size="sm" className="w-full">
-                    <List className="h-4 w-4 mr-2" />
+                    <Flame className="h-4 w-4 mr-2" />
                     {t('navbar.habits')}
                   </Button>
                 </Link>

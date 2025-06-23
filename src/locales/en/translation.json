@@ -176,6 +176,7 @@
     "pomodoro": "Pomodoro",
     "notes": "Notes",
     "recurring": "Recurring",
+    "habits": "Habits",
     "settings": "Settings"
   },
   "categoryModal": {
@@ -249,7 +250,9 @@
   "habits": {
     "title": "Habit Tracker",
     "none": "No habits available.",
-    "clickToToggle": "Click to toggle completion"
+    "clickToToggle": "Click to toggle completion",
+    "streak": "Streak: {{count}}",
+    "progress": "{{completed}}/{{total}} done"
   },
   "statistics": {
     "title": "Task Statistics",

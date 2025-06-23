@@ -176,6 +176,7 @@
     "pomodoro": "Pomodoro",
     "notes": "Notizen",
     "recurring": "Wiederkehrend",
+    "habits": "Gewohnheiten",
     "settings": "Einstellungen"
   },
   "categoryModal": {
@@ -249,7 +250,9 @@
   "habits": {
     "title": "Gewohnheiten",
     "none": "Keine Gewohnheiten vorhanden.",
-    "clickToToggle": "Klicke zum Umschalten"
+    "clickToToggle": "Klicke zum Umschalten",
+    "streak": "Serie: {{count}}",
+    "progress": "{{completed}} von {{total}} erledigt"
   },
   "statistics": {
     "title": "Task-Statistiken",
