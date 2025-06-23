@@ -2,6 +2,7 @@ import React, { useState, useEffect, createContext, useContext, useRef } from 'r
 import { Task, Category, Note, Deletion } from '@/types';
 import i18n from '@/lib/i18n';
 import { useSettings, defaultColorPalette } from '@/hooks/useSettings';
+import { format } from 'date-fns';
 
 const API_URL = '/api/data';
 
@@ -82,7 +83,8 @@ const useTaskStoreImpl = () => {
               pinned: task.pinned ?? false,
               startTime: task.startTime,
               endTime: task.endTime,
-              color: mapColor(task.color)
+              color: mapColor(task.color),
+              recurringId: task.recurringId
             }))
         : [];
       setTasks(tasksData);
@@ -237,6 +239,7 @@ const useTaskStoreImpl = () => {
       status: 'todo',
       order: 0,
       pinned: false,
+      recurringId: taskData.recurringId,
       customIntervalDays: taskData.customIntervalDays,
       titleTemplate: taskData.titleTemplate,
       template: taskData.template
@@ -322,6 +325,7 @@ const useTaskStoreImpl = () => {
   };
 
   const updateTask = (taskId: string, updates: Partial<Task>) => {
+    let affected: { id: string; date: string; completed: boolean } | null = null;
     const updateTaskRecursively = (tasks: Task[]): Task[] => {
       return tasks.map(task => {
         if (task.id === taskId) {
@@ -334,6 +338,17 @@ const useTaskStoreImpl = () => {
               lastCompleted: new Date(),
               nextDue: calculateNextDue(task.recurrencePattern),
               dueDate: task.dueDate,
+            };
+          }
+          if (
+            typeof updates.completed === 'boolean' &&
+            task.recurringId &&
+            task.dueDate
+          ) {
+            affected = {
+              id: task.recurringId,
+              date: format(task.dueDate, 'yyyy-MM-dd'),
+              completed: updates.completed,
             };
           }
           return {
@@ -355,6 +370,21 @@ const useTaskStoreImpl = () => {
       });
     };
     setTasks(prev => updateTaskRecursively(prev));
+    if (affected) {
+      setRecurring(prev =>
+        prev.map(habit => {
+          if (habit.id !== affected!.id) return habit;
+          const history = habit.habitHistory || [];
+          const exists = history.includes(affected!.date);
+          const newHistory = affected!.completed
+            ? exists
+              ? history
+              : [...history, affected!.date]
+            : history.filter(d => d !== affected!.date);
+          return { ...habit, habitHistory: newHistory, updatedAt: new Date() };
+        })
+      );
+    }
   };
 
   const deleteTask = (taskId: string) => {
@@ -452,15 +482,34 @@ const useTaskStoreImpl = () => {
   };
 
   const toggleHabitCompletion = (id: string, date: string) => {
+    let markComplete = false;
     setRecurring(prev =>
       prev.map(habit => {
         if (habit.id !== id) return habit;
         const history = habit.habitHistory || [];
         const exists = history.includes(date);
+        markComplete = !exists;
         const newHistory = exists
           ? history.filter(d => d !== date)
           : [...history, date];
         return { ...habit, habitHistory: newHistory, updatedAt: new Date() };
+      })
+    );
+    setTasks(prev =>
+      prev.map(task => {
+        if (
+          task.recurringId === id &&
+          task.dueDate &&
+          format(task.dueDate, 'yyyy-MM-dd') === date
+        ) {
+          return {
+            ...task,
+            completed: markComplete,
+            status: markComplete ? 'done' : 'todo',
+            updatedAt: new Date()
+          };
+        }
+        return task;
       })
     );
   };
@@ -499,7 +548,8 @@ const useTaskStoreImpl = () => {
         titleTemplate: undefined,
         isRecurring: false,
         parentId: undefined,
-          });
+        recurringId: t.id,
+      });
           const next = calculateNextDue(
             t.recurrencePattern,
             t.customIntervalDays,

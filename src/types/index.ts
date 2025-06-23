@@ -37,6 +37,8 @@ export interface Task {
   order: number;
   /** Whether the task is pinned */
   pinned: boolean;
+  /** ID of originating recurring template */
+  recurringId?: string;
   template?: boolean;
   titleTemplate?: string;
   customIntervalDays?: number;
