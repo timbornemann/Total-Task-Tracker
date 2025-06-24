@@ -344,9 +344,12 @@ const useTaskStoreImpl = () => {
             typeof updates.completed === 'boolean' &&
             task.recurringId
           ) {
+            // Extract the date to mark in the habit tracker
+            // Use either the creation date or due date of the task
+            const dateToMark = task.dueDate || task.createdAt;
             affected = {
               id: task.recurringId,
-              date: format(task.createdAt, 'yyyy-MM-dd'),
+              date: format(dateToMark, 'yyyy-MM-dd'),
               completed: updates.completed,
             };
           }
@@ -496,19 +499,21 @@ const useTaskStoreImpl = () => {
     );
     setTasks(prev =>
       prev.map(task => {
-        if (
-          task.recurringId === id &&
-          (
-            (task.dueDate && format(task.dueDate, 'yyyy-MM-dd') === date) ||
-            format(task.createdAt, 'yyyy-MM-dd') === date
-          )
-        ) {
-          return {
-            ...task,
-            completed: markComplete,
-            status: markComplete ? 'done' : 'todo',
-            updatedAt: new Date()
-          };
+        // Match tasks created from this recurring task template
+        if (task.recurringId === id) {
+          // Check if this task was created on the date we're toggling
+          const taskDate = format(task.createdAt, 'yyyy-MM-dd');
+          // Also check against the due date if available
+          const dueDate = task.dueDate ? format(task.dueDate, 'yyyy-MM-dd') : null;
+          
+          if (taskDate === date || (dueDate && dueDate === date)) {
+            return {
+              ...task,
+              completed: markComplete,
+              status: markComplete ? 'done' : 'todo',
+              updatedAt: new Date()
+            };
+          }
         }
         return task;
       })

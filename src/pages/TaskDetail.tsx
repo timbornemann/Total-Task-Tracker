@@ -726,7 +726,16 @@ const TaskDetailPage: React.FC = () => {
             if (editingTask) {
               updateTask(editingTask.id, data);
             } else {
-              addTask({ ...data, parentId: task.id });
+              addTask({
+                ...data,
+                parentId: task.id,
+                completed: false,
+                status: 'todo',
+                order: 0,
+                isRecurring: data.isRecurring || false,
+                priority: data.priority || 'medium',
+                categoryId: data.categoryId || task.categoryId
+              });
             }
           }}
           task={editingTask || undefined}
