@@ -508,14 +508,61 @@ const useTaskStoreImpl = () => {
     return title;
   };
 
+  const ensureRecurringTasks = () => {
+    recurring.forEach(template => {
+      const templateTasks = tasks.filter(t => t.recurringId === template.id);
+      const futureTasks = templateTasks.filter(t => t.createdAt >= new Date());
+      if (futureTasks.length > 0) return;
+
+      const lastDate = templateTasks.reduce((max, t) =>
+        new Date(t.createdAt) > max ? new Date(t.createdAt) : max,
+        new Date(template.createdAt)
+      );
+      let current = calculateNextDue(
+        template.recurrencePattern,
+        template.customIntervalDays,
+        lastDate
+      ) || new Date(lastDate);
+      for (let i = 0; i < 30; i++) {
+        addTask({
+          ...template,
+          dueDate: current,
+          dueOption: undefined,
+          dueAfterDays: undefined,
+          startOption: undefined,
+          startWeekday: undefined,
+          startDate: undefined,
+          title: generateTitle(template),
+          template: undefined,
+          titleTemplate: undefined,
+          isRecurring: false,
+          parentId: undefined,
+          recurringId: template.id,
+          createdAt: current,
+          visible: current <= new Date()
+        });
+        const next = calculateNextDue(
+          template.recurrencePattern,
+          template.customIntervalDays,
+          current
+        );
+        if (!next) break;
+        current = next;
+      }
+    });
+  };
+
   const processRecurring = () => {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
     setTasks(prev =>
       prev.map(t =>
-        t.recurringId && !t.visible && t.createdAt <= new Date()
+        t.recurringId && !t.visible && t.createdAt <= now
           ? { ...t, visible: true }
           : t
       )
     );
+    ensureRecurringTasks();
   };
 
   const addCategory = (categoryData: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>) => {
