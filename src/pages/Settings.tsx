@@ -282,7 +282,10 @@ const SettingsPage: React.FC = () => {
       const data = await res.json()
       const tasks = deriveStructure(data.tasks || [])
       const categories = deriveStructure(data.categories || [])
-      download({ task: tasks, category: categories }, 'tasks-structure.json')
+      download(
+        { tasks: [tasks], categories: [categories] },
+        'tasks-structure.json'
+      )
     }
   }
 
@@ -290,7 +293,7 @@ const SettingsPage: React.FC = () => {
     const res = await fetch('/api/notes')
     if (res.ok) {
       const notes = await res.json()
-      download({ note: deriveStructure(notes) }, 'notes-structure.json')
+      download({ notes: [deriveStructure(notes)] }, 'notes-structure.json')
     }
   }
 
@@ -303,7 +306,10 @@ const SettingsPage: React.FC = () => {
       const cards = await cardsRes.json()
       const decks = await decksRes.json()
       download(
-        { flashcard: deriveStructure(cards), deck: deriveStructure(decks) },
+        {
+          flashcards: [deriveStructure(cards)],
+          decks: [deriveStructure(decks)]
+        },
         'decks-structure.json'
       )
     }
@@ -315,11 +321,11 @@ const SettingsPage: React.FC = () => {
       const data = await res.json()
       download(
         {
-          task: deriveStructure(data.tasks || []),
-          category: deriveStructure(data.categories || []),
-          note: deriveStructure(data.notes || []),
-          flashcard: deriveStructure(data.flashcards || []),
-          deck: deriveStructure(data.decks || [])
+          tasks: [deriveStructure(data.tasks || [])],
+          categories: [deriveStructure(data.categories || [])],
+          notes: [deriveStructure(data.notes || [])],
+          flashcards: [deriveStructure(data.flashcards || [])],
+          decks: [deriveStructure(data.decks || [])]
         },
         'all-structure.json'
       )
