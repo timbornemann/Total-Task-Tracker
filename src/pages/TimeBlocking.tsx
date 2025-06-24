@@ -58,7 +58,7 @@ const TimeBlockingPage = () => {
   const tasksByDate = useMemo(() => {
     const map: Record<string, typeof tasks> = {};
     tasks.forEach(t => {
-      if (!t.dueDate) return;
+      if (!t.dueDate || t.visible === false) return;
       const key = new Date(t.dueDate).toDateString();
       if (!map[key]) map[key] = [];
       map[key].push(t);

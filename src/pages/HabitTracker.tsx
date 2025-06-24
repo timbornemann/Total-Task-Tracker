@@ -47,14 +47,17 @@ const HabitTrackerPage: React.FC = () => {
     return [0, 1, 2, 3, 4, 5, 6]
   }
 
-  const calculateStreak = (habit: Task, freqDays: number[]): number => {
-    const history = new Set(habit.habitHistory || [])
+  const calculateStreak = (
+    habit: Task,
+    freqDays: number[],
+    map: Record<string, Task>
+  ): number => {
     let streak = 0
     let day = today
     while (day >= yearStart) {
       if (freqDays.includes(day.getDay())) {
         const key = format(day, 'yyyy-MM-dd')
-        if (history.has(key)) streak++
+        if (map[key]?.completed) streak++
         else break
       }
       day = addDays(day, -1)
@@ -64,9 +67,9 @@ const HabitTrackerPage: React.FC = () => {
 
   const countTotals = (
     habit: Task,
-    freqDays: number[]
+    freqDays: number[],
+    map: Record<string, Task>
   ): { total: number; completed: number } => {
-    const history = new Set(habit.habitHistory || [])
     let total = 0
     let completed = 0
     weeks.forEach(w => {
@@ -74,7 +77,8 @@ const HabitTrackerPage: React.FC = () => {
         const date = addDays(w, d)
         if (date > today || date < yearStart) return
         total++
-        if (history.has(format(date, 'yyyy-MM-dd'))) completed++
+        const key = format(date, 'yyyy-MM-dd')
+        if (map[key]?.completed) completed++
       })
     })
     return { total, completed }
@@ -104,9 +108,15 @@ const HabitTrackerPage: React.FC = () => {
         ) : (
           <div className="space-y-6">
             {recurring.map(habit => {
+              const habitTasks = tasks.filter(t => t.recurringId === habit.id)
+              const taskMap = habitTasks.reduce<Record<string, Task>>((m, t) => {
+                const key = format(t.createdAt, 'yyyy-MM-dd')
+                m[key] = t
+                return m
+              }, {})
               const freqDays = getFrequencyDays(habit)
-              const { total, completed } = countTotals(habit, freqDays)
-              const streak = calculateStreak(habit, freqDays)
+              const { total, completed } = countTotals(habit, freqDays, taskMap)
+              const streak = calculateStreak(habit, freqDays, taskMap)
               const baseColor = colorPalette[habit.color] ?? colorPalette[0]
               const textColor = complementaryColor(baseColor)
               const doneColor = adjustColor(
@@ -115,7 +125,6 @@ const HabitTrackerPage: React.FC = () => {
               )
               const emptyColor = hslToHex(theme.muted)
               const rows = [...freqDays].sort((a, b) => a - b)
-              const habitTasks = tasks.filter(t => t.recurringId === habit.id)
               const firstTaskDate = habitTasks.length
                 ? startOfDay(
                     habitTasks.reduce(
@@ -177,10 +186,10 @@ const HabitTrackerPage: React.FC = () => {
                             {weeks.map(w => {
                               const date = addDays(w, r)
                               const dateStr = format(date, 'yyyy-MM-dd')
-                              const done = habit.habitHistory?.includes(dateStr)
+                              const done = taskMap[dateStr]?.completed
                               const future = date > today
                               const beforeStart = date < firstTaskDate
-                              const inactive = future || beforeStart
+                              const inactive = future || beforeStart || !taskMap[dateStr]
                               const currentDay = isToday(date)
                               return (
                                 <td key={dateStr} className="p-0.5">
