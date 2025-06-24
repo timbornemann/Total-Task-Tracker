@@ -7,6 +7,9 @@ import { useSettings } from '@/hooks/useSettings';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import MarkdownEditor from '@/components/MarkdownEditor';
 import ReactMarkdown from 'react-markdown';
 
@@ -19,6 +22,7 @@ const NoteDetailPage: React.FC = () => {
   const note = notes.find(n => n.id === id);
 
   const [isEditing, setIsEditing] = useState(false);
+  const [showPreview, setShowPreview] = useState(true);
   const [formData, setFormData] = useState({
     title: '',
     text: '',
@@ -77,12 +81,30 @@ const NoteDetailPage: React.FC = () => {
               required
               className="text-3xl font-bold border-none focus-visible:ring-0 focus-visible:outline-none p-0 bg-transparent"
             />
-            <MarkdownEditor
-              value={formData.text}
-              onChange={val => handleChange('text', val)}
-              rows={20}
-              className="min-h-[60vh]"
-            />
+            <div className="flex items-center justify-end space-x-2">
+              <Label htmlFor="preview">{t('noteDetail.livePreview')}</Label>
+              <Switch
+                id="preview"
+                checked={showPreview}
+                onCheckedChange={setShowPreview}
+              />
+            </div>
+            {showPreview ? (
+              <MarkdownEditor
+                value={formData.text}
+                onChange={val => handleChange('text', val)}
+                rows={20}
+                className="min-h-[60vh]"
+              />
+            ) : (
+              <Textarea
+                id="text"
+                value={formData.text}
+                onChange={e => handleChange('text', e.target.value)}
+                rows={20}
+                className="min-h-[60vh]"
+              />
+            )}
             <div className="flex flex-wrap gap-2">
               {colorOptions.map((color, idx) => (
                 <button
@@ -106,7 +128,7 @@ const NoteDetailPage: React.FC = () => {
             </div>
           </form>
         ) : (
-          <div className="space-y-6 text-center">
+          <div className="space-y-6">
             <h1 className="text-3xl font-bold" style={{ color: colorPalette[note.color] }}>
               {note.title}
             </h1>
