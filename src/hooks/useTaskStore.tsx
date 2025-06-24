@@ -344,9 +344,9 @@ const useTaskStoreImpl = () => {
             typeof updates.completed === 'boolean' &&
             task.recurringId
           ) {
-            // Extract the date to mark in the habit tracker
-            // Use either the creation date or due date of the task
-            const dateToMark = task.dueDate || task.createdAt;
+          // Extract the date to mark in the habit tracker
+          // Use the creation date of the task
+          const dateToMark = task.createdAt;
             affected = {
               id: task.recurringId,
               date: format(dateToMark, 'yyyy-MM-dd'),
@@ -503,10 +503,7 @@ const useTaskStoreImpl = () => {
         if (task.recurringId === id) {
           // Check if this task was created on the date we're toggling
           const taskDate = format(task.createdAt, 'yyyy-MM-dd');
-          // Also check against the due date if available
-          const dueDate = task.dueDate ? format(task.dueDate, 'yyyy-MM-dd') : null;
-          
-          if (taskDate === date || (dueDate && dueDate === date)) {
+          if (taskDate === date) {
             return {
               ...task,
               completed: markComplete,
