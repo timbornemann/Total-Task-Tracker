@@ -68,6 +68,9 @@ let syncRole = 'client'; // 'server' or 'client'
 let syncServerUrl = '';
 let syncInterval = 5; // minutes
 let syncEnabled = true;
+let llmUrl = '';
+let llmToken = '';
+let llmModel = 'gpt-3.5-turbo';
 let syncTimer = null;
 let lastSyncTime = 0;
 let lastSyncError = null;
@@ -92,11 +95,21 @@ if (initialSettings.syncServerUrl) {
 if (typeof initialSettings.syncEnabled === 'boolean') {
   syncEnabled = initialSettings.syncEnabled;
 }
+if (initialSettings.llmUrl) {
+  llmUrl = initialSettings.llmUrl;
+}
+if (initialSettings.llmToken) {
+  llmToken = initialSettings.llmToken;
+}
+if (initialSettings.llmModel) {
+  llmModel = initialSettings.llmModel;
+}
 log('Initial sync settings', {
   role: syncRole,
   url: syncServerUrl,
   interval: syncInterval,
-  enabled: syncEnabled
+  enabled: syncEnabled,
+  llmConfigured: !!llmUrl
 });
 startSyncTimer();
 
@@ -362,6 +375,15 @@ function saveAllData(data) {
     if (data.settings.syncEnabled !== undefined) {
       setSyncEnabled(data.settings.syncEnabled);
     }
+    if (data.settings.llmUrl !== undefined) {
+      setLlmUrl(data.settings.llmUrl);
+    }
+    if (data.settings.llmToken !== undefined) {
+      setLlmToken(data.settings.llmToken);
+    }
+    if (data.settings.llmModel !== undefined) {
+      setLlmModel(data.settings.llmModel);
+    }
   }
   notifyClients();
 }
@@ -429,6 +451,7 @@ async function performSync() {
       delete data.settings.syncServerUrl;
       delete data.settings.syncRole;
       delete data.settings.syncEnabled;
+      delete data.settings.llmToken;
     }
     const post = await fetch(url, {
       method: 'POST',
@@ -499,6 +522,19 @@ function setSyncEnabled(val) {
   syncEnabled = enabled;
   log('Sync enabled set to', syncEnabled);
   startSyncTimer();
+}
+
+function setLlmUrl(url) {
+  llmUrl = url || '';
+  log('LLM URL set to', llmUrl || '(none)');
+}
+
+function setLlmToken(token) {
+  llmToken = token || '';
+}
+
+function setLlmModel(model) {
+  llmModel = model || 'gpt-3.5-turbo';
 }
 
 function serveStatic(filePath, res) {
@@ -672,6 +708,7 @@ const server = http.createServer((req, res) => {
       if (all.settings) {
         delete all.settings.syncServerUrl;
         delete all.settings.syncRole;
+        delete all.settings.llmToken;
       }
       res.end(
         JSON.stringify(
@@ -728,6 +765,15 @@ const server = http.createServer((req, res) => {
           if (settings.syncEnabled !== undefined) {
             setSyncEnabled(settings.syncEnabled);
           }
+          if (settings.llmUrl !== undefined) {
+            setLlmUrl(settings.llmUrl);
+          }
+          if (settings.llmToken !== undefined) {
+            setLlmToken(settings.llmToken);
+          }
+          if (settings.llmModel !== undefined) {
+            setLlmModel(settings.llmModel);
+          }
           notifyClients();
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ status: 'ok' }));
@@ -777,6 +823,7 @@ const server = http.createServer((req, res) => {
         delete data.settings.syncServerUrl;
         delete data.settings.syncRole;
         delete data.settings.syncEnabled;
+        delete data.settings.llmToken;
       }
       syncLogs.push({ time: Date.now(), ip: req.socket.remoteAddress, method: 'GET' });
       res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -793,6 +840,7 @@ const server = http.createServer((req, res) => {
             delete incoming.settings.syncServerUrl;
             delete incoming.settings.syncRole;
             delete incoming.settings.syncEnabled;
+            delete incoming.settings.llmToken;
           }
           const merged = applyDeletions(
             mergeData(loadAllData(), incoming)
@@ -859,6 +907,37 @@ const server = http.createServer((req, res) => {
     };
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(info));
+    return;
+  }
+
+  if (parsed.pathname === '/api/llm') {
+    if (req.method === 'POST') {
+      let body = '';
+      req.on('data', c => { body += c; });
+      req.on('end', async () => {
+        try {
+          if (!llmUrl || !llmToken) throw new Error('LLM not configured');
+          const payload = JSON.parse(body || '{}');
+          const resp = await fetch(llmUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${llmToken}`
+            },
+            body: JSON.stringify({ model: llmModel, ...payload })
+          });
+          const text = await resp.text();
+          res.writeHead(resp.status, { 'Content-Type': 'application/json' });
+          res.end(text);
+        } catch (err) {
+          res.writeHead(500);
+          res.end(JSON.stringify({ error: 'llm_error' }));
+        }
+      });
+      return;
+    }
+    res.writeHead(405);
+    res.end();
     return;
   }
 

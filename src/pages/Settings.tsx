@@ -110,6 +110,12 @@ const SettingsPage: React.FC = () => {
     updateSyncEnabled,
     language,
     updateLanguage,
+    llmUrl,
+    updateLlmUrl,
+    llmToken,
+    updateLlmToken,
+    llmModel,
+    updateLlmModel,
     colorPalette,
     updatePaletteColor,
     homeSectionColors,
@@ -584,10 +590,13 @@ const SettingsPage: React.FC = () => {
                 </AccordionTrigger>
                 <AccordionContent className="pl-2">
                   <TabsList className="flex flex-col gap-1 bg-transparent p-0 h-auto">
-                    <TabsTrigger className="justify-start" value="data">
-                      {t('settings.tabs.data')}
-                    </TabsTrigger>
-                  </TabsList>
+                  <TabsTrigger className="justify-start" value="data">
+                    {t('settings.tabs.data')}
+                  </TabsTrigger>
+                  <TabsTrigger className="justify-start" value="ai">
+                    {t('settings.tabs.ai')}
+                  </TabsTrigger>
+                </TabsList>
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="info">
@@ -1092,6 +1101,35 @@ const SettingsPage: React.FC = () => {
                   )}
                 </div>
               )}
+            </TabsContent>
+            <TabsContent value="ai" className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="llmUrl">{t('settingsPage.aiUrl')}</Label>
+                <Input
+                  id="llmUrl"
+                  value={llmUrl}
+                  onChange={e => updateLlmUrl(e.target.value)}
+                  placeholder="http://localhost:8000/v1/chat/completions"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="llmToken">{t('settingsPage.aiToken')}</Label>
+                <Input
+                  id="llmToken"
+                  type="password"
+                  value={llmToken}
+                  onChange={e => updateLlmToken(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="llmModel">{t('settingsPage.aiModel')}</Label>
+                <Input
+                  id="llmModel"
+                  value={llmModel}
+                  onChange={e => updateLlmModel(e.target.value)}
+                  placeholder="gpt-3.5-turbo"
+                />
+              </div>
             </TabsContent>
             <TabsContent value="info" className="space-y-4">
               <div className="prose dark:prose-invert">
