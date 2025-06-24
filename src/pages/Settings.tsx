@@ -338,7 +338,7 @@ const SettingsPage: React.FC = () => {
     const res = await fetch('/api/data')
     const current = res.ok
       ? await res.json()
-      : { tasks: [], categories: [], notes: [] }
+      : { tasks: [], categories: [], notes: [] };
 
     const taskMap = new Map<string, Task>()
     for (const t of current.tasks || []) taskMap.set(t.id, t)
@@ -414,7 +414,7 @@ const SettingsPage: React.FC = () => {
     const res = await fetch('/api/all')
     const current = res.ok
       ? await res.json()
-      : { tasks: [], categories: [], notes: [], flashcards: [], decks: [] }
+      : { tasks: [], categories: [], notes: [], flashcards: [], decks: [] };
 
     const merge = <T extends { id: string }>(curr: T[], inc: T[]) => {
       const map = new Map<string, T>()
@@ -1101,6 +1101,7 @@ const SettingsPage: React.FC = () => {
         </p>
       </div>
     </div>
+  </>
   )
 }
 
