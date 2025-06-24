@@ -25,7 +25,7 @@ import {
 import { Task } from '@/types'
 
 const HabitTrackerPage: React.FC = () => {
-  const { recurring, toggleHabitCompletion } = useTaskStore()
+  const { recurring, tasks, toggleHabitCompletion } = useTaskStore()
   const { colorPalette, theme } = useSettings()
   const { t } = useTranslation()
 
@@ -115,6 +115,17 @@ const HabitTrackerPage: React.FC = () => {
               )
               const emptyColor = hslToHex(theme.muted)
               const rows = [...freqDays].sort((a, b) => a - b)
+              const habitTasks = tasks.filter(t => t.recurringId === habit.id)
+              const firstTaskDate = habitTasks.length
+                ? startOfDay(
+                    habitTasks.reduce(
+                      (min, t) => (t.createdAt < min ? t.createdAt : min),
+                      habitTasks[0].createdAt
+                    )
+                  )
+                : habit.startDate
+                ? startOfDay(new Date(habit.startDate))
+                : startOfDay(habit.createdAt)
               return (
                 <Card
                   key={habit.id}
@@ -168,17 +179,19 @@ const HabitTrackerPage: React.FC = () => {
                               const dateStr = format(date, 'yyyy-MM-dd')
                               const done = habit.habitHistory?.includes(dateStr)
                               const future = date > today
+                              const beforeStart = date < firstTaskDate
+                              const inactive = future || beforeStart
                               const currentDay = isToday(date)
                               return (
                                 <td key={dateStr} className="p-0.5">
                                   <div
-                                    className={`h-6 aspect-square w-full rounded hover:opacity-80 ${future ? 'cursor-default opacity-50' : 'cursor-pointer'}`}
+                                    className={`h-6 aspect-square w-full rounded hover:opacity-80 ${inactive ? 'cursor-default opacity-50' : 'cursor-pointer'}`}
                                     style={{
                                       backgroundColor: done ? doneColor : emptyColor,
                                       outline: currentDay ? `2px solid ${textColor}` : undefined
                                     }}
                                     onClick={() =>
-                                      !future && toggleHabitCompletion(habit.id, dateStr)
+                                      !inactive && toggleHabitCompletion(habit.id, dateStr)
                                     }
                                   />
                                 </td>
