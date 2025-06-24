@@ -3,17 +3,20 @@ import Navbar from '@/components/Navbar'
 import { useTaskStore } from '@/hooks/useTaskStore'
 import { useSettings } from '@/hooks/useSettings'
 import { useTranslation } from 'react-i18next'
+import i18n from '@/lib/i18n'
 import {
   startOfDay,
   addWeeks,
   addDays,
   getISOWeek,
+  getISODay,
   format,
   startOfISOWeekYear,
   getISOWeeksInYear,
   isSameISOWeek,
   isToday
 } from 'date-fns'
+import { de as deLocale, enUS } from 'date-fns/locale'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import TaskModal from '@/components/TaskModal'
@@ -42,6 +45,7 @@ const HabitCard: React.FC<{ habit: Task }> = ({ habit }) => {
   const { tasks, toggleHabitCompletion } = useTaskStore()
   const { colorPalette, theme } = useSettings()
   const { t } = useTranslation()
+  const locale = i18n.language === 'de' ? deLocale : enUS
   const [year, setYear] = useState(today.getFullYear())
 
   const yearStart = startOfISOWeekYear(new Date(year, 0, 4))
@@ -160,11 +164,12 @@ const HabitCard: React.FC<{ habit: Task }> = ({ habit }) => {
                 <td
                   className="text-xs pr-1"
                   style={{
-                    backgroundColor: r === today.getDay() ? textColor : undefined,
-                    color: r === today.getDay() ? baseColor : undefined
+                    backgroundColor:
+                      r === getISODay(today) - 1 ? textColor : undefined,
+                    color: r === getISODay(today) - 1 ? baseColor : undefined
                   }}
                 >
-                  {format(addDays(yearStart, r), 'EEE')}
+                  {format(addDays(yearStart, r), 'EEE', { locale })}
                 </td>
                 {weeks.map(w => {
                   const date = addDays(w, r)
