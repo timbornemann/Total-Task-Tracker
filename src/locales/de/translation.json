@@ -253,7 +253,8 @@
   },
   "notes": {
     "newNote": "Neue Notiz",
-    "none": "Keine Notizen vorhanden."
+    "none": "Keine Notizen vorhanden.",
+    "deleteConfirm": "Soll \"{{title}}\" wirklich gelöscht werden?"
   },
   "recurring": {
     "template": "Vorlage",
@@ -295,7 +296,8 @@
     "noCards": "Noch keine Karten vorhanden.",
     "notFound": "Deck nicht gefunden.",
     "cardNumber": "Karte {{number}}",
-    "dueProgress": "{{due}}/{{total}} fällig"
+    "dueProgress": "{{due}}/{{total}} fällig",
+    "deleteConfirm": "Soll diese Karte wirklich gelöscht werden?"
   },
   "releaseNotes": {
     "title": "Release Notes",
@@ -324,7 +326,8 @@
     "none": "Noch keine Decks vorhanden.",
     "cards": "{{count}} Karte",
     "cards_plural": "{{count}} Karten",
-    "dueProgress": "{{due}}/{{total}} fällig"
+    "dueProgress": "{{due}}/{{total}} fällig",
+    "deleteConfirm": "Soll das Deck \"{{name}}\" wirklich gelöscht werden?"
   },
   "flashcardStats": {
     "title": "Karten Statistiken",

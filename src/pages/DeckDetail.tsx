@@ -7,6 +7,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import FlashcardModal from '@/components/FlashcardModal';
 import { useFlashcardStore } from '@/hooks/useFlashcardStore';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
+import ConfirmDialog from '@/components/ConfirmDialog';
 
 const DeckDetailPage: React.FC = () => {
   const { t } = useTranslation();
@@ -27,6 +28,7 @@ const DeckDetailPage: React.FC = () => {
   const dueCount = countDueCardsForDeck(deckId!);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [deleteCardId, setDeleteCardId] = useState<string | null>(null);
 
   if (!deck) return <div className="p-4">{t('deckDetail.notFound')}</div>;
 
@@ -72,7 +74,7 @@ const DeckDetailPage: React.FC = () => {
                   <Button variant="outline" size="sm" onClick={() => { setEditingIndex(index); setIsModalOpen(true); }}>
                     <Pencil className="h-4 w-4" />
                   </Button>
-                  <Button variant="destructive" size="sm" onClick={() => deleteFlashcard(card.id)}>
+                  <Button variant="destructive" size="sm" onClick={() => setDeleteCardId(card.id)}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </CardFooter>
@@ -87,6 +89,19 @@ const DeckDetailPage: React.FC = () => {
         onSave={handleSave}
         decks={decks}
         card={editingIndex !== null ? cards[editingIndex] : undefined}
+      />
+      <ConfirmDialog
+        open={!!deleteCardId}
+        onOpenChange={o => !o && setDeleteCardId(null)}
+        title={t('deckDetail.deleteConfirm')}
+        onConfirm={() => {
+          if (deleteCardId) {
+            deleteFlashcard(deleteCardId);
+            setDeleteCardId(null);
+          }
+        }}
+        confirmText={t('common.delete')}
+        cancelText={t('common.cancel')}
       />
     </div>
   );

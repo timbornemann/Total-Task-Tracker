@@ -20,6 +20,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import KanbanFilterSheet from '@/components/KanbanFilterSheet';
 import { SlidersHorizontal } from 'lucide-react';
+import ConfirmDialog from '@/components/ConfirmDialog';
 
 const Kanban: React.FC = () => {
   const {
@@ -37,6 +38,7 @@ const Kanban: React.FC = () => {
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [parentTask, setParentTask] = useState<Task | null>(null);
+  const [deleteTaskId, setDeleteTaskId] = useState<string | null>(null);
   const navigate = useNavigate();
   const { start: startPomodoro } = usePomodoroStore();
   const { colorPalette } = useSettings();
@@ -91,14 +93,7 @@ const Kanban: React.FC = () => {
   };
 
   const handleDeleteTask = (taskId: string) => {
-    const task = findTaskById(taskId);
-    if (task && window.confirm(t('kanban.deleteConfirm', { title: task.title }))) {
-      deleteTask(taskId);
-      toast({
-        title: t('kanban.deleted'),
-        description: t('kanban.deleted')
-      });
-    }
+    setDeleteTaskId(taskId);
   };
 
   const handleToggleTaskComplete = (taskId: string, completed: boolean) => {
@@ -320,6 +315,27 @@ const Kanban: React.FC = () => {
         categories={categories}
         colorOptions={colorOptions}
         colorPalette={colorPalette}
+      />
+      <ConfirmDialog
+        open={!!deleteTaskId}
+        onOpenChange={o => !o && setDeleteTaskId(null)}
+        title={
+          deleteTaskId
+            ? t('kanban.deleteConfirm', { title: findTaskById(deleteTaskId)?.title })
+            : ''
+        }
+        onConfirm={() => {
+          if (deleteTaskId) {
+            deleteTask(deleteTaskId);
+            toast({
+              title: t('kanban.deleted'),
+              description: t('kanban.deleted')
+            });
+            setDeleteTaskId(null);
+          }
+        }}
+        confirmText={t('common.delete')}
+        cancelText={t('common.cancel')}
       />
     </div>
   );

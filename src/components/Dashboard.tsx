@@ -36,6 +36,7 @@ import TaskFilterSheet from './TaskFilterSheet';
 import CategoryFilterSheet from './CategoryFilterSheet';
 import { useToast } from '@/hooks/use-toast';
 import { ToastAction } from '@/components/ui/toast';
+import ConfirmDialog from './ConfirmDialog';
 import {
   DragDropContext,
   Droppable,
@@ -116,6 +117,8 @@ const Dashboard: React.FC = () => {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [parentTask, setParentTask] = useState<Task | null>(null);
+  const [deleteTaskId, setDeleteTaskId] = useState<string | null>(null);
+  const [deleteCategoryId, setDeleteCategoryId] = useState<string | null>(null);
   const { start: startPomodoro } = usePomodoroStore();
 
   const colorOptions = useMemo(() => {
@@ -271,14 +274,7 @@ const Dashboard: React.FC = () => {
   };
 
   const handleDeleteTask = (taskId: string) => {
-    const task = findTaskById(taskId);
-    if (task && window.confirm(t('task.deleteConfirm', { title: task.title }))) {
-      deleteTask(taskId);
-      toast({
-        title: t('task.deleted'),
-        description: t('dashboard.taskDeletedDesc')
-      });
-    }
+    setDeleteTaskId(taskId);
   };
 
   const handleToggleTaskComplete = (taskId: string, completed: boolean) => {
@@ -322,30 +318,7 @@ const Dashboard: React.FC = () => {
   };
 
   const handleDeleteCategory = (categoryId: string) => {
-    const category = categories.find(c => c.id === categoryId);
-    if (!category) return;
-
-    const nonDefaultCount = categories.filter(c => c.id !== 'default').length;
-    const confirmText =
-      nonDefaultCount === 1 && category.id !== 'default'
-        ? t('category.deleteLastConfirm', { name: category.name })
-        : t('category.deleteConfirm', { name: category.name });
-
-    if (window.confirm(confirmText)) {
-      deleteCategory(categoryId);
-      toast({
-        title: t('category.deleted'),
-        description: t('dashboard.categoryDeletedDesc'),
-        action: (
-          <ToastAction
-            altText={t('dashboard.undo')}
-            onClick={() => undoDeleteCategory(categoryId)}
-          >
-            {t('dashboard.undo')}
-          </ToastAction>
-        )
-      });
-    }
+    setDeleteCategoryId(categoryId);
   };
 
   const handleToggleCategoryPinned = (id: string, pinned: boolean) => {
@@ -698,6 +671,62 @@ const Dashboard: React.FC = () => {
         onFilterColorChange={setCategoryFilterColor}
         colorOptions={categoryColorOptions}
         colorPalette={colorPalette}
+      />
+      <ConfirmDialog
+        open={!!deleteTaskId}
+        onOpenChange={o => !o && setDeleteTaskId(null)}
+        title={
+          deleteTaskId
+            ? t('task.deleteConfirm', {
+                title: findTaskById(deleteTaskId)?.title
+              })
+            : ''
+        }
+        onConfirm={() => {
+          if (deleteTaskId) {
+            deleteTask(deleteTaskId);
+            toast({
+              title: t('task.deleted'),
+              description: t('dashboard.taskDeletedDesc')
+            });
+            setDeleteTaskId(null);
+          }
+        }}
+        confirmText={t('common.delete')}
+        cancelText={t('common.cancel')}
+      />
+      <ConfirmDialog
+        open={!!deleteCategoryId}
+        onOpenChange={o => !o && setDeleteCategoryId(null)}
+        title={(() => {
+          if (!deleteCategoryId) return '';
+          const category = categories.find(c => c.id === deleteCategoryId);
+          if (!category) return '';
+          const nonDefaultCount = categories.filter(c => c.id !== 'default').length;
+          return nonDefaultCount === 1 && category.id !== 'default'
+            ? t('category.deleteLastConfirm', { name: category.name })
+            : t('category.deleteConfirm', { name: category.name });
+        })()}
+        onConfirm={() => {
+          if (deleteCategoryId) {
+            deleteCategory(deleteCategoryId);
+            toast({
+              title: t('category.deleted'),
+              description: t('dashboard.categoryDeletedDesc'),
+              action: (
+                <ToastAction
+                  altText={t('dashboard.undo')}
+                  onClick={() => undoDeleteCategory(deleteCategoryId)}
+                >
+                  {t('dashboard.undo')}
+                </ToastAction>
+              )
+            });
+            setDeleteCategoryId(null);
+          }
+        }}
+        confirmText={t('common.delete')}
+        cancelText={t('common.cancel')}
       />
     </div>
   );
