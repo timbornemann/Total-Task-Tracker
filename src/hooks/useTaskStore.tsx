@@ -484,24 +484,22 @@ const useTaskStoreImpl = () => {
   };
 
   const toggleHabitCompletion = (id: string, date: string) => {
-    let markComplete = false;
+    const habit = recurring.find(h => h.id === id);
+    if (!habit) return;
+    const history = habit.habitHistory || [];
+    const exists = history.includes(date);
+    const markComplete = !exists;
+    const newHistory = exists ? history.filter(d => d !== date) : [...history, date];
+
     setRecurring(prev =>
-      prev.map(habit => {
-        if (habit.id !== id) return habit;
-        const history = habit.habitHistory || [];
-        const exists = history.includes(date);
-        markComplete = !exists;
-        const newHistory = exists
-          ? history.filter(d => d !== date)
-          : [...history, date];
-        return { ...habit, habitHistory: newHistory, updatedAt: new Date() };
-      })
+      prev.map(h =>
+        h.id === id ? { ...h, habitHistory: newHistory, updatedAt: new Date() } : h
+      )
     );
+
     setTasks(prev =>
       prev.map(task => {
-        // Match tasks created from this recurring task template
         if (task.recurringId === id) {
-          // Check if this task was created on the date we're toggling
           const taskDate = format(task.createdAt, 'yyyy-MM-dd');
           if (taskDate === date) {
             return {
