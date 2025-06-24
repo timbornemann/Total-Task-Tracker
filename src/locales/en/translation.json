@@ -170,7 +170,8 @@
   },
   "noteDetail": {
     "notFound": "Note not found.",
-    "title": "Note"
+    "title": "Note",
+    "livePreview": "Live preview"
   },
   "homeSections": {
     "tasks": "Tasks",
