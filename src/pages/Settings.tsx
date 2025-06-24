@@ -54,7 +54,7 @@ interface ServerInfo {
   wifiUrl: string | null
 }
 
-const deriveStructure = (items: any[]): Record<string, unknown> => {
+const deriveStructure = <T extends Record<string, unknown>>(items: T[]): Record<string, unknown> => {
   const result: Record<string, unknown> = {}
   for (const item of items) {
     Object.entries(item).forEach(([key, value]) => {
@@ -125,8 +125,15 @@ const SettingsPage: React.FC = () => {
   const allInputRef = React.useRef<HTMLInputElement>(null)
 
   type ImportType = 'tasks' | 'notes' | 'decks' | 'all'
+  type ImportData = Partial<{
+    tasks: Task[]
+    categories: Category[]
+    notes: Note[]
+    flashcards: Flashcard[]
+    decks: Deck[]
+  }>
   const [importInfo, setImportInfo] = useState<
-    | { type: ImportType; data: any }
+    | { type: ImportType; data: ImportData }
     | null
   >(null)
   const [importResult, setImportResult] = useState<'success' | 'error' | null>(
@@ -327,14 +334,14 @@ const SettingsPage: React.FC = () => {
     if (!file) return
     try {
       const text = await file.text()
-      const data = JSON.parse(text)
+      const data = JSON.parse(text) as ImportData
       setImportInfo({ type, data })
     } catch {
       setImportResult('error')
     }
   }
 
-  const importTasks = async (incoming: any) => {
+  const importTasks = async (incoming: ImportData) => {
     const res = await fetch('/api/data')
     const current = res.ok
       ? await res.json()
@@ -361,7 +368,7 @@ const SettingsPage: React.FC = () => {
     setTimeout(() => window.location.reload(), 1500)
   }
 
-  const importNotes = async (incoming: any) => {
+  const importNotes = async (incoming: ImportData['notes']) => {
     const res = await fetch('/api/notes')
     const current = res.ok ? await res.json() : []
 
@@ -378,7 +385,7 @@ const SettingsPage: React.FC = () => {
     setTimeout(() => window.location.reload(), 1500)
   }
 
-  const importDecks = async (data: any) => {
+  const importDecks = async (data: ImportData) => {
 
     const [cardsRes, decksRes] = await Promise.all([
       fetch('/api/flashcards'),
@@ -409,7 +416,7 @@ const SettingsPage: React.FC = () => {
     setTimeout(() => window.location.reload(), 1500)
   }
 
-  const importAll = async (incoming: any) => {
+  const importAll = async (incoming: ImportData) => {
 
     const res = await fetch('/api/all')
     const current = res.ok
@@ -444,7 +451,7 @@ const SettingsPage: React.FC = () => {
     if (!importInfo) return
     try {
       if (importInfo.type === 'tasks') await importTasks(importInfo.data)
-      if (importInfo.type === 'notes') await importNotes(importInfo.data)
+      if (importInfo.type === 'notes') await importNotes(importInfo.data.notes)
       if (importInfo.type === 'decks') await importDecks(importInfo.data)
       if (importInfo.type === 'all') await importAll(importInfo.data)
     } catch {
