@@ -54,79 +54,20 @@ interface ServerInfo {
   wifiUrl: string | null
 }
 
-const taskStructure = {
-  id: '',
-  title: '',
-  description: '',
-  priority: '',
-  color: 0,
-  completed: false,
-  status: '',
-  categoryId: '',
-  parentId: '',
-  subtasks: [],
-  createdAt: '',
-  updatedAt: '',
-  dueDate: '',
-  isRecurring: false,
-  recurrencePattern: '',
-  lastCompleted: '',
-  nextDue: '',
-  dueOption: '',
-  dueAfterDays: 0,
-  startOption: '',
-  startWeekday: 0,
-  startDate: '',
-  startTime: '',
-  endTime: '',
-  order: 0,
-  pinned: false,
-  recurringId: '',
-  template: false,
-  titleTemplate: '',
-  customIntervalDays: 0,
-  visible: false
-}
-
-const categoryStructure = {
-  id: '',
-  name: '',
-  description: '',
-  color: 0,
-  createdAt: '',
-  updatedAt: '',
-  order: 0,
-  pinned: false
-}
-
-const noteStructure = {
-  id: '',
-  title: '',
-  text: '',
-  color: 0,
-  createdAt: '',
-  updatedAt: '',
-  order: 0,
-  pinned: false
-}
-
-const flashcardStructure = {
-  id: '',
-  front: '',
-  back: '',
-  deckId: '',
-  interval: 0,
-  dueDate: '',
-  easyCount: 0,
-  mediumCount: 0,
-  hardCount: 0,
-  typedCorrect: 0,
-  typedTotal: 0
-}
-
-const deckStructure = {
-  id: '',
-  name: ''
+const deriveStructure = (items: any[]): Record<string, unknown> => {
+  const result: Record<string, unknown> = {}
+  for (const item of items) {
+    Object.entries(item).forEach(([key, value]) => {
+      if (!(key in result)) {
+        if (Array.isArray(value)) result[key] = []
+        else if (typeof value === 'string') result[key] = ''
+        else if (typeof value === 'number') result[key] = 0
+        else if (typeof value === 'boolean') result[key] = false
+        else result[key] = null
+      }
+    })
+  }
+  return result
 }
 
 const SettingsPage: React.FC = () => {
@@ -328,29 +269,54 @@ const SettingsPage: React.FC = () => {
     }
   }
 
-  const exportTaskStructure = () => {
-    download({ task: taskStructure, category: categoryStructure }, 'tasks-structure.json')
+  const exportTaskStructure = async () => {
+    const res = await fetch('/api/data')
+    if (res.ok) {
+      const data = await res.json()
+      const tasks = deriveStructure(data.tasks || [])
+      const categories = deriveStructure(data.categories || [])
+      download({ task: tasks, category: categories }, 'tasks-structure.json')
+    }
   }
 
-  const exportNoteStructure = () => {
-    download({ note: noteStructure }, 'notes-structure.json')
+  const exportNoteStructure = async () => {
+    const res = await fetch('/api/notes')
+    if (res.ok) {
+      const notes = await res.json()
+      download({ note: deriveStructure(notes) }, 'notes-structure.json')
+    }
   }
 
-  const exportDeckStructure = () => {
-    download({ flashcard: flashcardStructure, deck: deckStructure }, 'decks-structure.json')
+  const exportDeckStructure = async () => {
+    const [cardsRes, decksRes] = await Promise.all([
+      fetch('/api/flashcards'),
+      fetch('/api/decks')
+    ])
+    if (cardsRes.ok && decksRes.ok) {
+      const cards = await cardsRes.json()
+      const decks = await decksRes.json()
+      download(
+        { flashcard: deriveStructure(cards), deck: deriveStructure(decks) },
+        'decks-structure.json'
+      )
+    }
   }
 
-  const exportAllStructure = () => {
-    download(
-      {
-        task: taskStructure,
-        category: categoryStructure,
-        note: noteStructure,
-        flashcard: flashcardStructure,
-        deck: deckStructure
-      },
-      'all-structure.json'
-    )
+  const exportAllStructure = async () => {
+    const res = await fetch('/api/all')
+    if (res.ok) {
+      const data = await res.json()
+      download(
+        {
+          task: deriveStructure(data.tasks || []),
+          category: deriveStructure(data.categories || []),
+          note: deriveStructure(data.notes || []),
+          flashcard: deriveStructure(data.flashcards || []),
+          deck: deriveStructure(data.decks || [])
+        },
+        'all-structure.json'
+      )
+    }
   }
 
   const handleFile = async (
