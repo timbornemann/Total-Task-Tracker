@@ -87,7 +87,8 @@ const useTaskStoreImpl = () => {
               startTime: task.startTime,
               endTime: task.endTime,
               color: mapColor(task.color),
-              recurringId: task.recurringId
+              recurringId: task.recurringId,
+              visible: task.visible
             }))
         : [];
       setTasks(tasksData);
