@@ -30,6 +30,7 @@
       "home": "Startseite",
       "theme": "Theme",
       "data": "Daten & Server",
+      "ai": "KI",
       "info": "Info",
       "language": "Sprache"
     },
@@ -149,6 +150,9 @@
     "importPreview": "Import-Vorschau",
     "importSuccess": "Import erfolgreich",
     "importError": "Import fehlgeschlagen",
+    "aiUrl": "API-URL",
+    "aiToken": "API-Token",
+    "aiModel": "Modell",
     "categories": "Kategorien: {{count}}"
   },
   "noteModal": {

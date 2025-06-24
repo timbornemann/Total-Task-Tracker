@@ -32,6 +32,9 @@ const defaultSyncInterval = 5
 const defaultSyncEnabled = true
 const defaultTaskPriority: 'low' | 'medium' | 'high' = 'medium'
 const defaultLanguage = 'de'
+const defaultLlmUrl = ''
+const defaultLlmToken = ''
+const defaultLlmModel = 'gpt-3.5-turbo'
 const defaultTheme = {
   background: '0 0% 100%',
   foreground: '222.2 84% 4.9%',
@@ -311,6 +314,12 @@ interface SettingsContextValue {
   updateSyncEnabled: (value: boolean) => void
   language: string
   updateLanguage: (lang: string) => void
+  llmUrl: string
+  updateLlmUrl: (url: string) => void
+  llmToken: string
+  updateLlmToken: (token: string) => void
+  llmModel: string
+  updateLlmModel: (model: string) => void
 }
 
 const SettingsContext = createContext<SettingsContextValue | undefined>(undefined)
@@ -353,6 +362,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [syncInterval, setSyncInterval] = useState(defaultSyncInterval)
   const [syncEnabled, setSyncEnabled] = useState(defaultSyncEnabled)
   const [language, setLanguage] = useState(defaultLanguage)
+  const [llmUrl, setLlmUrl] = useState(defaultLlmUrl)
+  const [llmToken, setLlmToken] = useState(defaultLlmToken)
+  const [llmModel, setLlmModel] = useState(defaultLlmModel)
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
@@ -455,6 +467,15 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             setLanguage(data.language)
             i18n.changeLanguage(data.language)
           }
+          if (typeof data.llmUrl === 'string') {
+            setLlmUrl(data.llmUrl)
+          }
+          if (typeof data.llmToken === 'string') {
+            setLlmToken(data.llmToken)
+          }
+          if (typeof data.llmModel === 'string') {
+            setLlmModel(data.llmModel)
+          }
         }
       } catch (err) {
         console.error('Error loading settings', err)
@@ -492,7 +513,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             syncServerUrl,
             syncInterval,
             syncEnabled,
-            language
+            language,
+            llmUrl,
+            llmToken,
+            llmModel
           })
         })
       } catch (err) {
@@ -523,7 +547,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     syncServerUrl,
     syncInterval,
     syncEnabled,
-    language
+    language,
+    llmUrl,
+    llmToken,
+    llmModel
   ])
 
   useEffect(() => {
@@ -615,6 +642,18 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     i18n.changeLanguage(lang)
   }
 
+  const updateLlmUrl = (url: string) => {
+    setLlmUrl(url)
+  }
+
+  const updateLlmToken = (token: string) => {
+    setLlmToken(token)
+  }
+
+  const updateLlmModel = (model: string) => {
+    setLlmModel(model)
+  }
+
   const toggleHomeSection = (section: string) => {
     setHomeSections(prev =>
       prev.includes(section)
@@ -692,7 +731,13 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         syncEnabled,
         updateSyncEnabled,
         language,
-        updateLanguage
+        updateLanguage,
+        llmUrl,
+        updateLlmUrl,
+        llmToken,
+        updateLlmToken,
+        llmModel,
+        updateLlmModel
       }}
     >
       {children}

@@ -30,6 +30,7 @@
       "home": "Home",
       "theme": "Theme",
       "data": "Data & Server",
+      "ai": "AI",
       "info": "Info",
       "language": "Language"
     },
@@ -149,6 +150,9 @@
     "importPreview": "Import preview",
     "importSuccess": "Import successful",
     "importError": "Import failed",
+    "aiUrl": "API URL",
+    "aiToken": "API Token",
+    "aiModel": "Model",
     "categories": "Categories: {{count}}"
   },
   "noteModal": {
