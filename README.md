@@ -158,6 +158,8 @@ npm start    # startet die gebaute App auf Port 3002
 - Lern- und Pausendauer frei konfigurierbar (auch direkt im Timer anpassbar)
 - Daten können im Einstellungsbereich exportiert und importiert werden
   (inklusive Einstellungen)
+- Import zeigt eine Vorschau der einzufügenden Elemente und bestätigt den Erfolg
+- Zusätzlich kann die reine Datenstruktur als JSON exportiert werden
 - Zentrale Synchronisation über HTTP. Ein Container kann als Sync-Server
   betrieben werden, alle anderen senden ihre Daten regelmäßig dorthin.
   Der Server listet seine IP-Adressen auf und führt ein Log über eingehende
