@@ -7,6 +7,9 @@ import { format } from 'date-fns';
 const API_URL = '/api/data';
 
 const useTaskStoreImpl = () => {
+  const generateId = () =>
+    (crypto as { randomUUID?: () => string }).randomUUID?.() ||
+    `${Date.now()}-${Math.random().toString(36).slice(2)}`;
   const sortNotes = (list: Note[]): Note[] => {
     const pinned = list
       .filter(n => n.pinned)
@@ -228,7 +231,7 @@ const useTaskStoreImpl = () => {
   ) => {
     const newTask: Task = {
       ...taskData,
-      id: Date.now().toString(),
+      id: generateId(),
       subtasks: [],
       createdAt: taskData.createdAt ? new Date(taskData.createdAt) : new Date(),
       updatedAt: new Date(),
@@ -409,7 +412,7 @@ const useTaskStoreImpl = () => {
     const shouldCreateNow = start <= new Date();
     const newItem: Task = {
       ...data,
-      id: Date.now().toString(),
+      id: generateId(),
       subtasks: [],
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -517,7 +520,7 @@ const useTaskStoreImpl = () => {
   const addCategory = (categoryData: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>) => {
     const newCategory: Category = {
       ...categoryData,
-      id: Date.now().toString(),
+      id: generateId(),
       createdAt: new Date(),
       updatedAt: new Date(),
       order: 0,
@@ -689,7 +692,7 @@ const useTaskStoreImpl = () => {
   ) => {
     const newNote: Note = {
       ...data,
-      id: Date.now().toString(),
+      id: generateId(),
       createdAt: new Date(),
       updatedAt: new Date(),
       order: 0,

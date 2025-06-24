@@ -108,9 +108,15 @@ const HabitTrackerPage: React.FC = () => {
         ) : (
           <div className="space-y-6">
             {recurring.map(habit => {
+              const habitTasks = tasks.filter(t => t.recurringId === habit.id)
+              const taskMap = habitTasks.reduce<Record<string, Task>>((m, t) => {
+                const key = format(t.createdAt, 'yyyy-MM-dd')
+                m[key] = t
+                return m
+              }, {})
               const freqDays = getFrequencyDays(habit)
-              const { total, completed } = countTotals(habit, freqDays, map)
-              const streak = calculateStreak(habit, freqDays, map)
+              const { total, completed } = countTotals(habit, freqDays, taskMap)
+              const streak = calculateStreak(habit, freqDays, taskMap)
               const baseColor = colorPalette[habit.color] ?? colorPalette[0]
               const textColor = complementaryColor(baseColor)
               const doneColor = adjustColor(
@@ -119,6 +125,7 @@ const HabitTrackerPage: React.FC = () => {
               )
               const emptyColor = hslToHex(theme.muted)
               const rows = [...freqDays].sort((a, b) => a - b)
+
               const habitTasks = tasks.filter(t => t.recurringId === habit.id)
               const map = habitTasks.reduce<Record<string, Task>>((m, t) => {
                 const key = format(t.createdAt, 'yyyy-MM-dd')
@@ -186,10 +193,10 @@ const HabitTrackerPage: React.FC = () => {
                             {weeks.map(w => {
                               const date = addDays(w, r)
                               const dateStr = format(date, 'yyyy-MM-dd')
-                              const done = map[dateStr]?.completed
+                              const done = taskMap[dateStr]?.completed
                               const future = date > today
                               const beforeStart = date < firstTaskDate
-                              const inactive = future || beforeStart || !map[dateStr]
+                              const inactive = future || beforeStart || !taskMap[dateStr]
                               const currentDay = isToday(date)
                               return (
                                 <td key={dateStr} className="p-0.5">
