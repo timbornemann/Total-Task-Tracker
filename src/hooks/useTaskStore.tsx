@@ -221,13 +221,16 @@ const useTaskStoreImpl = () => {
   }, []);
 
   const addTask = (
-    taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'subtasks' | 'pinned'>
+    taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'subtasks' | 'pinned'> & {
+      createdAt?: Date
+      visible?: boolean
+    }
   ) => {
     const newTask: Task = {
       ...taskData,
       id: Date.now().toString(),
       subtasks: [],
-      createdAt: new Date(),
+      createdAt: taskData.createdAt ? new Date(taskData.createdAt) : new Date(),
       updatedAt: new Date(),
       dueDate: taskData.dueDate ? new Date(taskData.dueDate) : undefined,
       startTime: taskData.startTime,
@@ -242,7 +245,8 @@ const useTaskStoreImpl = () => {
       recurringId: taskData.recurringId,
       customIntervalDays: taskData.customIntervalDays,
       titleTemplate: taskData.titleTemplate,
-      template: taskData.template
+      template: taskData.template,
+      visible: taskData.visible ?? true
     };
     
     if (taskData.parentId) {
@@ -325,7 +329,6 @@ const useTaskStoreImpl = () => {
   };
 
   const updateTask = (taskId: string, updates: Partial<Task>) => {
-    let affected: { id: string; date: string; completed: boolean } | null = null;
     const updateTaskRecursively = (tasks: Task[]): Task[] => {
       return tasks.map(task => {
         if (task.id === taskId) {
@@ -338,19 +341,6 @@ const useTaskStoreImpl = () => {
               lastCompleted: new Date(),
               nextDue: calculateNextDue(task.recurrencePattern),
               dueDate: task.dueDate,
-            };
-          }
-          if (
-            typeof updates.completed === 'boolean' &&
-            task.recurringId
-          ) {
-          // Extract the date to mark in the habit tracker
-          // Use the creation date of the task
-          const dateToMark = task.createdAt;
-            affected = {
-              id: task.recurringId,
-              date: format(dateToMark, 'yyyy-MM-dd'),
-              completed: updates.completed,
             };
           }
           return {
@@ -372,21 +362,6 @@ const useTaskStoreImpl = () => {
       });
     };
     setTasks(prev => updateTaskRecursively(prev));
-    if (affected) {
-      setRecurring(prev =>
-        prev.map(habit => {
-          if (habit.id !== affected!.id) return habit;
-          const history = habit.habitHistory || [];
-          const exists = history.includes(affected!.date);
-          const newHistory = affected!.completed
-            ? exists
-              ? history
-              : [...history, affected!.date]
-            : history.filter(d => d !== affected!.date);
-          return { ...habit, habitHistory: newHistory, updatedAt: new Date() };
-        })
-      );
-    }
   };
 
   const deleteTask = (taskId: string) => {
@@ -445,7 +420,6 @@ const useTaskStoreImpl = () => {
       template: true,
       startTime: data.startTime,
       endTime: data.endTime,
-      habitHistory: [],
       nextDue: shouldCreateNow
         ? calculateNextDue(
             data.recurrencePattern,
@@ -455,10 +429,12 @@ const useTaskStoreImpl = () => {
         : start,
     };
 
-    if (shouldCreateNow) {
+    const occurrences = 30;
+    let current = start;
+    for (let i = 0; i < occurrences; i++) {
       addTask({
         ...newItem,
-        dueDate: calculateDueDate(newItem),
+        dueDate: current,
         dueOption: undefined,
         dueAfterDays: undefined,
         startOption: undefined,
@@ -471,7 +447,17 @@ const useTaskStoreImpl = () => {
         titleTemplate: undefined,
         isRecurring: false,
         parentId: undefined,
+        recurringId: newItem.id,
+        createdAt: current,
+        visible: current <= new Date(),
       });
+      const next = calculateNextDue(
+        data.recurrencePattern,
+        data.customIntervalDays,
+        current
+      );
+      if (!next) break;
+      current = next;
     }
 
     setRecurring(prev => [...prev, newItem]);
@@ -484,24 +470,12 @@ const useTaskStoreImpl = () => {
   };
 
   const toggleHabitCompletion = (id: string, date: string) => {
-    const habit = recurring.find(h => h.id === id);
-    if (!habit) return;
-    const history = habit.habitHistory || [];
-    const exists = history.includes(date);
-    const markComplete = !exists;
-    const newHistory = exists ? history.filter(d => d !== date) : [...history, date];
-
-    setRecurring(prev =>
-      prev.map(h =>
-        h.id === id ? { ...h, habitHistory: newHistory, updatedAt: new Date() } : h
-      )
-    );
-
     setTasks(prev =>
       prev.map(task => {
         if (task.recurringId === id) {
           const taskDate = format(task.createdAt, 'yyyy-MM-dd');
           if (taskDate === date) {
+            const markComplete = !task.completed;
             return {
               ...task,
               completed: markComplete,
@@ -517,6 +491,7 @@ const useTaskStoreImpl = () => {
 
   const deleteRecurringTask = (id: string) => {
     setRecurring(prev => prev.filter(t => t.id !== id));
+    setTasks(prev => prev.filter(t => !(t.recurringId === id && !t.visible)));
     setDeletions(prev => [...prev, { id, type: 'recurring', deletedAt: new Date() }]);
   };
 
@@ -530,39 +505,13 @@ const useTaskStoreImpl = () => {
   };
 
   const processRecurring = () => {
-    setRecurring(prev => {
-      let changed = false;
-      const updated = prev.map(t => {
-        if (t.nextDue && t.nextDue <= new Date()) {
-          addTask({
-            ...t,
-            dueDate: calculateDueDate(t),
-            dueOption: undefined,
-            dueAfterDays: undefined,
-        startOption: undefined,
-        startWeekday: undefined,
-        startDate: undefined,
-        startTime: t.startTime,
-        endTime: t.endTime,
-        title: generateTitle(t),
-        template: undefined,
-        titleTemplate: undefined,
-        isRecurring: false,
-        parentId: undefined,
-        recurringId: t.id,
-      });
-          const next = calculateNextDue(
-            t.recurrencePattern,
-            t.customIntervalDays,
-            t.nextDue
-          );
-          changed = true;
-          return { ...t, nextDue: next, order: t.order + 1 };
-        }
-        return t;
-      });
-      return changed ? updated : prev;
-    });
+    setTasks(prev =>
+      prev.map(t =>
+        t.recurringId && !t.visible && t.createdAt <= new Date()
+          ? { ...t, visible: true }
+          : t
+      )
+    );
   };
 
   const addCategory = (categoryData: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>) => {
@@ -775,7 +724,9 @@ const useTaskStoreImpl = () => {
 
   const getTasksByCategory = (categoryId: string): Task[] => {
     return tasks
-      .filter(task => task.categoryId === categoryId && !task.parentId)
+      .filter(
+        task => task.categoryId === categoryId && !task.parentId && task.visible !== false
+      )
       .sort((a, b) =>
         a.pinned === b.pinned ? a.order - b.order : a.pinned ? -1 : 1
       );

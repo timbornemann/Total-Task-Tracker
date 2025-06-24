@@ -121,7 +121,7 @@ const Dashboard: React.FC = () => {
   const colorOptions = useMemo(() => {
     const tasksForColors = selectedCategory
       ? getTasksByCategory(selectedCategory.id)
-      : tasks;
+      : tasks.filter(t => t.visible !== false);
     const colors = new Set<number>();
     tasksForColors.forEach(task => colors.add(task.color));
     return Array.from(colors);
@@ -226,13 +226,13 @@ const Dashboard: React.FC = () => {
   // Statistics
   const totalTasks = selectedCategory
     ? getTasksByCategory(selectedCategory.id).length
-    : tasks.length;
+    : tasks.filter(t => t.visible !== false).length;
 
   const totalCategories = selectedCategory ? 1 : categories.length;
 
   const completedTasks = (selectedCategory
     ? getTasksByCategory(selectedCategory.id)
-    : tasks
+    : tasks.filter(t => t.visible !== false)
   ).filter(task => {
     const hasSubtasks = task.subtasks.length > 0;
     if (hasSubtasks) {

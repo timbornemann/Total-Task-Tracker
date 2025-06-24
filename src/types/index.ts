@@ -42,8 +42,8 @@ export interface Task {
   template?: boolean;
   titleTemplate?: string;
   customIntervalDays?: number;
-  /** Dates completed when used as habit template */
-  habitHistory?: string[];
+  /** Whether the task is visible to the user */
+  visible?: boolean;
 }
 
 export interface Category {
