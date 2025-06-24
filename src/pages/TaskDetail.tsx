@@ -17,6 +17,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import SubtaskFilterSheet from "@/components/SubtaskFilterSheet";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import { useTaskStore } from "@/hooks/useTaskStore";
 import { useSettings } from "@/hooks/useSettings";
 import { Task } from "@/types";
@@ -64,6 +65,7 @@ const TaskDetailPage: React.FC = () => {
   const { colorPalette, theme } = useSettings();
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortCriteria, setSortCriteria] = useState("order");
   const [filterPriority, setFilterPriority] = useState("all");
@@ -235,14 +237,7 @@ const TaskDetailPage: React.FC = () => {
   };
 
   const handleDelete = () => {
-    if (window.confirm(t("task.deleteConfirm", { title: task.title }))) {
-      deleteTask(task.id);
-      if (task.parentId) {
-        navigate(`/tasks/${task.parentId}`);
-      } else {
-        navigate(`/tasks?categoryId=${task.categoryId}`);
-      }
-    }
+    setDeleteOpen(true);
   };
 
   const handleAddSubtask = () => {
@@ -767,6 +762,21 @@ const TaskDetailPage: React.FC = () => {
           colorPalette={colorPalette}
           layout={subtaskLayout}
           onLayoutChange={setSubtaskLayout}
+        />
+        <ConfirmDialog
+          open={deleteOpen}
+          onOpenChange={setDeleteOpen}
+          title={t('task.deleteConfirm', { title: task.title })}
+          onConfirm={() => {
+            deleteTask(task.id);
+            if (task.parentId) {
+              navigate(`/tasks/${task.parentId}`);
+            } else {
+              navigate(`/tasks?categoryId=${task.categoryId}`);
+            }
+          }}
+          confirmText={t('common.delete')}
+          cancelText={t('common.cancel')}
         />
       </div>
     </div>

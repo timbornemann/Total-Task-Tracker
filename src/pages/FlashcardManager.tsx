@@ -8,6 +8,7 @@ import DeckModal from '@/components/DeckModal';
 import { useFlashcardStore } from '@/hooks/useFlashcardStore';
 import { Deck } from '@/types';
 import { useTranslation } from 'react-i18next';
+import ConfirmDialog from '@/components/ConfirmDialog';
 
 const FlashcardManagerPage: React.FC = () => {
   const {
@@ -22,6 +23,7 @@ const FlashcardManagerPage: React.FC = () => {
   const { t } = useTranslation();
   const [isDeckModalOpen, setIsDeckModalOpen] = useState(false);
   const [editingDeck, setEditingDeck] = useState<Deck | null>(null);
+  const [deleteDeckId, setDeleteDeckId] = useState<string | null>(null);
 
   const handleSaveDeck = (name: string) => {
     if (editingDeck) {
@@ -63,7 +65,7 @@ const FlashcardManagerPage: React.FC = () => {
                     <Button variant="outline" size="sm" onClick={e => { e.stopPropagation(); setEditingDeck(deck); setIsDeckModalOpen(true); }}>
                       <Pencil className="h-4 w-4" />
                     </Button>
-                    <Button variant="destructive" size="sm" onClick={e => { e.stopPropagation(); deleteDeck(deck.id); }}>
+                    <Button variant="destructive" size="sm" onClick={e => { e.stopPropagation(); setDeleteDeckId(deck.id); }}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </CardFooter>
@@ -78,6 +80,19 @@ const FlashcardManagerPage: React.FC = () => {
         onClose={() => { setIsDeckModalOpen(false); setEditingDeck(null); }}
         onSave={handleSaveDeck}
         deck={editingDeck || undefined}
+      />
+      <ConfirmDialog
+        open={!!deleteDeckId}
+        onOpenChange={o => !o && setDeleteDeckId(null)}
+        title={deleteDeckId ? t('flashcardManager.deleteConfirm', { name: decks.find(d => d.id === deleteDeckId)?.name }) : ''}
+        onConfirm={() => {
+          if (deleteDeckId) {
+            deleteDeck(deleteDeckId);
+            setDeleteDeckId(null);
+          }
+        }}
+        confirmText={t('common.delete')}
+        cancelText={t('common.cancel')}
       />
     </div>
   );

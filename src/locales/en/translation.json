@@ -253,7 +253,8 @@
   },
   "notes": {
     "newNote": "New Note",
-    "none": "No notes available."
+    "none": "No notes available.",
+    "deleteConfirm": "Are you sure you want to delete \"{{title}}\"?"
   },
   "recurring": {
     "template": "Template",
@@ -295,7 +296,8 @@
     "noCards": "No cards available.",
     "notFound": "Deck not found.",
     "cardNumber": "Card {{number}}",
-    "dueProgress": "{{due}}/{{total}} due"
+    "dueProgress": "{{due}}/{{total}} due",
+    "deleteConfirm": "Are you sure you want to delete this card?"
   },
   "releaseNotes": {
     "title": "Release Notes",
@@ -324,7 +326,8 @@
     "none": "No decks available.",
     "cards": "{{count}} card",
     "cards_plural": "{{count}} cards",
-    "dueProgress": "{{due}}/{{total}} due"
+    "dueProgress": "{{due}}/{{total}} due",
+    "deleteConfirm": "Are you sure you want to delete deck \"{{name}}\"?"
   },
   "flashcardStats": {
     "title": "Card Statistics",

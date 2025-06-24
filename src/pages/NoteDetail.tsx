@@ -12,6 +12,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import MarkdownEditor from '@/components/MarkdownEditor';
 import ReactMarkdown from 'react-markdown';
+import ConfirmDialog from '@/components/ConfirmDialog';
 
 const NoteDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -28,6 +29,7 @@ const NoteDetailPage: React.FC = () => {
     text: '',
     color: 3
   });
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const colorOptions = colorPalette;
 
@@ -139,10 +141,7 @@ const NoteDetailPage: React.FC = () => {
               </Button>
               <Button
                 variant="destructive"
-                onClick={() => {
-                  deleteNote(note.id);
-                  navigate('/notes');
-                }}
+                onClick={() => setDeleteOpen(true)}
               >
                 {t('common.delete')}
               </Button>
@@ -151,6 +150,17 @@ const NoteDetailPage: React.FC = () => {
         )}
         </div>
       </div>
+      <ConfirmDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        title={t('notes.deleteConfirm', { title: note.title })}
+        onConfirm={() => {
+          deleteNote(note.id);
+          navigate('/notes');
+        }}
+        confirmText={t('common.delete')}
+        cancelText={t('common.cancel')}
+      />
     </div>
   );
 };
