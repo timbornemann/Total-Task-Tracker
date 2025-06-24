@@ -125,6 +125,13 @@ const HabitTrackerPage: React.FC = () => {
               )
               const emptyColor = hslToHex(theme.muted)
               const rows = [...freqDays].sort((a, b) => a - b)
+
+              const habitTasks = tasks.filter(t => t.recurringId === habit.id)
+              const map = habitTasks.reduce<Record<string, Task>>((m, t) => {
+                const key = format(t.createdAt, 'yyyy-MM-dd')
+                m[key] = t
+                return m
+              }, {})
               const firstTaskDate = habitTasks.length
                 ? startOfDay(
                     habitTasks.reduce(
