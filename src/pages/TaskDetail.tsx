@@ -421,11 +421,21 @@ const TaskDetailPage: React.FC = () => {
               </TooltipProvider>
             </div>
           </div>
-          <h1
-            className={`mt-2 text-center text-2xl font-bold ${isCompleted ? "line-through opacity-70" : ""}`}
-          >
-            {task.title}
-          </h1>
+          <div className="mt-2 flex items-center justify-center gap-2">
+            {task.subtasks.length === 0 && (
+              <input
+                type="checkbox"
+                checked={task.completed}
+                onChange={handleToggleComplete}
+                className="h-5 w-5 text-primary rounded border-gray-300 focus:ring-primary"
+              />
+            )}
+            <h1
+              className={`text-2xl font-bold ${isCompleted ? "line-through opacity-70" : ""}`}
+            >
+              {task.title}
+            </h1>
+          </div>
         </div>
         <div className="bg-card shadow rounded-b-lg">
           <div className="px-4 py-2 flex items-center justify-between space-x-4">
