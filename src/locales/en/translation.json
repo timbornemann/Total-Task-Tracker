@@ -143,7 +143,13 @@
     "notes": "Notes",
     "decksAndCards": "Decks & Cards",
     "all": "All",
-    "export": "Export"
+    "export": "Export",
+    "import": "Import",
+    "exportStructure": "Export structure",
+    "importPreview": "Import preview",
+    "importSuccess": "Import successful",
+    "importError": "Import failed",
+    "categories": "Categories: {{count}}"
   },
   "noteModal": {
     "editTitle": "Edit Note",
@@ -159,7 +165,8 @@
     "edit": "Edit",
     "delete": "Delete",
     "back": "Back",
-    "undo": "Undo"
+    "undo": "Undo",
+    "continue": "Continue"
   },
   "noteDetail": {
     "notFound": "Note not found.",

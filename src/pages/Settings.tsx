@@ -11,8 +11,18 @@ import { Link } from 'react-router-dom'
 import { hslToHex, hexToHsl } from '@/utils/color'
 import { Checkbox } from '@/components/ui/checkbox'
 import { allHomeSections } from '@/utils/homeSections'
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogFooter,
+  AlertDialogAction,
+  AlertDialogCancel
+} from '@/components/ui/alert-dialog'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd'
-import { GripVertical } from 'lucide-react'
+import { GripVertical, CheckCircle, XCircle } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -42,6 +52,81 @@ interface ServerInfo {
   urls: string[]
   wifiIp: string | null
   wifiUrl: string | null
+}
+
+const taskStructure = {
+  id: '',
+  title: '',
+  description: '',
+  priority: '',
+  color: 0,
+  completed: false,
+  status: '',
+  categoryId: '',
+  parentId: '',
+  subtasks: [],
+  createdAt: '',
+  updatedAt: '',
+  dueDate: '',
+  isRecurring: false,
+  recurrencePattern: '',
+  lastCompleted: '',
+  nextDue: '',
+  dueOption: '',
+  dueAfterDays: 0,
+  startOption: '',
+  startWeekday: 0,
+  startDate: '',
+  startTime: '',
+  endTime: '',
+  order: 0,
+  pinned: false,
+  recurringId: '',
+  template: false,
+  titleTemplate: '',
+  customIntervalDays: 0,
+  visible: false
+}
+
+const categoryStructure = {
+  id: '',
+  name: '',
+  description: '',
+  color: 0,
+  createdAt: '',
+  updatedAt: '',
+  order: 0,
+  pinned: false
+}
+
+const noteStructure = {
+  id: '',
+  title: '',
+  text: '',
+  color: 0,
+  createdAt: '',
+  updatedAt: '',
+  order: 0,
+  pinned: false
+}
+
+const flashcardStructure = {
+  id: '',
+  front: '',
+  back: '',
+  deckId: '',
+  interval: 0,
+  dueDate: '',
+  easyCount: 0,
+  mediumCount: 0,
+  hardCount: 0,
+  typedCorrect: 0,
+  typedTotal: 0
+}
+
+const deckStructure = {
+  id: '',
+  name: ''
 }
 
 const SettingsPage: React.FC = () => {
@@ -92,6 +177,20 @@ const SettingsPage: React.FC = () => {
 
   const { t } = useTranslation()
   const { toast } = useToast()
+
+  const tasksInputRef = React.useRef<HTMLInputElement>(null)
+  const notesInputRef = React.useRef<HTMLInputElement>(null)
+  const decksInputRef = React.useRef<HTMLInputElement>(null)
+  const allInputRef = React.useRef<HTMLInputElement>(null)
+
+  type ImportType = 'tasks' | 'notes' | 'decks' | 'all'
+  const [importInfo, setImportInfo] = useState<
+    | { type: ImportType; data: any }
+    | null
+  >(null)
+  const [importResult, setImportResult] = useState<'success' | 'error' | null>(
+    null
+  )
 
   const coreColors = [
     { key: 'background', label: 'bgColor', desc: 'bgColorDesc' },
@@ -229,11 +328,47 @@ const SettingsPage: React.FC = () => {
     }
   }
 
-  const importTasks = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const exportTaskStructure = () => {
+    download({ task: taskStructure, category: categoryStructure }, 'tasks-structure.json')
+  }
+
+  const exportNoteStructure = () => {
+    download({ note: noteStructure }, 'notes-structure.json')
+  }
+
+  const exportDeckStructure = () => {
+    download({ flashcard: flashcardStructure, deck: deckStructure }, 'decks-structure.json')
+  }
+
+  const exportAllStructure = () => {
+    download(
+      {
+        task: taskStructure,
+        category: categoryStructure,
+        note: noteStructure,
+        flashcard: flashcardStructure,
+        deck: deckStructure
+      },
+      'all-structure.json'
+    )
+  }
+
+  const handleFile = async (
+    type: ImportType,
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0]
     if (!file) return
-    const text = await file.text()
-    const incoming = JSON.parse(text)
+    try {
+      const text = await file.text()
+      const data = JSON.parse(text)
+      setImportInfo({ type, data })
+    } catch {
+      setImportResult('error')
+    }
+  }
+
+  const importTasks = async (incoming: any) => {
     const res = await fetch('/api/data')
     const current = res.ok
       ? await res.json()
@@ -256,14 +391,11 @@ const SettingsPage: React.FC = () => {
         notes: current.notes || []
       })
     })
-    window.location.reload()
+    setImportResult('success')
+    setTimeout(() => window.location.reload(), 1500)
   }
 
-  const importNotes = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const text = await file.text()
-    const incoming = JSON.parse(text)
+  const importNotes = async (incoming: any) => {
     const res = await fetch('/api/notes')
     const current = res.ok ? await res.json() : []
 
@@ -276,14 +408,11 @@ const SettingsPage: React.FC = () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(Array.from(noteMap.values()))
     })
-    window.location.reload()
+    setImportResult('success')
+    setTimeout(() => window.location.reload(), 1500)
   }
 
-  const importDecks = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const text = await file.text()
-    const data = JSON.parse(text)
+  const importDecks = async (data: any) => {
 
     const [cardsRes, decksRes] = await Promise.all([
       fetch('/api/flashcards'),
@@ -310,14 +439,11 @@ const SettingsPage: React.FC = () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(Array.from(deckMap.values()))
     })
-    window.location.reload()
+    setImportResult('success')
+    setTimeout(() => window.location.reload(), 1500)
   }
 
-  const importAll = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const text = await file.text()
-    const incoming = JSON.parse(text)
+  const importAll = async (incoming: any) => {
 
     const res = await fetch('/api/all')
     const current = res.ok
@@ -344,13 +470,83 @@ const SettingsPage: React.FC = () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(merged)
     })
-    window.location.reload()
+    setImportResult('success')
+    setTimeout(() => window.location.reload(), 1500)
   }
+
+  const confirmImport = async () => {
+    if (!importInfo) return
+    try {
+      if (importInfo.type === 'tasks') await importTasks(importInfo.data)
+      if (importInfo.type === 'notes') await importNotes(importInfo.data)
+      if (importInfo.type === 'decks') await importDecks(importInfo.data)
+      if (importInfo.type === 'all') await importAll(importInfo.data)
+    } catch {
+      setImportResult('error')
+    } finally {
+      setImportInfo(null)
+    }
+  }
+
+  useEffect(() => {
+    if (importResult) {
+      const id = setTimeout(() => setImportResult(null), 1500)
+      return () => clearTimeout(id)
+    }
+  }, [importResult])
 
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar title={t('navbar.settings')} />
+    <>
+      <AlertDialog open={!!importInfo} onOpenChange={o => !o && setImportInfo(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('settingsPage.importPreview')}</AlertDialogTitle>
+          </AlertDialogHeader>
+          <div className="space-y-1 text-sm">
+            {importInfo?.data.tasks && (
+              <p>
+                {t('navbar.tasks')}: {importInfo.data.tasks.length}
+              </p>
+            )}
+            {importInfo?.data.categories && (
+              <p>
+                {t('settingsPage.categories', { count: importInfo.data.categories.length })}
+              </p>
+            )}
+            {importInfo?.data.notes && (
+              <p>
+                {t('navbar.notes')}: {importInfo.data.notes.length}
+              </p>
+            )}
+            {importInfo?.data.flashcards && (
+              <p>
+                {t('navbar.cards')}: {importInfo.data.flashcards.length}
+              </p>
+            )}
+            {importInfo?.data.decks && (
+              <p>
+                {t('navbar.decks')}: {importInfo.data.decks.length}
+              </p>
+            )}
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmImport}>{t('common.continue')}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <Dialog open={importResult !== null} onOpenChange={o => !o && setImportResult(null)}>
+        <DialogContent className="w-40 flex flex-col items-center">
+          {importResult === 'success' ? (
+            <CheckCircle className="w-10 h-10 text-green-500" />
+          ) : (
+            <XCircle className="w-10 h-10 text-red-500" />
+          )}
+        </DialogContent>
+      </Dialog>
+      <div className="min-h-screen bg-background">
+        <Navbar title={t('navbar.settings')} />
       <div className="max-w-5xl mx-auto px-4 py-6">
         <Tabs defaultValue="shortcuts" className="flex gap-6">
           <div className="w-48 overflow-y-auto max-h-[calc(100vh-8rem)]">
@@ -823,28 +1019,60 @@ const SettingsPage: React.FC = () => {
                 <p className="font-medium">{t('settingsPage.tasksAndCategories')}</p>
                 <div className="flex items-center gap-2">
                   <Button onClick={exportTasks}>{t('settingsPage.export')}</Button>
-                  <Input type="file" accept="application/json" onChange={importTasks} />
+                  <Button onClick={() => tasksInputRef.current?.click()}>{t('settingsPage.import')}</Button>
+                  <Button onClick={exportTaskStructure}>{t('settingsPage.exportStructure')}</Button>
+                  <Input
+                    ref={tasksInputRef}
+                    type="file"
+                    accept="application/json"
+                    onChange={e => handleFile('tasks', e)}
+                    className="hidden"
+                  />
                 </div>
               </div>
               <div className="space-y-2">
                 <p className="font-medium">{t('settingsPage.notes')}</p>
                 <div className="flex items-center gap-2">
                   <Button onClick={exportNotes}>{t('settingsPage.export')}</Button>
-                  <Input type="file" accept="application/json" onChange={importNotes} />
+                  <Button onClick={() => notesInputRef.current?.click()}>{t('settingsPage.import')}</Button>
+                  <Button onClick={exportNoteStructure}>{t('settingsPage.exportStructure')}</Button>
+                  <Input
+                    ref={notesInputRef}
+                    type="file"
+                    accept="application/json"
+                    onChange={e => handleFile('notes', e)}
+                    className="hidden"
+                  />
                 </div>
               </div>
               <div className="space-y-2">
                 <p className="font-medium">{t('settingsPage.decksAndCards')}</p>
                 <div className="flex items-center gap-2">
                   <Button onClick={exportDecks}>{t('settingsPage.export')}</Button>
-                  <Input type="file" accept="application/json" onChange={importDecks} />
+                  <Button onClick={() => decksInputRef.current?.click()}>{t('settingsPage.import')}</Button>
+                  <Button onClick={exportDeckStructure}>{t('settingsPage.exportStructure')}</Button>
+                  <Input
+                    ref={decksInputRef}
+                    type="file"
+                    accept="application/json"
+                    onChange={e => handleFile('decks', e)}
+                    className="hidden"
+                  />
                 </div>
               </div>
               <div className="space-y-2">
                 <p className="font-medium">{t('settingsPage.all')}</p>
                 <div className="flex items-center gap-2">
                   <Button onClick={exportAll}>{t('settingsPage.export')}</Button>
-                  <Input type="file" accept="application/json" onChange={importAll} />
+                  <Button onClick={() => allInputRef.current?.click()}>{t('settingsPage.import')}</Button>
+                  <Button onClick={exportAllStructure}>{t('settingsPage.exportStructure')}</Button>
+                  <Input
+                    ref={allInputRef}
+                    type="file"
+                    accept="application/json"
+                    onChange={e => handleFile('all', e)}
+                    className="hidden"
+                  />
                 </div>
               </div>
               {serverInfo && (
