@@ -536,6 +536,7 @@ const useTaskStoreImpl = () => {
           lastDate
         ) || new Date(lastDate);
       current.setHours(0, 0, 0, 0);
+        
       for (let i = 0; i < 30; i++) {
         addTask({
           ...template,
