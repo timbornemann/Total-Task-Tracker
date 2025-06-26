@@ -10,7 +10,7 @@ export interface AllData {
   deletions: Deletion[]
 }
 
-export function mergeLists<T extends { id: string; [key: string]: any }>(
+export function mergeLists<T extends { id: string; [key: string]: unknown }>(
   curr: T[] = [],
   inc: T[] = [],
   compare: string | null = 'updatedAt'
