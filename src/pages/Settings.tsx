@@ -108,6 +108,8 @@ const SettingsPage: React.FC = () => {
     updateSyncInterval,
     syncEnabled,
     updateSyncEnabled,
+    offlineCache,
+    toggleOfflineCache,
     language,
     updateLanguage,
     llmUrl,
@@ -938,6 +940,14 @@ const SettingsPage: React.FC = () => {
                   onCheckedChange={v => updateSyncEnabled(Boolean(v))}
                 />
                 <Label htmlFor="syncEnabled">{t('settingsPage.enableSync')}</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="offlineCache"
+                  checked={offlineCache}
+                  onCheckedChange={toggleOfflineCache}
+                />
+                <Label htmlFor="offlineCache">{t('settingsPage.offlineCache')}</Label>
               </div>
               <div className="space-y-2">
                 <p className="font-medium">{t('settingsPage.syncRole')}</p>
