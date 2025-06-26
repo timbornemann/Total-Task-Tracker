@@ -35,6 +35,7 @@ const defaultLanguage = 'de'
 const defaultLlmUrl = ''
 const defaultLlmToken = ''
 const defaultLlmModel = 'gpt-3.5-turbo'
+const defaultOfflineCache = true
 const defaultTheme = {
   background: '0 0% 100%',
   foreground: '222.2 84% 4.9%',
@@ -320,6 +321,8 @@ interface SettingsContextValue {
   updateLlmToken: (token: string) => void
   llmModel: string
   updateLlmModel: (model: string) => void
+  offlineCache: boolean
+  toggleOfflineCache: () => void
 }
 
 const SettingsContext = createContext<SettingsContextValue | undefined>(undefined)
@@ -365,6 +368,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [llmUrl, setLlmUrl] = useState(defaultLlmUrl)
   const [llmToken, setLlmToken] = useState(defaultLlmToken)
   const [llmModel, setLlmModel] = useState(defaultLlmModel)
+  const [offlineCache, setOfflineCache] = useState(defaultOfflineCache)
   const [loaded, setLoaded] = useState(false)
 
   useEffect(() => {
@@ -476,6 +480,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           if (typeof data.llmModel === 'string') {
             setLlmModel(data.llmModel)
           }
+          if (typeof data.offlineCache === 'boolean') {
+            setOfflineCache(data.offlineCache)
+          }
         }
       } catch (err) {
         console.error('Error loading settings', err)
@@ -516,7 +523,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             language,
             llmUrl,
             llmToken,
-            llmModel
+            llmModel,
+            offlineCache
           })
         })
       } catch (err) {
@@ -550,7 +558,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     language,
     llmUrl,
     llmToken,
-    llmModel
+    llmModel,
+    offlineCache
   ])
 
   useEffect(() => {
@@ -635,6 +644,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const updateSyncEnabled = (value: boolean) => {
     setSyncEnabled(value)
+  }
+
+  const toggleOfflineCache = () => {
+    setOfflineCache(prev => !prev)
   }
 
   const updateLanguage = (lang: string) => {
@@ -737,7 +750,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         llmToken,
         updateLlmToken,
         llmModel,
-        updateLlmModel
+        updateLlmModel,
+        offlineCache,
+        toggleOfflineCache
       }}
     >
       {children}

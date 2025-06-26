@@ -145,8 +145,9 @@ npm start    # startet die gebaute App auf Port 3002
   - Eingabemodus zum Tippen der Antworten; nach dem Prüfen bewertest du selbst, ob die Karte leicht, mittel oder schwer war
   - Timed-Modus mit anpassbarem Countdown pro Karte; der Timer wird einmalig gestartet und kann pausiert werden. Bei Ablauf wird automatisch "schwer" gewertet
 - Statistikseite für Lernkarten
-  - Deck-Statistiken mit Übersicht fälliger Karten
+- Deck-Statistiken mit Übersicht fälliger Karten
 - Speicherung der Daten auf dem lokalen Server
+- Kann als Progressive Web App installiert werden (Desktop & Smartphone)
 - Pomodoro-Timer läuft beim Neuladen der Seite weiter
 - Kann als schwebendes Fenster (Picture-in-Picture) angezeigt werden
  - Statistikseite auf der Pomodoro-Seite mit Tages-, Wochen-, Monats- und Jahresübersicht

@@ -8,6 +8,7 @@ import { TaskStoreProvider } from "@/hooks/useTaskStore";
 import { CurrentCategoryProvider } from "@/hooks/useCurrentCategory";
 import { SettingsProvider } from "@/hooks/useSettings";
 import { FlashcardStoreProvider } from "@/hooks/useFlashcardStore";
+import ServiceWorkerManager from "@/components/ServiceWorkerManager";
 import CommandPalette from "@/components/CommandPalette";
 import Home from "./pages/Home";
 import TasksPage from "./pages/Tasks";
@@ -41,6 +42,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <SettingsProvider>
+        <ServiceWorkerManager />
         <PomodoroHistoryProvider>
           <TaskStoreProvider>
             <FlashcardStoreProvider>

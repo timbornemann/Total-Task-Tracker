@@ -77,6 +77,7 @@
     "showPinnedTasks": "Show pinned tasks",
     "showPinnedNotes": "Show pinned notes",
     "showPinnedCategories": "Show pinned categories",
+    "offlineCache": "Enable offline cache",
     "themePreset": "Preset",
     "custom": "custom",
     "bgColor": "Background (App)",
