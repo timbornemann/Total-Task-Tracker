@@ -9,10 +9,10 @@ Die Daten werden dabei vollständig lokal auf dem Server gespeichert, entweder p
 ## Inhaltsverzeichnis
 - [Voraussetzungen](#voraussetzungen)
 - [Schnellstart mit dem fertigen Docker-Image](#schnellstart-mit-dem-fertigen-docker-image)
+- [Automatische Updates mit Watchtower](#automatische-updates-mit-watchtower)
 - [Docker-Compose: Image selbst bauen](#docker-compose-image-selbst-bauen)
 - [Installation für die lokale Entwicklung](#installation-für-die-lokale-entwicklung)
 - [Entwicklung starten](#entwicklung-starten)
-- [Automatische Updates mit Watchtower](#automatische-updates-mit-watchtower)
 - [Manuelle Produktion ohne Docker](#manuelle-produktion-ohne-docker)
 - [Funktionen](#funktionen)
 - [Verwendung](#verwendung)
@@ -40,6 +40,30 @@ docker run -d --name total-task-tracker -p 3002:3002 -v ./server/data:/app/serve
 ```
 
 Soll in den Einstellungen eine bestimmte IP angezeigt werden (etwa bei der Docker-Nutzung), kannst du die Umgebungsvariable `SERVER_PUBLIC_IP` setzen. Dieser Wert wird unter "Server Info" zusätzlich ausgegeben.
+
+## Automatische Updates mit Watchtower
+
+Um den Container stets aktuell zu halten, kannst du [Watchtower](https://containrrr.dev/watchtower/) einsetzen. Damit wird regelmäßig geprüft, ob neue Images verfügbar sind.
+
+### Alle Container überwachen
+
+```bash
+docker run -d --name watchtower --restart unless-stopped -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --interval 3600
+```
+
+Der Parameter `--interval` gibt das Prüfintervall in Sekunden an. Im Beispiel sucht Watchtower also jede Stunde nach Updates und startet betroffene Container neu.
+
+### Nur diesen Container aktualisieren
+
+```bash
+docker run -d --name watchtower --restart unless-stopped -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower total-task-tracker-app --interval 3600
+```
+
+Soll Watchtower lediglich einmalig prüfen und danach beendet werden, füge `--run-once` hinzu:
+
+```bash
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower total-task-tracker-app --run-once
+```
 
 ## Docker-Compose: Image selbst bauen
 
@@ -88,32 +112,6 @@ Nach der Installation der Abhängigkeiten kannst du die Tests mit folgendem Befe
 
 ```bash
 npm test
-```
-
----
-
-## Automatische Updates mit Watchtower
-
-Um den Container stets aktuell zu halten, kannst du [Watchtower](https://containrrr.dev/watchtower/) einsetzen. Damit wird regelmäßig geprüft, ob neue Images verfügbar sind.
-
-### Alle Container überwachen
-
-```bash
-docker run -d --name watchtower --restart unless-stopped -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --interval 3600
-```
-
-Der Parameter `--interval` gibt das Prüfintervall in Sekunden an. Im Beispiel sucht Watchtower also jede Stunde nach Updates und startet betroffene Container neu.
-
-### Nur diesen Container aktualisieren
-
-```bash
-docker run -d --name watchtower --restart unless-stopped -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower total-task-tracker-app --interval 3600
-```
-
-Soll Watchtower lediglich einmalig prüfen und danach beendet werden, füge `--run-once` hinzu:
-
-```bash
-docker run --rm -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower total-task-tracker-app --run-once
 ```
 
 ## Manuelle Produktion ohne Docker
