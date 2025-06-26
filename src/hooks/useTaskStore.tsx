@@ -3,6 +3,7 @@ import { Task, Category, Note, Deletion } from '@/types';
 import i18n from '@/lib/i18n';
 import { useSettings, defaultColorPalette } from '@/hooks/useSettings';
 import { format } from 'date-fns';
+import { loadOfflineData, updateOfflineData, syncWithServer } from '@/utils/offline';
 
 const API_URL = '/api/data';
 
@@ -33,144 +34,134 @@ const useTaskStoreImpl = () => {
   const [recentlyDeletedCategories, setRecentlyDeletedCategories] =
     useState<{ category: Category; taskIds: string[] }[]>([]);
 
-  const fetchData = async () => {
-    try {
-      const res = await fetch(API_URL);
-      if (!res.ok) throw new Error('Server error');
-      const {
-        tasks: savedTasks,
-        categories: savedCategories,
-        notes: savedNotes,
-        recurring: savedRecurring,
-        deletions: savedDeletions
-      } = await res.json();
+  const processData = (data: {
+    tasks: Task[]
+    categories: Category[]
+    notes: Note[]
+    recurring: Task[]
+    deletions: Deletion[]
+  }) => {
+    const serverDeletions = (data.deletions || []).map(d => ({
+      ...d,
+      deletedAt: new Date(d.deletedAt)
+    }))
+    setDeletions(serverDeletions)
 
-      const serverDeletions: (Omit<Deletion, 'deletedAt'> & { deletedAt: string })[] =
-        savedDeletions || [];
+    const isDeleted = (type: Deletion['type'], id: string) =>
+      serverDeletions.some(d => d.type === type && d.id === id)
 
-      const deletionsData = serverDeletions.map(d => ({
-        ...d,
-        deletedAt: new Date(d.deletedAt)
-      }));
-      setDeletions(deletionsData);
-
-      const isDeleted = (type: Deletion['type'], id: string) =>
-        serverDeletions.some(d => d.type === type && d.id === id);
-
-      const mapColor = (c: unknown): number => {
-        if (typeof c === 'number') {
-          return c >= 0 && c < colorPalette.length ? c : 0;
-        }
-        if (typeof c === 'string') {
-          const idx = colorPalette.indexOf(c);
-          if (idx !== -1) return idx;
-          const defIdx = defaultColorPalette.indexOf(c as string);
-          if (defIdx !== -1) return defIdx;
-        }
-        return 0;
-      };
-
-      const tasksData = savedTasks
-        ? savedTasks
-            .filter((t: Task) => !isDeleted('task', t.id))
-            .map((task: Task, idx: number) => ({
-              ...task,
-              createdAt: new Date(task.createdAt),
-              updatedAt: new Date(task.updatedAt),
-              dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
-              lastCompleted: task.lastCompleted ? new Date(task.lastCompleted) : undefined,
-              nextDue: task.nextDue ? new Date(task.nextDue) : undefined,
-              order: typeof task.order === 'number' ? task.order : idx,
-              completed: task.completed ?? false,
-              status: task.status ?? (task.completed ? 'done' : 'todo'),
-              pinned: task.pinned ?? false,
-              startTime: task.startTime,
-              endTime: task.endTime,
-              color: mapColor(task.color),
-              recurringId: task.recurringId,
-              visible: task.visible
-            }))
-        : [];
-      setTasks(tasksData);
-
-      const notesData = savedNotes
-        ? savedNotes
-            .filter((n: Note) => !isDeleted('note', n.id))
-            .map((note: Note, idx: number) => ({
-              ...note,
-              createdAt: new Date(note.createdAt),
-              updatedAt: new Date(note.updatedAt),
-              pinned: note.pinned ?? false,
-              order: typeof note.order === 'number' ? note.order : idx,
-              color: mapColor(note.color)
-            }))
-        : [];
-      setNotes(sortNotes(notesData));
-
-      const recurringData = savedRecurring
-        ? savedRecurring
-            .filter((t: Task) => !isDeleted('recurring', t.id))
-            .map((t: Task, idx: number) => ({
-              ...t,
-              createdAt: new Date(t.createdAt),
-              updatedAt: new Date(t.updatedAt),
-              dueDate: t.dueDate ? new Date(t.dueDate) : undefined,
-              lastCompleted: t.lastCompleted ? new Date(t.lastCompleted) : undefined,
-              nextDue: t.nextDue ? new Date(t.nextDue) : undefined,
-              order: typeof t.order === 'number' ? t.order : idx,
-              completed: t.completed ?? false,
-              status: t.status ?? 'todo',
-              pinned: t.pinned ?? false,
-              template: true,
-              startTime: t.startTime,
-              endTime: t.endTime,
-              color: mapColor(t.color)
-            }))
-        : [];
-      setRecurring(recurringData);
-
-      let categoriesData: Category[];
-      if (savedCategories && savedCategories.length) {
-        categoriesData = savedCategories
-          .filter((c: Category) => !isDeleted('category', c.id))
-          .map((category: Category, idx: number) => ({
-            ...category,
-            createdAt: new Date(category.createdAt),
-            updatedAt: new Date(category.updatedAt),
-            order: typeof category.order === 'number' ? category.order : idx,
-            color: mapColor(category.color),
-            pinned: category.pinned ?? false
-          }));
-      } else {
-        const defaultCategory: Category = {
-          id: 'default',
-          name: i18n.t('taskStore.defaultCategoryName'),
-          description: i18n.t('taskStore.defaultCategoryDescription'),
-          color: 0,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          order: 0,
-          pinned: false
-        };
-        categoriesData = [defaultCategory];
+    const mapColor = (c: unknown): number => {
+      if (typeof c === 'number') {
+        return c >= 0 && c < colorPalette.length ? c : 0
       }
-      setCategories(categoriesData);
-
-      const dataString = JSON.stringify({
-        tasks: tasksData,
-        categories: categoriesData,
-        notes: notesData,
-        recurring: recurringData,
-        deletions: deletionsData
-      });
-      lastDataRef.current = dataString;
-
-      setLoaded(true);
-    } catch (error) {
-      console.error('Error loading data:', error);
-      setLoaded(true);
+      if (typeof c === 'string') {
+        const idx = colorPalette.indexOf(c)
+        if (idx !== -1) return idx
+        const defIdx = defaultColorPalette.indexOf(c as string)
+        if (defIdx !== -1) return defIdx
+      }
+      return 0
     }
-  };
+
+    const tasksData = (data.tasks || [])
+      .filter(t => !isDeleted('task', t.id))
+      .map((task, idx) => ({
+        ...task,
+        createdAt: new Date(task.createdAt),
+        updatedAt: new Date(task.updatedAt),
+        dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
+        lastCompleted: task.lastCompleted ? new Date(task.lastCompleted) : undefined,
+        nextDue: task.nextDue ? new Date(task.nextDue) : undefined,
+        order: typeof task.order === 'number' ? task.order : idx,
+        completed: task.completed ?? false,
+        status: task.status ?? (task.completed ? 'done' : 'todo'),
+        pinned: task.pinned ?? false,
+        startTime: task.startTime,
+        endTime: task.endTime,
+        color: mapColor(task.color),
+        recurringId: task.recurringId,
+        visible: task.visible
+      }))
+    setTasks(tasksData)
+
+    const notesData = (data.notes || [])
+      .filter(n => !isDeleted('note', n.id))
+      .map((note, idx) => ({
+        ...note,
+        createdAt: new Date(note.createdAt),
+        updatedAt: new Date(note.updatedAt),
+        pinned: note.pinned ?? false,
+        order: typeof note.order === 'number' ? note.order : idx,
+        color: mapColor(note.color)
+      }))
+    setNotes(sortNotes(notesData))
+
+    const recurringData = (data.recurring || [])
+      .filter(t => !isDeleted('recurring', t.id))
+      .map((t, idx) => ({
+        ...t,
+        createdAt: new Date(t.createdAt),
+        updatedAt: new Date(t.updatedAt),
+        dueDate: t.dueDate ? new Date(t.dueDate) : undefined,
+        lastCompleted: t.lastCompleted ? new Date(t.lastCompleted) : undefined,
+        nextDue: t.nextDue ? new Date(t.nextDue) : undefined,
+        order: typeof t.order === 'number' ? t.order : idx,
+        completed: t.completed ?? false,
+        status: t.status ?? 'todo',
+        pinned: t.pinned ?? false,
+        template: true,
+        startTime: t.startTime,
+        endTime: t.endTime,
+        color: mapColor(t.color)
+      }))
+    setRecurring(recurringData)
+
+    let categoriesData: Category[]
+    if (data.categories && data.categories.length) {
+      categoriesData = data.categories
+        .filter(c => !isDeleted('category', c.id))
+        .map((category, idx) => ({
+          ...category,
+          createdAt: new Date(category.createdAt),
+          updatedAt: new Date(category.updatedAt),
+          order: typeof category.order === 'number' ? category.order : idx,
+          color: mapColor(category.color),
+          pinned: category.pinned ?? false
+        }))
+    } else {
+      const defaultCategory: Category = {
+        id: 'default',
+        name: i18n.t('taskStore.defaultCategoryName'),
+        description: i18n.t('taskStore.defaultCategoryDescription'),
+        color: 0,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        order: 0,
+        pinned: false
+      }
+      categoriesData = [defaultCategory]
+    }
+    setCategories(categoriesData)
+
+    const dataString = JSON.stringify({
+      tasks: tasksData,
+      categories: categoriesData,
+      notes: notesData,
+      recurring: recurringData,
+      deletions: serverDeletions
+    })
+    lastDataRef.current = dataString
+  }
+
+  const fetchData = async () => {
+    const offline = loadOfflineData()
+    if (offline) {
+      processData(offline)
+    }
+    const synced = await syncWithServer()
+    processData(synced)
+    setLoaded(true)
+  }
 
   useEffect(() => {
     fetchData();
@@ -194,28 +185,32 @@ const useTaskStoreImpl = () => {
   // Save to server whenever data changes after initial load
   useEffect(() => {
     if (!loaded) return;
-    const dataString = JSON.stringify({
-      tasks,
-      categories,
-      notes,
-      recurring,
-      deletions
-    });
-    if (dataString === lastDataRef.current) return;
-    lastDataRef.current = dataString;
+    const data = { tasks, categories, notes, recurring, deletions }
+    const dataString = JSON.stringify(data)
+    if (dataString === lastDataRef.current) return
+    lastDataRef.current = dataString
+    updateOfflineData(data)
 
-    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
     saveTimerRef.current = window.setTimeout(async () => {
       try {
-        await fetch(API_URL, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: dataString
-        });
+        if (navigator.onLine) {
+          await fetch(API_URL, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: dataString
+          })
+          await fetch('/api/recurring', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(recurring)
+          })
+        }
       } catch (error) {
-        console.error('Error saving data:', error);
+        console.error('Error saving data:', error)
       }
-    }, 500);
+      if (navigator.onLine) await syncWithServer()
+    }, 500)
   }, [tasks, categories, notes, recurring, deletions, loaded]);
 
   useEffect(() => {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
 import { Flashcard, Deck } from '@/types';
+import { loadOfflineData, updateOfflineData, syncWithServer } from '@/utils/offline';
 
 const API_URL = '/api/flashcards';
 const DECKS_URL = '/api/decks';
@@ -11,55 +12,46 @@ const useFlashcardStoreImpl = () => {
 
   useEffect(() => {
     const load = async () => {
-      try {
-        const [cardsRes, decksRes] = await Promise.all([
-          fetch(API_URL),
-          fetch(DECKS_URL)
-        ]);
-
-        if (cardsRes.ok) {
-          const data = await cardsRes.json();
-          setFlashcards(
-            (data || []).map(
-              (c: Omit<Flashcard, 'dueDate'> & { dueDate: string }) => ({
-                ...c,
-                dueDate: new Date(c.dueDate),
-                easyCount: c.easyCount ?? 0,
-                mediumCount: c.mediumCount ?? 0,
-                hardCount: c.hardCount ?? 0,
-                typedCorrect: c.typedCorrect ?? 0,
-                typedTotal: c.typedTotal ?? 0
-              })
-            )
-          );
-        }
-
-        if (decksRes.ok) {
-          const data = await decksRes.json();
-          setDecks(data || []);
-        }
-      } catch (err) {
-        console.error('Error loading flashcards and decks', err);
-      } finally {
-        setLoaded(true);
+      const offline = loadOfflineData()
+      if (offline) {
+        setFlashcards(
+          (offline.flashcards || []).map(c => ({
+            ...c,
+            dueDate: new Date(c.dueDate)
+          }))
+        )
+        setDecks(offline.decks || [])
       }
-    };
+      const synced = await syncWithServer()
+      setFlashcards(
+        (synced.flashcards || []).map(c => ({
+          ...c,
+          dueDate: new Date(c.dueDate)
+        }))
+      )
+      setDecks(synced.decks || [])
+      setLoaded(true)
+    }
 
-    load();
-  }, []);
+    load()
+  }, [])
 
   useEffect(() => {
     if (!loaded) return;
     const save = async () => {
       try {
-        await fetch(API_URL, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(flashcards)
-        });
+        updateOfflineData({ flashcards })
+        if (navigator.onLine) {
+          await fetch(API_URL, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(flashcards)
+          })
+        }
       } catch (err) {
         console.error('Error saving flashcards', err);
       }
+      if (navigator.onLine) await syncWithServer()
     };
 
     save();
@@ -69,14 +61,18 @@ const useFlashcardStoreImpl = () => {
     if (!loaded) return;
     const save = async () => {
       try {
-        await fetch(DECKS_URL, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(decks)
-        });
+        updateOfflineData({ decks })
+        if (navigator.onLine) {
+          await fetch(DECKS_URL, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(decks)
+          })
+        }
       } catch (err) {
         console.error('Error saving decks', err);
       }
+      if (navigator.onLine) await syncWithServer()
     };
 
     save();
