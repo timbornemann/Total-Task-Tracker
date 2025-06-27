@@ -7,7 +7,6 @@ import { useSettings } from '@/hooks/useSettings';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import MarkdownEditor from '@/components/MarkdownEditor';
@@ -91,22 +90,13 @@ const NoteDetailPage: React.FC = () => {
                 onCheckedChange={setShowPreview}
               />
             </div>
-            {showPreview ? (
-              <MarkdownEditor
-                value={formData.text}
-                onChange={val => handleChange('text', val)}
-                rows={20}
-                className="min-h-[60vh]"
-              />
-            ) : (
-              <Textarea
-                id="text"
-                value={formData.text}
-                onChange={e => handleChange('text', e.target.value)}
-                rows={20}
-                className="min-h-[60vh]"
-              />
-            )}
+            <MarkdownEditor
+              value={formData.text}
+              onChange={val => handleChange('text', val)}
+              rows={20}
+              className="min-h-[60vh]"
+              showPreview={showPreview}
+            />
             <div className="flex flex-wrap gap-2">
               {colorOptions.map((color, idx) => (
                 <button
