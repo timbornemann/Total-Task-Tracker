@@ -1,5 +1,5 @@
 # Total-Task-Tracker
-
+English version available in [README.en.md](README.en.md).
 
 Der Total-Task-Tracker ist eine leistungsstarke, lokal betriebene Aufgaben- und Lernverwaltung auf Basis von React, Node.js und SQLite. Die Anwendung kombiniert klassische To-do-Funktionen mit Kalenderintegration, Markdown-Notizen, einem Pomodoro-Timer und einem integrierten Lernkarten-System mit Spaced-Repetition-Algorithmus.
 Ideal für Selbstorganisation, Projektplanung oder die strukturierte Prüfungsvorbereitung.
