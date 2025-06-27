@@ -42,24 +42,24 @@ If a certain IP should be shown in the settings (for example when using Docker),
 
 ## Automatic updates with Watchtower
 
-Um den Container stets aktuell zu halten, kannst du [Watchtower](https://containrrr.dev/watchtower/) einsetzen. This regularly checked whether new images are available.
+To keep the container up to date, you can use [Watchtower](https://containrrr.dev/watchtower/). It regularly checks whether new images are available.
 
-### monitor all containers
+### Monitor all containers
 
 ```bash
 docker run -d --name watchtower --restart unless-stopped -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower --interval 3600
 ```
 
-The parameter `-Interval` specifies the test interval in seconds. In the example, WatchTower searches for updates every hour and restarts affected containers.
+The parameter `--interval` specifies the check interval in seconds. In this example, Watchtower searches for updates every hour and restarts affected containers.
 
-### only update this container
+### Only update this container
 
 ```bash
 docker run -d --name watchtower --restart unless-stopped -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower total-task-tracker-app --interval 3600
 ```
 
 
-If WatchTower should only be checked once and then ended, add `-Run-Once ':
+If Watchtower should only check once and then exit, add `--run-once`:
 
 ```bash
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower total-task-tracker-app --run-once
