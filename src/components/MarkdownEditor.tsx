@@ -32,6 +32,7 @@ interface MarkdownEditorProps {
   onChange: (value: string) => void;
   rows?: number;
   className?: string;
+  showPreview?: boolean;
 }
 
 // Global styles for the markdown editor
@@ -69,6 +70,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
   onChange,
   rows = 5,
   className,
+  showPreview = true,
 }) => {
   const { t } = useTranslation();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -460,15 +462,17 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
         </Tooltip>
       </div>
       <div className="relative">
-        <div
-          ref={previewRef}
-          className={cn(
-            'prose max-w-none p-8 min-h-[80px] border rounded-sm bg-background shadow-sm overflow-auto',
-            className
-          )}
-        >
-          <MarkdownWithActiveLine>{getHybridContent()}</MarkdownWithActiveLine>
-        </div>
+        {showPreview && (
+          <div
+            ref={previewRef}
+            className={cn(
+              'prose max-w-none p-8 min-h-[80px] border rounded-sm bg-background shadow-sm overflow-auto',
+              className
+            )}
+          >
+            <MarkdownWithActiveLine>{getHybridContent()}</MarkdownWithActiveLine>
+          </div>
+        )}
         <Textarea
           ref={textareaRef}
           value={value}
@@ -496,10 +500,12 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
             }
           }}
           className={cn(
-            'absolute inset-0 p-8 min-h-[80px] opacity-0 border rounded-sm shadow-sm focus-visible:ring-0 focus-visible:outline-none resize-none',
+            showPreview
+              ? 'absolute inset-0 p-8 min-h-[80px] opacity-0 border rounded-sm shadow-sm focus-visible:ring-0 focus-visible:outline-none resize-none'
+              : 'p-8 w-full min-h-[80px] border rounded-sm shadow-sm focus-visible:ring-0 focus-visible:outline-none resize-none',
             className
           )}
-          style={{ caretColor: 'transparent' }}
+          style={showPreview ? { caretColor: 'transparent' } : undefined}
         />
       </div>
       <style dangerouslySetInnerHTML={{ __html: editorStyles }} />
