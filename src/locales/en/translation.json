@@ -70,6 +70,9 @@
     "typing": "Typing",
     "timed": "Timed",
     "defaultTaskPriority": "Default priority",
+    "defaultTaskView": "Default task view",
+    "showCompletedTasks": "Show completed by default",
+    "defaultTaskColor": "Default task color",
     "low": "Low",
     "medium": "Medium",
     "high": "High",
@@ -231,6 +234,7 @@
     "titleTemplate": "Dynamic Title",
     "titleTemplatePlaceholder": "{date} / {counter}",
     "color": "Color",
+    "hidden": "Hidden",
     "placeholderExample": "e.g. 3"
   },
   "deckModal": {
@@ -504,6 +508,7 @@
     "priorityLabel": "Priority:",
     "colorLabel": "Color:",
     "showCompleted": "Show completed",
+    "showHidden": "Show hidden",
     "viewLabel": "View:",
     "listView": "List",
     "gridView": "Grid",
@@ -558,7 +563,9 @@
     "addSubtask": "Add subtask",
     "progress": "Progress: {{completed}}/{{total}} subtasks",
     "recurring": "Recurring",
-    "due": "Due on {{date}}"
+    "due": "Due on {{date}}",
+    "hide": "Hide",
+    "unhide": "Unhide"
   },
   "taskDetail": {
     "noSubtasks": "No subtasks available.",

@@ -84,6 +84,7 @@ export interface TaskFormData {
   endTime?: string;
   titleTemplate?: string;
   template?: boolean;
+  visible?: boolean;
 }
 
 export interface CategoryFormData {

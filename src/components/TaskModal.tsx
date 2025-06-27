@@ -65,12 +65,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
   defaultEndTime
 }) => {
   const { t } = useTranslation();
-  const { defaultTaskPriority, colorPalette } = useSettings()
+  const { defaultTaskPriority, defaultTaskColor, colorPalette } = useSettings()
   const [formData, setFormData] = useState<TaskFormData>({
     title: '',
     description: '',
     priority: defaultTaskPriority,
-    color: 0,
+    color: defaultTaskColor,
     categoryId: '',
     parentId: parentTask?.id,
     dueDate: undefined,
@@ -84,6 +84,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     startDate: undefined,
     startTime: undefined,
     endTime: undefined,
+    visible: true,
     titleTemplate: undefined,
     template: false
   });
@@ -113,14 +114,15 @@ const TaskModal: React.FC<TaskModalProps> = ({
         startTime: task.startTime,
         endTime: task.endTime,
         titleTemplate: task.titleTemplate,
-        template: task.template
+        template: task.template,
+        visible: task.visible !== false
       });
     } else {
       setFormData({
         title: '',
         description: '',
         priority: defaultTaskPriority,
-        color: 0,
+        color: defaultTaskColor,
         categoryId:
           defaultCategoryId || parentTask?.categoryId || categories[0]?.id || '',
         parentId: parentTask?.id,
@@ -136,7 +138,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
         startTime: defaultStartTime,
         endTime: defaultEndTime,
         titleTemplate: undefined,
-        template: false
+        template: false,
+        visible: true
       });
     }
   }, [
@@ -353,6 +356,14 @@ const TaskModal: React.FC<TaskModalProps> = ({
                   onClick={() => handleChange('color', idx)}
                 />
               ))}
+            </div>
+            <div className="flex items-center justify-between mt-3">
+              <Label htmlFor="visible">{t('taskModal.hidden')}</Label>
+              <Switch
+                id="visible"
+                checked={formData.visible !== false}
+                onCheckedChange={(checked) => handleChange('visible', checked)}
+              />
             </div>
           </div>
 

@@ -328,14 +328,21 @@ const useTaskStoreImpl = () => {
   };
 
   const updateTask = (taskId: string, updates: Partial<Task>) => {
+    const normalizedUpdates = { ...updates }
+    if (
+      typeof updates.completed === 'boolean' &&
+      updates.visible === undefined
+    ) {
+      normalizedUpdates.visible = !updates.completed
+    }
     const updateTaskRecursively = (tasks: Task[]): Task[] => {
       return tasks.map(task => {
         if (task.id === taskId) {
           // If task is being marked as complete and is recurring, update lastCompleted and nextDue
-          if (updates.completed && task.isRecurring) {
+          if (normalizedUpdates.completed && task.isRecurring) {
             return {
               ...task,
-              ...updates,
+              ...normalizedUpdates,
               updatedAt: new Date(),
               lastCompleted: new Date(),
               nextDue: calculateNextDue(task.recurrencePattern),
@@ -344,11 +351,13 @@ const useTaskStoreImpl = () => {
           }
           return {
             ...task,
-            ...updates,
+            ...normalizedUpdates,
             updatedAt: new Date(),
-            dueDate: updates.dueDate ? new Date(updates.dueDate) : task.dueDate,
-            startTime: updates.startTime ?? task.startTime,
-            endTime: updates.endTime ?? task.endTime
+            dueDate: normalizedUpdates.dueDate
+              ? new Date(normalizedUpdates.dueDate)
+              : task.dueDate,
+            startTime: normalizedUpdates.startTime ?? task.startTime,
+            endTime: normalizedUpdates.endTime ?? task.endTime
           };
         }
         if (task.subtasks.length > 0) {
