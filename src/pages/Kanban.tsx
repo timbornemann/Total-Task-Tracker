@@ -12,15 +12,61 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/hooks/useSettings';
 import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult
-} from '@hello-pangea/dnd';
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  useDroppable
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { useTranslation } from 'react-i18next';
 import KanbanFilterSheet from '@/components/KanbanFilterSheet';
 import { SlidersHorizontal } from 'lucide-react';
 import ConfirmDialog from '@/components/ConfirmDialog';
+
+interface SortableKanbanTaskProps {
+  item: FlattenedTask;
+  children: React.ReactNode;
+}
+
+const SortableKanbanTask: React.FC<SortableKanbanTaskProps> = ({ item, children }) => {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+    id: item.task.id,
+    data: { status: item.task.status }
+  });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      {children}
+    </div>
+  );
+};
+
+interface KanbanColumnProps {
+  id: 'todo' | 'inprogress' | 'done';
+  children: React.ReactNode;
+}
+
+const KanbanColumn: React.FC<KanbanColumnProps> = ({ id, children }) => {
+  const { setNodeRef } = useDroppable({ id, data: { status: id } });
+  return (
+    <div ref={setNodeRef} className="rounded-md p-2 space-y-2 min-h-[200px]" style={{ backgroundColor: `hsl(var(--kanban-${id}))` }}>
+      {children}
+    </div>
+  );
+};
 
 const Kanban: React.FC = () => {
   const {
@@ -54,12 +100,14 @@ const Kanban: React.FC = () => {
     done: ''
   });
 
-  const onDragEnd = (result: DropResult) => {
-    if (!result.destination) return;
-    const { draggableId, destination, source } = result;
-    const newStatus = destination.droppableId as 'todo' | 'inprogress' | 'done';
-    if (destination.droppableId !== source.droppableId) {
-      updateTask(draggableId, {
+  const sensors = useSensors(useSensor(PointerSensor));
+
+  const onDragEnd = ({ active, over }: DragEndEvent) => {
+    if (!over) return;
+    const newStatus = over.data.current?.status as 'todo' | 'inprogress' | 'done';
+    const oldStatus = active.data.current?.status as 'todo' | 'inprogress' | 'done';
+    if (newStatus && newStatus !== oldStatus) {
+      updateTask(active.id, {
         status: newStatus,
         completed: newStatus === 'done'
       });
@@ -224,64 +272,46 @@ const Kanban: React.FC = () => {
             {t('dashboard.openFilters')}
           </Button>
         </div>
-        <DragDropContext onDragEnd={onDragEnd}>
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {statuses.map(status => (
-              <Droppable droppableId={status} key={status}>
-                {provided => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                    className="rounded-md p-2 space-y-2 min-h-[200px]"
-                    style={{ backgroundColor: `hsl(var(--kanban-${status}))` }}
-                  >
-                    <h2 className="text-base font-semibold mb-2">
-                      {labels[status]}
-                    </h2>
-                    <Input
-                      value={columnSearch[status]}
-                      onChange={e =>
-                        setColumnSearch(prev => ({
-                          ...prev,
-                          [status]: e.target.value
-                        }))
-                      }
-                      placeholder={t('kanban.search')}
-                      className="mb-2 h-8"
-                    />
-                    {tasksByStatus[status].map((item, index) => (
-                      <Draggable
-                        key={item.task.id}
-                        draggableId={item.task.id}
-                        index={index}
-                      >
-                        {prov => (
-                          <div
-                            ref={prov.innerRef}
-                            {...prov.draggableProps}
-                            {...prov.dragHandleProps}
-                          >
-                            <TaskCard
-                              task={item.task}
-                              parentPathTitles={item.path.map(p => p.title)}
-                              showSubtasks={false}
-                              onEdit={handleEditTask}
-                              onDelete={handleDeleteTask}
-                              onAddSubtask={handleAddSubtask}
-                              onToggleComplete={handleToggleTaskComplete}
-                              onViewDetails={handleViewTaskDetails}
-                            />
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
+              <SortableContext
+                key={status}
+                items={tasksByStatus[status].map(item => item.task.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <KanbanColumn id={status}>
+                  <h2 className="text-base font-semibold mb-2">{labels[status]}</h2>
+                  <Input
+                    value={columnSearch[status]}
+                    onChange={e =>
+                      setColumnSearch(prev => ({
+                        ...prev,
+                        [status]: e.target.value
+                      }))
+                    }
+                    placeholder={t('kanban.search')}
+                    className="mb-2 h-8"
+                  />
+                  {tasksByStatus[status].map(item => (
+                    <SortableKanbanTask key={item.task.id} item={item}>
+                      <TaskCard
+                        task={item.task}
+                        parentPathTitles={item.path.map(p => p.title)}
+                        showSubtasks={false}
+                        onEdit={handleEditTask}
+                        onDelete={handleDeleteTask}
+                        onAddSubtask={handleAddSubtask}
+                        onToggleComplete={handleToggleTaskComplete}
+                        onViewDetails={handleViewTaskDetails}
+                      />
+                    </SortableKanbanTask>
+                  ))}
+                </KanbanColumn>
+              </SortableContext>
             ))}
           </div>
-        </DragDropContext>
+        </DndContext>
       </div>
 
       <TaskModal

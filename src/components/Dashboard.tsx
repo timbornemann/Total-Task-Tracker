@@ -38,13 +38,70 @@ import { useToast } from '@/hooks/use-toast';
 import { ToastAction } from '@/components/ui/toast';
 import ConfirmDialog from './ConfirmDialog';
 import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult
-} from '@hello-pangea/dnd';
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  rectSortingStrategy,
+  verticalListSortingStrategy,
+  useSortable,
+  arrayMove
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import Navbar from './Navbar';
 import { usePomodoroStore } from './PomodoroTimer';
+
+interface SortableCategoryProps {
+  category: Category;
+  children: React.ReactNode;
+}
+
+const SortableCategory: React.FC<SortableCategoryProps> = ({
+  category,
+  children
+}) => {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+    id: category.id
+  });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      {children}
+    </div>
+  );
+};
+
+interface SortableTaskProps {
+  task: Task;
+  children: React.ReactNode;
+}
+
+const SortableTask: React.FC<SortableTaskProps> = ({ task, children }) => {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+    id: task.id
+  });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      {children}
+    </div>
+  );
+};
 
 const Dashboard: React.FC = () => {
   const { t } = useTranslation();
@@ -62,7 +119,6 @@ const Dashboard: React.FC = () => {
     findTaskById,
     reorderCategories,
     reorderTasks,
-    moveTaskToSubtask,
     undoDeleteCategory
   } = useTaskStore();
 
@@ -363,21 +419,25 @@ const Dashboard: React.FC = () => {
     setSearchParams(params, { replace: true });
   };
 
-  const handleCategoryDragEnd = (result: DropResult) => {
-    if (!result.destination) return;
-    reorderCategories(result.source.index, result.destination.index);
+  const sensors = useSensors(useSensor(PointerSensor));
+
+  const handleCategoryDragEnd = ({ active, over }: DragEndEvent) => {
+    if (!over || active.id === over.id) return;
+    const oldIndex = categories.findIndex(c => c.id === active.id);
+    const newIndex = categories.findIndex(c => c.id === over.id);
+    if (oldIndex !== -1 && newIndex !== -1) {
+      reorderCategories(oldIndex, newIndex);
+    }
   };
 
-  const handleTaskDragEnd = (result: DropResult) => {
-    if (!selectedCategory) return;
-
-    if (result.combine) {
-      moveTaskToSubtask(result.draggableId, result.combine.draggableId);
-      return;
+  const handleTaskDragEnd = ({ active, over }: DragEndEvent) => {
+    if (!selectedCategory || !over || active.id === over.id) return;
+    const tasksInCat = getTasksByCategory(selectedCategory.id);
+    const oldIndex = tasksInCat.findIndex(t => t.id === active.id);
+    const newIndex = tasksInCat.findIndex(t => t.id === over.id);
+    if (oldIndex !== -1 && newIndex !== -1) {
+      reorderTasks(selectedCategory.id, oldIndex, newIndex);
     }
-
-    if (!result.destination) return;
-    reorderTasks(selectedCategory.id, result.source.index, result.destination.index);
   };
 
   return (
@@ -484,38 +544,27 @@ const Dashboard: React.FC = () => {
                 </CardContent>
               </Card>
             ) : (
-              <DragDropContext onDragEnd={handleCategoryDragEnd}>
-                <Droppable droppableId="categories">
-                  {provided => (
-                    <div
-                      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                    >
-                      {sortedCategories.map((category, index) => (
-                        <Draggable key={category.id} draggableId={category.id} index={index}>
-                          {prov => (
-                            <div ref={prov.innerRef} {...prov.draggableProps} {...prov.dragHandleProps}>
-                              <CategoryCard
-                                category={category}
-                                tasks={getTasksByCategory(category.id)}
-                                onEdit={category => {
-                                  setEditingCategory(category);
-                                  setIsCategoryModalOpen(true);
-                                }}
-                                onDelete={handleDeleteCategory}
-                                onViewTasks={handleViewCategoryTasks}
-                                onTogglePinned={handleToggleCategoryPinned}
-                              />
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-              </DragDropContext>
+              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleCategoryDragEnd}>
+                <SortableContext items={sortedCategories.map(c => c.id)} strategy={rectSortingStrategy}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                    {sortedCategories.map(category => (
+                      <SortableCategory key={category.id} category={category}>
+                        <CategoryCard
+                          category={category}
+                          tasks={getTasksByCategory(category.id)}
+                          onEdit={category => {
+                            setEditingCategory(category);
+                            setIsCategoryModalOpen(true);
+                          }}
+                          onDelete={handleDeleteCategory}
+                          onViewTasks={handleViewCategoryTasks}
+                          onTogglePinned={handleToggleCategoryPinned}
+                        />
+                      </SortableCategory>
+                    ))}
+                  </div>
+                </SortableContext>
+              </DndContext>
             )}
           </div>
         ) : (
@@ -574,45 +623,34 @@ const Dashboard: React.FC = () => {
                 </CardContent>
               </Card>
             ) : (
-              <DragDropContext onDragEnd={handleTaskDragEnd}>
-                <Droppable droppableId="tasks" isCombineEnabled>
-                  {provided => (
-                    <div
-                      className={
-                        taskLayout === 'grid'
-                          ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'
-                          : 'space-y-3 sm:space-y-4'
-                      }
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                    >
-                      {sortedTasks.map((task, index) => (
-                        <Draggable key={task.id} draggableId={task.id} index={index}>
-                          {prov => (
-                            <div
-                              ref={prov.innerRef}
-                              {...prov.draggableProps}
-                              {...prov.dragHandleProps}
-                              className={taskLayout === 'grid' ? 'h-full' : ''}
-                            >
-                              <TaskCard
-                                task={task}
-                                onEdit={handleEditTask}
-                                onDelete={handleDeleteTask}
-                                onAddSubtask={handleAddSubtask}
-                                onToggleComplete={handleToggleTaskComplete}
-                                onViewDetails={handleViewTaskDetails}
-                                isGrid={taskLayout === 'grid'}
-                              />
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-              </DragDropContext>
+              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleTaskDragEnd}>
+                <SortableContext
+                  items={sortedTasks.map(t => t.id)}
+                  strategy={taskLayout === 'grid' ? rectSortingStrategy : verticalListSortingStrategy}
+                >
+                  <div
+                    className={
+                      taskLayout === 'grid'
+                        ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'
+                        : 'space-y-3 sm:space-y-4'
+                    }
+                  >
+                    {sortedTasks.map(task => (
+                      <SortableTask key={task.id} task={task}>
+                        <TaskCard
+                          task={task}
+                          onEdit={handleEditTask}
+                          onDelete={handleDeleteTask}
+                          onAddSubtask={handleAddSubtask}
+                          onToggleComplete={handleToggleTaskComplete}
+                          onViewDetails={handleViewTaskDetails}
+                          isGrid={taskLayout === 'grid'}
+                        />
+                      </SortableTask>
+                    ))}
+                  </div>
+                </SortableContext>
+              </DndContext>
             )}
           </div>
         )}
