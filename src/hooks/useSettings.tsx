@@ -31,6 +31,9 @@ const defaultFlashcardSettings = {
 const defaultSyncInterval = 5
 const defaultSyncEnabled = true
 const defaultTaskPriority: 'low' | 'medium' | 'high' = 'medium'
+const defaultTaskLayoutSetting: 'list' | 'grid' = 'list'
+const defaultShowCompletedTasksSetting = true
+const defaultTaskColorSetting = 0
 const defaultLanguage = 'de'
 const defaultLlmUrl = ''
 const defaultLlmToken = ''
@@ -297,6 +300,12 @@ interface SettingsContextValue {
   toggleShowPinnedCategories: () => void
   collapseSubtasksByDefault: boolean
   toggleCollapseSubtasksByDefault: () => void
+  defaultTaskLayout: 'list' | 'grid'
+  updateDefaultTaskLayout: (val: 'list' | 'grid') => void
+  showCompletedByDefault: boolean
+  toggleShowCompletedByDefault: () => void
+  defaultTaskColor: number
+  updateDefaultTaskColor: (val: number) => void
   flashcardTimer: number
   updateFlashcardTimer: (value: number) => void
   flashcardSessionSize: number
@@ -360,6 +369,13 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [showPinnedNotes, setShowPinnedNotes] = useState(true)
   const [showPinnedCategories, setShowPinnedCategories] = useState(true)
   const [collapseSubtasksByDefault, setCollapseSubtasksByDefault] = useState(false)
+  const [defaultTaskLayout, setDefaultTaskLayout] = useState<'list' | 'grid'>(
+    defaultTaskLayoutSetting
+  )
+  const [showCompletedByDefault, setShowCompletedByDefault] = useState(
+    defaultShowCompletedTasksSetting
+  )
+  const [defaultTaskColor, setDefaultTaskColor] = useState(defaultTaskColorSetting)
   const [syncRole, setSyncRole] = useState<'server' | 'client'>('client')
   const [syncServerUrl, setSyncServerUrl] = useState('')
   const [syncInterval, setSyncInterval] = useState(defaultSyncInterval)
@@ -446,6 +462,15 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           if (typeof data.collapseSubtasksByDefault === 'boolean') {
             setCollapseSubtasksByDefault(data.collapseSubtasksByDefault)
           }
+          if (typeof data.defaultTaskLayout === 'string') {
+            setDefaultTaskLayout(data.defaultTaskLayout)
+          }
+          if (typeof data.showCompletedByDefault === 'boolean') {
+            setShowCompletedByDefault(data.showCompletedByDefault)
+          }
+          if (typeof data.defaultTaskColor === 'number') {
+            setDefaultTaskColor(data.defaultTaskColor)
+          }
           if (typeof data.flashcardTimer === 'number') {
             setFlashcardTimer(data.flashcardTimer)
           }
@@ -513,6 +538,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             showPinnedNotes,
             showPinnedCategories,
             collapseSubtasksByDefault,
+            defaultTaskLayout,
+            showCompletedByDefault,
+            defaultTaskColor,
             flashcardTimer,
             flashcardSessionSize,
             flashcardDefaultMode,
@@ -548,6 +576,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     showPinnedNotes,
     showPinnedCategories,
     collapseSubtasksByDefault,
+    defaultTaskLayout,
+    showCompletedByDefault,
+    defaultTaskColor,
     flashcardTimer,
     flashcardSessionSize,
     flashcardDefaultMode,
@@ -667,6 +698,18 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setLlmModel(model)
   }
 
+  const updateDefaultTaskLayout = (val: 'list' | 'grid') => {
+    setDefaultTaskLayout(val)
+  }
+
+  const toggleShowCompletedByDefault = () => {
+    setShowCompletedByDefault(prev => !prev)
+  }
+
+  const updateDefaultTaskColor = (val: number) => {
+    setDefaultTaskColor(val)
+  }
+
   const toggleHomeSection = (section: string) => {
     setHomeSections(prev =>
       prev.includes(section)
@@ -729,6 +772,12 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         toggleShowPinnedCategories,
         collapseSubtasksByDefault,
         toggleCollapseSubtasksByDefault,
+        defaultTaskLayout,
+        updateDefaultTaskLayout,
+        showCompletedByDefault,
+        toggleShowCompletedByDefault,
+        defaultTaskColor,
+        updateDefaultTaskColor,
         flashcardTimer,
         updateFlashcardTimer,
         flashcardSessionSize,

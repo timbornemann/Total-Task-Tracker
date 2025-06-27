@@ -23,7 +23,9 @@ import {
   ChevronRight,
   Star,
   StarOff,
-  Calendar as CalendarIcon
+  Calendar as CalendarIcon,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { useTaskStore } from '@/hooks/useTaskStore';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -177,6 +179,14 @@ const TaskCard: React.FC<TaskCardProps> = ({
                 <Edit className="h-4 w-4 mr-2" />
                 {t('common.edit')}
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => updateTask(st.id, { visible: !(st.visible !== false) })}>
+                {st.visible === false ? (
+                  <Eye className="h-4 w-4 mr-2" />
+                ) : (
+                  <EyeOff className="h-4 w-4 mr-2" />
+                )}
+                {st.visible === false ? t('taskCard.unhide') : t('taskCard.hide')}
+              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onDelete(st.id)}
                 className="text-destructive"
@@ -272,6 +282,14 @@ const TaskCard: React.FC<TaskCardProps> = ({
             <DropdownMenuItem onClick={() => onEdit(task)}>
               <Edit className="h-4 w-4 mr-2" />
               {t('common.edit')}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => updateTask(task.id, { visible: !(task.visible !== false) })}>
+              {task.visible === false ? (
+                <Eye className="h-4 w-4 mr-2" />
+              ) : (
+                <EyeOff className="h-4 w-4 mr-2" />
+              )}
+              {task.visible === false ? t('taskCard.unhide') : t('taskCard.hide')}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => onDelete(task.id)}

@@ -70,6 +70,9 @@
     "typing": "Eingabe",
     "timed": "Timed",
     "defaultTaskPriority": "Standard-Priorität",
+    "defaultTaskView": "Standard-Ansicht für Tasks",
+    "showCompletedTasks": "Abgeschlossene standardmäßig anzeigen",
+    "defaultTaskColor": "Standardfarbe für Tasks",
     "low": "Niedrig",
     "medium": "Mittel",
     "high": "Hoch",
@@ -231,6 +234,7 @@
     "titleTemplate": "Dynamischer Titel",
     "titleTemplatePlaceholder": "{date} / {counter}",
     "color": "Farbe",
+    "hidden": "Versteckt",
     "placeholderExample": "z.B. 3"
   },
   "deckModal": {
@@ -504,6 +508,7 @@
     "priorityLabel": "Priorität:",
     "colorLabel": "Farbe:",
     "showCompleted": "Abgeschlossene anzeigen",
+    "showHidden": "Versteckte anzeigen",
     "viewLabel": "Ansicht:",
     "listView": "Liste",
     "gridView": "Raster",
@@ -558,7 +563,9 @@
     "addSubtask": "Unteraufgabe hinzufügen",
     "progress": "Fortschritt: {{completed}}/{{total}} Unteraufgaben",
     "recurring": "Wiederholt",
-    "due": "Fällig am {{date}}"
+    "due": "Fällig am {{date}}",
+    "hide": "Verstecken",
+    "unhide": "Einblenden"
   },
   "taskDetail": {
     "noSubtasks": "Keine Unteraufgaben vorhanden.",

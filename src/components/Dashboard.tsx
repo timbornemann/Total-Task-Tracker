@@ -124,7 +124,11 @@ const Dashboard: React.FC = () => {
 
   const { toast } = useToast();
   const { setCurrentCategoryId } = useCurrentCategory();
-  const { colorPalette } = useSettings();
+  const {
+    colorPalette,
+    defaultTaskLayout,
+    showCompletedByDefault
+  } = useSettings();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
@@ -137,8 +141,9 @@ const Dashboard: React.FC = () => {
   const [filterPriority, setFilterPriority] = useState<string>('all');
   const [filterColor, setFilterColor] = useState<string>('all');
   const [categoryFilterColor, setCategoryFilterColor] = useState<string>('all');
-  const [taskLayout, setTaskLayout] = useState<'list' | 'grid'>('list');
-  const [showCompleted, setShowCompleted] = useState<boolean>(true);
+  const [taskLayout, setTaskLayout] = useState<'list' | 'grid'>(defaultTaskLayout);
+  const [showCompleted, setShowCompleted] = useState<boolean>(showCompletedByDefault);
+  const [showHidden, setShowHidden] = useState<boolean>(false);
 
 
   useEffect(() => {
@@ -179,7 +184,9 @@ const Dashboard: React.FC = () => {
 
   const colorOptions = useMemo(() => {
     const tasksForColors = selectedCategory
-      ? getTasksByCategory(selectedCategory.id)
+      ? showHidden
+        ? tasks.filter(t => t.categoryId === selectedCategory.id && !t.parentId)
+        : getTasksByCategory(selectedCategory.id)
       : tasks.filter(t => t.visible !== false);
     const colors = new Set<number>();
     tasksForColors.forEach(task => colors.add(task.color));
@@ -226,7 +233,12 @@ const Dashboard: React.FC = () => {
   }, [filteredCategories, sortCriteria]);
 
   const filteredTasks = selectedCategory
-    ? getTasksByCategory(selectedCategory.id).filter(task => {
+    ? (showHidden
+        ? tasks.filter(
+            t => t.categoryId === selectedCategory.id && !t.parentId
+          )
+        : getTasksByCategory(selectedCategory.id)
+      ).filter(task => {
         const matchesSearch =
           task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
           task.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -284,13 +296,17 @@ const Dashboard: React.FC = () => {
 
   // Statistics
   const totalTasks = selectedCategory
-    ? getTasksByCategory(selectedCategory.id).length
+    ? (showHidden
+        ? tasks.filter(t => t.categoryId === selectedCategory.id && !t.parentId).length
+        : getTasksByCategory(selectedCategory.id).length)
     : tasks.filter(t => t.visible !== false).length;
 
   const totalCategories = selectedCategory ? 1 : categories.length;
 
   const completedTasks = (selectedCategory
-    ? getTasksByCategory(selectedCategory.id)
+    ? (showHidden
+        ? tasks.filter(t => t.categoryId === selectedCategory.id && !t.parentId)
+        : getTasksByCategory(selectedCategory.id))
     : tasks.filter(t => t.visible !== false)
   ).filter(task => {
     const hasSubtasks = task.subtasks.length > 0;
@@ -697,6 +713,8 @@ const Dashboard: React.FC = () => {
         colorPalette={colorPalette}
         showCompleted={showCompleted}
         onShowCompletedChange={setShowCompleted}
+        showHidden={showHidden}
+        onShowHiddenChange={setShowHidden}
         layout={taskLayout}
         onLayoutChange={setTaskLayout}
       />

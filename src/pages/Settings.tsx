@@ -127,6 +127,12 @@ const SettingsPage: React.FC = () => {
     toggleShowPinnedCategories,
     collapseSubtasksByDefault,
     toggleCollapseSubtasksByDefault,
+    defaultTaskLayout,
+    updateDefaultTaskLayout,
+    showCompletedByDefault,
+    toggleShowCompletedByDefault,
+    defaultTaskColor,
+    updateDefaultTaskColor,
     flashcardTimer,
     updateFlashcardTimer,
     flashcardSessionSize,
@@ -760,6 +766,42 @@ const SettingsPage: React.FC = () => {
                     <SelectItem value="high">{t('settingsPage.high')}</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+              <div>
+                <Label htmlFor="taskView">{t('settingsPage.defaultTaskView')}</Label>
+                <Select value={defaultTaskLayout} onValueChange={updateDefaultTaskLayout}>
+                  <SelectTrigger id="taskView">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="list">{t('dashboard.listView')}</SelectItem>
+                    <SelectItem value="grid">{t('dashboard.gridView')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="showCompletedDefault"
+                  checked={showCompletedByDefault}
+                  onCheckedChange={toggleShowCompletedByDefault}
+                />
+                <Label htmlFor="showCompletedDefault">{t('settingsPage.showCompletedTasks')}</Label>
+              </div>
+              <div>
+                <Label>{t('settingsPage.defaultTaskColor')}</Label>
+                <div className="flex space-x-1 mt-1">
+                  {colorPalette.map((c, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      className={`w-5 h-5 rounded-full border-2 transition-all ${
+                        defaultTaskColor === idx ? 'border-foreground scale-110' : 'border-gray-300 hover:scale-105'
+                      }`}
+                      style={{ backgroundColor: c }}
+                      onClick={() => updateDefaultTaskColor(idx)}
+                    />
+                  ))}
+                </div>
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox

@@ -31,6 +31,8 @@ interface TaskFilterSheetProps {
   colorPalette: Record<number, string>
   showCompleted: boolean
   onShowCompletedChange: (val: boolean) => void
+  showHidden: boolean
+  onShowHiddenChange: (val: boolean) => void
   layout: 'list' | 'grid'
   onLayoutChange: (val: 'list' | 'grid') => void
 }
@@ -48,6 +50,8 @@ const TaskFilterSheet: React.FC<TaskFilterSheetProps> = ({
   colorPalette,
   showCompleted,
   onShowCompletedChange,
+  showHidden,
+  onShowHiddenChange,
   layout,
   onLayoutChange
 }) => {
@@ -128,6 +132,16 @@ const TaskFilterSheet: React.FC<TaskFilterSheetProps> = ({
                 />
                 <Label htmlFor="showCompletedSheet" className="text-sm">
                   {t('dashboard.showCompleted')}
+                </Label>
+              </div>
+              <div className="flex items-center gap-2 mb-3">
+                <Checkbox
+                  id="showHiddenSheet"
+                  checked={showHidden}
+                  onCheckedChange={checked => onShowHiddenChange(Boolean(checked))}
+                />
+                <Label htmlFor="showHiddenSheet" className="text-sm">
+                  {t('dashboard.showHidden')}
                 </Label>
               </div>
               <div className="flex items-center gap-1">
