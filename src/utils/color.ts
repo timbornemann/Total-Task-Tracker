@@ -92,12 +92,14 @@ export const adjustColor = (hex: string, percent: number): string => {
 };
 
 export const complementaryColor = (hex: string): string => {
-  const [hStr, sStr, lStr] = hexToHsl(hex).split(/\s+/);
-  const h = (parseFloat(hStr) + 180) % 360;
-  const s = parseFloat(sStr);
-  let l = parseFloat(lStr);
-  l = isColorDark(hex) ? Math.min(100, l + 40) : Math.max(0, l - 40);
-  return hslToHex(`${h} ${s}% ${l}%`);
+  const dark = isColorDark(hex);
+  const adjusted = adjustColor(hex, dark ? 60 : -60);
+  if (colorContrast(hex, adjusted) < 128) {
+    const blackContrast = colorContrast(hex, "#000000");
+    const whiteContrast = colorContrast(hex, "#ffffff");
+    return blackContrast > whiteContrast ? "#000000" : "#ffffff";
+  }
+  return adjusted;
 };
 
 export const colorContrast = (hex1: string, hex2: string): number => {
