@@ -169,9 +169,18 @@ const Kanban: React.FC = () => {
     navigate(`/tasks/${task.id}?categoryId=${task.categoryId}`);
   };
 
-  const flattened = flattenTasks(tasks.filter(t => t.visible !== false));
+  const flattened = flattenTasks(
+    tasks.filter(t => t.visible !== false || t.status === 'done')
+  );
   const colorOptions = useMemo(
-    () => Array.from(new Set(tasks.filter(t => t.visible !== false).map(t => t.color))),
+    () =>
+      Array.from(
+        new Set(
+          tasks
+            .filter(t => t.visible !== false || t.status === 'done')
+            .map(t => t.color)
+        )
+      ),
     [tasks]
   );
 

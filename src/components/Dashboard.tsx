@@ -350,7 +350,11 @@ const Dashboard: React.FC = () => {
   };
 
   const handleToggleTaskComplete = (taskId: string, completed: boolean) => {
-    updateTask(taskId, { completed, status: completed ? 'done' : 'todo' });
+    updateTask(taskId, {
+      completed,
+      status: completed ? 'done' : 'todo',
+      visible: !completed
+    });
     const task = findTaskById(taskId);
     toast({
       title: completed ? t('task.completed') : t('task.reactivated'),
