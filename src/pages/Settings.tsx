@@ -21,7 +21,20 @@ import {
   AlertDialogCancel
 } from '@/components/ui/alert-dialog'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
-import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd'
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { GripVertical, CheckCircle, XCircle } from 'lucide-react'
 import {
   Select,
@@ -45,6 +58,26 @@ import {
 import ReactMarkdown from 'react-markdown'
 import readme from '../../README.md?raw'
 import { useToast } from '@/hooks/use-toast'
+
+interface SortableHomeSectionProps {
+  id: string
+  children: React.ReactNode
+}
+
+const SortableHomeSection: React.FC<SortableHomeSectionProps> = ({ id, children }) => {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition
+  }
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      {children}
+    </div>
+  )
+}
 
 interface ServerInfo {
   ips: string[]
@@ -231,9 +264,15 @@ const SettingsPage: React.FC = () => {
     return () => clearInterval(id)
   }, [syncRole])
 
-  const handleHomeDrag = (result: DropResult) => {
-    if (!result.destination) return
-    reorderHomeSections(result.source.index, result.destination.index)
+  const sensors = useSensors(useSensor(PointerSensor))
+
+  const handleHomeDrag = ({ active, over }: DragEndEvent) => {
+    if (!over || active.id === over.id) return
+    const oldIndex = homeSectionOrder.indexOf(active.id as string)
+    const newIndex = homeSectionOrder.indexOf(over.id as string)
+    if (oldIndex !== -1 && newIndex !== -1) {
+      reorderHomeSections(oldIndex, newIndex)
+    }
   }
 
   const download = (data: unknown, name: string) => {
@@ -756,33 +795,22 @@ const SettingsPage: React.FC = () => {
                 />
                 <Label htmlFor="showPinnedCategories">{t('settingsPage.showPinnedCategories')}</Label>
               </div>
-              <DragDropContext onDragEnd={handleHomeDrag}>
-                <Droppable droppableId="homeOrder">
-                  {provided => (
-                    <div
-                      className="space-y-2"
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                    >
-                      {homeSectionOrder.map((key, index) => {
-                        const sec = allHomeSections.find(s => s.key === key)
-                        if (!sec) return null
-                        return (
-                          <Draggable key={sec.key} draggableId={sec.key} index={index}>
-                            {prov => (
-                              <div
-                                ref={prov.innerRef}
-                                {...prov.draggableProps}
-                                {...prov.dragHandleProps}
-                                className="flex items-center justify-between border rounded p-2 bg-card"
-                              >
-                                <div className="flex items-center space-x-2">
-                                  <Checkbox
-                                    id={sec.key}
-                                    checked={homeSections.includes(sec.key)}
-                                    onCheckedChange={() => toggleHomeSection(sec.key)}
-                                  />
-                                  <Label htmlFor={sec.key}>{t(sec.labelKey)}</Label>
+              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleHomeDrag}>
+                <SortableContext items={homeSectionOrder} strategy={verticalListSortingStrategy}>
+                  <div className="space-y-2">
+                    {homeSectionOrder.map(key => {
+                      const sec = allHomeSections.find(s => s.key === key)
+                      if (!sec) return null
+                      return (
+                        <SortableHomeSection key={sec.key} id={sec.key}>
+                          <div className="flex items-center justify-between border rounded p-2 bg-card">
+                            <div className="flex items-center space-x-2">
+                              <Checkbox
+                                id={sec.key}
+                                checked={homeSections.includes(sec.key)}
+                                onCheckedChange={() => toggleHomeSection(sec.key)}
+                              />
+                              <Label htmlFor={sec.key}>{t(sec.labelKey)}</Label>
                                   <div className="flex ml-2 space-x-1">
                                     {colorPalette.map((c, idx) => (
                                       <button
@@ -799,17 +827,14 @@ const SettingsPage: React.FC = () => {
                                     ))}
                                   </div>
                                 </div>
-                                <GripVertical className="h-4 w-4 text-muted-foreground" />
-                              </div>
-                            )}
-                          </Draggable>
-                        )
-                      })}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-              </DragDropContext>
+                            <GripVertical className="h-4 w-4 text-muted-foreground" />
+                          </div>
+                        </SortableHomeSection>
+                      )
+                    })}
+                  </div>
+                </SortableContext>
+              </DndContext>
             </TabsContent>
             <TabsContent value="theme" className="space-y-4">
               <div>

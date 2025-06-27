@@ -132,6 +132,7 @@ npm start    # startet die gebaute App auf Port 3002
   - Aufgaben lassen sich mit Start- und Endzeit planen
   - Tasks ohne Uhrzeit werden pro Tag als Liste angezeigt
 - Eigene Notizen mit Farbe und Drag & Drop sortierbar
+  - Drag & Drop basiert jetzt auf dnd-kit und funktioniert in Grid-Layouts für Notizen, Tasks, Kategorien und die Startseiten-Buttons
   - Notizen lassen sich anpinnen; die ersten drei angepinnten erscheinen auf der Startseite
   - Tasks lassen sich ebenfalls anpinnen; die ersten drei werden auf der Startseite gezeigt
   - Text kann im Markdown-Format geschrieben werden
