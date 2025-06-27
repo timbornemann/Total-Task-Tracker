@@ -7,25 +7,22 @@ Ideal for self -organization, project planning or structured exam preparation.
 The data is stored completely locally on the server, either by docker or in the classic node.js company. So you keep full control over your content.
 
 ## Table of contents
-- [Requirements] (#requirements)
--[Quick start with the finished docker image] (#quick start-with-friendly docker image)
--[Automatic updates with Watchtower] (#automatic updates-mit watchtower)
--[Docker compose: Building Image yourself] (#Docker-Compose-Image-Selbst-Selbst-Selbst-Bauen)
--[Installation for local development] (#installation-for-the-local development)
-- [Start development] (#development)
--[Manual production without a docker] (#manual-production-rash-docker)
-- [functions] (#functions)
-- [Use] (#use)
-- [Key Purula] (#keystick)
--[Learning card algorithm] (#Learning Card algorithm)
+- [Requirements](#requirements)
+- [Quick start with the finished Docker image](#quick-start-with-the-finished-docker-image-recommended)
+- [Automatic updates with Watchtower](#automatic-updates-with-watchtower)
+- [Docker Compose: Building image yourself](#docker-compose-building-image-yourself)
+- [Installation for local development](#installation-for-local-development)
+- [Start development](#start-development)
+- [Manual production without Docker](#manual-production-without-docker)
+- [Functions](#functions)
 
 
-## requirements
+## Requirements
 
-*For local development: ** node.js ** (recommended version 18) and ** npm **
-*For productive operation: ** Docker ** and ** Docker compose **
+* For local development: **Node.js** (recommended version 18) and **npm**
+* For production use: **Docker** and **docker-compose**
 
-## quick start with the finished docker image (recommended)
+## Quick start with the finished Docker image (recommended)
 
 If you don't want to build locally, you can use the docker image already provided from the Github Container Registry:
 
@@ -34,16 +31,16 @@ docker pull ghcr.io/timbornemann/total-task-tracker:latest
 docker run -d --name total-task-tracker -p 3002:3002 -v total-task-tracker-data:/app/server/data ghcr.io/timbornemann/total-task-tracker:latest
 ```
 
-By default, the application uses your SQLite data in the Volume `Total-Task-Tracker-Data '. This volume is automatically created at the first start and is also retained after a container update. If you want to bind a certain directory instead, you can specify a volume:
+By default, the application stores its SQLite data in the volume `total-task-tracker-data`. This volume is created automatically on first start and is retained when the container is updated. If you prefer to bind a specific directory, you can specify a volume:
 
 ```bash
 docker run -d --name total-task-tracker -p 3002:3002 -v ./server/data:/app/server/data ghcr.io/timbornemann/total-task-tracker:latest
 ```
 
 
-If a certain IP is to be displayed in the settings (for example in the case of docker use), you can set the ambient variable `server_public_ip`. This value is also output under "Server Info".
+If a certain IP should be shown in the settings (for example when using Docker), set the environment variable `SERVER_PUBLIC_IP`. This value also appears under "Server Info".
 
-## automatic updates with watchtower
+## Automatic updates with Watchtower
 
 Um den Container stets aktuell zu halten, kannst du [Watchtower](https://containrrr.dev/watchtower/) einsetzen. This regularly checked whether new images are available.
 
@@ -68,7 +65,7 @@ If WatchTower should only be checked once and then ended, add `-Run-Once ':
 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower total-task-tracker-app --run-once
 ```
 
-## Docker Compose: Building Image yourself
+## Docker Compose: Building image yourself
 
 The application can also be carried out completely via `docker compose`. A production building is automatically created.
 
@@ -79,10 +76,10 @@ The application can also be carried out completely via `docker compose`. A produ
 VERSION=$(git describe --tags --abbrev=0) docker-compose up --build
 ```
 
-The service then listens to port ** 3002 **. In the browser under `http: // localhost: 3002` you reach the dashboard. The data is saved in a named docker volume (`total-task tracker-data`). The container can be stopped with `docker compose down` without the data being lost.
+The service then listens on port **3002**. In the browser at `http://localhost:3002` you reach the dashboard. The data is stored in a named Docker volume (`total-task-tracker-data`). The container can be stopped with `docker compose down` without losing data.
 
 
-## installation for local development
+## Installation for local development
 
 ```bash
 # Repository cloning
@@ -92,12 +89,12 @@ cd Total-Task-Tracker
 # Install dependencies
 npm install
 
-The project uses to display notes ** React-Markdown **.
+The project uses **react-markdown** to display notes.
 ```
 
-## start development
+## Start development
 
-In development mode, the react application with Vite on port ** 8081 ** runs. The node server can also be started for data storage.
+In development mode, the React application with Vite runs on port **8081**. The Node server can also be started for data storage.
 
 ```bash
 # Frontend with automatic reload
@@ -108,28 +105,28 @@ npm run dev
 npm start
 ```
 
-Then call in the browser `http: // Localhost: 8081`.
+Then open `http://localhost:8081` in your browser.
 
-## execute tests
+## Execute tests
 
 The application uses [vitest] (https://vitest.dev/) and the React Testing Library.
 After installing the dependencies, you can start the tests with the following command:
 
 ```bash
-NPM test
+npm test
 ```
 
-## manual production without docker
+## Manual production without Docker
 
 If you want to deploy without a docker, you can build the application locally and use the node server directly.
 
 
 ```bash
 npm run build
-NPM Start # starts the built app on port 3002
+npm start # starts the built app on port 3002
 ```
 
-## functions
+## Functions
 
 - Create, edit and sort tasks
 - Subscriptions and priorities
@@ -178,9 +175,8 @@ the data off as soon as the server can be reached again.
 - multilingual surface (German, English) selectable
 -Several theme presets (Light, Dark, Ocean, Dark-Red, Hacker,
 Motivation) and your own "custom" theme selectable
-- In the custom theme, colors of the surface and cards can be individually adjusted
-- Each theme preset now brings a suitable color palette for categories,
-Tasks and notes with
+- In the custom theme, colors of the interface and cards can be adjusted individually
+- Each theme preset now includes a suitable color palette for categories, tasks and notes
 - New "Info" rider in the settings shows version number, release notes and readme
 - German or English can be selected in the "Language" tab
 - Submenu "Server Info" in the settings lists IP addresses, port and finished URLs
