@@ -115,3 +115,6 @@ export const colorContrast = (hex1: string, hex2: string): number => {
   const yiq2 = (r2 * 299 + g2 * 587 + b2 * 114) / 1000;
   return Math.abs(yiq1 - yiq2);
 };
+
+export const paletteToGradient = (colors: string[]): string =>
+  `linear-gradient(to right, ${colors.join(', ')})`;
