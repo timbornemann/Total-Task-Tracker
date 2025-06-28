@@ -304,17 +304,13 @@ const Dashboard: React.FC = () => {
 
   // Statistics
   const totalTasks = selectedCategory
-    ? (showHidden
-        ? tasks.filter(t => t.categoryId === selectedCategory.id && !t.parentId).length
-        : getTasksByCategory(selectedCategory.id).length)
+    ? getTasksByCategory(selectedCategory.id).length
     : tasks.filter(t => t.visible !== false).length;
 
   const totalCategories = selectedCategory ? 1 : categories.length;
 
   const completedTasks = (selectedCategory
-    ? (showHidden
-        ? tasks.filter(t => t.categoryId === selectedCategory.id && !t.parentId)
-        : getTasksByCategory(selectedCategory.id))
+    ? getTasksByCategory(selectedCategory.id)
     : tasks.filter(t => t.visible !== false)
   ).filter(task => {
     const hasSubtasks = task.subtasks.length > 0;
