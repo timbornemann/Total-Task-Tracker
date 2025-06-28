@@ -26,6 +26,7 @@ interface PomodoroState {
   resume: () => void;
   reset: () => void;
   startBreak: () => void;
+  skipBreak: () => void;
   tick: () => void;
   setStartTime: (time?: number) => void;
   setLastTick: (time: number) => void;
@@ -79,6 +80,15 @@ export const usePomodoroStore = create<PomodoroState>()(
           pauseStart: undefined,
           mode: 'break',
           remainingTime: state.breakDuration,
+          lastTick: Date.now()
+        })),
+      skipBreak: () =>
+        set(state => ({
+          isRunning: true,
+          isPaused: false,
+          pauseStart: undefined,
+          mode: 'work',
+          remainingTime: state.workDuration,
           lastTick: Date.now()
         })),
       tick: () =>
@@ -137,6 +147,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
     resume,
     reset,
     startBreak,
+    skipBreak,
     pauseStart,
     workDuration,
     breakDuration,
@@ -301,6 +312,12 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
     startBreak();
   };
 
+  const handleSkipBreak = () => {
+    endBreak(Date.now());
+    skipBreak();
+    setStartTime(Date.now());
+  };
+
   useEffect(() => {
     setDurations(pomodoro.workMinutes * 60, pomodoro.breakMinutes * 60);
   }, [pomodoro, setDurations]);
@@ -377,6 +394,11 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ compact, size = 80, float
         {isRunning && !isPaused && mode === 'work' && !floating && !compact && (
           <Button onClick={handleStartBreak} variant="outline">
             {t('pomodoroTimer.break')}
+          </Button>
+        )}
+        {isRunning && !isPaused && mode === 'break' && !floating && !compact && (
+          <Button onClick={handleSkipBreak} variant="outline">
+            {t('pomodoroTimer.skipBreak')}
           </Button>
         )}
         {isRunning && isPaused && (
