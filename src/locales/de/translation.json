@@ -103,7 +103,7 @@
     "workRing": "Pomodoro Arbeit",
     "breakRing": "Pomodoro Pause",
     "taskOverdue": "Überfällig Farbe",
-    "taskColors": "Kategorie, Task & Notizfarben",
+    "taskColors": "Kategorie, Task, Notiz & Startseite",
     "bgColorDesc": "Hintergrund der Anwendung",
     "fgColorDesc": "Standard Textfarbe",
     "accentColorDesc": "Akzente wie Links",
@@ -124,7 +124,7 @@
     "workRingDesc": "Pomodoro Arbeitsring",
     "breakRingDesc": "Pomodoro Pausenring",
     "taskOverdueDesc": "Farbe für überfällige Termine",
-    "taskColorsDesc": "Palette für Tasks, Kategorien und Notizen",
+    "taskColorsDesc": "Palette für Tasks, Kategorien, Notizen und die Startseite",
     "themeGroups": {
       "base": "Grundfarben",
       "interactive": "Interaktion",
@@ -132,7 +132,7 @@
       "status": "Status & Warnungen",
       "statsKanban": "Statistik & Kanban",
       "pomodoro": "Pomodoro",
-      "palette": "Task-Farben"
+      "palette": "Farbpalette"
     },
     "dataTitle": "Datenexport / -import",
     "syncRole": "Sync-Rolle",
