@@ -8,7 +8,7 @@ import KeyInput from '@/components/KeyInput'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Link } from 'react-router-dom'
-import { hslToHex, hexToHsl } from '@/utils/color'
+import { hslToHex, hexToHsl, paletteToGradient } from '@/utils/color'
 import { Checkbox } from '@/components/ui/checkbox'
 import { allHomeSections } from '@/utils/homeSections'
 import {
@@ -943,12 +943,24 @@ const SettingsPage: React.FC = () => {
                   <SelectContent className="max-h-60 overflow-y-auto">
                     {customThemes.map(ct => (
                       <SelectItem key={ct.name} value={ct.name}>
-                        {ct.name}
+                        <span className="flex items-center gap-2 w-full">
+                          <span>{ct.name}</span>
+                          <span
+                            className="flex-1 h-3 rounded"
+                            style={{ background: paletteToGradient(ct.colorPalette) }}
+                          />
+                        </span>
                       </SelectItem>
                     ))}
                     {Object.keys(themePresets).map(name => (
                       <SelectItem key={name} value={name}>
-                        {name}
+                        <span className="flex items-center gap-2 w-full">
+                          <span>{name}</span>
+                          <span
+                            className="flex-1 h-3 rounded"
+                            style={{ background: paletteToGradient(themePresets[name].colorPalette) }}
+                          />
+                        </span>
                       </SelectItem>
                     ))}
                     <SelectItem value="custom">{t('settingsPage.custom')}</SelectItem>
