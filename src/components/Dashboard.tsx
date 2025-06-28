@@ -145,7 +145,7 @@ const Dashboard: React.FC = () => {
   const [showCompleted, setShowCompleted] = useState<boolean>(showCompletedByDefault);
   const [showHidden, setShowHidden] = useState<boolean>(false);
 
-
+  
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
     if (params.get('sort') !== sortCriteria) {
@@ -153,6 +153,14 @@ const Dashboard: React.FC = () => {
       setSearchParams(params, { replace: true });
     }
   }, [sortCriteria]);
+
+  useEffect(() => {
+    setTaskLayout(defaultTaskLayout);
+  }, [defaultTaskLayout]);
+
+  useEffect(() => {
+    setShowCompleted(showCompletedByDefault);
+  }, [showCompletedByDefault]);
 
   useEffect(() => {
     const catId = searchParams.get('categoryId');
