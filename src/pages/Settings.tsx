@@ -270,7 +270,11 @@ const SettingsPage: React.FC = () => {
     return () => clearInterval(id)
   }, [syncRole])
 
-  const sensors = useSensors(useSensor(PointerSensor))
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 }
+    })
+  )
 
   const handleHomeDrag = ({ active, over }: DragEndEvent) => {
     if (!over || active.id === over.id) return
