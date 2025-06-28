@@ -22,24 +22,28 @@ export const useStatistics = (): TaskStats => {
     
     flattenTasks(tasks);
 
-    const totalTasks = allTasks.length;
-    const completedTasks = allTasks.filter(task => task.completed).length;
-    const pendingTasks = allTasks.filter(task => !task.completed).length;
-    const recurringTasks = allTasks.filter(task => task.isRecurring).length;
+    const statsTasks = allTasks.filter(
+      task => !(task.recurringId && task.visible === false)
+    );
+
+    const totalTasks = statsTasks.length;
+    const completedTasks = statsTasks.filter(task => task.completed).length;
+    const pendingTasks = statsTasks.filter(task => !task.completed).length;
+    const recurringTasks = statsTasks.filter(task => task.isRecurring).length;
 
     const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);
-    const tasksCompletedLast7Days = allTasks.filter(task => {
+    const tasksCompletedLast7Days = statsTasks.filter(task => {
       if (!task.completed) return false;
       const updated = task.lastCompleted || task.updatedAt;
       return new Date(updated) >= weekAgo;
     }).length;
-    const tasksCreatedLast7Days = allTasks.filter(task => new Date(task.createdAt) >= weekAgo).length;
+    const tasksCreatedLast7Days = statsTasks.filter(task => new Date(task.createdAt) >= weekAgo).length;
     
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const overdueTasks = allTasks.filter(task => {
+    const overdueTasks = statsTasks.filter(task => {
       if (task.completed) return false;
       if (!task.dueDate) return false;
       return new Date(task.dueDate) < today;
@@ -48,14 +52,14 @@ export const useStatistics = (): TaskStats => {
 
     // Tasks by priority
     const tasksByPriority = {
-      high: allTasks.filter(task => task.priority === 'high').length,
-      medium: allTasks.filter(task => task.priority === 'medium').length,
-      low: allTasks.filter(task => task.priority === 'low').length,
+      high: statsTasks.filter(task => task.priority === 'high').length,
+      medium: statsTasks.filter(task => task.priority === 'medium').length,
+      low: statsTasks.filter(task => task.priority === 'low').length,
     };
 
     // Tasks by category
     const tasksByCategory = categories.map(category => {
-      const categoryTasks = allTasks.filter(task => task.categoryId === category.id);
+      const categoryTasks = statsTasks.filter(task => task.categoryId === category.id);
       return {
         categoryId: category.id,
         categoryName: category.name,
@@ -72,7 +76,7 @@ export const useStatistics = (): TaskStats => {
       const dateStr = date.toISOString().split('T')[0];
       
       // For now, simulate data - in a real app you'd track actual completion dates
-      const dayTasks = allTasks.filter(task => {
+      const dayTasks = statsTasks.filter(task => {
         const taskDate = new Date(task.createdAt).toISOString().split('T')[0];
         return taskDate === dateStr;
       });
