@@ -187,19 +187,28 @@ const SettingsPage: React.FC = () => {
     null
   )
 
-  const coreColors = [
+  const baseColors = [
     { key: 'background', label: 'bgColor', desc: 'bgColorDesc' },
     { key: 'foreground', label: 'fgColor', desc: 'fgColorDesc' },
-    { key: 'accent', label: 'accentColor', desc: 'accentColorDesc' },
+    { key: 'accent', label: 'accentColor', desc: 'accentColorDesc' }
+  ] as const
+
+  const interactiveColors = [
     { key: 'primary', label: 'primaryColor', desc: 'primaryColorDesc' },
     { key: 'primary-foreground', label: 'primaryFgColor', desc: 'primaryFgColorDesc' },
     { key: 'destructive', label: 'destructiveColor', desc: 'destructiveColorDesc' },
-    { key: 'destructive-foreground', label: 'destructiveFgColor', desc: 'destructiveFgColorDesc' },
+    { key: 'destructive-foreground', label: 'destructiveFgColor', desc: 'destructiveFgColorDesc' }
+  ] as const
+
+  const surfaceColors = [
     { key: 'muted', label: 'mutedColor', desc: 'mutedColorDesc' },
     { key: 'muted-foreground', label: 'mutedFgColor', desc: 'mutedFgColorDesc' },
     { key: 'card', label: 'cardBgColor', desc: 'cardBgColorDesc' },
     { key: 'card-foreground', label: 'cardFgColor', desc: 'cardFgColorDesc' },
-    { key: 'popover', label: 'popoverColor', desc: 'popoverColorDesc' },
+    { key: 'popover', label: 'popoverColor', desc: 'popoverColorDesc' }
+  ] as const
+
+  const statusColors = [
     { key: 'task-overdue', label: 'taskOverdue', desc: 'taskOverdueDesc' }
   ] as const
 
@@ -900,10 +909,73 @@ const SettingsPage: React.FC = () => {
                 </Select>
               </div>
               <Accordion type="multiple" className="space-y-2">
-                <AccordionItem value="core">
-                  <AccordionTrigger>{t('settingsPage.themeGroups.core')}</AccordionTrigger>
+                <AccordionItem value="base">
+                  <AccordionTrigger>{t('settingsPage.themeGroups.base')}</AccordionTrigger>
                   <AccordionContent className="space-y-4">
-                    {coreColors.map(c => (
+                    {baseColors.map(c => (
+                      <div key={c.key} className="space-y-1">
+                        <Label htmlFor={c.key}>{t(`settingsPage.${c.label}`)}</Label>
+                        <p className="text-xs text-muted-foreground">
+                          {t(`settingsPage.${c.desc}`)}
+                        </p>
+                        <Input
+                          id={c.key}
+                          type="color"
+                          value={hslToHex(theme[c.key as keyof typeof theme])}
+                          onChange={e =>
+                            updateTheme(c.key as keyof typeof theme, hexToHsl(e.target.value))
+                          }
+                        />
+                      </div>
+                    ))}
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="interactive">
+                  <AccordionTrigger>{t('settingsPage.themeGroups.interactive')}</AccordionTrigger>
+                  <AccordionContent className="space-y-4">
+                    {interactiveColors.map(c => (
+                      <div key={c.key} className="space-y-1">
+                        <Label htmlFor={c.key}>{t(`settingsPage.${c.label}`)}</Label>
+                        <p className="text-xs text-muted-foreground">
+                          {t(`settingsPage.${c.desc}`)}
+                        </p>
+                        <Input
+                          id={c.key}
+                          type="color"
+                          value={hslToHex(theme[c.key as keyof typeof theme])}
+                          onChange={e =>
+                            updateTheme(c.key as keyof typeof theme, hexToHsl(e.target.value))
+                          }
+                        />
+                      </div>
+                    ))}
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="surface">
+                  <AccordionTrigger>{t('settingsPage.themeGroups.surface')}</AccordionTrigger>
+                  <AccordionContent className="space-y-4">
+                    {surfaceColors.map(c => (
+                      <div key={c.key} className="space-y-1">
+                        <Label htmlFor={c.key}>{t(`settingsPage.${c.label}`)}</Label>
+                        <p className="text-xs text-muted-foreground">
+                          {t(`settingsPage.${c.desc}`)}
+                        </p>
+                        <Input
+                          id={c.key}
+                          type="color"
+                          value={hslToHex(theme[c.key as keyof typeof theme])}
+                          onChange={e =>
+                            updateTheme(c.key as keyof typeof theme, hexToHsl(e.target.value))
+                          }
+                        />
+                      </div>
+                    ))}
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="status">
+                  <AccordionTrigger>{t('settingsPage.themeGroups.status')}</AccordionTrigger>
+                  <AccordionContent className="space-y-4">
+                    {statusColors.map(c => (
                       <div key={c.key} className="space-y-1">
                         <Label htmlFor={c.key}>{t(`settingsPage.${c.label}`)}</Label>
                         <p className="text-xs text-muted-foreground">

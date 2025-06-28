@@ -126,7 +126,10 @@
     "taskOverdueDesc": "Farbe für überfällige Termine",
     "taskColorsDesc": "Palette für Tasks, Kategorien und Notizen",
     "themeGroups": {
-      "core": "Grundfarben",
+      "base": "Grundfarben",
+      "interactive": "Interaktion",
+      "surface": "Oberflächen",
+      "status": "Status & Warnungen",
       "statsKanban": "Statistik & Kanban",
       "pomodoro": "Pomodoro",
       "palette": "Task-Farben"
