@@ -23,3 +23,6 @@ server/data
 *.njsproj
 *.sln
 *.sw?
+
+# Vite PWA dev build output
+dev-dist/
