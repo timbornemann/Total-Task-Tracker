@@ -35,6 +35,15 @@ export default defineConfig(({ mode }) => ({
     VitePWA({
       registerType: 'autoUpdate',
       devOptions: { enabled: true },
+      workbox: {
+        runtimeCaching: [
+          {
+            urlPattern: /^\/api\//,
+            handler: 'NetworkOnly'
+          }
+        ],
+        navigateFallbackDenylist: [/^\/api\//]
+      },
       manifest: {
         name: 'Total Task Tracker',
         short_name: 'TaskTracker',
