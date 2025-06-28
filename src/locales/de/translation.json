@@ -23,6 +23,7 @@
   },
   "settings": {
     "tabs": {
+      "overview": "Übersicht",
       "shortcuts": "Shortcuts",
       "pomodoro": "Pomodoro",
       "flashcards": "Karten",
@@ -82,6 +83,9 @@
     "showPinnedCategories": "Gepinnte Kategorien anzeigen",
     "offlineCache": "Offline-Cache aktivieren",
     "themePreset": "Voreinstellung",
+    "customThemeName": "Name des Themes",
+    "addTheme": "Theme hinzufügen",
+    "yourThemes": "Eigene Themes",
     "custom": "custom",
     "bgColor": "Hintergrund (App)",
     "fgColor": "Textfarbe",

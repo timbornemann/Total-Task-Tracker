@@ -953,6 +953,9 @@ interface SettingsContextValue {
   updateTheme: (key: keyof typeof defaultTheme, value: string) => void
   themeName: string
   updateThemeName: (name: string) => void
+  customThemes: { name: string; theme: typeof defaultTheme; colorPalette: string[] }[]
+  addCustomTheme: (name: string) => void
+  deleteCustomTheme: (name: string) => void
   colorPalette: string[]
   updatePaletteColor: (index: number, value: string) => void
   homeSectionColors: Record<string, number>
@@ -1022,6 +1025,11 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   )
   const [theme, setTheme] = useState(defaultTheme)
   const [themeName, setThemeName] = useState('light')
+  const [customThemes, setCustomThemes] = useState<{
+    name: string
+    theme: typeof defaultTheme
+    colorPalette: string[]
+  }[]>([])
   const [colorPalette, setColorPalette] = useState<string[]>(defaultColorPalette)
   const [homeSectionColors, setHomeSectionColors] = useState<Record<string, number>>(
     { ...defaultHomeSectionColors }
@@ -1083,12 +1091,18 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             if (!preset && Array.isArray(data.colorPalette)) {
               setColorPalette(data.colorPalette)
             }
+            if (Array.isArray(data.customThemes)) {
+              setCustomThemes(data.customThemes)
+            }
           } else {
             if (data.theme) {
               setTheme({ ...defaultTheme, ...data.theme })
             }
             if (Array.isArray(data.colorPalette)) {
               setColorPalette(data.colorPalette)
+            }
+            if (Array.isArray(data.customThemes)) {
+              setCustomThemes(data.customThemes)
             }
           }
           if (Array.isArray(data.homeSectionOrder)) {
@@ -1199,6 +1213,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             defaultTaskPriority: priority,
             theme,
             themeName,
+            customThemes,
             colorPalette,
             homeSectionColors,
             homeSections,
@@ -1237,6 +1252,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     priority,
     theme,
     themeName,
+    customThemes,
     colorPalette,
     homeSectionColors,
     homeSections,
@@ -1297,9 +1313,13 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const updateThemeName = (name: string) => {
     setThemeName(name)
     const preset = themePresets[name]
+    const custom = customThemes.find(t => t.name === name)
     if (preset) {
       setTheme(preset.theme)
       setColorPalette(preset.colorPalette)
+    } else if (custom) {
+      setTheme(custom.theme)
+      setColorPalette(custom.colorPalette)
     }
   }
 
@@ -1310,6 +1330,24 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       return arr
     })
     setThemeName('custom')
+  }
+
+  const addCustomTheme = (name: string) => {
+    setCustomThemes(prev => [
+      { name, theme: { ...theme }, colorPalette: [...colorPalette] },
+      ...prev.filter(t => t.name !== name)
+    ])
+    setThemeName(name)
+  }
+
+  const deleteCustomTheme = (name: string) => {
+    setCustomThemes(prev => prev.filter(t => t.name !== name))
+    if (themeName === name) {
+      setThemeName('light')
+      const preset = themePresets['light']
+      setTheme(preset.theme)
+      setColorPalette(preset.colorPalette)
+    }
   }
 
   const updateHomeSectionColor = (section: string, color: number) => {
@@ -1425,6 +1463,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         updateTheme,
         themeName,
         updateThemeName,
+        customThemes,
+        addCustomTheme,
+        deleteCustomTheme,
         colorPalette,
         updatePaletteColor,
         homeSectionColors,

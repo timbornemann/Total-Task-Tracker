@@ -23,6 +23,7 @@
   },
   "settings": {
     "tabs": {
+      "overview": "Overview",
       "shortcuts": "Shortcuts",
       "pomodoro": "Pomodoro",
       "flashcards": "Cards",
@@ -82,6 +83,9 @@
     "showPinnedCategories": "Show pinned categories",
     "offlineCache": "Enable offline cache",
     "themePreset": "Preset",
+    "customThemeName": "Theme name",
+    "addTheme": "Add Theme",
+    "yourThemes": "Your Themes",
     "custom": "custom",
     "bgColor": "Background (App)",
     "fgColor": "Text color",

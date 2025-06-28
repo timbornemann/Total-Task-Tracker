@@ -174,8 +174,8 @@ the data off as soon as the server can be reached again.
 - Standard priority for new tasks adjustable
 - multilingual surface (German, English) selectable
 -Several theme presets (Light, Dark, Ocean, Dark-Red, Hacker,
-Motivation) and your own "custom" theme selectable
-- In the custom theme, colors of the interface and cards can be adjusted individually
+Motivation) are available. You can create and manage multiple custom
+themes with individually adjustable colors.
 - Each theme preset now includes a suitable color palette for categories, tasks and notes
 - New "Info" rider in the settings shows version number, release notes and readme
 - German or English can be selected in the "Language" tab
