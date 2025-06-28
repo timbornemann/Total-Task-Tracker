@@ -61,11 +61,15 @@ export const syncWithServer = async (): Promise<OfflineData> => {
     if (!res.ok) throw new Error('fetch failed')
     const serverData = (await res.json()) as OfflineData
     const merged = applyDeletions(mergeData(serverData, local))
-    await fetch('/api/all', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(merged, replacer)
-    })
+    const mergedStr = JSON.stringify(merged, replacer)
+    const serverStr = JSON.stringify(serverData, replacer)
+    if (mergedStr !== serverStr) {
+      await fetch('/api/all', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: mergedStr
+      })
+    }
     saveOfflineData(merged)
     return merged
   } catch (err) {

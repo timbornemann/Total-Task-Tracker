@@ -3,7 +3,7 @@ import { Task, Category, Note, Deletion } from '@/types';
 import i18n from '@/lib/i18n';
 import { useSettings, defaultColorPalette } from '@/hooks/useSettings';
 import { format } from 'date-fns';
-import { loadOfflineData, updateOfflineData, syncWithServer } from '@/utils/offline';
+import { loadOfflineData, updateOfflineData, saveOfflineData, syncWithServer, type OfflineData } from '@/utils/offline';
 
 const API_URL = '/api/data';
 
@@ -153,13 +153,22 @@ const useTaskStoreImpl = () => {
     lastDataRef.current = dataString
   }
 
-  const fetchData = async () => {
+  const fetchData = async (merge = true) => {
     const offline = loadOfflineData()
     if (offline) {
       processData(offline)
     }
-    const synced = await syncWithServer()
-    processData(synced)
+    if (merge) {
+      const synced = await syncWithServer()
+      processData(synced)
+    } else {
+      const res = await fetch('/api/all')
+      if (res.ok) {
+        const data = (await res.json()) as OfflineData
+        processData(data)
+        saveOfflineData(data)
+      }
+    }
     setLoaded(true)
   }
 
@@ -178,7 +187,7 @@ const useTaskStoreImpl = () => {
 
   useEffect(() => {
     const es = new EventSource('/api/updates');
-    es.onmessage = () => fetchData();
+    es.onmessage = () => fetchData(false);
     return () => es.close();
   }, []);
 
