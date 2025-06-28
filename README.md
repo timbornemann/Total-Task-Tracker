@@ -170,8 +170,9 @@ npm start    # startet die gebaute App auf Port 3002
 - Standard-Priorität für neue Tasks einstellbar
 - Mehrsprachige Oberfläche (Deutsch, Englisch) auswählbar
 - Mehrere Theme-Voreinstellungen (light, dark, ocean, dark-red, hacker,
-  motivation) und ein eigenes "Custom"-Theme wählbar
-- Im Custom-Theme lassen sich Farben der Oberfläche und Karten individuell anpassen
+  motivation) stehen zur Auswahl. Eigene Themes können benannt,
+  gespeichert und verwaltet werden, wobei alle Farben individuell
+  anpassbar sind.
 - Jede Theme-Voreinstellung bringt nun eine passende Farbpalette für Kategorien,
   Tasks und Notizen mit
 - Neuer "Info"-Reiter in den Einstellungen zeigt Versionsnummer, Release Notes und README

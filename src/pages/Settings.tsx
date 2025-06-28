@@ -158,6 +158,9 @@ const SettingsPage: React.FC = () => {
     llmModel,
     updateLlmModel,
     colorPalette,
+    customThemes,
+    addCustomTheme,
+    deleteCustomTheme,
     updatePaletteColor,
     homeSectionColors,
     updateHomeSectionColor
@@ -170,6 +173,14 @@ const SettingsPage: React.FC = () => {
   const notesInputRef = React.useRef<HTMLInputElement>(null)
   const decksInputRef = React.useRef<HTMLInputElement>(null)
   const allInputRef = React.useRef<HTMLInputElement>(null)
+
+  const [currentTab, setCurrentTab] = useState(() =>
+    localStorage.getItem('settingsTab') || 'overview'
+  )
+  const handleTabChange = (val: string) => {
+    setCurrentTab(val)
+    localStorage.setItem('settingsTab', val)
+  }
 
   type ImportType = 'tasks' | 'notes' | 'decks' | 'all'
   type ImportData = Partial<{
@@ -186,6 +197,8 @@ const SettingsPage: React.FC = () => {
   const [importResult, setImportResult] = useState<'success' | 'error' | null>(
     null
   )
+
+  const [newThemeName, setNewThemeName] = useState('')
 
   const baseColors = [
     { key: 'background', label: 'bgColor', desc: 'bgColorDesc' },
@@ -593,8 +606,13 @@ const SettingsPage: React.FC = () => {
       <div className="min-h-screen bg-background">
         <Navbar title={t('navbar.settings')} />
       <div className="max-w-5xl mx-auto px-4 py-6">
-        <Tabs defaultValue="shortcuts" className="flex gap-6">
+        <Tabs value={currentTab} onValueChange={handleTabChange} className="flex gap-6">
           <div className="w-48 overflow-y-auto max-h-[calc(100vh-8rem)]">
+            <TabsList className="flex flex-col gap-1 mb-2 bg-transparent p-0 h-auto">
+              <TabsTrigger className="justify-start" value="overview">
+                {t('settings.tabs.overview')}
+              </TabsTrigger>
+            </TabsList>
             <Accordion type="multiple" className="space-y-2">
               <AccordionItem value="general">
                 <AccordionTrigger className="text-sm">
@@ -674,6 +692,30 @@ const SettingsPage: React.FC = () => {
             </Accordion>
           </div>
           <div className="flex-1 space-y-4">
+            <TabsContent value="overview" className="space-y-4">
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  'shortcuts',
+                  'language',
+                  'home',
+                  'theme',
+                  'pomodoro',
+                  'tasks',
+                  'flashcards',
+                  'data',
+                  'ai',
+                  'info'
+                ].map(key => (
+                  <Button
+                    key={key}
+                    variant="outline"
+                    onClick={() => handleTabChange(key)}
+                  >
+                    {t(`settings.tabs.${key}`)}
+                  </Button>
+                ))}
+              </div>
+            </TabsContent>
             <TabsContent value="shortcuts" className="space-y-4">
               <div>
                 <Label htmlFor="open">{t('settingsPage.commandPalette')}</Label>
@@ -898,7 +940,12 @@ const SettingsPage: React.FC = () => {
                   <SelectTrigger id="themePreset">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="max-h-60 overflow-y-auto">
+                    {customThemes.map(ct => (
+                      <SelectItem key={ct.name} value={ct.name}>
+                        {ct.name}
+                      </SelectItem>
+                    ))}
                     {Object.keys(themePresets).map(name => (
                       <SelectItem key={name} value={name}>
                         {name}
@@ -907,6 +954,44 @@ const SettingsPage: React.FC = () => {
                     <SelectItem value="custom">{t('settingsPage.custom')}</SelectItem>
                   </SelectContent>
                 </Select>
+                <div className="flex items-center gap-2 mt-2">
+                  <Input
+                    value={newThemeName}
+                    onChange={e => setNewThemeName(e.target.value)}
+                    placeholder={t('settingsPage.customThemeName') || ''}
+                  />
+                  <Button
+                    onClick={() => {
+                      if (newThemeName.trim()) {
+                        addCustomTheme(newThemeName.trim())
+                        setNewThemeName('')
+                      }
+                    }}
+                  >
+                    {t('settingsPage.addTheme')}
+                  </Button>
+                </div>
+                {customThemes.length > 0 && (
+                  <div>
+                    <p className="text-sm font-medium mt-2">
+                      {t('settingsPage.yourThemes')}
+                    </p>
+                    <ul className="space-y-1 mt-1">
+                      {customThemes.map(ct => (
+                        <li key={ct.name} className="flex items-center gap-2">
+                          <span className="flex-1">{ct.name}</span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => deleteCustomTheme(ct.name)}
+                          >
+                            {t('common.delete')}
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
               <Accordion type="multiple" className="space-y-2">
                 <AccordionItem value="base">
