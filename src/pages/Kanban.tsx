@@ -100,7 +100,11 @@ const Kanban: React.FC = () => {
     done: ''
   });
 
-  const sensors = useSensors(useSensor(PointerSensor));
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 }
+    })
+  );
 
   const onDragEnd = ({ active, over }: DragEndEvent) => {
     if (!over) return;

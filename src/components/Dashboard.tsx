@@ -439,7 +439,11 @@ const Dashboard: React.FC = () => {
     setSearchParams(params, { replace: true });
   };
 
-  const sensors = useSensors(useSensor(PointerSensor));
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 }
+    })
+  );
 
   const handleCategoryDragEnd = ({ active, over }: DragEndEvent) => {
     if (!over || active.id === over.id) return;
