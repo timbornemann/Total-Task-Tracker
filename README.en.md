@@ -76,7 +76,7 @@ The application can also be carried out completely via `docker compose`. A produ
 VERSION=$(git describe --tags --abbrev=0) docker-compose up --build
 ```
 
-The service then listens on port **3002**. In the browser at `http://localhost:3002` you reach the dashboard. The data is stored in a named Docker volume (`total-task-tracker-data`). The container can be stopped with `docker compose down` without losing data.
+The service then listens on port **3002** (HTTPS). Open `https://localhost:3002` in your browser. The data is stored in a named Docker volume (`total-task-tracker-data`). You can stop the container with `docker compose down` without losing data. The self-signed certificate can be downloaded on the settings page to trust the site on other devices.
 
 
 ## Installation for local development
@@ -125,6 +125,8 @@ If you want to deploy without a docker, you can build the application locally an
 npm run build
 npm start # starts the built app on port 3002
 ```
+
+On first start the application creates a self-signed certificate and is available at `https://localhost:3002`. You can download the certificate from the settings page to trust the site on other devices.
 
 ## Functions
 

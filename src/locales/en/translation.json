@@ -52,7 +52,8 @@
       "ips": "IPs",
       "urls": "URLs",
       "loading": "Loading...",
-      "wifiIp": "WiFi IP"
+      "wifiIp": "WiFi IP",
+      "certDownload": "Download Certificate"
     }
   },
   "settingsPage": {
