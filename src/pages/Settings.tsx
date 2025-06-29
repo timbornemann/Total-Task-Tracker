@@ -938,29 +938,37 @@ const SettingsPage: React.FC = () => {
                 <Label htmlFor="themePreset">{t('settingsPage.themePreset')}</Label>
                 <Select value={themeName} onValueChange={updateThemeName}>
                   <SelectTrigger id="themePreset">
-                    <SelectValue />
+                    <SelectValue className="flex-1 pr-2">
+                      {themeName}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent className="max-h-60 overflow-y-auto">
                     {customThemes.map(ct => (
-                      <SelectItem key={ct.name} value={ct.name} className="flex items-center">
-                        <span className="flex items-center gap-2 w-full">
-                          <span>{ct.name}</span>
-                          <span
-                            className="flex-1 h-3 rounded w-full"
-                            style={{ background: themeToGradient(ct.theme, ct.colorPalette) }}
+                      <SelectItem key={ct.name} value={ct.name} className="h-9 py-1.5 overflow-visible">
+                        <div className="flex items-center pr-2">
+                          <span className="inline-block min-w-[80px]">{ct.name}</span>
+                          <div 
+                            className="h-3 rounded absolute right-2 border border-input" 
+                            style={{ 
+                              background: themeToGradient(ct.theme, ct.colorPalette),
+                              width: 'calc(100% - 130px)'
+                            }}
                           />
-                        </span>
+                        </div>
                       </SelectItem>
                     ))}
                     {Object.keys(themePresets).map(name => (
-                      <SelectItem key={name} value={name} className="flex items-center">
-                        <span className="flex items-center gap-2 w-full">
-                          <span>{name}</span>
-                          <span
-                            className="flex-1 h-3 rounded w-full"
-                            style={{ background: themeToGradient(themePresets[name].theme, themePresets[name].colorPalette) }}
+                      <SelectItem key={name} value={name} className="h-9 py-1.5 overflow-visible">
+                        <div className="flex items-center pr-2">
+                          <span className="inline-block min-w-[80px]">{name}</span>
+                          <div 
+                            className="h-3 rounded absolute right-2 border border-input" 
+                            style={{ 
+                              background: themeToGradient(themePresets[name].theme, themePresets[name].colorPalette),
+                              width: 'calc(100% - 130px)'
+                            }}
                           />
-                        </span>
+                        </div>
                       </SelectItem>
                     ))}
                     <SelectItem value="custom">{t('settingsPage.custom')}</SelectItem>
