@@ -362,19 +362,17 @@ const TimeBlockingPage = () => {
         <Calendar mode="single" selected={date} onSelect={d => d && setDate(d)} />
       </div>
       <div className="flex-1 space-y-4">
-        <DaySchedule
-          tasks={dayWithTimes}
-          date={date}
-          showTimes
-        />
         {dayWithoutTimes.length > 0 && (
           <div>
-            <h3 className="font-medium text-sm mb-1">{t('timeBlocking.withoutTime')}</h3>
-            <ul className="space-y-1 text-sm">
+            <h3 className="font-medium mb-1">{t('timeBlocking.withoutTime')}</h3>
+            <ul className="space-y-2">
               {dayWithoutTimes.map(task => (
-                <li key={task.id} className="flex items-center space-x-2">
+                <li
+                  key={task.id}
+                  className="flex items-center space-x-2 border rounded p-2"
+                >
                   <span
-                    className="w-2 h-2 rounded-full"
+                    className="w-3 h-3 rounded-full"
                     style={{ backgroundColor: colorPalette[task.color] }}
                   />
                   <span className="truncate">{task.title}</span>
@@ -383,6 +381,7 @@ const TimeBlockingPage = () => {
             </ul>
           </div>
         )}
+        <DaySchedule tasks={dayWithTimes} date={date} showTimes />
       </div>
     </div>
   );
@@ -416,15 +415,13 @@ const TimeBlockingPage = () => {
               <div className="text-center text-sm font-medium">
                 {d.toLocaleDateString(locale, { weekday: 'short', day: 'numeric' })}
               </div>
-              <DaySchedule
-                tasks={withTimes}
-                showTimes={idx === 0}
-                date={d}
-              />
               {withoutTimes.length > 0 && (
-                <ul className="mt-1 space-y-1 text-xs">
+                <ul className="space-y-1 text-sm mb-1">
                   {withoutTimes.map(task => (
-                    <li key={task.id} className="flex items-center space-x-1">
+                    <li
+                      key={task.id}
+                      className="flex items-center space-x-1 border rounded p-1"
+                    >
                       <span
                         className="w-2 h-2 rounded-full"
                         style={{ backgroundColor: colorPalette[task.color] }}
@@ -434,6 +431,11 @@ const TimeBlockingPage = () => {
                   ))}
                 </ul>
               )}
+              <DaySchedule
+                tasks={withTimes}
+                showTimes={idx === 0}
+                date={d}
+              />
             </div>
           );
         })}
