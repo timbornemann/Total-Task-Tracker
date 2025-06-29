@@ -13,22 +13,18 @@ import {
   AccordionTrigger
 } from '@/components/ui/accordion'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
-import { Category } from '@/types'
 
 interface KanbanFilterSheetProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   sort: string
   onSortChange: (value: string) => void
-  filterCategory: string
-  onFilterCategoryChange: (value: string) => void
   filterPriority: string
   onFilterPriorityChange: (value: string) => void
   filterColor: string
   onFilterColorChange: (value: string) => void
   filterPinned: string
   onFilterPinnedChange: (value: string) => void
-  categories: Category[]
   colorOptions: number[]
   colorPalette: Record<number, string>
 }
@@ -38,15 +34,12 @@ const KanbanFilterSheet: React.FC<KanbanFilterSheetProps> = ({
   onOpenChange,
   sort,
   onSortChange,
-  filterCategory,
-  onFilterCategoryChange,
   filterPriority,
   onFilterPriorityChange,
   filterColor,
   onFilterColorChange,
   filterPinned,
   onFilterPinnedChange,
-  categories,
   colorOptions,
   colorPalette
 }) => {
@@ -58,22 +51,6 @@ const KanbanFilterSheet: React.FC<KanbanFilterSheetProps> = ({
           <SheetTitle>{t('dashboard.filterTitle')}</SheetTitle>
         </SheetHeader>
         <Accordion type="multiple" className="mt-4">
-          <AccordionItem value="category">
-            <AccordionTrigger>{t('kanban.categoryLabel')}</AccordionTrigger>
-            <AccordionContent>
-              <Select value={filterCategory} onValueChange={onFilterCategoryChange}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder={t('kanban.categoryLabel')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t('kanban.filter.all')}</SelectItem>
-                  {categories.map(c => (
-                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </AccordionContent>
-          </AccordionItem>
           <AccordionItem value="sort">
             <AccordionTrigger>{t('kanban.sortLabel')}</AccordionTrigger>
             <AccordionContent>

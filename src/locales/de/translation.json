@@ -418,6 +418,7 @@
     "reactivated": "Task reaktiviert",
     "deleteConfirm": "Sind Sie sicher, dass Sie \"{{title}}\" löschen möchten?",
     "search": "Suchen...",
+    "moreFilters": "Mehr Filter",
     "priorityLabel": "Priorität:",
     "colorLabel": "Farbe:",
     "categoryLabel": "Kategorie:",

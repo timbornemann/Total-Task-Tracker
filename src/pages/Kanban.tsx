@@ -9,6 +9,13 @@ import { useToast } from '@/hooks/use-toast';
 import { Task, TaskFormData } from '@/types';
 import { flattenTasks, FlattenedTask } from '@/utils/taskUtils';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem
+} from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/hooks/useSettings';
 import {
@@ -28,7 +35,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { useTranslation } from 'react-i18next';
 import KanbanFilterSheet from '@/components/KanbanFilterSheet';
-import { SlidersHorizontal } from 'lucide-react';
+import { SlidersHorizontal, Search } from 'lucide-react';
 import ConfirmDialog from '@/components/ConfirmDialog';
 
 interface SortableKanbanTaskProps {
@@ -94,11 +101,7 @@ const Kanban: React.FC = () => {
   const [filterColor, setFilterColor] = useState<string>('all');
   const [filterPinned, setFilterPinned] = useState<string>('all');
   const [sortCriteria, setSortCriteria] = useState<string>('order');
-  const [columnSearch, setColumnSearch] = useState({
-    todo: '',
-    inprogress: '',
-    done: ''
-  });
+  const [searchTerm, setSearchTerm] = useState('');
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -249,7 +252,7 @@ const Kanban: React.FC = () => {
 
   sorted.forEach(item => {
     const status = item.task.status as 'todo' | 'inprogress' | 'done';
-    const search = columnSearch[status].toLowerCase();
+    const search = searchTerm.toLowerCase();
     const matchesSearch =
       item.task.title.toLowerCase().includes(search) ||
       item.task.description.toLowerCase().includes(search);
@@ -276,13 +279,33 @@ const Kanban: React.FC = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         <div className="flex flex-wrap items-center gap-2 mb-4">
+          <div className="relative flex-1 sm:max-w-xs">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder={t('kanban.search')}
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className="pl-10 w-full"
+            />
+          </div>
+          <Select value={filterCategory} onValueChange={setFilterCategory}>
+            <SelectTrigger className="w-[140px] sm:w-[180px]">
+              <SelectValue placeholder={t('kanban.categoryLabel')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t('kanban.filter.all')}</SelectItem>
+              {categories.map(c => (
+                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Button
             variant="outline"
             size="sm"
             onClick={() => setIsFilterSheetOpen(true)}
           >
             <SlidersHorizontal className="h-4 w-4 mr-2" />
-            {t('dashboard.openFilters')}
+            {t('kanban.moreFilters')}
           </Button>
         </div>
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
@@ -295,17 +318,6 @@ const Kanban: React.FC = () => {
               >
                 <KanbanColumn id={status}>
                   <h2 className="text-base font-semibold mb-2">{labels[status]}</h2>
-                  <Input
-                    value={columnSearch[status]}
-                    onChange={e =>
-                      setColumnSearch(prev => ({
-                        ...prev,
-                        [status]: e.target.value
-                      }))
-                    }
-                    placeholder={t('kanban.search')}
-                    className="mb-2 h-8"
-                  />
                   {tasksByStatus[status].map(item => (
                     <SortableKanbanTask key={item.task.id} item={item}>
                       <TaskCard
@@ -347,15 +359,12 @@ const Kanban: React.FC = () => {
         onOpenChange={setIsFilterSheetOpen}
         sort={sortCriteria}
         onSortChange={setSortCriteria}
-        filterCategory={filterCategory}
-        onFilterCategoryChange={setFilterCategory}
         filterPriority={filterPriority}
         onFilterPriorityChange={setFilterPriority}
         filterColor={filterColor}
         onFilterColorChange={setFilterColor}
         filterPinned={filterPinned}
         onFilterPinnedChange={setFilterPinned}
-        categories={categories}
         colorOptions={colorOptions}
         colorPalette={colorPalette}
       />
