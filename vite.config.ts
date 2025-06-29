@@ -46,7 +46,7 @@ export default defineConfig(({ mode }) => ({
       },
       manifest: {
         name: 'Total Task Tracker',
-        short_name: 'TaskTracker',
+        short_name: 'Total Task Tracker',
         description: 'Local task and learning manager',
         start_url: '/',
         display: 'standalone',
@@ -54,13 +54,13 @@ export default defineConfig(({ mode }) => ({
         theme_color: '#0ea5e9',
         icons: [
           {
-            src: '/placeholder.svg',
+            src: '/public/favicon.ico',
             sizes: '192x192',
             type: 'image/svg+xml',
             purpose: 'any'
           },
           {
-            src: '/placeholder.svg',
+            src: '/public/favicon.ico',
             sizes: '512x512',
             type: 'image/svg+xml',
             purpose: 'any'
