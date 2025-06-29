@@ -1,10 +1,13 @@
 import http from 'http';
+import https from 'https';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { parse } from 'url';
 import Database from 'better-sqlite3';
 import os from 'os';
+import selfsigned from 'selfsigned';
+import httpProxy from 'http-proxy';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,8 +15,22 @@ const __dirname = path.dirname(__filename);
 const DATA_DIR = path.join(__dirname, 'data');
 const DB_FILE = path.join(DATA_DIR, 'data.db');
 const DIST_DIR = path.join(__dirname, '..', 'dist');
+const CERT_FILE = path.join(DATA_DIR, 'cert.pem');
+const KEY_FILE = path.join(DATA_DIR, 'key.pem');
 
 fs.mkdirSync(DATA_DIR, { recursive: true });
+let cert;
+let key;
+if (!fs.existsSync(CERT_FILE) || !fs.existsSync(KEY_FILE)) {
+  const pems = selfsigned.generate([{ name: 'commonName', value: 'TotalTaskTracker' }], { days: 365 });
+  fs.writeFileSync(CERT_FILE, pems.cert);
+  fs.writeFileSync(KEY_FILE, pems.private);
+  cert = pems.cert;
+  key = pems.private;
+} else {
+  cert = fs.readFileSync(CERT_FILE);
+  key = fs.readFileSync(KEY_FILE);
+}
 const db = new Database(DB_FILE);
 
 function log(...args) {
@@ -557,7 +574,7 @@ function serveStatic(filePath, res) {
   });
 }
 
-const server = http.createServer((req, res) => {
+const appServer = http.createServer((req, res) => {
   log(req.method, req.url, 'from', req.socket.remoteAddress);
   const parsed = parse(req.url, true);
 
@@ -893,9 +910,9 @@ const server = http.createServer((req, res) => {
     const info = {
       ips,
       port: activePort,
-      urls: ips.map(ip => `http://${ip}:${activePort}/`),
+      urls: ips.map(ip => `https://${ip}:${activePort}/`),
       wifiIp,
-      wifiUrl: wifiIp ? `http://${wifiIp}:${activePort}/` : null
+      wifiUrl: wifiIp ? `https://${wifiIp}:${activePort}/` : null
     };
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(info));
@@ -956,9 +973,31 @@ const server = http.createServer((req, res) => {
 });
 
 let port = Number(process.env.PORT) || 3002;
+const internalPort = port + 1;
 let activePort = port;
 const publicIp = process.env.SERVER_PUBLIC_IP || null;
-server.listen(port, () => {
-  activePort = server.address().port;
+appServer.listen(internalPort, () => {
+  log('App server listening on', internalPort);
+});
+
+const proxy = httpProxy.createProxyServer({ target: `http://localhost:${internalPort}` });
+const proxyServer = https.createServer({ key, cert }, (req, res) => {
+  if (req.url === '/api/certificate') {
+    res.writeHead(200, {
+      'Content-Type': 'application/x-pem-file',
+      'Content-Disposition': 'attachment; filename=cert.pem'
+    });
+    fs.createReadStream(CERT_FILE).pipe(res);
+    return;
+  }
+  proxy.web(req, res);
+});
+
+proxyServer.on('upgrade', (req, socket, head) => {
+  proxy.ws(req, socket, head);
+});
+
+proxyServer.listen(port, () => {
+  activePort = proxyServer.address().port;
   log('Server listening on port', activePort, 'DB', DB_FILE);
 });

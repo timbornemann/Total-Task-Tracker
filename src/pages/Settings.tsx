@@ -319,6 +319,23 @@ const SettingsPage: React.FC = () => {
     URL.revokeObjectURL(url)
   }
 
+  const downloadCert = async () => {
+    try {
+      const res = await fetch('/api/certificate')
+      if (res.ok) {
+        const blob = await res.blob()
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'server-cert.pem'
+        a.click()
+        URL.revokeObjectURL(url)
+      }
+    } catch (err) {
+      console.error('Failed to download certificate', err)
+    }
+  }
+
   const exportTasks = async () => {
     const res = await fetch('/api/data')
     if (res.ok) {
@@ -1347,6 +1364,9 @@ const SettingsPage: React.FC = () => {
                       <p className="text-sm break-all">{serverInfo.wifiUrl}</p>
                     </div>
                   )}
+                  <Button onClick={downloadCert}>
+                    {t('settings.serverInfo.certDownload')}
+                  </Button>
                   {syncRole === 'server' && syncLog && (
                     <div>
                       <p className="font-medium">{t('settingsPage.syncLog')}</p>

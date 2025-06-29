@@ -76,7 +76,7 @@ Die Anwendung kann auch komplett über `docker-compose` ausgeführt werden. Dabe
 VERSION=$(git describe --tags --abbrev=0) docker-compose up --build
 ```
 
-Der Dienst lauscht anschließend auf Port **3002**. Im Browser unter `http://localhost:3002` erreichst du das Dashboard. Die Daten werden in einem benannten Docker-Volume (`total-task-tracker-data`) gespeichert. Mit `docker-compose down` kann der Container gestoppt werden, ohne dass die Daten verloren gehen.
+Der Dienst lauscht anschließend auf Port **3002** \(HTTPS\). Im Browser unter `https://localhost:3002` erreichst du das Dashboard. Die Daten werden in einem benannten Docker-Volume (`total-task-tracker-data`) gespeichert. Mit `docker-compose down` kann der Container gestoppt werden, ohne dass die Daten verloren gehen. Das selbstsignierte Zertifikat kannst du in der Einstellungsseite herunterladen, um andere Geräte als vertrauenswürdig einzustufen.
 
 ## Installation für die lokale Entwicklung
 
@@ -122,6 +122,8 @@ Möchtest du ohne Docker deployen, kannst du die Anwendung lokal bauen und den N
 npm run build
 npm start    # startet die gebaute App auf Port 3002
 ```
+
+Die Anwendung erzeugt beim ersten Start ein selbstsigniertes Zertifikat und ist unter `https://localhost:3002` erreichbar. Über die Einstellungen kannst du das Zertifikat herunterladen, um es auf anderen Geräten zu vertrauen.
 
 ## Funktionen
 
