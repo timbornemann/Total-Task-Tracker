@@ -942,22 +942,22 @@ const SettingsPage: React.FC = () => {
                   </SelectTrigger>
                   <SelectContent className="max-h-60 overflow-y-auto">
                     {customThemes.map(ct => (
-                      <SelectItem key={ct.name} value={ct.name}>
+                      <SelectItem key={ct.name} value={ct.name} className="flex items-center">
                         <span className="flex items-center gap-2 w-full">
                           <span>{ct.name}</span>
                           <span
-                            className="flex-1 h-3 rounded"
+                            className="flex-1 h-3 rounded min-w-[50px]"
                             style={{ background: paletteToGradient(ct.colorPalette) }}
                           />
                         </span>
                       </SelectItem>
                     ))}
                     {Object.keys(themePresets).map(name => (
-                      <SelectItem key={name} value={name}>
+                      <SelectItem key={name} value={name} className="flex items-center">
                         <span className="flex items-center gap-2 w-full">
                           <span>{name}</span>
                           <span
-                            className="flex-1 h-3 rounded"
+                            className="flex-1 h-3 rounded min-w-[50px]"
                             style={{ background: paletteToGradient(themePresets[name].colorPalette) }}
                           />
                         </span>
