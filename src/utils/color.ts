@@ -118,3 +118,33 @@ export const colorContrast = (hex1: string, hex2: string): number => {
 
 export const paletteToGradient = (colors: string[]): string =>
   `linear-gradient(to right, ${colors.join(', ')})`;
+
+export const weightedGradient = (
+  colors: string[],
+  weights: number[],
+): string => {
+  if (colors.length !== weights.length) return paletteToGradient(colors);
+  const total = weights.reduce((s, w) => s + w, 0);
+  let acc = 0;
+  const stops = colors.map((c, i) => {
+    const start = (acc / total) * 100;
+    acc += weights[i];
+    const end = (acc / total) * 100;
+    return `${c} ${start}% ${end}%`;
+  });
+  return `linear-gradient(to right, ${stops.join(', ')})`;
+};
+
+export const themeToGradient = (
+  theme: Record<string, string>,
+  palette: string[],
+): string => {
+  const colors = [
+    `hsl(${theme.background})`,
+    `hsl(${theme.foreground})`,
+    `hsl(${theme.accent})`,
+    ...palette,
+  ];
+  const weights = [3, 2, 2, ...new Array(palette.length).fill(1)];
+  return weightedGradient(colors, weights);
+};
