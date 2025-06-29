@@ -54,13 +54,13 @@ export default defineConfig(({ mode }) => ({
         theme_color: '#0ea5e9',
         icons: [
           {
-            src: '/public/favicon.ico',
+            src: '/favicon.ico',
             sizes: '192x192',
             type: 'image/svg+xml',
             purpose: 'any'
           },
           {
-            src: '/public/favicon.ico',
+            src: '/favicon.ico',
             sizes: '512x512',
             type: 'image/svg+xml',
             purpose: 'any'
