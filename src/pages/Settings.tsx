@@ -8,7 +8,7 @@ import KeyInput from '@/components/KeyInput'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Link } from 'react-router-dom'
-import { hslToHex, hexToHsl, paletteToGradient } from '@/utils/color'
+import { hslToHex, hexToHsl, themeToGradient } from '@/utils/color'
 import { Checkbox } from '@/components/ui/checkbox'
 import { allHomeSections } from '@/utils/homeSections'
 import {
@@ -946,8 +946,8 @@ const SettingsPage: React.FC = () => {
                         <span className="flex items-center gap-2 w-full">
                           <span>{ct.name}</span>
                           <span
-                            className="flex-1 h-3 rounded min-w-[50px]"
-                            style={{ background: paletteToGradient(ct.colorPalette) }}
+                            className="flex-1 h-3 rounded w-full"
+                            style={{ background: themeToGradient(ct.theme, ct.colorPalette) }}
                           />
                         </span>
                       </SelectItem>
@@ -957,8 +957,8 @@ const SettingsPage: React.FC = () => {
                         <span className="flex items-center gap-2 w-full">
                           <span>{name}</span>
                           <span
-                            className="flex-1 h-3 rounded min-w-[50px]"
-                            style={{ background: paletteToGradient(themePresets[name].colorPalette) }}
+                            className="flex-1 h-3 rounded w-full"
+                            style={{ background: themeToGradient(themePresets[name].theme, themePresets[name].colorPalette) }}
                           />
                         </span>
                       </SelectItem>
