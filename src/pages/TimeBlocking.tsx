@@ -9,6 +9,7 @@ import { TaskFormData, Task } from '@/types';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/lib/i18n';
 import { useSettings } from '@/hooks/useSettings';
+import { isColorDark } from '@/utils/color';
 
 const parseMinutes = (time?: string) => {
   if (!time) return null;
@@ -153,6 +154,22 @@ const TimeBlockingPage = () => {
     return result;
   };
 
+  const TimeColumn = () => (
+    <div className="relative border h-[600px]">
+      {Array.from({ length: 24 }).map((_, i) => (
+        <div
+          key={i}
+          className="absolute left-0 w-full border-t text-xs text-muted-foreground"
+          style={{ top: `${(i / 24) * 100}%` }}
+        >
+          <div className="-mt-2 text-right pr-1">
+            {String(i).padStart(2, '0')}:00
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
   const DaySchedule = ({
     tasks,
     showTimes = true,
@@ -296,7 +313,7 @@ const TimeBlockingPage = () => {
         ))}
         <div
           ref={containerRef}
-          className="absolute inset-0 ml-14 mr-2"
+          className={`absolute inset-0 mr-2 ${showTimes ? 'ml-14' : ''}`}
           onPointerDown={handleContainerPointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
@@ -366,18 +383,19 @@ const TimeBlockingPage = () => {
           <div>
             <h3 className="font-medium mb-1">{t('timeBlocking.withoutTime')}</h3>
             <ul className="space-y-2">
-              {dayWithoutTimes.map(task => (
-                <li
-                  key={task.id}
-                  className="flex items-center space-x-2 border rounded p-2"
-                >
-                  <span
-                    className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: colorPalette[task.color] }}
-                  />
-                  <span className="truncate">{task.title}</span>
-                </li>
-              ))}
+              {dayWithoutTimes.map(task => {
+                const bg = colorPalette[task.color]
+                const fg = isColorDark(bg) ? '#fff' : '#000'
+                return (
+                  <li
+                    key={task.id}
+                    className="rounded p-2"
+                    style={{ backgroundColor: bg, color: fg }}
+                  >
+                    {task.title}
+                  </li>
+                )
+              })}
             </ul>
           </div>
         )}
@@ -386,15 +404,30 @@ const TimeBlockingPage = () => {
     </div>
   );
 
-  const renderWeek = () => (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <button
-          className="p-1 rounded hover:bg-muted"
-          onClick={() => setDate(prev => new Date(prev.getFullYear(), prev.getMonth(), prev.getDate() - 7))}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </button>
+  const renderWeek = () => {
+    const data = weekDays.map(d => {
+      const dayList = getTasksFor(d)
+      return {
+        date: d,
+        withTimes: dayList.filter(t => t.startTime || t.endTime),
+        withoutTimes: dayList.filter(t => !t.startTime && !t.endTime)
+      }
+    })
+    const maxWithout = Math.max(
+      0,
+      ...data.map(d => d.withoutTimes.length)
+    )
+    const itemHeight = 28
+
+    return (
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <button
+            className="p-1 rounded hover:bg-muted"
+            onClick={() => setDate(prev => new Date(prev.getFullYear(), prev.getMonth(), prev.getDate() - 7))}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
         <div className="font-medium">
           {weekDays[0].toLocaleDateString(locale)} - {weekDays[6].toLocaleDateString(locale)}
         </div>
@@ -405,43 +438,39 @@ const TimeBlockingPage = () => {
           <ChevronRight className="h-4 w-4" />
         </button>
       </div>
-      <div className="grid grid-cols-7 gap-2">
-        {weekDays.map((d, idx) => {
-          const dayList = getTasksFor(d);
-          const withTimes = dayList.filter(t => t.startTime || t.endTime);
-          const withoutTimes = dayList.filter(t => !t.startTime && !t.endTime);
-          return (
-            <div key={d.toDateString()} className="flex flex-col space-y-1">
-              <div className="text-center text-sm font-medium">
-                {d.toLocaleDateString(locale, { weekday: 'short', day: 'numeric' })}
+      <div className="grid grid-cols-8 gap-2">
+        <TimeColumn />
+        {data.map(info => (
+          <div key={info.date.toDateString()} className="flex flex-col space-y-1">
+            <div className="text-center text-sm font-medium">
+                {info.date.toLocaleDateString(locale, { weekday: 'short', day: 'numeric' })}
               </div>
-              {withoutTimes.length > 0 && (
-                <ul className="space-y-1 text-sm mb-1">
-                  {withoutTimes.map(task => (
-                    <li
-                      key={task.id}
-                      className="flex items-center space-x-1 border rounded p-1"
-                    >
-                      <span
-                        className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: colorPalette[task.color] }}
-                      />
-                      <span className="truncate">{task.title}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <DaySchedule
-                tasks={withTimes}
-                showTimes={idx === 0}
-                date={d}
-              />
+              <div className="mb-1" style={{ minHeight: maxWithout * itemHeight }}>
+                {info.withoutTimes.length > 0 && (
+                  <ul className="space-y-1 text-sm">
+                    {info.withoutTimes.map(task => {
+                      const bg = colorPalette[task.color]
+                      const fg = isColorDark(bg) ? '#fff' : '#000'
+                      return (
+                        <li
+                          key={task.id}
+                          className="rounded p-1 text-xs"
+                          style={{ backgroundColor: bg, color: fg }}
+                        >
+                          {task.title}
+                        </li>
+                      )
+                    })}
+                  </ul>
+                )}
+              </div>
+              <DaySchedule tasks={info.withTimes} showTimes={false} date={info.date} />
             </div>
-          );
-        })}
+        ))}
       </div>
     </div>
-  );
+    );
+  };
 
   const renderMonth = () => {
     const start = startOfMonth(date);
