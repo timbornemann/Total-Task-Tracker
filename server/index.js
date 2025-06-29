@@ -548,6 +548,9 @@ function serveStatic(filePath, res) {
     const type = ext === '.js' ? 'text/javascript'
       : ext === '.css' ? 'text/css'
       : ext === '.json' ? 'application/json'
+      : ext === '.webmanifest' ? 'application/manifest+json'
+      : ext === '.svg' ? 'image/svg+xml'
+      : ext === '.ico' ? 'image/x-icon'
       : 'text/html';
     res.writeHead(200, { 'Content-Type': type });
     res.end(data);
