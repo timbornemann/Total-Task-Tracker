@@ -34,6 +34,8 @@ const defaultTaskPriority: 'low' | 'medium' | 'high' = 'medium'
 const defaultTaskLayoutSetting: 'list' | 'grid' = 'list'
 const defaultShowCompletedTasksSetting = true
 const defaultTaskColorSetting = 0
+const defaultTimerColorSetting = 0
+const defaultTimerExtendSetting = 60
 const defaultLanguage = 'de'
 const defaultLlmUrl = ''
 const defaultLlmToken = ''
@@ -978,6 +980,10 @@ interface SettingsContextValue {
   toggleShowCompletedByDefault: () => void
   defaultTaskColor: number
   updateDefaultTaskColor: (val: number) => void
+  defaultTimerColor: number
+  updateDefaultTimerColor: (val: number) => void
+  timerExtendSeconds: number
+  updateTimerExtendSeconds: (val: number) => void
   flashcardTimer: number
   updateFlashcardTimer: (value: number) => void
   flashcardSessionSize: number
@@ -1053,6 +1059,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     defaultShowCompletedTasksSetting
   )
   const [defaultTaskColor, setDefaultTaskColor] = useState(defaultTaskColorSetting)
+  const [defaultTimerColor, setDefaultTimerColor] = useState(defaultTimerColorSetting)
+  const [timerExtendSeconds, setTimerExtendSeconds] = useState(defaultTimerExtendSetting)
   const [syncRole, setSyncRole] = useState<'server' | 'client'>('client')
   const [syncServerUrl, setSyncServerUrl] = useState('')
   const [syncInterval, setSyncInterval] = useState(defaultSyncInterval)
@@ -1154,6 +1162,12 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           if (typeof data.defaultTaskColor === 'number') {
             setDefaultTaskColor(data.defaultTaskColor)
           }
+          if (typeof data.defaultTimerColor === 'number') {
+            setDefaultTimerColor(data.defaultTimerColor)
+          }
+          if (typeof data.timerExtendSeconds === 'number') {
+            setTimerExtendSeconds(data.timerExtendSeconds)
+          }
           if (typeof data.flashcardTimer === 'number') {
             setFlashcardTimer(data.flashcardTimer)
           }
@@ -1225,6 +1239,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             defaultTaskLayout,
             showCompletedByDefault,
             defaultTaskColor,
+            defaultTimerColor,
+            timerExtendSeconds,
             flashcardTimer,
             flashcardSessionSize,
             flashcardDefaultMode,
@@ -1264,6 +1280,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     defaultTaskLayout,
     showCompletedByDefault,
     defaultTaskColor,
+    defaultTimerColor,
+    timerExtendSeconds,
     flashcardTimer,
     flashcardSessionSize,
     flashcardDefaultMode,
@@ -1417,6 +1435,14 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setDefaultTaskColor(val)
   }
 
+  const updateDefaultTimerColor = (val: number) => {
+    setDefaultTimerColor(val)
+  }
+
+  const updateTimerExtendSeconds = (val: number) => {
+    setTimerExtendSeconds(val)
+  }
+
   const toggleHomeSection = (section: string) => {
     setHomeSections(prev =>
       prev.includes(section)
@@ -1488,6 +1514,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         toggleShowCompletedByDefault,
         defaultTaskColor,
         updateDefaultTaskColor,
+        defaultTimerColor,
+        updateDefaultTimerColor,
+        timerExtendSeconds,
+        updateTimerExtendSeconds,
         flashcardTimer,
         updateFlashcardTimer,
         flashcardSessionSize,

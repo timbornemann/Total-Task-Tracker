@@ -27,6 +27,9 @@ import PomodoroPage from "./pages/Pomodoro";
 import PomodoroHistoryPage from "./pages/PomodoroHistory";
 import PomodoroTimer from "@/components/PomodoroTimer";
 import PomodoroTicker from "@/components/PomodoroTicker";
+import TimerTicker from "@/components/TimerTicker";
+import TimersPage from "./pages/Timers";
+import TimerDetailPage from "./pages/TimerDetail";
 import { PomodoroHistoryProvider } from "@/hooks/usePomodoroHistory.tsx";
 import ReleaseNotesModal from "@/components/ReleaseNotesModal";
 import SurprisePage from "./pages/Surprise";
@@ -71,6 +74,8 @@ const App = () => (
               <Route path="/release-notes" element={<ReleaseNotesPage />} />
               <Route path="/pomodoro" element={<PomodoroPage />} />
               <Route path="/pomodoro/history" element={<PomodoroHistoryPage />} />
+              <Route path="/timers" element={<TimersPage />} />
+              <Route path="/timers/:id" element={<TimerDetailPage />} />
               <Route path="/surprise" element={<SurprisePage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
@@ -78,6 +83,7 @@ const App = () => (
             </BrowserRouter>
             <PomodoroTimer compact />
             <PomodoroTicker />
+            <TimerTicker />
             <ReleaseNotesModal />
             </CurrentCategoryProvider>
           </FlashcardStoreProvider>

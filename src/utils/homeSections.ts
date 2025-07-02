@@ -28,6 +28,7 @@ export const allHomeSections: HomeSection[] = [
   { key: 'decks', labelKey: 'homeSections.decks', path: '/flashcards/manage', icon: Pencil },
   { key: 'flashcard-stats', labelKey: 'homeSections.cardStats', path: '/flashcards/stats', icon: BarChart3 },
   { key: 'pomodoro', labelKey: 'homeSections.pomodoro', path: '/pomodoro', icon: Timer },
+  { key: 'timers', labelKey: 'homeSections.timers', path: '/timers', icon: Timer },
   { key: 'notes', labelKey: 'homeSections.notes', path: '/notes', icon: List },
   { key: 'recurring', labelKey: 'homeSections.recurring', path: '/recurring', icon: List },
   { key: 'habits', labelKey: 'homeSections.habits', path: '/habits', icon: Flame },
