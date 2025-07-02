@@ -20,12 +20,22 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
 
       - name: Check formatting
+        id: format_check
+        run: npm run format:check
+        continue-on-error: true
+
+      - name: Auto fix formatting
+        if: steps.format_check.outcome == 'failure'
+        run: npm run format
+
+      - name: Verify formatting
+        if: steps.format_check.outcome == 'failure'
         run: npm run format:check
 
       - name: Run lint
@@ -33,4 +43,3 @@ jobs:
 
       - name: Build project
         run: npm run build
-

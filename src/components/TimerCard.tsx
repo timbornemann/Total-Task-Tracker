@@ -1,10 +1,10 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Play, Pause, RotateCcw, Plus } from 'lucide-react';
-import TimerCircle from './TimerCircle';
-import { useTimers } from '@/hooks/useTimers';
-import { useSettings } from '@/hooks/useSettings';
-import { Button } from '@/components/ui/button';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { Play, Pause, RotateCcw, Plus } from "lucide-react";
+import TimerCircle from "./TimerCircle";
+import { useTimers } from "@/hooks/useTimers";
+import { useSettings } from "@/hooks/useSettings";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   id: string;
@@ -12,7 +12,7 @@ interface Props {
 
 const TimerCard: React.FC<Props> = ({ id }) => {
   const navigate = useNavigate();
-  const timer = useTimers(state => state.timers.find(t => t.id === id));
+  const timer = useTimers((state) => state.timers.find((t) => t.id === id));
   const { startTimer, pauseTimer, resumeTimer, extendTimer } = useTimers();
   const { timerExtendSeconds } = useSettings();
   if (!timer) return null;

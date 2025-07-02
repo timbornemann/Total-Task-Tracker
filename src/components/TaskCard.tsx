@@ -1,18 +1,22 @@
-
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Task } from '@/types';
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Task } from "@/types";
 import {
   calculateTaskCompletion,
   getTaskProgress,
-  getPriorityColors
-} from '@/utils/taskUtils';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { useSettings } from '@/hooks/useSettings';
-import { isColorDark, adjustColor, complementaryColor, hslToHex } from '@/utils/color';
+  getPriorityColors,
+} from "@/utils/taskUtils";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { useSettings } from "@/hooks/useSettings";
+import {
+  isColorDark,
+  adjustColor,
+  complementaryColor,
+  hslToHex,
+} from "@/utils/color";
 import {
   Edit,
   Trash2,
@@ -25,10 +29,15 @@ import {
   StarOff,
   Calendar as CalendarIcon,
   Eye,
-  EyeOff
-} from 'lucide-react';
-import { useTaskStore } from '@/hooks/useTaskStore';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+  EyeOff,
+} from "lucide-react";
+import { useTaskStore } from "@/hooks/useTaskStore";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface TaskCardProps {
   task: Task;
@@ -56,11 +65,12 @@ const TaskCard: React.FC<TaskCardProps> = ({
   depth = 0,
   parentPathTitles = [],
   showSubtasks = true,
-  isGrid = false
+  isGrid = false,
 }) => {
   const isCompleted = calculateTaskCompletion(task);
   const progress = getTaskProgress(task);
-  const progressPercentage = progress.total > 0 ? (progress.completed / progress.total) * 100 : 0;
+  const progressPercentage =
+    progress.total > 0 ? (progress.completed / progress.total) * 100 : 0;
   const priorityColors = getPriorityColors(task.priority);
   const { updateTask } = useTaskStore();
   const { t, i18n } = useTranslation();
@@ -74,9 +84,13 @@ const TaskCard: React.FC<TaskCardProps> = ({
 
   const baseColor = colorPalette[task.color] ?? colorPalette[0];
   const depthOffset = depth * 8;
-  const displayColor = depth > 0
-    ? adjustColor(baseColor, isColorDark(baseColor) ? depthOffset : -depthOffset)
-    : baseColor;
+  const displayColor =
+    depth > 0
+      ? adjustColor(
+          baseColor,
+          isColorDark(baseColor) ? depthOffset : -depthOffset,
+        )
+      : baseColor;
   const headerTextColor = complementaryColor(displayColor);
   const cardHex = hslToHex(theme.card);
   const progressBg = isColorDark(cardHex)
@@ -102,10 +116,12 @@ const TaskCard: React.FC<TaskCardProps> = ({
     }
   };
 
-  const [subtaskCollapse, setSubtaskCollapse] = useState<Record<string, boolean>>({});
+  const [subtaskCollapse, setSubtaskCollapse] = useState<
+    Record<string, boolean>
+  >({});
 
   const toggleSubtaskCollapse = (id: string) =>
-    setSubtaskCollapse(prev => ({ ...prev, [id]: !prev[id] }));
+    setSubtaskCollapse((prev) => ({ ...prev, [id]: !prev[id] }));
 
   const renderSubtask = (st: Task, level: number) => {
     const done = calculateTaskCompletion(st);
@@ -154,7 +170,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
             )}
             <span
               className={`text-sm break-words ${
-                done ? 'line-through text-muted-foreground' : ''
+                done ? "line-through text-muted-foreground" : ""
               }`}
             >
               {st.title}
@@ -169,30 +185,36 @@ const TaskCard: React.FC<TaskCardProps> = ({
             <DropdownMenuContent align="end" className="bg-background z-50">
               <DropdownMenuItem onClick={() => onViewDetails(st)}>
                 <FolderOpen className="h-4 w-4 mr-2" />
-                {t('taskCard.viewDetails')}
+                {t("taskCard.viewDetails")}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onAddSubtask(st)}>
                 <Plus className="h-4 w-4 mr-2" />
-                {t('taskCard.addSubtask')}
+                {t("taskCard.addSubtask")}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onEdit(st)}>
                 <Edit className="h-4 w-4 mr-2" />
-                {t('common.edit')}
+                {t("common.edit")}
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => updateTask(st.id, { visible: !(st.visible !== false) })}>
+              <DropdownMenuItem
+                onClick={() =>
+                  updateTask(st.id, { visible: !(st.visible !== false) })
+                }
+              >
                 {st.visible === false ? (
                   <Eye className="h-4 w-4 mr-2" />
                 ) : (
                   <EyeOff className="h-4 w-4 mr-2" />
                 )}
-                {st.visible === false ? t('taskCard.unhide') : t('taskCard.hide')}
+                {st.visible === false
+                  ? t("taskCard.unhide")
+                  : t("taskCard.hide")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onDelete(st.id)}
                 className="text-destructive"
               >
                 <Trash2 className="h-4 w-4 mr-2" />
-                {t('common.delete')}
+                {t("common.delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -201,9 +223,9 @@ const TaskCard: React.FC<TaskCardProps> = ({
           <div className="ml-4 space-y-1">
             <div className="flex items-center justify-between">
               <span className="text-xs sm:text-sm font-medium text-foreground">
-                {t('taskCard.progress', {
+                {t("taskCard.progress", {
                   completed: progress.completed,
-                  total: progress.total
+                  total: progress.total,
                 })}
               </span>
               <span className="text-xs sm:text-sm text-muted-foreground">
@@ -218,7 +240,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
             />
             {!subtaskCollapse[st.id] && (
               <div className="space-y-1 mt-2">
-                {st.subtasks.map(child => renderSubtask(child, level + 1))}
+                {st.subtasks.map((child) => renderSubtask(child, level + 1))}
               </div>
             )}
           </div>
@@ -229,10 +251,10 @@ const TaskCard: React.FC<TaskCardProps> = ({
 
   return (
     <Card
-      className={`${isGrid ? 'h-full flex flex-col' : 'mb-3 sm:mb-4'} rounded-xl ${
-        depth > 0 ? 'ml-3 sm:ml-6' : ''
+      className={`${isGrid ? "h-full flex flex-col" : "mb-3 sm:mb-4"} rounded-xl ${
+        depth > 0 ? "ml-3 sm:ml-6" : ""
       }`}
-      style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}
+      style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}
     >
       <div
         className="rounded-t-xl px-4 py-2 flex items-center justify-between"
@@ -249,7 +271,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
           )}
           <h3
             className={`font-semibold cursor-pointer text-sm sm:text-base break-words ${
-              isCompleted ? 'line-through opacity-70' : ''
+              isCompleted ? "line-through opacity-70" : ""
             }`}
             onClick={() => onViewDetails(task)}
           >
@@ -269,45 +291,53 @@ const TaskCard: React.FC<TaskCardProps> = ({
               ) : (
                 <StarOff className="h-4 w-4 mr-2" />
               )}
-              {task.pinned ? t('taskDetail.unpin') : t('taskDetail.pin')}
+              {task.pinned ? t("taskDetail.unpin") : t("taskDetail.pin")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onViewDetails(task)}>
               <FolderOpen className="h-4 w-4 mr-2" />
-              {t('taskCard.viewDetails')}
+              {t("taskCard.viewDetails")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onAddSubtask(task)}>
               <Plus className="h-4 w-4 mr-2" />
-              {t('taskCard.addSubtask')}
+              {t("taskCard.addSubtask")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onEdit(task)}>
               <Edit className="h-4 w-4 mr-2" />
-              {t('common.edit')}
+              {t("common.edit")}
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => updateTask(task.id, { visible: !(task.visible !== false) })}>
+            <DropdownMenuItem
+              onClick={() =>
+                updateTask(task.id, { visible: !(task.visible !== false) })
+              }
+            >
               {task.visible === false ? (
                 <Eye className="h-4 w-4 mr-2" />
               ) : (
                 <EyeOff className="h-4 w-4 mr-2" />
               )}
-              {task.visible === false ? t('taskCard.unhide') : t('taskCard.hide')}
+              {task.visible === false
+                ? t("taskCard.unhide")
+                : t("taskCard.hide")}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => onDelete(task.id)}
               className="text-destructive"
             >
               <Trash2 className="h-4 w-4 mr-2" />
-              {t('common.delete')}
+              {t("common.delete")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
       {(task.description || (showSubtasks && task.subtasks.length > 0)) && (
-        <CardContent className={`pt-3 ${isGrid ? 'flex-1' : ''}`}>
+        <CardContent className={`pt-3 ${isGrid ? "flex-1" : ""}`}>
           {task.description && (
-            <p className={`text-sm text-muted-foreground mb-3 break-words ${
-              isGrid ? 'line-clamp-3' : ''
-            }`}>
+            <p
+              className={`text-sm text-muted-foreground mb-3 break-words ${
+                isGrid ? "line-clamp-3" : ""
+              }`}
+            >
               {task.description}
             </p>
           )}
@@ -316,7 +346,10 @@ const TaskCard: React.FC<TaskCardProps> = ({
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs sm:text-sm font-medium text-foreground">
-                  {t('taskCard.progress', { completed: progress.completed, total: progress.total })}
+                  {t("taskCard.progress", {
+                    completed: progress.completed,
+                    total: progress.total,
+                  })}
                 </span>
                 <div className="flex items-center space-x-2">
                   <span className="text-xs sm:text-sm text-muted-foreground">
@@ -344,7 +377,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
               />
               {!collapsed && (
                 <div className="space-y-2 mt-2">
-                  {task.subtasks.map(st => renderSubtask(st, 1))}
+                  {task.subtasks.map((st) => renderSubtask(st, 1))}
                 </div>
               )}
             </div>
@@ -352,7 +385,8 @@ const TaskCard: React.FC<TaskCardProps> = ({
         </CardContent>
       )}
 
-      {!task.description && (!showSubtasks || task.subtasks.length === 0) &&
+      {!task.description &&
+        (!showSubtasks || task.subtasks.length === 0) &&
         isGrid && <div className="flex-1" />}
 
       <div className="border-t px-4 py-2 flex items-center justify-between text-xs">
@@ -361,11 +395,13 @@ const TaskCard: React.FC<TaskCardProps> = ({
             <>
               <CalendarIcon className="h-4 w-4" />
               <span
-                style={{ color: isOverdue ? 'hsl(var(--task-overdue))' : undefined }}
+                style={{
+                  color: isOverdue ? "hsl(var(--task-overdue))" : undefined,
+                }}
               >
                 {new Date(task.dueDate).toLocaleDateString(i18n.language, {
-                  month: 'short',
-                  day: 'numeric'
+                  month: "short",
+                  day: "numeric",
                 })}
               </span>
             </>
@@ -379,7 +415,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
           style={{
             backgroundColor: priorityColors.bg,
             color: priorityColors.fg,
-            borderColor: priorityColors.bg
+            borderColor: priorityColors.bg,
           }}
         >
           {t(`taskModal.${task.priority}`)}

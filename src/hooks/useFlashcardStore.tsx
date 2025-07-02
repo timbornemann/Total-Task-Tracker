@@ -1,9 +1,13 @@
-import React, { useState, useEffect, createContext, useContext } from 'react';
-import { Flashcard, Deck } from '@/types';
-import { loadOfflineData, updateOfflineData, syncWithServer } from '@/utils/offline';
+import React, { useState, useEffect, createContext, useContext } from "react";
+import { Flashcard, Deck } from "@/types";
+import {
+  loadOfflineData,
+  updateOfflineData,
+  syncWithServer,
+} from "@/utils/offline";
 
-const API_URL = '/api/flashcards';
-const DECKS_URL = '/api/decks';
+const API_URL = "/api/flashcards";
+const DECKS_URL = "/api/decks";
 
 const useFlashcardStoreImpl = () => {
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
@@ -12,46 +16,46 @@ const useFlashcardStoreImpl = () => {
 
   useEffect(() => {
     const load = async () => {
-      const offline = loadOfflineData()
+      const offline = loadOfflineData();
       if (offline) {
         setFlashcards(
-          (offline.flashcards || []).map(c => ({
+          (offline.flashcards || []).map((c) => ({
             ...c,
-            dueDate: new Date(c.dueDate)
-          }))
-        )
-        setDecks(offline.decks || [])
+            dueDate: new Date(c.dueDate),
+          })),
+        );
+        setDecks(offline.decks || []);
       }
-      const synced = await syncWithServer()
+      const synced = await syncWithServer();
       setFlashcards(
-        (synced.flashcards || []).map(c => ({
+        (synced.flashcards || []).map((c) => ({
           ...c,
-          dueDate: new Date(c.dueDate)
-        }))
-      )
-      setDecks(synced.decks || [])
-      setLoaded(true)
-    }
+          dueDate: new Date(c.dueDate),
+        })),
+      );
+      setDecks(synced.decks || []);
+      setLoaded(true);
+    };
 
-    load()
-  }, [])
+    load();
+  }, []);
 
   useEffect(() => {
     if (!loaded) return;
     const save = async () => {
       try {
-        updateOfflineData({ flashcards })
+        updateOfflineData({ flashcards });
         if (navigator.onLine) {
           await fetch(API_URL, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(flashcards)
-          })
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(flashcards),
+          });
         }
       } catch (err) {
-        console.error('Error saving flashcards', err);
+        console.error("Error saving flashcards", err);
       }
-      if (navigator.onLine) await syncWithServer()
+      if (navigator.onLine) await syncWithServer();
     };
 
     save();
@@ -61,24 +65,26 @@ const useFlashcardStoreImpl = () => {
     if (!loaded) return;
     const save = async () => {
       try {
-        updateOfflineData({ decks })
+        updateOfflineData({ decks });
         if (navigator.onLine) {
           await fetch(DECKS_URL, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(decks)
-          })
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(decks),
+          });
         }
       } catch (err) {
-        console.error('Error saving decks', err);
+        console.error("Error saving decks", err);
       }
-      if (navigator.onLine) await syncWithServer()
+      if (navigator.onLine) await syncWithServer();
     };
 
     save();
   }, [decks, loaded]);
 
-  const addFlashcard = (data: Omit<Flashcard, 'id' | 'interval' | 'dueDate'>) => {
+  const addFlashcard = (
+    data: Omit<Flashcard, "id" | "interval" | "dueDate">,
+  ) => {
     const newCard: Flashcard = {
       ...data,
       id: Date.now().toString(),
@@ -88,60 +94,58 @@ const useFlashcardStoreImpl = () => {
       mediumCount: 0,
       hardCount: 0,
       typedCorrect: 0,
-      typedTotal: 0
+      typedTotal: 0,
     };
-    setFlashcards(prev => [...prev, newCard]);
+    setFlashcards((prev) => [...prev, newCard]);
   };
 
   const updateFlashcard = (id: string, updates: Partial<Flashcard>) => {
-    setFlashcards(prev =>
-      prev.map(c => (c.id === id ? { ...c, ...updates } : c))
+    setFlashcards((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, ...updates } : c)),
     );
   };
 
   const deleteFlashcard = (id: string) => {
-    setFlashcards(prev => prev.filter(c => c.id !== id));
+    setFlashcards((prev) => prev.filter((c) => c.id !== id));
   };
 
   const addDeck = (name: string) => {
     const newDeck: Deck = { id: Date.now().toString(), name };
-    setDecks(prev => [...prev, newDeck]);
+    setDecks((prev) => [...prev, newDeck]);
   };
 
   const updateDeck = (id: string, name: string) => {
-    setDecks(prev => prev.map(d => (d.id === id ? { ...d, name } : d)));
-    setFlashcards(prev => prev.map(c => (c.deckId === id ? { ...c } : c)));
+    setDecks((prev) => prev.map((d) => (d.id === id ? { ...d, name } : d)));
+    setFlashcards((prev) => prev.map((c) => (c.deckId === id ? { ...c } : c)));
   };
 
   const deleteDeck = (id: string) => {
-    setDecks(prev => prev.filter(d => d.id !== id));
-    setFlashcards(prev => prev.filter(c => c.deckId !== id));
+    setDecks((prev) => prev.filter((d) => d.id !== id));
+    setFlashcards((prev) => prev.filter((c) => c.deckId !== id));
   };
 
   const countCardsForDeck = (deckId: string) =>
-    flashcards.filter(c => c.deckId === deckId).length;
+    flashcards.filter((c) => c.deckId === deckId).length;
 
   const countDueCardsForDeck = (deckId: string) =>
     flashcards.filter(
-      c => c.deckId === deckId && new Date(c.dueDate) <= new Date()
+      (c) => c.deckId === deckId && new Date(c.dueDate) <= new Date(),
     ).length;
 
   const rateFlashcard = (
     id: string,
-    difficulty: 'easy' | 'medium' | 'hard',
-    typedCorrect?: boolean
+    difficulty: "easy" | "medium" | "hard",
+    typedCorrect?: boolean,
   ) => {
-    setFlashcards(prev => {
-      return prev.map(card => {
+    setFlashcards((prev) => {
+      return prev.map((card) => {
         if (card.id !== id) return card;
         const total = card.easyCount + card.mediumCount + card.hardCount;
         const successRate =
-          total > 0
-            ? (card.easyCount + 0.5 * card.mediumCount) / total
-            : 0.5;
+          total > 0 ? (card.easyCount + 0.5 * card.mediumCount) / total : 0.5;
         let base = 0.8;
-        if (difficulty === 'easy') base = 1.5;
-        else if (difficulty === 'medium') base = 1.2;
+        if (difficulty === "easy") base = 1.5;
+        else if (difficulty === "medium") base = 1.2;
         const factor = base * (1 + successRate);
         const interval = Math.max(1, Math.round(card.interval * factor));
         const dueDate = new Date();
@@ -150,16 +154,17 @@ const useFlashcardStoreImpl = () => {
           ...card,
           interval,
           dueDate,
-          easyCount: card.easyCount + (difficulty === 'easy' ? 1 : 0),
-          mediumCount: card.mediumCount + (difficulty === 'medium' ? 1 : 0),
-          hardCount: card.hardCount + (difficulty === 'hard' ? 1 : 0),
-          typedCorrect: typedCorrect !== undefined
-            ? (card.typedCorrect ?? 0) + (typedCorrect ? 1 : 0)
-            : card.typedCorrect,
+          easyCount: card.easyCount + (difficulty === "easy" ? 1 : 0),
+          mediumCount: card.mediumCount + (difficulty === "medium" ? 1 : 0),
+          hardCount: card.hardCount + (difficulty === "hard" ? 1 : 0),
+          typedCorrect:
+            typedCorrect !== undefined
+              ? (card.typedCorrect ?? 0) + (typedCorrect ? 1 : 0)
+              : card.typedCorrect,
           typedTotal:
             typedCorrect !== undefined
               ? (card.typedTotal ?? 0) + 1
-              : card.typedTotal
+              : card.typedTotal,
         };
       });
     });
@@ -176,7 +181,7 @@ const useFlashcardStoreImpl = () => {
     updateDeck,
     deleteDeck,
     countCardsForDeck,
-    countDueCardsForDeck
+    countDueCardsForDeck,
   };
 };
 
@@ -184,9 +189,9 @@ type FlashcardStore = ReturnType<typeof useFlashcardStoreImpl>;
 
 const FlashcardStoreContext = createContext<FlashcardStore | null>(null);
 
-export const FlashcardStoreProvider: React.FC<{ children: React.ReactNode }> = ({
-  children
-}) => {
+export const FlashcardStoreProvider: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
   const store = useFlashcardStoreImpl();
   return (
     <FlashcardStoreContext.Provider value={store}>
@@ -198,7 +203,9 @@ export const FlashcardStoreProvider: React.FC<{ children: React.ReactNode }> = (
 export const useFlashcardStore = () => {
   const ctx = useContext(FlashcardStoreContext);
   if (!ctx) {
-    throw new Error('useFlashcardStore must be used within FlashcardStoreProvider');
+    throw new Error(
+      "useFlashcardStore must be used within FlashcardStoreProvider",
+    );
   }
   return ctx;
 };
