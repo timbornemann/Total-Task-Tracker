@@ -133,6 +133,10 @@ const SettingsPage: React.FC = () => {
     toggleShowCompletedByDefault,
     defaultTaskColor,
     updateDefaultTaskColor,
+    defaultTimerColor,
+    updateDefaultTimerColor,
+    timerExtendSeconds,
+    updateTimerExtendSeconds,
     flashcardTimer,
     updateFlashcardTimer,
     flashcardSessionSize,
@@ -659,6 +663,9 @@ const SettingsPage: React.FC = () => {
                     <TabsTrigger className="justify-start" value="flashcards">
                       {t('settings.tabs.flashcards')}
                     </TabsTrigger>
+                    <TabsTrigger className="justify-start" value="timers">
+                      {t('settings.tabs.timers')}
+                    </TabsTrigger>
                   </TabsList>
                 </AccordionContent>
               </AccordionItem>
@@ -702,6 +709,7 @@ const SettingsPage: React.FC = () => {
                   'pomodoro',
                   'tasks',
                   'flashcards',
+                  'timers',
                   'data',
                   'ai',
                   'info'
@@ -865,6 +873,33 @@ const SettingsPage: React.FC = () => {
                   onCheckedChange={toggleCollapseSubtasksByDefault}
                 />
                 <Label htmlFor="collapseSubtasks">{t('settingsPage.collapseSubtasks')}</Label>
+              </div>
+            </TabsContent>
+            <TabsContent value="timers" className="space-y-4">
+              <div>
+                <Label htmlFor="timerExtend">{t('settingsPage.timerExtend')}</Label>
+                <Input
+                  id="timerExtend"
+                  type="number"
+                  value={timerExtendSeconds}
+                  onChange={e => updateTimerExtendSeconds(Number(e.target.value))}
+                />
+              </div>
+              <div>
+                <Label>{t('settingsPage.defaultTimerColor')}</Label>
+                <div className="flex space-x-1 mt-1">
+                  {colorPalette.map((c, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      className={`w-5 h-5 rounded-full border-2 transition-all ${
+                        defaultTimerColor === idx ? 'border-foreground scale-110' : 'border-gray-300 hover:scale-105'
+                      }`}
+                      style={{ backgroundColor: c }}
+                      onClick={() => updateDefaultTimerColor(idx)}
+                    />
+                  ))}
+                </div>
               </div>
             </TabsContent>
             <TabsContent value="home" className="space-y-2">
