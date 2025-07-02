@@ -1,19 +1,19 @@
-import React, { useState, useMemo } from 'react';
-import Navbar from '@/components/Navbar';
-import { useTaskStore } from '@/hooks/useTaskStore';
-import { Calendar } from '@/components/ui/calendar';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { ChevronLeft, ChevronRight, Move, GripVertical } from 'lucide-react';
-import TaskModal from '@/components/TaskModal';
-import { TaskFormData, Task } from '@/types';
-import { useTranslation } from 'react-i18next';
-import i18n from '@/lib/i18n';
-import { useSettings } from '@/hooks/useSettings';
-import { isColorDark } from '@/utils/color';
+import React, { useState, useMemo } from "react";
+import Navbar from "@/components/Navbar";
+import { useTaskStore } from "@/hooks/useTaskStore";
+import { Calendar } from "@/components/ui/calendar";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { ChevronLeft, ChevronRight, Move, GripVertical } from "lucide-react";
+import TaskModal from "@/components/TaskModal";
+import { TaskFormData, Task } from "@/types";
+import { useTranslation } from "react-i18next";
+import i18n from "@/lib/i18n";
+import { useSettings } from "@/hooks/useSettings";
+import { isColorDark } from "@/utils/color";
 
 const parseMinutes = (time?: string) => {
   if (!time) return null;
-  const [h, m] = time.split(':').map(Number);
+  const [h, m] = time.split(":").map(Number);
   if (isNaN(h) || isNaN(m)) return null;
   return h * 60 + m;
 };
@@ -33,32 +33,32 @@ const startOfMonth = (d: Date) => {
 };
 
 const formatTime = (m: number) => {
-  const h = Math.floor(m / 60)
-  const mm = Math.floor(m % 60)
-  return `${String(h).padStart(2, '0')}:${String(mm).padStart(2, '0')}`
-}
+  const h = Math.floor(m / 60);
+  const mm = Math.floor(m % 60);
+  return `${String(h).padStart(2, "0")}:${String(mm).padStart(2, "0")}`;
+};
 
 const snap = (m: number) => {
-  return Math.min(1440, Math.max(0, Math.round(m / 30) * 30))
-}
+  return Math.min(1440, Math.max(0, Math.round(m / 30) * 30));
+};
 
 const TimeBlockingPage = () => {
-  const { tasks, categories, addTask, updateTask } = useTaskStore()
-  const { t } = useTranslation()
-  const { colorPalette } = useSettings()
-  const locale = i18n.language === 'de' ? 'de-DE' : 'en-US'
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const { tasks, categories, addTask, updateTask } = useTaskStore();
+  const { t } = useTranslation();
+  const { colorPalette } = useSettings();
+  const locale = i18n.language === "de" ? "de-DE" : "en-US";
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalDefaults, setModalDefaults] = useState<{
-    start?: string
-    end?: string
-    due?: Date
-  }>({})
+    start?: string;
+    end?: string;
+    due?: Date;
+  }>({});
   const [date, setDate] = useState<Date>(new Date());
-  const [view, setView] = useState<'day' | 'week' | 'month'>('day');
+  const [view, setView] = useState<"day" | "week" | "month">("day");
 
   const tasksByDate = useMemo(() => {
     const map: Record<string, typeof tasks> = {};
-    tasks.forEach(t => {
+    tasks.forEach((t) => {
       if (!t.dueDate || t.visible === false) return;
       const key = new Date(t.dueDate).toDateString();
       if (!map[key]) map[key] = [];
@@ -70,44 +70,50 @@ const TimeBlockingPage = () => {
   const getTasksFor = (d: Date) => tasksByDate[d.toDateString()] || [];
 
   const dayTasks = useMemo(() => getTasksFor(date), [tasksByDate, date]);
-  const dayWithTimes = dayTasks.filter(t => t.startTime || t.endTime);
-  const dayWithoutTimes = dayTasks.filter(t => !t.startTime && !t.endTime);
+  const dayWithTimes = dayTasks.filter((t) => t.startTime || t.endTime);
+  const dayWithoutTimes = dayTasks.filter((t) => !t.startTime && !t.endTime);
 
   const weekDays = useMemo(() => {
     const start = startOfWeek(date);
-    return Array.from({ length: 7 }, (_, i) => new Date(start.getFullYear(), start.getMonth(), start.getDate() + i));
+    return Array.from(
+      { length: 7 },
+      (_, i) =>
+        new Date(start.getFullYear(), start.getMonth(), start.getDate() + i),
+    );
   }, [date]);
 
-  const eventDays = useMemo(() => Object.keys(tasksByDate).map(d => new Date(d)), [tasksByDate]);
+  const eventDays = useMemo(
+    () => Object.keys(tasksByDate).map((d) => new Date(d)),
+    [tasksByDate],
+  );
 
   const handleUpdateTimes = (id: string, start: number, end: number) => {
     updateTask(id, {
       startTime: formatTime(start),
-      endTime: formatTime(end)
-    })
-  }
+      endTime: formatTime(end),
+    });
+  };
 
   const handleCreateFromSchedule = (start: number, end: number, day: Date) => {
     setModalDefaults({
       start: formatTime(start),
       end: formatTime(end),
-      due: day
-    })
-    setIsModalOpen(true)
-  }
+      due: day,
+    });
+    setIsModalOpen(true);
+  };
 
   interface LayoutItem {
-    task: Task
-    start: number
-    end: number
-    column: number
-    columns: number
+    task: Task;
+    start: number;
+    end: number;
+    column: number;
+    columns: number;
   }
 
   const layoutTasks = (list: Task[]) => {
-
     const events = list
-      .map(t => {
+      .map((t) => {
         const start = parseMinutes(t.startTime) ?? 0;
         const end = parseMinutes(t.endTime) ?? start + 30;
         return { task: t, start, end };
@@ -122,8 +128,8 @@ const TimeBlockingPage = () => {
       if (group.length === 0) return;
       const colsEnd: number[] = [];
       const groupItems: LayoutItem[] = [];
-      group.forEach(ev => {
-        let col = colsEnd.findIndex(e => e <= ev.start);
+      group.forEach((ev) => {
+        let col = colsEnd.findIndex((e) => e <= ev.start);
         if (col === -1) {
           col = colsEnd.length;
           colsEnd.push(ev.end);
@@ -133,7 +139,7 @@ const TimeBlockingPage = () => {
         groupItems.push({ ...ev, column: col, columns: 0 });
       });
       const total = colsEnd.length;
-      groupItems.forEach(i => (i.columns = total));
+      groupItems.forEach((i) => (i.columns = total));
       result.push(...groupItems);
     };
 
@@ -163,7 +169,7 @@ const TimeBlockingPage = () => {
           style={{ top: `${(i / 24) * 100}%` }}
         >
           <div className="-mt-2 text-right pr-1">
-            {String(i).padStart(2, '0')}:00
+            {String(i).padStart(2, "0")}:00
           </div>
         </div>
       ))}
@@ -173,60 +179,67 @@ const TimeBlockingPage = () => {
   const DaySchedule = ({
     tasks,
     showTimes = true,
-    date
+    date,
   }: {
-    tasks: Task[]
-    showTimes?: boolean
-    date: Date
+    tasks: Task[];
+    showTimes?: boolean;
+    date: Date;
   }) => {
-    const containerRef = React.useRef<HTMLDivElement>(null)
+    const containerRef = React.useRef<HTMLDivElement>(null);
     const [drag, setDrag] = useState<{
-      id: string
-      type: 'move' | 'resize'
-      start: number
-      end: number
-      initialY: number
-      duration: number
-      column: number
-      columns: number
-    } | null>(null)
-    const [selection, setSelection] = useState<{ start: number; end: number } | null>(null)
+      id: string;
+      type: "move" | "resize";
+      start: number;
+      end: number;
+      initialY: number;
+      duration: number;
+      column: number;
+      columns: number;
+    } | null>(null);
+    const [selection, setSelection] = useState<{
+      start: number;
+      end: number;
+    } | null>(null);
 
     const displayTasks = useMemo(() => {
-      if (!drag) return tasks
-      return tasks.map(t =>
+      if (!drag) return tasks;
+      return tasks.map((t) =>
         t.id === drag.id
-          ? { ...t, startTime: formatTime(drag.start), endTime: formatTime(drag.end) }
-          : t
-      )
-    }, [tasks, drag])
+          ? {
+              ...t,
+              startTime: formatTime(drag.start),
+              endTime: formatTime(drag.end),
+            }
+          : t,
+      );
+    }, [tasks, drag]);
 
     const layout = useMemo(() => {
-      const items = layoutTasks(displayTasks)
+      const items = layoutTasks(displayTasks);
       if (drag) {
-        const current = items.find(i => i.task.id === drag.id)
+        const current = items.find((i) => i.task.id === drag.id);
         if (current) {
-          current.column = drag.column
-          current.columns = drag.columns
+          current.column = drag.column;
+          current.columns = drag.columns;
         }
       }
-      return items
-    }, [displayTasks, drag?.id, drag?.column, drag?.columns])
+      return items;
+    }, [displayTasks, drag?.id, drag?.column, drag?.columns]);
 
     const getMinutes = (clientY: number) => {
-      const rect = containerRef.current!.getBoundingClientRect()
-      const y = clientY - rect.top
-      return snap((y / rect.height) * 1440)
-    }
+      const rect = containerRef.current!.getBoundingClientRect();
+      const y = clientY - rect.top;
+      return snap((y / rect.height) * 1440);
+    };
 
     const handleTaskPointerDown = (
       item: LayoutItem,
       e: React.PointerEvent<HTMLDivElement>,
-      action: 'move' | 'resize' | null = null
+      action: "move" | "resize" | null = null,
     ) => {
-      e.stopPropagation()
-      const type: 'move' | 'resize' = action ?? 'move'
-      containerRef.current?.setPointerCapture(e.pointerId)
+      e.stopPropagation();
+      const type: "move" | "resize" = action ?? "move";
+      containerRef.current?.setPointerCapture(e.pointerId);
       setDrag({
         id: item.task.id,
         type,
@@ -235,70 +248,74 @@ const TimeBlockingPage = () => {
         initialY: e.clientY,
         duration: item.end - item.start,
         column: item.column,
-        columns: item.columns
-      })
-    }
+        columns: item.columns,
+      });
+    };
 
-    const handleContainerPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-      if (e.target !== containerRef.current) return
-      const m = getMinutes(e.clientY)
-      setSelection({ start: m, end: m })
-      containerRef.current?.setPointerCapture(e.pointerId)
-    }
+    const handleContainerPointerDown = (
+      e: React.PointerEvent<HTMLDivElement>,
+    ) => {
+      if (e.target !== containerRef.current) return;
+      const m = getMinutes(e.clientY);
+      setSelection({ start: m, end: m });
+      containerRef.current?.setPointerCapture(e.pointerId);
+    };
 
     const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
       if (drag) {
-        const rect = containerRef.current!.getBoundingClientRect()
-        const pixelDiff = e.clientY - drag.initialY
-        const minuteDiff = (pixelDiff / rect.height) * 1440
-        
-        if (drag.type === 'move') {
-          let start = snap(drag.start + minuteDiff)
-          let end = snap(start + drag.duration)
-          
+        const rect = containerRef.current!.getBoundingClientRect();
+        const pixelDiff = e.clientY - drag.initialY;
+        const minuteDiff = (pixelDiff / rect.height) * 1440;
+
+        if (drag.type === "move") {
+          let start = snap(drag.start + minuteDiff);
+          let end = snap(start + drag.duration);
+
           if (start < 0) {
-            start = 0
-            end = drag.duration
+            start = 0;
+            end = drag.duration;
           }
           if (end > 1440) {
-            end = 1440
-            start = end - drag.duration
+            end = 1440;
+            start = end - drag.duration;
           }
-          
-          setDrag({ ...drag, start, end, initialY: e.clientY })
+
+          setDrag({ ...drag, start, end, initialY: e.clientY });
         } else {
-          let end = snap(drag.end + minuteDiff)
-          
-          if (end < drag.start + 30) end = drag.start + 30
-          if (end > 1440) end = 1440
-          
-          setDrag({ ...drag, end, initialY: e.clientY })
+          let end = snap(drag.end + minuteDiff);
+
+          if (end < drag.start + 30) end = drag.start + 30;
+          if (end > 1440) end = 1440;
+
+          setDrag({ ...drag, end, initialY: e.clientY });
         }
       } else if (selection) {
-        setSelection(prev => (prev ? { ...prev, end: getMinutes(e.clientY) } : null))
+        setSelection((prev) =>
+          prev ? { ...prev, end: getMinutes(e.clientY) } : null,
+        );
       }
-    }
+    };
 
     const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
       if (drag) {
-        handleUpdateTimes(drag.id, drag.start, drag.end)
-        setDrag(null)
+        handleUpdateTimes(drag.id, drag.start, drag.end);
+        setDrag(null);
       }
       if (selection) {
-        let { start, end } = selection
-        if (end < start) [start, end] = [end, start]
-        if (end === start) end = start + 30
-        handleCreateFromSchedule(start, end, date)
-        setSelection(null)
+        let { start, end } = selection;
+        if (end < start) [start, end] = [end, start];
+        if (end === start) end = start + 30;
+        handleCreateFromSchedule(start, end, date);
+        setSelection(null);
       }
-      containerRef.current?.releasePointerCapture(e.pointerId)
-    }
+      containerRef.current?.releasePointerCapture(e.pointerId);
+    };
 
     const handleDoubleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-      if (e.target !== containerRef.current) return
-      const start = getMinutes(e.clientY)
-      handleCreateFromSchedule(start, start + 30, date)
-    }
+      if (e.target !== containerRef.current) return;
+      const start = getMinutes(e.clientY);
+      handleCreateFromSchedule(start, start + 30, date);
+    };
 
     return (
       <div className="relative border h-[600px]">
@@ -308,45 +325,49 @@ const TimeBlockingPage = () => {
             className="absolute left-0 w-full border-t text-xs text-muted-foreground"
             style={{ top: `${(i / 24) * 100}%` }}
           >
-            {showTimes && <div className="-mt-2">{String(i).padStart(2, '0')}:00</div>}
+            {showTimes && (
+              <div className="-mt-2">{String(i).padStart(2, "0")}:00</div>
+            )}
           </div>
         ))}
         <div
           ref={containerRef}
-          className={`absolute inset-0 mr-2 ${showTimes ? 'ml-14' : ''}`}
+          className={`absolute inset-0 mr-2 ${showTimes ? "ml-14" : ""}`}
           onPointerDown={handleContainerPointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onDoubleClick={handleDoubleClick}
         >
-          {layout.map(item => {
-            const { task, start, end, column, columns } = item
-            const top = (start / 1440) * 100
-            const height = Math.max(((end - start) / 1440) * 100, 2)
-            const width = 100 / columns
-            const left = column * width
+          {layout.map((item) => {
+            const { task, start, end, column, columns } = item;
+            const top = (start / 1440) * 100;
+            const height = Math.max(((end - start) / 1440) * 100, 2);
+            const width = 100 / columns;
+            const left = column * width;
             return (
               <div
                 key={task.id}
-                onPointerDown={e => handleTaskPointerDown(item, e)}
+                onPointerDown={(e) => handleTaskPointerDown(item, e)}
                 className="absolute rounded text-sm overflow-hidden cursor-pointer pl-4 pr-2 py-1"
                 style={{
                   top: `${top}%`,
                   height: `${height}%`,
                   left: `${left}%`,
                   width: `${width}%`,
-                  backgroundColor: colorPalette[task.color]
+                  backgroundColor: colorPalette[task.color],
                 }}
               >
                 <div
                   className="absolute top-0 left-0 p-0.5 cursor-move"
-                  onPointerDown={e => handleTaskPointerDown(item, e, 'move')}
+                  onPointerDown={(e) => handleTaskPointerDown(item, e, "move")}
                 >
                   <Move className="h-3 w-3" />
                 </div>
                 <div
                   className="absolute bottom-0 right-0 p-0.5 cursor-ns-resize"
-                  onPointerDown={e => handleTaskPointerDown(item, e, 'resize')}
+                  onPointerDown={(e) =>
+                    handleTaskPointerDown(item, e, "resize")
+                  }
                 >
                   <GripVertical className="h-3 w-3" />
                 </div>
@@ -355,7 +376,7 @@ const TimeBlockingPage = () => {
                   {task.startTime} - {task.endTime}
                 </div>
               </div>
-            )
+            );
           })}
           {selection && (
             <div
@@ -364,28 +385,34 @@ const TimeBlockingPage = () => {
                 top: `${(Math.min(selection.start, selection.end) / 1440) * 100}%`,
                 height: `${(Math.abs(selection.end - selection.start) / 1440) * 100}%`,
                 left: 0,
-                right: 0
+                right: 0,
               }}
             />
           )}
         </div>
       </div>
-    )
-  }
+    );
+  };
 
   const renderDay = () => (
     <div className="flex flex-col lg:flex-row gap-6">
       <div className="lg:w-1/3">
-        <Calendar mode="single" selected={date} onSelect={d => d && setDate(d)} />
+        <Calendar
+          mode="single"
+          selected={date}
+          onSelect={(d) => d && setDate(d)}
+        />
       </div>
       <div className="flex-1 space-y-4">
         {dayWithoutTimes.length > 0 && (
           <div>
-            <h3 className="font-medium mb-1">{t('timeBlocking.withoutTime')}</h3>
+            <h3 className="font-medium mb-1">
+              {t("timeBlocking.withoutTime")}
+            </h3>
             <ul className="space-y-2">
-              {dayWithoutTimes.map(task => {
-                const bg = colorPalette[task.color]
-                const fg = isColorDark(bg) ? '#fff' : '#000'
+              {dayWithoutTimes.map((task) => {
+                const bg = colorPalette[task.color];
+                const fg = isColorDark(bg) ? "#fff" : "#000";
                 return (
                   <li
                     key={task.id}
@@ -394,7 +421,7 @@ const TimeBlockingPage = () => {
                   >
                     {task.title}
                   </li>
-                )
+                );
               })}
             </ul>
           </div>
@@ -405,52 +432,77 @@ const TimeBlockingPage = () => {
   );
 
   const renderWeek = () => {
-    const data = weekDays.map(d => {
-      const dayList = getTasksFor(d)
+    const data = weekDays.map((d) => {
+      const dayList = getTasksFor(d);
       return {
         date: d,
-        withTimes: dayList.filter(t => t.startTime || t.endTime),
-        withoutTimes: dayList.filter(t => !t.startTime && !t.endTime)
-      }
-    })
-    const maxWithout = Math.max(
-      0,
-      ...data.map(d => d.withoutTimes.length)
-    )
-    const itemHeight = 28
+        withTimes: dayList.filter((t) => t.startTime || t.endTime),
+        withoutTimes: dayList.filter((t) => !t.startTime && !t.endTime),
+      };
+    });
+    const maxWithout = Math.max(0, ...data.map((d) => d.withoutTimes.length));
+    const itemHeight = 28;
 
     return (
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <button
             className="p-1 rounded hover:bg-muted"
-            onClick={() => setDate(prev => new Date(prev.getFullYear(), prev.getMonth(), prev.getDate() - 7))}
+            onClick={() =>
+              setDate(
+                (prev) =>
+                  new Date(
+                    prev.getFullYear(),
+                    prev.getMonth(),
+                    prev.getDate() - 7,
+                  ),
+              )
+            }
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
-        <div className="font-medium">
-          {weekDays[0].toLocaleDateString(locale)} - {weekDays[6].toLocaleDateString(locale)}
+          <div className="font-medium">
+            {weekDays[0].toLocaleDateString(locale)} -{" "}
+            {weekDays[6].toLocaleDateString(locale)}
+          </div>
+          <button
+            className="p-1 rounded hover:bg-muted"
+            onClick={() =>
+              setDate(
+                (prev) =>
+                  new Date(
+                    prev.getFullYear(),
+                    prev.getMonth(),
+                    prev.getDate() + 7,
+                  ),
+              )
+            }
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
         </div>
-        <button
-          className="p-1 rounded hover:bg-muted"
-          onClick={() => setDate(prev => new Date(prev.getFullYear(), prev.getMonth(), prev.getDate() + 7))}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </button>
-      </div>
-      <div className="grid grid-cols-8 gap-2">
-        <TimeColumn />
-        {data.map(info => (
-          <div key={info.date.toDateString()} className="flex flex-col space-y-1">
-            <div className="text-center text-sm font-medium">
-                {info.date.toLocaleDateString(locale, { weekday: 'short', day: 'numeric' })}
+        <div className="grid grid-cols-8 gap-2">
+          <TimeColumn />
+          {data.map((info) => (
+            <div
+              key={info.date.toDateString()}
+              className="flex flex-col space-y-1"
+            >
+              <div className="text-center text-sm font-medium">
+                {info.date.toLocaleDateString(locale, {
+                  weekday: "short",
+                  day: "numeric",
+                })}
               </div>
-              <div className="mb-1" style={{ minHeight: maxWithout * itemHeight }}>
+              <div
+                className="mb-1"
+                style={{ minHeight: maxWithout * itemHeight }}
+              >
                 {info.withoutTimes.length > 0 && (
                   <ul className="space-y-1 text-sm">
-                    {info.withoutTimes.map(task => {
-                      const bg = colorPalette[task.color]
-                      const fg = isColorDark(bg) ? '#fff' : '#000'
+                    {info.withoutTimes.map((task) => {
+                      const bg = colorPalette[task.color];
+                      const fg = isColorDark(bg) ? "#fff" : "#000";
                       return (
                         <li
                           key={task.id}
@@ -459,16 +511,20 @@ const TimeBlockingPage = () => {
                         >
                           {task.title}
                         </li>
-                      )
+                      );
                     })}
                   </ul>
                 )}
               </div>
-              <DaySchedule tasks={info.withTimes} showTimes={false} date={info.date} />
+              <DaySchedule
+                tasks={info.withTimes}
+                showTimes={false}
+                date={info.date}
+              />
             </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
     );
   };
 
@@ -488,9 +544,9 @@ const TimeBlockingPage = () => {
     }
 
     const handlePrev = () =>
-      setDate(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+      setDate((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
     const handleNext = () =>
-      setDate(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+      setDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
 
     return (
       <div className="space-y-2">
@@ -500,8 +556,8 @@ const TimeBlockingPage = () => {
           </button>
           <div className="font-medium">
             {date.toLocaleDateString(locale, {
-              month: 'long',
-              year: 'numeric'
+              month: "long",
+              year: "numeric",
             })}
           </div>
           <button className="p-1 rounded hover:bg-muted" onClick={handleNext}>
@@ -519,25 +575,27 @@ const TimeBlockingPage = () => {
                 >
                   {d && (
                     <>
-                      <div className="font-semibold text-sm">
-                        {d.getDate()}
-                      </div>
-                      {getTasksFor(d).slice(0, 3).map(task => (
-                        <div
-                          key={task.id}
-                          className="flex items-center space-x-1 truncate"
-                        >
-                          <span
-                            className="w-2 h-2 rounded-full"
-                            style={{ backgroundColor: colorPalette[task.color] }}
-                          />
-                          <span className="truncate">{task.title}</span>
-                        </div>
-                      ))}
+                      <div className="font-semibold text-sm">{d.getDate()}</div>
+                      {getTasksFor(d)
+                        .slice(0, 3)
+                        .map((task) => (
+                          <div
+                            key={task.id}
+                            className="flex items-center space-x-1 truncate"
+                          >
+                            <span
+                              className="w-2 h-2 rounded-full"
+                              style={{
+                                backgroundColor: colorPalette[task.color],
+                              }}
+                            />
+                            <span className="truncate">{task.title}</span>
+                          </div>
+                        ))}
                       {getTasksFor(d).length > 3 && (
                         <div className="text-muted-foreground">
-                          {t('timeBlocking.more', {
-                            count: getTasksFor(d).length - 3
+                          {t("timeBlocking.more", {
+                            count: getTasksFor(d).length - 3,
                           })}
                         </div>
                       )}
@@ -554,46 +612,50 @@ const TimeBlockingPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar title={t('timeBlocking.title')} />
+      <Navbar title={t("timeBlocking.title")} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         <ToggleGroup
           type="single"
           value={view}
-          onValueChange={v => v && setView(v as 'day' | 'week' | 'month')}
+          onValueChange={(v) => v && setView(v as "day" | "week" | "month")}
         >
-          <ToggleGroupItem value="day">{t('timeBlocking.day')}</ToggleGroupItem>
-          <ToggleGroupItem value="week">{t('timeBlocking.week')}</ToggleGroupItem>
-          <ToggleGroupItem value="month">{t('timeBlocking.month')}</ToggleGroupItem>
+          <ToggleGroupItem value="day">{t("timeBlocking.day")}</ToggleGroupItem>
+          <ToggleGroupItem value="week">
+            {t("timeBlocking.week")}
+          </ToggleGroupItem>
+          <ToggleGroupItem value="month">
+            {t("timeBlocking.month")}
+          </ToggleGroupItem>
         </ToggleGroup>
-      <div className="mt-4">
-        {view === 'day' && renderDay()}
-        {view === 'week' && renderWeek()}
-        {view === 'month' && renderMonth()}
+        <div className="mt-4">
+          {view === "day" && renderDay()}
+          {view === "week" && renderWeek()}
+          {view === "month" && renderMonth()}
+        </div>
+        <TaskModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setModalDefaults({});
+          }}
+          onSave={(data: TaskFormData) => {
+            addTask({
+              ...data,
+              completed: false,
+              status: "todo",
+              order: 0,
+            });
+          }}
+          categories={categories}
+          defaultCategoryId={categories[0]?.id}
+          defaultDueDate={modalDefaults.due}
+          defaultStartTime={modalDefaults.start}
+          defaultEndTime={modalDefaults.end}
+          allowRecurring={false}
+        />
       </div>
-      <TaskModal
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false)
-          setModalDefaults({})
-        }}
-        onSave={(data: TaskFormData) => {
-          addTask({ 
-            ...data, 
-            completed: false,
-            status: 'todo',
-            order: 0
-          })
-        }}
-        categories={categories}
-        defaultCategoryId={categories[0]?.id}
-        defaultDueDate={modalDefaults.due}
-        defaultStartTime={modalDefaults.start}
-        defaultEndTime={modalDefaults.end}
-        allowRecurring={false}
-      />
     </div>
-  </div>
-);
+  );
 };
 
 export default TimeBlockingPage;

@@ -1,4 +1,5 @@
 # Total-Task-Tracker
+
 English version available in [README.en.md](README.en.md).
 
 Der Total-Task-Tracker ist eine leistungsstarke, lokal betriebene Aufgaben- und Lernverwaltung auf Basis von React, Node.js und SQLite. Die Anwendung kombiniert klassische To-do-Funktionen mit Kalenderintegration, Markdown-Notizen, einem Pomodoro-Timer und einem integrierten Lernkarten-System mit Spaced-Repetition-Algorithmus.
@@ -7,6 +8,7 @@ Ideal für Selbstorganisation, Projektplanung oder die strukturierte Prüfungsvo
 Die Daten werden dabei vollständig lokal auf dem Server gespeichert, entweder per Docker oder im klassischen Node.js-Betrieb. So behältst du volle Kontrolle über deine Inhalte.
 
 ## Inhaltsverzeichnis
+
 - [Voraussetzungen](#voraussetzungen)
 - [Schnellstart mit dem fertigen Docker-Image](#schnellstart-mit-dem-fertigen-docker-image)
 - [Automatische Updates mit Watchtower](#automatische-updates-mit-watchtower)
@@ -21,8 +23,8 @@ Die Daten werden dabei vollständig lokal auf dem Server gespeichert, entweder p
 
 ## Voraussetzungen
 
-* Für die lokale Entwicklung: **Node.js** (empfohlen Version 18) und **npm**
-* Für den produktiven Betrieb: **Docker** und **docker-compose**
+- Für die lokale Entwicklung: **Node.js** (empfohlen Version 18) und **npm**
+- Für den produktiven Betrieb: **Docker** und **docker-compose**
 
 ## Schnellstart mit dem fertigen Docker-Image (empfohlen)
 
@@ -149,11 +151,11 @@ npm start    # startet die gebaute App auf Port 3002
 - Kann als Progressive Web App installiert werden (Desktop & Smartphone)
 - Pomodoro-Timer läuft beim Neuladen der Seite weiter
 - Kann als schwebendes Fenster (Picture-in-Picture) angezeigt werden
- - Statistikseite auf der Pomodoro-Seite mit Tages-, Wochen-, Monats- und Jahresübersicht
-   - Auswertung nach Tageszeiten (Morgen, Mittag, Abend, Nacht)
-   - Zusätzliche Anzeige für den aktuellen Tag
- - Minuten für Arbeit und Pause werden separat gezählt und als gestapelter Balken
-    dargestellt. Beim Pausieren oder Zurücksetzen des Timers werden die Werte
+- Statistikseite auf der Pomodoro-Seite mit Tages-, Wochen-, Monats- und Jahresübersicht
+  - Auswertung nach Tageszeiten (Morgen, Mittag, Abend, Nacht)
+  - Zusätzliche Anzeige für den aktuellen Tag
+- Minuten für Arbeit und Pause werden separat gezählt und als gestapelter Balken
+  dargestellt. Beim Pausieren oder Zurücksetzen des Timers werden die Werte
   sofort aktualisiert.
 - Lern- und Pausendauer frei konfigurierbar (auch direkt im Timer anpassbar)
 - Daten können im Einstellungsbereich exportiert und importiert werden
@@ -188,15 +190,15 @@ npm start    # startet die gebaute App auf Port 3002
 5. Über das Suchfeld und die Filter sortierst und findest du Aufgaben nach Priorität oder Farbe.
 6. Mit dem Sternsymbol kannst du eine Task anpinnen. Die ersten drei gepinnten erscheinen auf der Startseite.
 7. Mit `Strg+K` (oder über das Suchsymbol) öffnest du die **globale Suche**. Sie durchsucht Tasks, Notizen und Lernkarten und führt dich bei Auswahl direkt zum entsprechenden Eintrag.
-8. In der **Zeitplan**-Ansicht wählst du einen Tag, eine Woche oder einen Monat aus. Aufgaben mit Uhrzeit erscheinen als Blöcke, solche ohne Zeit als Liste unterhalb des Plans. 
+8. In der **Zeitplan**-Ansicht wählst du einen Tag, eine Woche oder einen Monat aus. Aufgaben mit Uhrzeit erscheinen als Blöcke, solche ohne Zeit als Liste unterhalb des Plans.
    Die **Statistiken** geben einen Überblick über erledigte Tasks.
 9. Unter **Notizen** kannst du unabhängige Notizen verwalten und per Drag & Drop sortieren. Gepinnte Notizen erscheinen auf der Startseite. Deine Inhalte kannst du dabei in Markdown verfassen. Beim Anklicken einer Notiz siehst du zunächst eine Vorschau und kannst sie direkt bearbeiten. Auf dem Desktop erscheint nun während des Bearbeitens eine Live-Vorschau rechts neben dem Editor. Der Editor stellt zahlreiche Schaltflächen für gängige Formatierungen bereit.
 10. Unter **Decks** legst du Kartendecks an und kannst sie bearbeiten. In der Detailansicht eines Decks fügst du einzelne Karten hinzu.
 11. Der Bereich **Karten** zeigt dir fällige Karten zum Lernen an. Dort kannst du
-   gezielt Decks ein- oder ausblenden, einen Zufallsmodus aktivieren und im
-   Eingabemodus Antworten eintippen. Nach dem Vergleich der Lösung entscheidest
-   du selbst, wie schwer dir die Karte fiel.
-   Im Timed-Modus bestimmt ein einstellbarer Countdown die Zeit pro Karte. Der Timer startet einmalig zu Beginn der Session und kann jederzeit pausiert werden. Bei 0 wird automatisch "schwer" gewertet.
+    gezielt Decks ein- oder ausblenden, einen Zufallsmodus aktivieren und im
+    Eingabemodus Antworten eintippen. Nach dem Vergleich der Lösung entscheidest
+    du selbst, wie schwer dir die Karte fiel.
+    Im Timed-Modus bestimmt ein einstellbarer Countdown die Zeit pro Karte. Der Timer startet einmalig zu Beginn der Session und kann jederzeit pausiert werden. Bei 0 wird automatisch "schwer" gewertet.
 
 Viel Spaß beim Ausprobieren!
 
@@ -225,4 +227,3 @@ Die nächste Wiederholungszeit wird dann wie folgt bestimmt:
 3. Das Intervall erhöht sich um `interval * Faktor`
 
 Dadurch fließt sowohl die bisherige Leistung als auch die aktuelle Bewertung in das nächste Fälligkeitsdatum ein.
-

@@ -1,1 +1,1 @@
-export * from './useFlashcardStore.tsx';
+export * from "./useFlashcardStore.tsx";

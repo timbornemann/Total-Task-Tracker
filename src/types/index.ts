@@ -1,13 +1,12 @@
-
 export interface Task {
   id: string;
   title: string;
   description: string;
-  priority: 'low' | 'medium' | 'high';
+  priority: "low" | "medium" | "high";
   color: number;
   completed: boolean;
   /** Status for kanban workflow */
-  status: 'todo' | 'inprogress' | 'done';
+  status: "todo" | "inprogress" | "done";
   categoryId: string;
   parentId?: string;
   subtasks: Task[];
@@ -16,15 +15,15 @@ export interface Task {
   /** Optional due date for one-time tasks */
   dueDate?: Date;
   isRecurring: boolean;
-  recurrencePattern?: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  recurrencePattern?: "daily" | "weekly" | "monthly" | "yearly";
   lastCompleted?: Date;
   nextDue?: Date;
   /** How to calculate due date for recurring tasks */
-  dueOption?: 'days' | 'weekEnd' | 'monthEnd';
+  dueOption?: "days" | "weekEnd" | "monthEnd";
   /** Number of days after creation when dueOption is 'days' */
   dueAfterDays?: number;
   /** Start configuration for recurring task */
-  startOption?: 'today' | 'weekday' | 'date';
+  startOption?: "today" | "weekday" | "date";
   /** Weekday number if startOption is 'weekday' (0=Sunday) */
   startWeekday?: number;
   /** Fixed start date if startOption is 'date' */
@@ -62,7 +61,7 @@ export interface Category {
 export interface TaskFormData {
   title: string;
   description: string;
-  priority: 'low' | 'medium' | 'high';
+  priority: "low" | "medium" | "high";
   color: number;
   categoryId: string;
   parentId?: string;
@@ -71,11 +70,11 @@ export interface TaskFormData {
 
   dueDate?: Date;
   isRecurring: boolean;
-  recurrencePattern?: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  recurrencePattern?: "daily" | "weekly" | "monthly" | "yearly";
   customIntervalDays?: number;
-  dueOption?: 'days' | 'weekEnd' | 'monthEnd';
+  dueOption?: "days" | "weekEnd" | "monthEnd";
   dueAfterDays?: number;
-  startOption?: 'today' | 'weekday' | 'date';
+  startOption?: "today" | "weekday" | "date";
   startWeekday?: number;
   startDate?: Date;
   /** Optional start time in HH:mm */
@@ -127,13 +126,7 @@ export interface Deck {
 
 export interface Deletion {
   id: string;
-  type:
-    | 'task'
-    | 'category'
-    | 'note'
-    | 'recurring'
-    | 'flashcard'
-    | 'deck';
+  type: "task" | "category" | "note" | "recurring" | "flashcard" | "deck";
   deletedAt: Date;
 }
 

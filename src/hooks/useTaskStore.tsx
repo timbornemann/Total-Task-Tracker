@@ -1,11 +1,23 @@
-import React, { useState, useEffect, createContext, useContext, useRef } from 'react';
-import { Task, Category, Note, Deletion } from '@/types';
-import i18n from '@/lib/i18n';
-import { useSettings, defaultColorPalette } from '@/hooks/useSettings';
-import { format } from 'date-fns';
-import { loadOfflineData, updateOfflineData, saveOfflineData, syncWithServer, type OfflineData } from '@/utils/offline';
+import React, {
+  useState,
+  useEffect,
+  createContext,
+  useContext,
+  useRef,
+} from "react";
+import { Task, Category, Note, Deletion } from "@/types";
+import i18n from "@/lib/i18n";
+import { useSettings, defaultColorPalette } from "@/hooks/useSettings";
+import { format } from "date-fns";
+import {
+  loadOfflineData,
+  updateOfflineData,
+  saveOfflineData,
+  syncWithServer,
+  type OfflineData,
+} from "@/utils/offline";
 
-const API_URL = '/api/data';
+const API_URL = "/api/data";
 
 const useTaskStoreImpl = () => {
   const generateId = () =>
@@ -13,11 +25,11 @@ const useTaskStoreImpl = () => {
     `${Date.now()}-${Math.random().toString(36).slice(2)}`;
   const sortNotes = (list: Note[]): Note[] => {
     const pinned = list
-      .filter(n => n.pinned)
+      .filter((n) => n.pinned)
       .sort((a, b) => a.order - b.order)
       .map((n, idx) => ({ ...n, order: idx }));
     const others = list
-      .filter(n => !n.pinned)
+      .filter((n) => !n.pinned)
       .sort((a, b) => a.order - b.order)
       .map((n, idx) => ({ ...n, order: idx }));
     return [...pinned, ...others];
@@ -29,75 +41,78 @@ const useTaskStoreImpl = () => {
   const [recurring, setRecurring] = useState<Task[]>([]);
   const [deletions, setDeletions] = useState<Deletion[]>([]);
   const [loaded, setLoaded] = useState(false);
-  const lastDataRef = useRef('');
+  const lastDataRef = useRef("");
   const saveTimerRef = useRef<number | null>(null);
-  const [recentlyDeletedCategories, setRecentlyDeletedCategories] =
-    useState<{ category: Category; taskIds: string[] }[]>([]);
+  const [recentlyDeletedCategories, setRecentlyDeletedCategories] = useState<
+    { category: Category; taskIds: string[] }[]
+  >([]);
 
   const processData = (data: {
-    tasks: Task[]
-    categories: Category[]
-    notes: Note[]
-    recurring: Task[]
-    deletions: Deletion[]
+    tasks: Task[];
+    categories: Category[];
+    notes: Note[];
+    recurring: Task[];
+    deletions: Deletion[];
   }) => {
-    const serverDeletions = (data.deletions || []).map(d => ({
+    const serverDeletions = (data.deletions || []).map((d) => ({
       ...d,
-      deletedAt: new Date(d.deletedAt)
-    }))
-    setDeletions(serverDeletions)
+      deletedAt: new Date(d.deletedAt),
+    }));
+    setDeletions(serverDeletions);
 
-    const isDeleted = (type: Deletion['type'], id: string) =>
-      serverDeletions.some(d => d.type === type && d.id === id)
+    const isDeleted = (type: Deletion["type"], id: string) =>
+      serverDeletions.some((d) => d.type === type && d.id === id);
 
     const mapColor = (c: unknown): number => {
-      if (typeof c === 'number') {
-        return c >= 0 && c < colorPalette.length ? c : 0
+      if (typeof c === "number") {
+        return c >= 0 && c < colorPalette.length ? c : 0;
       }
-      if (typeof c === 'string') {
-        const idx = colorPalette.indexOf(c)
-        if (idx !== -1) return idx
-        const defIdx = defaultColorPalette.indexOf(c as string)
-        if (defIdx !== -1) return defIdx
+      if (typeof c === "string") {
+        const idx = colorPalette.indexOf(c);
+        if (idx !== -1) return idx;
+        const defIdx = defaultColorPalette.indexOf(c as string);
+        if (defIdx !== -1) return defIdx;
       }
-      return 0
-    }
+      return 0;
+    };
 
     const tasksData = (data.tasks || [])
-      .filter(t => !isDeleted('task', t.id))
+      .filter((t) => !isDeleted("task", t.id))
       .map((task, idx) => ({
         ...task,
         createdAt: new Date(task.createdAt),
         updatedAt: new Date(task.updatedAt),
         dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
-        lastCompleted: task.lastCompleted ? new Date(task.lastCompleted) : undefined,
+        lastCompleted: task.lastCompleted
+          ? new Date(task.lastCompleted)
+          : undefined,
         nextDue: task.nextDue ? new Date(task.nextDue) : undefined,
-        order: typeof task.order === 'number' ? task.order : idx,
+        order: typeof task.order === "number" ? task.order : idx,
         completed: task.completed ?? false,
-        status: task.status ?? (task.completed ? 'done' : 'todo'),
+        status: task.status ?? (task.completed ? "done" : "todo"),
         pinned: task.pinned ?? false,
         startTime: task.startTime,
         endTime: task.endTime,
         color: mapColor(task.color),
         recurringId: task.recurringId,
-        visible: task.visible
-      }))
-    setTasks(tasksData)
+        visible: task.visible,
+      }));
+    setTasks(tasksData);
 
     const notesData = (data.notes || [])
-      .filter(n => !isDeleted('note', n.id))
+      .filter((n) => !isDeleted("note", n.id))
       .map((note, idx) => ({
         ...note,
         createdAt: new Date(note.createdAt),
         updatedAt: new Date(note.updatedAt),
         pinned: note.pinned ?? false,
-        order: typeof note.order === 'number' ? note.order : idx,
-        color: mapColor(note.color)
-      }))
-    setNotes(sortNotes(notesData))
+        order: typeof note.order === "number" ? note.order : idx,
+        color: mapColor(note.color),
+      }));
+    setNotes(sortNotes(notesData));
 
     const recurringData = (data.recurring || [])
-      .filter(t => !isDeleted('recurring', t.id))
+      .filter((t) => !isDeleted("recurring", t.id))
       .map((t, idx) => ({
         ...t,
         createdAt: new Date(t.createdAt),
@@ -105,72 +120,72 @@ const useTaskStoreImpl = () => {
         dueDate: t.dueDate ? new Date(t.dueDate) : undefined,
         lastCompleted: t.lastCompleted ? new Date(t.lastCompleted) : undefined,
         nextDue: t.nextDue ? new Date(t.nextDue) : undefined,
-        order: typeof t.order === 'number' ? t.order : idx,
+        order: typeof t.order === "number" ? t.order : idx,
         completed: t.completed ?? false,
-        status: t.status ?? 'todo',
+        status: t.status ?? "todo",
         pinned: t.pinned ?? false,
         template: true,
         startTime: t.startTime,
         endTime: t.endTime,
-        color: mapColor(t.color)
-      }))
-    setRecurring(recurringData)
+        color: mapColor(t.color),
+      }));
+    setRecurring(recurringData);
 
-    let categoriesData: Category[]
+    let categoriesData: Category[];
     if (data.categories && data.categories.length) {
       categoriesData = data.categories
-        .filter(c => !isDeleted('category', c.id))
+        .filter((c) => !isDeleted("category", c.id))
         .map((category, idx) => ({
           ...category,
           createdAt: new Date(category.createdAt),
           updatedAt: new Date(category.updatedAt),
-          order: typeof category.order === 'number' ? category.order : idx,
+          order: typeof category.order === "number" ? category.order : idx,
           color: mapColor(category.color),
-          pinned: category.pinned ?? false
-        }))
+          pinned: category.pinned ?? false,
+        }));
     } else {
       const defaultCategory: Category = {
-        id: 'default',
-        name: i18n.t('taskStore.defaultCategoryName'),
-        description: i18n.t('taskStore.defaultCategoryDescription'),
+        id: "default",
+        name: i18n.t("taskStore.defaultCategoryName"),
+        description: i18n.t("taskStore.defaultCategoryDescription"),
         color: 0,
         createdAt: new Date(),
         updatedAt: new Date(),
         order: 0,
-        pinned: false
-      }
-      categoriesData = [defaultCategory]
+        pinned: false,
+      };
+      categoriesData = [defaultCategory];
     }
-    setCategories(categoriesData)
+    setCategories(categoriesData);
 
     const dataString = JSON.stringify({
       tasks: tasksData,
       categories: categoriesData,
       notes: notesData,
       recurring: recurringData,
-      deletions: serverDeletions
-    })
-    lastDataRef.current = dataString
-  }
+      deletions: serverDeletions,
+    });
+    lastDataRef.current = dataString;
+  };
 
   const fetchData = async (merge = true) => {
-    const offline = loadOfflineData()
+    const offline = loadOfflineData();
     if (offline) {
-      processData(offline)
+      processData(offline);
     }
     if (merge) {
-      const synced = await syncWithServer()
-      processData(synced)
+      const synced = await syncWithServer();
+      processData(synced);
     } else {
-      const res = await fetch('/api/all')
+      const res = await fetch("/api/all");
       if (res.ok) {
-        const data = (await res.json()) as OfflineData
-        processData(data)
-        saveOfflineData(data)
+        const data = (await res.json()) as OfflineData;
+        processData(data);
+        saveOfflineData(data);
       }
     }
-    setLoaded(true)
-  }
+    setLoaded(true);
+  };
 
   useEffect(() => {
     fetchData();
@@ -186,7 +201,7 @@ const useTaskStoreImpl = () => {
   }, []);
 
   useEffect(() => {
-    const es = new EventSource('/api/updates');
+    const es = new EventSource("/api/updates");
     es.onmessage = () => fetchData(false);
     return () => es.close();
   }, []);
@@ -194,32 +209,32 @@ const useTaskStoreImpl = () => {
   // Save to server whenever data changes after initial load
   useEffect(() => {
     if (!loaded) return;
-    const data = { tasks, categories, notes, recurring, deletions }
-    const dataString = JSON.stringify(data)
-    if (dataString === lastDataRef.current) return
-    lastDataRef.current = dataString
-    updateOfflineData(data)
+    const data = { tasks, categories, notes, recurring, deletions };
+    const dataString = JSON.stringify(data);
+    if (dataString === lastDataRef.current) return;
+    lastDataRef.current = dataString;
+    updateOfflineData(data);
 
-    if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = window.setTimeout(async () => {
       try {
         if (navigator.onLine) {
           await fetch(API_URL, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: dataString
-          })
-          await fetch('/api/recurring', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(recurring)
-          })
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: dataString,
+          });
+          await fetch("/api/recurring", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(recurring),
+          });
         }
       } catch (error) {
-        console.error('Error saving data:', error)
+        console.error("Error saving data:", error);
       }
-      if (navigator.onLine) await syncWithServer()
-    }, 500)
+      if (navigator.onLine) await syncWithServer();
+    }, 500);
   }, [tasks, categories, notes, recurring, deletions, loaded]);
 
   useEffect(() => {
@@ -229,10 +244,13 @@ const useTaskStoreImpl = () => {
   }, []);
 
   const addTask = (
-    taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'subtasks' | 'pinned'> & {
-      createdAt?: Date
-      visible?: boolean
-    }
+    taskData: Omit<
+      Task,
+      "id" | "createdAt" | "updatedAt" | "subtasks" | "pinned"
+    > & {
+      createdAt?: Date;
+      visible?: boolean;
+    },
   ) => {
     const newTask: Task = {
       ...taskData,
@@ -244,69 +262,77 @@ const useTaskStoreImpl = () => {
       startTime: taskData.startTime,
       endTime: taskData.endTime,
       nextDue: taskData.isRecurring
-        ? calculateNextDue(taskData.recurrencePattern, taskData.customIntervalDays)
+        ? calculateNextDue(
+            taskData.recurrencePattern,
+            taskData.customIntervalDays,
+          )
         : undefined,
       lastCompleted: undefined,
-      status: 'todo',
+      status: "todo",
       order: 0,
       pinned: false,
       recurringId: taskData.recurringId,
       customIntervalDays: taskData.customIntervalDays,
       titleTemplate: taskData.titleTemplate,
       template: taskData.template,
-      visible: taskData.visible ?? true
+      visible: taskData.visible ?? true,
     };
-    
+
     if (taskData.parentId) {
       // Add as subtask
       const updateTaskRecursively = (tasks: Task[]): Task[] => {
-        return tasks.map(task => {
+        return tasks.map((task) => {
           if (task.id === taskData.parentId) {
             return {
               ...task,
-              subtasks: [...task.subtasks, { ...newTask, order: task.subtasks.length }],
-              updatedAt: new Date()
+              subtasks: [
+                ...task.subtasks,
+                { ...newTask, order: task.subtasks.length },
+              ],
+              updatedAt: new Date(),
             };
           }
           if (task.subtasks.length > 0) {
             return {
               ...task,
-              subtasks: updateTaskRecursively(task.subtasks)
+              subtasks: updateTaskRecursively(task.subtasks),
             };
           }
           return task;
         });
       };
-      setTasks(prev => updateTaskRecursively(prev));
+      setTasks((prev) => updateTaskRecursively(prev));
     } else {
       // Add as main task
-      setTasks(prev => {
-        const tasksInCategory = prev.filter(t => t.categoryId === taskData.categoryId && !t.parentId);
+      setTasks((prev) => {
+        const tasksInCategory = prev.filter(
+          (t) => t.categoryId === taskData.categoryId && !t.parentId,
+        );
         return [...prev, { ...newTask, order: tasksInCategory.length }];
       });
     }
   };
 
   const calculateNextDue = (
-    pattern?: 'daily' | 'weekly' | 'monthly' | 'yearly',
+    pattern?: "daily" | "weekly" | "monthly" | "yearly",
     customDays?: number,
-    fromDate: Date = new Date()
+    fromDate: Date = new Date(),
   ): Date | undefined => {
     if (!pattern && !customDays) return undefined;
 
     const nextDue = new Date(fromDate);
 
     switch (pattern) {
-      case 'daily':
+      case "daily":
         nextDue.setDate(fromDate.getDate() + 1);
         break;
-      case 'weekly':
+      case "weekly":
         nextDue.setDate(fromDate.getDate() + 7);
         break;
-      case 'monthly':
+      case "monthly":
         nextDue.setMonth(fromDate.getMonth() + 1);
         break;
-      case 'yearly':
+      case "yearly":
         nextDue.setFullYear(fromDate.getFullYear() + 1);
         break;
       default:
@@ -320,16 +346,16 @@ const useTaskStoreImpl = () => {
     if (!t.dueOption) return undefined;
     const base = new Date();
     switch (t.dueOption) {
-      case 'days':
+      case "days":
         if (t.dueAfterDays) base.setDate(base.getDate() + t.dueAfterDays);
         break;
-      case 'weekEnd': {
+      case "weekEnd": {
         const day = base.getDay();
         const diff = 7 - day;
         base.setDate(base.getDate() + diff);
         break;
       }
-      case 'monthEnd':
+      case "monthEnd":
         base.setMonth(base.getMonth() + 1, 0);
         break;
     }
@@ -337,15 +363,15 @@ const useTaskStoreImpl = () => {
   };
 
   const updateTask = (taskId: string, updates: Partial<Task>) => {
-    const normalizedUpdates = { ...updates }
+    const normalizedUpdates = { ...updates };
     if (
-      typeof updates.completed === 'boolean' &&
+      typeof updates.completed === "boolean" &&
       updates.visible === undefined
     ) {
-      normalizedUpdates.visible = !updates.completed
+      normalizedUpdates.visible = !updates.completed;
     }
     const updateTaskRecursively = (tasks: Task[]): Task[] => {
-      return tasks.map(task => {
+      return tasks.map((task) => {
         if (task.id === taskId) {
           // If task is being marked as complete and is recurring, update lastCompleted and nextDue
           if (normalizedUpdates.completed && task.isRecurring) {
@@ -366,24 +392,24 @@ const useTaskStoreImpl = () => {
               ? new Date(normalizedUpdates.dueDate)
               : task.dueDate,
             startTime: normalizedUpdates.startTime ?? task.startTime,
-            endTime: normalizedUpdates.endTime ?? task.endTime
+            endTime: normalizedUpdates.endTime ?? task.endTime,
           };
         }
         if (task.subtasks.length > 0) {
           return {
             ...task,
-            subtasks: updateTaskRecursively(task.subtasks)
+            subtasks: updateTaskRecursively(task.subtasks),
           };
         }
         return task;
       });
     };
-    setTasks(prev => updateTaskRecursively(prev));
+    setTasks((prev) => updateTaskRecursively(prev));
   };
 
   const deleteTask = (taskId: string) => {
     const deleteTaskRecursively = (tasks: Task[]): Task[] => {
-      return tasks.filter(task => {
+      return tasks.filter((task) => {
         if (task.id === taskId) {
           return false;
         }
@@ -393,29 +419,36 @@ const useTaskStoreImpl = () => {
         return true;
       });
     };
-    setTasks(prev => {
+    setTasks((prev) => {
       const without = deleteTaskRecursively(prev);
-      const main = without.filter(t => !t.parentId);
-      const subs = without.filter(t => t.parentId);
+      const main = without.filter((t) => !t.parentId);
+      const subs = without.filter((t) => t.parentId);
       const grouped: { [key: string]: Task[] } = {};
-      main.forEach(t => {
+      main.forEach((t) => {
         grouped[t.categoryId] = grouped[t.categoryId] || [];
         grouped[t.categoryId].push(t);
       });
-      const reorderedMain = Object.values(grouped).flatMap(list =>
-        list.map((t, idx) => ({ ...t, order: idx }))
+      const reorderedMain = Object.values(grouped).flatMap((list) =>
+        list.map((t, idx) => ({ ...t, order: idx })),
       );
       return [...reorderedMain, ...subs];
     });
-    setDeletions(prev => [...prev, { id: taskId, type: 'task', deletedAt: new Date() }]);
+    setDeletions((prev) => [
+      ...prev,
+      { id: taskId, type: "task", deletedAt: new Date() },
+    ]);
   };
 
   const addRecurringTask = (
-    data: Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'subtasks' | 'pinned'>
+    data: Omit<Task, "id" | "createdAt" | "updatedAt" | "subtasks" | "pinned">,
   ) => {
     const start = (() => {
-      if (data.startOption === 'date' && data.startDate) return new Date(data.startDate);
-      if (data.startOption === 'weekday' && typeof data.startWeekday === 'number') {
+      if (data.startOption === "date" && data.startDate)
+        return new Date(data.startDate);
+      if (
+        data.startOption === "weekday" &&
+        typeof data.startWeekday === "number"
+      ) {
         const d = new Date();
         const diff = (7 + data.startWeekday - d.getDay()) % 7;
         d.setDate(d.getDate() + diff);
@@ -432,7 +465,7 @@ const useTaskStoreImpl = () => {
       createdAt: new Date(),
       updatedAt: new Date(),
       completed: false,
-      status: 'todo',
+      status: "todo",
       order: recurring.length,
       pinned: false,
       template: true,
@@ -442,7 +475,7 @@ const useTaskStoreImpl = () => {
         ? calculateNextDue(
             data.recurrencePattern,
             data.customIntervalDays,
-            start
+            start,
           )
         : start,
     };
@@ -472,63 +505,70 @@ const useTaskStoreImpl = () => {
       const next = calculateNextDue(
         data.recurrencePattern,
         data.customIntervalDays,
-        current
+        current,
       );
       if (!next) break;
       next.setHours(0, 0, 0, 0);
       current = next;
     }
 
-    setRecurring(prev => [...prev, newItem]);
+    setRecurring((prev) => [...prev, newItem]);
   };
 
   const updateRecurringTask = (id: string, updates: Partial<Task>) => {
-    setRecurring(prev =>
-      prev.map(t => (t.id === id ? { ...t, ...updates, updatedAt: new Date() } : t))
+    setRecurring((prev) =>
+      prev.map((t) =>
+        t.id === id ? { ...t, ...updates, updatedAt: new Date() } : t,
+      ),
     );
   };
 
   const toggleHabitCompletion = (id: string, date: string) => {
-    setTasks(prev =>
-      prev.map(task => {
+    setTasks((prev) =>
+      prev.map((task) => {
         if (task.recurringId === id) {
-          const taskDate = format(task.createdAt, 'yyyy-MM-dd');
+          const taskDate = format(task.createdAt, "yyyy-MM-dd");
           if (taskDate === date) {
             const markComplete = !task.completed;
             return {
               ...task,
               completed: markComplete,
-              status: markComplete ? 'done' : 'todo',
-              updatedAt: new Date()
+              status: markComplete ? "done" : "todo",
+              updatedAt: new Date(),
             };
           }
         }
         return task;
-      })
+      }),
     );
   };
 
   const deleteRecurringTask = (id: string) => {
-    setRecurring(prev => prev.filter(t => t.id !== id));
-    setTasks(prev => prev.filter(t => !(t.recurringId === id && !t.visible)));
-    setDeletions(prev => [...prev, { id, type: 'recurring', deletedAt: new Date() }]);
+    setRecurring((prev) => prev.filter((t) => t.id !== id));
+    setTasks((prev) =>
+      prev.filter((t) => !(t.recurringId === id && !t.visible)),
+    );
+    setDeletions((prev) => [
+      ...prev,
+      { id, type: "recurring", deletedAt: new Date() },
+    ]);
   };
 
   const generateTitle = (t: Task): string => {
     const now = new Date();
     let title = t.titleTemplate || t.title;
-    const locale = i18n.language === 'de' ? 'de-DE' : 'en-US';
-    title = title.replace('{date}', now.toLocaleDateString(locale));
-    title = title.replace('{counter}', String(t.order + 1));
+    const locale = i18n.language === "de" ? "de-DE" : "en-US";
+    title = title.replace("{date}", now.toLocaleDateString(locale));
+    title = title.replace("{counter}", String(t.order + 1));
     return title;
   };
 
   const ensureRecurringTasks = () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    recurring.forEach(template => {
-      const templateTasks = tasks.filter(t => t.recurringId === template.id);
-      const futureTasks = templateTasks.filter(t => {
+    recurring.forEach((template) => {
+      const templateTasks = tasks.filter((t) => t.recurringId === template.id);
+      const futureTasks = templateTasks.filter((t) => {
         const d = new Date(t.createdAt);
         d.setHours(0, 0, 0, 0);
         return d >= today;
@@ -546,10 +586,10 @@ const useTaskStoreImpl = () => {
         calculateNextDue(
           template.recurrencePattern,
           template.customIntervalDays,
-          lastDate
+          lastDate,
         ) || new Date(lastDate);
       current.setHours(0, 0, 0, 0);
-        
+
       for (let i = 0; i < 30; i++) {
         addTask({
           ...template,
@@ -566,12 +606,12 @@ const useTaskStoreImpl = () => {
           parentId: undefined,
           recurringId: template.id,
           createdAt: current,
-          visible: current <= new Date()
+          visible: current <= new Date(),
         });
         const next = calculateNextDue(
           template.recurrencePattern,
           template.customIntervalDays,
-          current
+          current,
         );
         if (!next) break;
         next.setHours(0, 0, 0, 0);
@@ -583,113 +623,125 @@ const useTaskStoreImpl = () => {
   const processRecurring = () => {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
-    setTasks(prev =>
-      prev.map(t =>
-        t.recurringId && !t.visible && (() => {
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.recurringId &&
+        !t.visible &&
+        (() => {
           const d = new Date(t.createdAt);
           d.setHours(0, 0, 0, 0);
           return d <= now;
         })()
           ? { ...t, visible: true }
-          : t
-      )
+          : t,
+      ),
     );
     ensureRecurringTasks();
   };
 
-  const addCategory = (categoryData: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const addCategory = (
+    categoryData: Omit<Category, "id" | "createdAt" | "updatedAt">,
+  ) => {
     const newCategory: Category = {
       ...categoryData,
       id: generateId(),
       createdAt: new Date(),
       updatedAt: new Date(),
       order: 0,
-      pinned: categoryData.pinned ?? false
+      pinned: categoryData.pinned ?? false,
     };
-    setCategories(prev => [...prev, { ...newCategory, order: prev.length }]);
+    setCategories((prev) => [...prev, { ...newCategory, order: prev.length }]);
   };
 
   const updateCategory = (categoryId: string, updates: Partial<Category>) => {
-    setCategories(prev => prev.map(category => 
-      category.id === categoryId 
-        ? { ...category, ...updates, updatedAt: new Date() }
-        : category
-    ));
+    setCategories((prev) =>
+      prev.map((category) =>
+        category.id === categoryId
+          ? { ...category, ...updates, updatedAt: new Date() }
+          : category,
+      ),
+    );
   };
 
   const deleteCategory = (categoryId: string) => {
-    if (categoryId === 'default') return; // Prevent deleting default category
+    if (categoryId === "default") return; // Prevent deleting default category
 
-    const categoryToDelete = categories.find(c => c.id === categoryId);
+    const categoryToDelete = categories.find((c) => c.id === categoryId);
     if (!categoryToDelete) return;
 
     const updateTasksCategory = (tasks: Task[]): Task[] => {
-      return tasks.map(task => ({
+      return tasks.map((task) => ({
         ...task,
-        categoryId: task.categoryId === categoryId ? 'default' : task.categoryId,
-        subtasks: updateTasksCategory(task.subtasks)
+        categoryId:
+          task.categoryId === categoryId ? "default" : task.categoryId,
+        subtasks: updateTasksCategory(task.subtasks),
       }));
     };
 
     const affectedTaskIds = tasks
-      .filter(t => t.categoryId === categoryId)
-      .map(t => t.id);
+      .filter((t) => t.categoryId === categoryId)
+      .map((t) => t.id);
 
-    setTasks(prev => updateTasksCategory(prev));
+    setTasks((prev) => updateTasksCategory(prev));
 
-    setCategories(prev => {
+    setCategories((prev) => {
       const remaining = prev
-        .filter(category => category.id !== categoryId)
+        .filter((category) => category.id !== categoryId)
         .map((c, idx) => ({ ...c, order: idx }));
 
       // If no categories remain after deletion, recreate a default category
       if (remaining.length === 0) {
         const defaultCategory: Category = {
-          id: 'default',
-          name: i18n.t('taskStore.defaultCategoryName'),
-          description: i18n.t('taskStore.defaultCategoryDescription'),
+          id: "default",
+          name: i18n.t("taskStore.defaultCategoryName"),
+          description: i18n.t("taskStore.defaultCategoryDescription"),
           color: 0,
           createdAt: new Date(),
           updatedAt: new Date(),
-          order: 0
+          order: 0,
         };
         return [defaultCategory];
       }
       return remaining;
     });
 
-    setRecentlyDeletedCategories(prev => [
+    setRecentlyDeletedCategories((prev) => [
       ...prev,
-      { category: categoryToDelete, taskIds: affectedTaskIds }
+      { category: categoryToDelete, taskIds: affectedTaskIds },
     ]);
-    setDeletions(prev => [...prev, { id: categoryId, type: 'category', deletedAt: new Date() }]);
+    setDeletions((prev) => [
+      ...prev,
+      { id: categoryId, type: "category", deletedAt: new Date() },
+    ]);
   };
 
   const undoDeleteCategory = (categoryId: string) => {
-    const deleted = recentlyDeletedCategories.find(r => r.category.id === categoryId);
+    const deleted = recentlyDeletedCategories.find(
+      (r) => r.category.id === categoryId,
+    );
     if (!deleted) return;
 
-    setCategories(prev => {
+    setCategories((prev) => {
       const updated = [...prev];
       updated.splice(deleted.category.order, 0, deleted.category);
       return updated.map((c, idx) => ({ ...c, order: idx }));
     });
 
-    setTasks(prev =>
-      prev.map(t =>
+    setTasks((prev) =>
+      prev.map((t) =>
         deleted.taskIds.includes(t.id)
           ? { ...t, categoryId: deleted.category.id }
-          : t
-      )
+          : t,
+      ),
     );
 
-    setRecentlyDeletedCategories(prev =>
-      prev.filter(r => r.category.id !== categoryId)
+    setRecentlyDeletedCategories((prev) =>
+      prev.filter((r) => r.category.id !== categoryId),
     );
   };
 
   const reorderCategories = (startIndex: number, endIndex: number) => {
-    setCategories(prev => {
+    setCategories((prev) => {
       const updated = Array.from(prev);
       const [removed] = updated.splice(startIndex, 1);
       updated.splice(endIndex, 0, removed);
@@ -697,10 +749,18 @@ const useTaskStoreImpl = () => {
     });
   };
 
-  const reorderTasks = (categoryId: string, startIndex: number, endIndex: number) => {
-    setTasks(prev => {
-      const tasksInCategory = prev.filter(t => t.categoryId === categoryId && !t.parentId);
-      const others = prev.filter(t => !(t.categoryId === categoryId && !t.parentId));
+  const reorderTasks = (
+    categoryId: string,
+    startIndex: number,
+    endIndex: number,
+  ) => {
+    setTasks((prev) => {
+      const tasksInCategory = prev.filter(
+        (t) => t.categoryId === categoryId && !t.parentId,
+      );
+      const others = prev.filter(
+        (t) => !(t.categoryId === categoryId && !t.parentId),
+      );
       const ordered = Array.from(tasksInCategory);
       const [removed] = ordered.splice(startIndex, 1);
       ordered.splice(endIndex, 0, removed);
@@ -710,11 +770,11 @@ const useTaskStoreImpl = () => {
   };
 
   const moveTaskToSubtask = (taskId: string, parentId: string) => {
-    setTasks(prev => {
+    setTasks((prev) => {
       let taskToMove: Task | null = null;
 
       const removeTask = (list: Task[]): Task[] => {
-        return list.filter(t => {
+        return list.filter((t) => {
           if (t.id === taskId) {
             taskToMove = { ...t };
             return false;
@@ -730,19 +790,19 @@ const useTaskStoreImpl = () => {
       if (!taskToMove) return prev;
 
       const addToParent = (list: Task[]): Task[] => {
-        return list.map(t => {
+        return list.map((t) => {
           if (t.id === parentId) {
             const newSubtask = {
               ...taskToMove!,
               parentId: parentId,
               categoryId: t.categoryId,
               order: t.subtasks.length,
-              updatedAt: new Date()
+              updatedAt: new Date(),
             };
             return {
               ...t,
               subtasks: [...t.subtasks, newSubtask],
-              updatedAt: new Date()
+              updatedAt: new Date(),
             };
           }
           if (t.subtasks.length > 0) {
@@ -756,11 +816,15 @@ const useTaskStoreImpl = () => {
 
       const reorderRoot = (list: Task[]) => {
         const grouped: { [key: string]: Task[] } = {};
-        list.filter(t => !t.parentId).forEach(t => {
-          grouped[t.categoryId] = grouped[t.categoryId] || [];
-          grouped[t.categoryId].push(t);
-        });
-        return Object.values(grouped).flatMap(ls => ls.map((t, idx) => ({ ...t, order: idx })));
+        list
+          .filter((t) => !t.parentId)
+          .forEach((t) => {
+            grouped[t.categoryId] = grouped[t.categoryId] || [];
+            grouped[t.categoryId].push(t);
+          });
+        return Object.values(grouped).flatMap((ls) =>
+          ls.map((t, idx) => ({ ...t, order: idx })),
+        );
       };
 
       return reorderRoot(updated);
@@ -768,7 +832,7 @@ const useTaskStoreImpl = () => {
   };
 
   const addNote = (
-    data: Omit<Note, 'id' | 'createdAt' | 'updatedAt' | 'order'>
+    data: Omit<Note, "id" | "createdAt" | "updatedAt" | "order">,
   ) => {
     const newNote: Note = {
       ...data,
@@ -776,28 +840,31 @@ const useTaskStoreImpl = () => {
       createdAt: new Date(),
       updatedAt: new Date(),
       order: 0,
-      pinned: data.pinned ?? false
+      pinned: data.pinned ?? false,
     };
-    setNotes(prev => sortNotes([...prev, newNote]));
+    setNotes((prev) => sortNotes([...prev, newNote]));
   };
 
   const updateNote = (noteId: string, updates: Partial<Note>) => {
-    setNotes(prev =>
+    setNotes((prev) =>
       sortNotes(
-        prev.map(n =>
-          n.id === noteId ? { ...n, ...updates, updatedAt: new Date() } : n
-        )
-      )
+        prev.map((n) =>
+          n.id === noteId ? { ...n, ...updates, updatedAt: new Date() } : n,
+        ),
+      ),
     );
   };
 
   const deleteNote = (noteId: string) => {
-    setNotes(prev => sortNotes(prev.filter(n => n.id !== noteId)));
-    setDeletions(prev => [...prev, { id: noteId, type: 'note', deletedAt: new Date() }]);
+    setNotes((prev) => sortNotes(prev.filter((n) => n.id !== noteId)));
+    setDeletions((prev) => [
+      ...prev,
+      { id: noteId, type: "note", deletedAt: new Date() },
+    ]);
   };
 
   const reorderNotes = (startIndex: number, endIndex: number) => {
-    setNotes(prev => {
+    setNotes((prev) => {
       const ordered = sortNotes(prev);
       const [removed] = ordered.splice(startIndex, 1);
       ordered.splice(endIndex, 0, removed);
@@ -808,14 +875,20 @@ const useTaskStoreImpl = () => {
   const getTasksByCategory = (categoryId: string): Task[] => {
     return tasks
       .filter(
-        task => task.categoryId === categoryId && !task.parentId && task.visible !== false
+        (task) =>
+          task.categoryId === categoryId &&
+          !task.parentId &&
+          task.visible !== false,
       )
       .sort((a, b) =>
-        a.pinned === b.pinned ? a.order - b.order : a.pinned ? -1 : 1
+        a.pinned === b.pinned ? a.order - b.order : a.pinned ? -1 : 1,
       );
   };
 
-  const findTaskById = (taskId: string, tasksArray: Task[] = tasks): Task | null => {
+  const findTaskById = (
+    taskId: string,
+    tasksArray: Task[] = tasks,
+  ): Task | null => {
     for (const task of tasksArray) {
       if (task.id === taskId) {
         return task;
@@ -854,7 +927,7 @@ const useTaskStoreImpl = () => {
     addRecurringTask,
     updateRecurringTask,
     deleteRecurringTask,
-    toggleHabitCompletion
+    toggleHabitCompletion,
   };
 };
 
@@ -862,17 +935,21 @@ type TaskStore = ReturnType<typeof useTaskStoreImpl>;
 
 const TaskStoreContext = createContext<TaskStore | null>(null);
 
-export const TaskStoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const TaskStoreProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const store = useTaskStoreImpl();
   return (
-    <TaskStoreContext.Provider value={store}>{children}</TaskStoreContext.Provider>
+    <TaskStoreContext.Provider value={store}>
+      {children}
+    </TaskStoreContext.Provider>
   );
 };
 
 export const useTaskStore = () => {
   const ctx = useContext(TaskStoreContext);
   if (!ctx) {
-    throw new Error('useTaskStore must be used within TaskStoreProvider');
+    throw new Error("useTaskStore must be used within TaskStoreProvider");
   }
   return ctx;
 };

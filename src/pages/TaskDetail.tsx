@@ -326,7 +326,7 @@ const TaskDetailPage: React.FC = () => {
               onMouseLeave={() => setBackHover(false)}
               style={{
                 color: backHover
-                  ? colorPalette[task.color] ?? colorPalette[0]
+                  ? (colorPalette[task.color] ?? colorPalette[0])
                   : textColor,
                 backgroundColor: backHover ? textColor : "transparent",
               }}
@@ -476,7 +476,6 @@ const TaskDetailPage: React.FC = () => {
                       </div>
                     </div>
 
-
                     <div className="space-y-4 mb-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <Card>
@@ -610,8 +609,8 @@ const TaskDetailPage: React.FC = () => {
                             </ResponsiveContainer>
                           </div>
                         </CardContent>
-                    </Card>
-                  </div>
+                      </Card>
+                    </div>
 
                     <div className="mb-4">
                       <div className="flex items-center justify-between mb-2">
@@ -735,11 +734,11 @@ const TaskDetailPage: React.FC = () => {
                 ...data,
                 parentId: task.id,
                 completed: false,
-                status: 'todo',
+                status: "todo",
                 order: 0,
                 isRecurring: data.isRecurring || false,
-                priority: data.priority || 'medium',
-                categoryId: data.categoryId || task.categoryId
+                priority: data.priority || "medium",
+                categoryId: data.categoryId || task.categoryId,
               });
             }
           }}
@@ -766,7 +765,7 @@ const TaskDetailPage: React.FC = () => {
         <ConfirmDialog
           open={deleteOpen}
           onOpenChange={setDeleteOpen}
-          title={t('task.deleteConfirm', { title: task.title })}
+          title={t("task.deleteConfirm", { title: task.title })}
           onConfirm={() => {
             deleteTask(task.id);
             if (task.parentId) {
@@ -775,8 +774,8 @@ const TaskDetailPage: React.FC = () => {
               navigate(`/tasks?categoryId=${task.categoryId}`);
             }
           }}
-          confirmText={t('common.delete')}
-          cancelText={t('common.cancel')}
+          confirmText={t("common.delete")}
+          cancelText={t("common.cancel")}
         />
       </div>
     </div>

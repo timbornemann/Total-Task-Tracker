@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -6,8 +6,8 @@ import {
   AlertDialogTitle,
   AlertDialogFooter,
   AlertDialogAction,
-  AlertDialogCancel
-} from '@/components/ui/alert-dialog';
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -24,7 +24,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   title,
   onConfirm,
   confirmText,
-  cancelText
+  cancelText,
 }) => (
   <AlertDialog open={open} onOpenChange={onOpenChange}>
     <AlertDialogContent>

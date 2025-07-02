@@ -117,7 +117,7 @@ export const colorContrast = (hex1: string, hex2: string): number => {
 };
 
 export const paletteToGradient = (colors: string[]): string =>
-  `linear-gradient(to right, ${colors.join(', ')})`;
+  `linear-gradient(to right, ${colors.join(", ")})`;
 
 export const weightedGradient = (
   colors: string[],
@@ -132,7 +132,7 @@ export const weightedGradient = (
     const end = (acc / total) * 100;
     return `${c} ${start}% ${end}%`;
   });
-  return `linear-gradient(to right, ${stops.join(', ')})`;
+  return `linear-gradient(to right, ${stops.join(", ")})`;
 };
 
 export const themeToGradient = (

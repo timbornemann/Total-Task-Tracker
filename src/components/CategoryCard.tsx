@@ -1,20 +1,31 @@
-
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Category, Task } from '@/types';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Edit, Trash2, FolderOpen, MoreVertical, Star, StarOff } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { getTaskProgress } from '@/utils/taskUtils';
-import { useSettings } from '@/hooks/useSettings';
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { Category, Task } from "@/types";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Edit,
+  Trash2,
+  FolderOpen,
+  MoreVertical,
+  Star,
+  StarOff,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { getTaskProgress } from "@/utils/taskUtils";
+import { useSettings } from "@/hooks/useSettings";
 import {
   isColorDark,
   adjustColor,
   complementaryColor,
-  hslToHex
-} from '@/utils/color';
+  hslToHex,
+} from "@/utils/color";
 
 interface CategoryCardProps {
   category: Category;
@@ -31,12 +42,12 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   onEdit,
   onDelete,
   onViewTasks,
-  onTogglePinned
+  onTogglePinned,
 }) => {
   const { t } = useTranslation();
   const { colorPalette, theme } = useSettings();
   const totalTasks = tasks.length;
-  const completedTasks = tasks.filter(task => {
+  const completedTasks = tasks.filter((task) => {
     const progress = getTaskProgress(task);
     return progress.completed === progress.total;
   }).length;
@@ -45,7 +56,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
     totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
 
   const baseColor = colorPalette[category.color] ?? colorPalette[0];
-  const textColor = isColorDark(baseColor) ? '#fff' : '#000';
+  const textColor = isColorDark(baseColor) ? "#fff" : "#000";
   const hoverColor = isColorDark(baseColor)
     ? adjustColor(baseColor, 10)
     : adjustColor(baseColor, -10);
@@ -70,17 +81,19 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   return (
     <Card
       className="relative h-full transition-all duration-200 hover:shadow-lg cursor-pointer group hover:[background-color:var(--hover-color)] transform hover:-translate-y-1"
-      style={{
-        backgroundColor: baseColor,
-        color: textColor,
-        '--hover-color': hoverColor
-      } as React.CSSProperties}
+      style={
+        {
+          backgroundColor: baseColor,
+          color: textColor,
+          "--hover-color": hoverColor,
+        } as React.CSSProperties
+      }
     >
       <div
         className="absolute -top-2 left-4 w-8 h-3 rounded-t"
         style={{ backgroundColor: tabColor }}
       />
-      <CardHeader 
+      <CardHeader
         className="pb-2 sm:pb-3"
         onClick={() => onViewTasks(category)}
       >
@@ -89,7 +102,11 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
             <div className="flex-1 min-w-0">
               <CardTitle
                 className="text-base sm:text-lg font-semibold transition-colors break-words group-hover:[color:var(--title-hover-color)]"
-                style={{ '--title-hover-color': titleHoverColor } as React.CSSProperties}
+                style={
+                  {
+                    "--title-hover-color": titleHoverColor,
+                  } as React.CSSProperties
+                }
               >
                 {category.name}
               </CardTitle>
@@ -100,13 +117,13 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
               )}
             </div>
           </div>
-          
+
           {/* Desktop Actions */}
           <div className="hidden sm:flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
             <Button
               variant="ghost"
               size="sm"
-              onClick={e => {
+              onClick={(e) => {
                 e.stopPropagation();
                 onTogglePinned(category.id, !category.pinned);
               }}
@@ -129,7 +146,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
             >
               <Edit className="h-4 w-4" />
             </Button>
-            {category.id !== 'default' && (
+            {category.id !== "default" && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -137,12 +154,14 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                   e.stopPropagation();
                   onDelete(category.id);
                 }}
-                title={t('categoryCard.deleteTooltip')}
+                title={t("categoryCard.deleteTooltip")}
                 className="h-8 w-8 p-0 hover:[color:var(--delete-hover-color)]"
-                style={{
-                  color: deleteColor,
-                  '--delete-hover-color': deleteHoverColor
-                } as React.CSSProperties}
+                style={
+                  {
+                    color: deleteColor,
+                    "--delete-hover-color": deleteHoverColor,
+                  } as React.CSSProperties
+                }
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -153,9 +172,9 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
           <div className="sm:hidden flex-shrink-0">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   className="h-8 w-8 p-0"
                   onClick={(e) => e.stopPropagation()}
                 >
@@ -171,23 +190,27 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                   ) : (
                     <StarOff className="h-4 w-4 mr-2" />
                   )}
-                  {category.pinned ? t('taskDetail.unpin') : t('taskDetail.pin')}
+                  {category.pinned
+                    ? t("taskDetail.unpin")
+                    : t("taskDetail.pin")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onEdit(category)}>
                   <Edit className="h-4 w-4 mr-2" />
-                  {t('common.edit')}
+                  {t("common.edit")}
                 </DropdownMenuItem>
-                {category.id !== 'default' && (
+                {category.id !== "default" && (
                   <DropdownMenuItem
                     onClick={() => onDelete(category.id)}
                     className="group"
-                    style={{
-                      color: deleteColor,
-                      '--delete-hover-color': deleteHoverColor
-                    } as React.CSSProperties}
+                    style={
+                      {
+                        color: deleteColor,
+                        "--delete-hover-color": deleteHoverColor,
+                      } as React.CSSProperties
+                    }
                   >
                     <Trash2 className="h-4 w-4 mr-2 group-hover:[color:var(--delete-hover-color)]" />
-                    {t('categoryCard.deleteMenu')}
+                    {t("categoryCard.deleteMenu")}
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
@@ -195,7 +218,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
           </div>
         </div>
       </CardHeader>
-      
+
       <CardContent onClick={() => onViewTasks(category)}>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
@@ -205,7 +228,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                 style={{ color: textColor }}
               />
               <span className="text-xs sm:text-sm">
-                {t('dashboard.tasksBadge', { count: totalTasks })}
+                {t("dashboard.tasksBadge", { count: totalTasks })}
               </span>
             </div>
             <Badge
@@ -214,25 +237,33 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
               style={{
                 backgroundColor: `${progressBg}80`,
                 color: textColor,
-                borderColor: `${progressBg}40`
+                borderColor: `${progressBg}40`,
               }}
             >
-              {t('categoryCard.percentDone', { percent: Math.round(completionPercentage) })}
+              {t("categoryCard.percentDone", {
+                percent: Math.round(completionPercentage),
+              })}
             </Badge>
           </div>
 
-          <div className="w-full rounded-full h-2" style={{ backgroundColor: progressBg }}>
+          <div
+            className="w-full rounded-full h-2"
+            style={{ backgroundColor: progressBg }}
+          >
             <div
               className="h-2 rounded-full transition-all duration-300"
               style={{
                 width: `${completionPercentage}%`,
-                backgroundColor: progressColor
+                backgroundColor: progressColor,
               }}
             />
           </div>
-          
+
           <div className="text-xs text-center">
-            {t('categoryCard.completedOfTotal', { completed: completedTasks, total: totalTasks })}
+            {t("categoryCard.completedOfTotal", {
+              completed: completedTasks,
+              total: totalTasks,
+            })}
           </div>
         </div>
       </CardContent>

@@ -6,25 +6,25 @@ Diese Datei dient als Anleitung für automatisierte Agenten (z. B. Codex), wie
 
 ## 1. Projektübersicht
 
-* **Frontend**: React + Vite, TypeScript, Tailwind CSS, Shadcn UI
-* **Backend**: Node.js (ES Modules) mit SQLite
-* **Struktur**:
+- **Frontend**: React + Vite, TypeScript, Tailwind CSS, Shadcn UI
+- **Backend**: Node.js (ES Modules) mit SQLite
+- **Struktur**:
 
-  * `/src` → Frontend (React/TS)
-  * `/server` → Backend (Node.js + SQLite)
-  * `/public` → Statische Assets
-  * `Dockerfile`, `docker-compose.yml` → Container Setup
+  - `/src` → Frontend (React/TS)
+  - `/server` → Backend (Node.js + SQLite)
+  - `/public` → Statische Assets
+  - `Dockerfile`, `docker-compose.yml` → Container Setup
 
-* **Hauptfunktionen**:
+- **Hauptfunktionen**:
 
-  * Aufgabenverwaltung mit Kategorien, Unteraufgaben und Wiederholungen
-  * Tasks und Notizen können angeheftet werden (maximal drei auf der Startseite)
-  * Kalenderansicht und Task-Statistiken
-  * Notizen mit Markdown-Vorschau und Drag & Drop
-  * Lernkarten mit Spaced-Repetition, Deck-Verwaltung und Statistikseite
-  * Globale Suche über die Command Palette (`Strg+K`)
-  * Pomodoro-Timer mit History und eigener Statistik
-  * Daten-Export/-Import und mehrere Theme-Voreinstellungen
+  - Aufgabenverwaltung mit Kategorien, Unteraufgaben und Wiederholungen
+  - Tasks und Notizen können angeheftet werden (maximal drei auf der Startseite)
+  - Kalenderansicht und Task-Statistiken
+  - Notizen mit Markdown-Vorschau und Drag & Drop
+  - Lernkarten mit Spaced-Repetition, Deck-Verwaltung und Statistikseite
+  - Globale Suche über die Command Palette (`Strg+K`)
+  - Pomodoro-Timer mit History und eigener Statistik
+  - Daten-Export/-Import und mehrere Theme-Voreinstellungen
 
 ---
 
@@ -43,46 +43,45 @@ npm start             # Backend (Node.js) auf Port 3002
 docker-compose up --build
 ```
 
-* SQLite-Daten werden unter `./server/data` gespeichert und als Volume gemountet.
+- SQLite-Daten werden unter `./server/data` gespeichert und als Volume gemountet.
 
 ---
 
 ## 4. Codekonventionen
 
-* **Frontend**: TypeScript (`.tsx`, `.ts`)
-* **Backend**: JavaScript (ES Modules, `.js`)
-* **Formatierung**: 2 Leerzeichen, Semikolons am Ende
+- **Frontend**: TypeScript (`.tsx`, `.ts`)
+- **Backend**: JavaScript (ES Modules, `.js`)
+- **Formatierung**: 2 Leerzeichen, Semikolons am Ende
 
 ---
 
 ## 5. Navigation & Feature-Integration
 
-* Neue Features **sollen** in die **Navigationsleiste** integriert werden falls sie groß genug sind.
-* Die Navbar befindet sich unter `src/components/Navbar.tsx`.
-* Links werden über React Router konfiguriert.
-* Im Fall das neue Texte entstehen **müssen** sie in beide sprachen de und en in den translation.json Dateien angelegt und eingebunden werden.
-* Funktionen und Features sollen anpassbar sein, somit sollen anpassugnen in der Einstellungsseite einstellungen bekommen
-* Neue Grafische Elemente sollen mit den themes verknüpgt sein und somit vorhandene Farben nutzen oder im Fall von ganz Neuen Sachen neue Anpassungseinstellungen in den Einstellungen unter Theme anlegen.
+- Neue Features **sollen** in die **Navigationsleiste** integriert werden falls sie groß genug sind.
+- Die Navbar befindet sich unter `src/components/Navbar.tsx`.
+- Links werden über React Router konfiguriert.
+- Im Fall das neue Texte entstehen **müssen** sie in beide sprachen de und en in den translation.json Dateien angelegt und eingebunden werden.
+- Funktionen und Features sollen anpassbar sein, somit sollen anpassugnen in der Einstellungsseite einstellungen bekommen
+- Neue Grafische Elemente sollen mit den themes verknüpgt sein und somit vorhandene Farben nutzen oder im Fall von ganz Neuen Sachen neue Anpassungseinstellungen in den Einstellungen unter Theme anlegen.
 
 ---
 
 ## 6. Dokumentation & README
 
-* Bei **größeren Änderungen** (z. B. neue Features, API-Struktur, neue Befehle) **README.md aktualisieren**.
-* Neue Umgebungsvariablen, Setup-Anleitungen sollten dokumentiert werden.
+- Bei **größeren Änderungen** (z. B. neue Features, API-Struktur, neue Befehle) **README.md aktualisieren**.
+- Neue Umgebungsvariablen, Setup-Anleitungen sollten dokumentiert werden.
 
 ---
 
 ## 7. Commit- & PR-Richtlinien
 
-* Commit-Nachrichten auf **Englisch**, klar und aussagekräftig
-* Beschreiben, **was** geändert wurde und **warum**
-* Pull Requests sollten nachvollziehbare Änderungen enthalten (inkl. Screenshots bei UI-Updates)
+- Commit-Nachrichten auf **Englisch**, klar und aussagekräftig
+- Beschreiben, **was** geändert wurde und **warum**
+- Pull Requests sollten nachvollziehbare Änderungen enthalten (inkl. Screenshots bei UI-Updates)
 
 ---
 
-
 ## 8. Pflege & Erweiterung
 
-* Diese Datei darf bei Bedarf erweitert werden
-* Unterverzeichnisse können eigene AGENTS.md verwenden, um spezifische Regeln zu setzen
+- Diese Datei darf bei Bedarf erweitert werden
+- Unterverzeichnisse können eigene AGENTS.md verwenden, um spezifische Regeln zu setzen

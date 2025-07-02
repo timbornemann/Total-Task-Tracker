@@ -1,25 +1,25 @@
-import { useEffect } from 'react'
-import { useSettings } from '@/hooks/useSettings'
+import { useEffect } from "react";
+import { useSettings } from "@/hooks/useSettings";
 
 const ServiceWorkerManager: React.FC = () => {
-  const { offlineCache } = useSettings()
+  const { offlineCache } = useSettings();
 
   useEffect(() => {
-    if (!('serviceWorker' in navigator)) return
+    if (!("serviceWorker" in navigator)) return;
 
     if (offlineCache) {
-      const swPath = import.meta.env.DEV ? '/dev-sw.js?dev-sw' : '/sw.js'
+      const swPath = import.meta.env.DEV ? "/dev-sw.js?dev-sw" : "/sw.js";
       navigator.serviceWorker
-        .register(swPath, { type: 'module' })
-        .catch(err => console.error('SW registration failed', err))
+        .register(swPath, { type: "module" })
+        .catch((err) => console.error("SW registration failed", err));
     } else {
-      navigator.serviceWorker.getRegistrations().then(regs => {
-        regs.forEach(r => r.unregister())
-      })
+      navigator.serviceWorker.getRegistrations().then((regs) => {
+        regs.forEach((r) => r.unregister());
+      });
     }
-  }, [offlineCache])
+  }, [offlineCache]);
 
-  return null
-}
+  return null;
+};
 
-export default ServiceWorkerManager
+export default ServiceWorkerManager;
