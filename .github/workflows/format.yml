@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Format Check
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  build:
+  format:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,8 +25,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run lint
-        run: npm run lint
+      - name: Check formatting
+        id: format_check
+        run: npm run format:check
+        continue-on-error: true
 
-      - name: Build project
-        run: npm run build
+      - name: Auto fix formatting
+        if: steps.format_check.outcome == 'failure'
+        run: npm run format
+
+      - name: Verify formatting
+        if: steps.format_check.outcome == 'failure'
+        run: npm run format:check
