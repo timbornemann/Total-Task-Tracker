@@ -503,6 +503,7 @@
     "stop": "Stop",
     "extend": "Extend",
     "detailTitle": "Timer",
+    "deleteConfirm": "Are you sure you want to delete \"{{title}}\"?",
     "none": "No timers available"
   },
   "commandPalette": {

@@ -75,7 +75,7 @@ const TimerCircle: React.FC<Props> = ({
         <div
           className={size > 100 ? "text-4xl font-bold" : "text-2xl font-bold"}
         >
-          {paused ? `||` : formatTime(remaining)}
+          {formatTime(remaining)}
         </div>
       </div>
     </div>
