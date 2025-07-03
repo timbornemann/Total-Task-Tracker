@@ -11,14 +11,24 @@ import {
   PomodoroHistoryProvider,
 } from "@/hooks/usePomodoroHistory.tsx";
 
+type AudioContextConstructor = typeof AudioContext;
+
+const getAudioContext = (): AudioContext | null => {
+  const Ctor =
+    window.AudioContext ||
+    (window as unknown as { webkitAudioContext?: AudioContextConstructor })
+      .webkitAudioContext;
+  return Ctor ? new Ctor() : null;
+};
+
 const playSound = (url?: string) => {
   if (url) {
     if (url.startsWith("tone:")) {
       const [, freqStr, durStr] = url.split(":");
       const freq = parseFloat(freqStr) || 440;
       const dur = parseFloat(durStr) || 0.4;
-      try {
-        const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const ctx = getAudioContext();
+      if (ctx) {
         const osc = ctx.createOscillator();
         osc.type = "sine";
         osc.frequency.setValueAtTime(freq, ctx.currentTime);
@@ -26,8 +36,6 @@ const playSound = (url?: string) => {
         osc.start();
         osc.stop(ctx.currentTime + dur);
         return;
-      } catch {
-        // ignore
       }
     } else {
       try {
@@ -39,16 +47,14 @@ const playSound = (url?: string) => {
       }
     }
   }
-  try {
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+  const ctx = getAudioContext();
+  if (ctx) {
     const osc = ctx.createOscillator();
     osc.type = "sine";
     osc.frequency.setValueAtTime(440, ctx.currentTime);
     osc.connect(ctx.destination);
     osc.start();
     osc.stop(ctx.currentTime + 0.4);
-  } catch {
-    // ignore
   }
 };
 
