@@ -32,7 +32,7 @@ const TimersPage: React.FC = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar title={t("navbar.timers")} />
       <div className="p-4 flex-1">
-        <div className="mb-4">
+        <div className="mb-4 flex justify-center">
           <Button onClick={() => setOpen(true)}>{t("timers.new")}</Button>
         </div>
         {sorted.length === 0 && (

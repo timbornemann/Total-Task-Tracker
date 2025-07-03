@@ -34,6 +34,10 @@ interface TimersState {
   resumeTimer: (id: string) => void;
   stopTimer: (id: string) => void;
   extendTimer: (id: string, seconds: number) => void;
+  updateTimer: (
+    id: string,
+    data: Pick<Timer, "title" | "color" | "duration">,
+  ) => void;
   tick: () => void;
 }
 
@@ -103,7 +107,6 @@ export const useTimers = create<TimersState>()(
                   ...t,
                   isRunning: false,
                   isPaused: false,
-                  remaining: 0,
                   startTime: undefined,
                   lastTick: undefined,
                   pauseStart: undefined,
@@ -123,19 +126,46 @@ export const useTimers = create<TimersState>()(
               : t,
           ),
         })),
+      updateTimer: (id, data) =>
+        set((state) => ({
+          timers: state.timers.map((t) =>
+            t.id === id
+              ? {
+                  ...t,
+                  title: data.title,
+                  color: data.color,
+                  duration: data.duration,
+                  remaining: t.isRunning
+                    ? Math.min(t.remaining, data.duration)
+                    : data.duration,
+                }
+              : t,
+          ),
+        })),
       tick: () => {
         const now = Date.now();
         set((state) => ({
           timers: state.timers.map((t) => {
             if (!t.isRunning || t.isPaused) return t;
             const last = t.lastTick ?? now;
-            const elapsed = Math.floor((now - last) / 1000);
-            const remaining = Math.max(0, t.remaining - elapsed);
+            const elapsed = (now - last) / 1000;
+            const remaining = t.remaining - elapsed;
+            if (remaining <= 0) {
+              return {
+                ...t,
+                isRunning: false,
+                isPaused: false,
+                remaining: t.duration,
+                startTime: undefined,
+                lastTick: undefined,
+                pauseStart: undefined,
+              };
+            }
             return {
               ...t,
               remaining,
               lastTick: now,
-              isRunning: remaining > 0,
+              isRunning: true,
             };
           }),
         }));

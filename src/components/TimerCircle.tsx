@@ -1,11 +1,13 @@
 import React from "react";
 import { useSettings } from "@/hooks/useSettings";
+import { complementaryColor } from "@/utils/color";
 
 interface Props {
   remaining: number;
   duration: number;
   size?: number;
   color: number;
+  ringColor?: string;
   paused?: boolean;
 }
 
@@ -27,6 +29,7 @@ const TimerCircle: React.FC<Props> = ({
   duration,
   size = 80,
   color,
+  ringColor: ringColorProp,
   paused,
 }) => {
   const { colorPalette } = useSettings();
@@ -36,7 +39,8 @@ const TimerCircle: React.FC<Props> = ({
   const circumference = normalizedRadius * 2 * Math.PI;
   const progress = remaining / duration;
   const strokeDashoffset = circumference - progress * circumference;
-  const ringColor = colorPalette[color] ?? colorPalette[0];
+  const baseColor = colorPalette[color] ?? colorPalette[0];
+  const ringColor = ringColorProp ?? complementaryColor(baseColor);
   return (
     <div className="relative" style={{ width: radius * 2, height: radius * 2 }}>
       <svg

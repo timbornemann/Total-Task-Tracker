@@ -23,29 +23,39 @@ interface TimerModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (data: TimerFormData) => void;
+  initialData?: TimerFormData;
 }
 
-const TimerModal: React.FC<TimerModalProps> = ({ isOpen, onClose, onSave }) => {
+const TimerModal: React.FC<TimerModalProps> = ({
+  isOpen,
+  onClose,
+  onSave,
+  initialData,
+}) => {
   const { t } = useTranslation();
   const { colorPalette, defaultTimerColor } = useSettings();
-  const [data, setData] = useState<TimerFormData>({
-    title: "",
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-    color: defaultTimerColor,
-  });
-
-  useEffect(() => {
-    if (!isOpen) return;
-    setData({
+  const [data, setData] = useState<TimerFormData>(
+    initialData ?? {
       title: "",
       hours: 0,
       minutes: 0,
       seconds: 0,
       color: defaultTimerColor,
-    });
-  }, [isOpen, defaultTimerColor]);
+    },
+  );
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setData(
+      initialData ?? {
+        title: "",
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+        color: defaultTimerColor,
+      },
+    );
+  }, [isOpen, defaultTimerColor, initialData]);
 
   const handleChange = (field: keyof TimerFormData, value: string | number) => {
     setData((prev) => ({ ...prev, [field]: value }));
@@ -61,7 +71,9 @@ const TimerModal: React.FC<TimerModalProps> = ({ isOpen, onClose, onSave }) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{t("timers.new")}</DialogTitle>
+          <DialogTitle>
+            {t(initialData ? "timerModal.editTitle" : "timerModal.newTitle")}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
