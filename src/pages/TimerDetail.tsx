@@ -20,22 +20,24 @@ const TimerDetail: React.FC = () => {
   const updateTimer = useTimers((state) => state.updateTimer);
   const { timerExtendSeconds, colorPalette } = useSettings();
   const [editOpen, setEditOpen] = React.useState(false);
+
+  const initialData = React.useMemo(() => {
+    if (!timer) return null;
+    return {
+      title: timer.title,
+      hours: Math.floor(timer.duration / 3600),
+      minutes: Math.floor((timer.duration % 3600) / 60),
+      seconds: Math.floor(timer.duration % 60),
+      color: timer.color,
+    };
+  }, [timer]);
+
   if (!timer) return null;
+
   const { title, color, duration, remaining, isRunning, isPaused } = timer;
   const baseColor = colorPalette[color] ?? colorPalette[0];
   const textColor = isColorDark(baseColor) ? "#fff" : "#000";
   const ringColor = complementaryColor(baseColor);
-
-  const initialData = React.useMemo(
-    () => ({
-      title,
-      hours: Math.floor(duration / 3600),
-      minutes: Math.floor((duration % 3600) / 60),
-      seconds: Math.floor(duration % 60),
-      color,
-    }),
-    [title, duration, color],
-  );
 
   const handleEditSave = (data: {
     title: string;
