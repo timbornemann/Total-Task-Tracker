@@ -64,6 +64,8 @@
     "newFlashcard": "Neue Karte",
     "workMinutes": "Lernzeit (Minuten)",
     "breakMinutes": "Pause (Minuten)",
+    "workSound": "Sound bei Pausenstart (URL)",
+    "breakSound": "Sound bei Arbeitsstart (URL)",
     "flashcardTimer": "Timer pro Karte (Sekunden)",
     "flashcardSessionSize": "Training-Session Größe",
     "startMode": "Startmodus",

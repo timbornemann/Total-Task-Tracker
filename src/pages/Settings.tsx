@@ -843,6 +843,32 @@ const SettingsPage: React.FC = () => {
                     }
                   />
                 </div>
+                <div>
+                  <Label htmlFor="workSound">
+                    {t("settingsPage.workSound")}
+                  </Label>
+                  <Input
+                    id="workSound"
+                    type="text"
+                    value={pomodoro.workSound}
+                    onChange={(e) =>
+                      updatePomodoro("workSound", e.target.value)
+                    }
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="breakSound">
+                    {t("settingsPage.breakSound")}
+                  </Label>
+                  <Input
+                    id="breakSound"
+                    type="text"
+                    value={pomodoro.breakSound}
+                    onChange={(e) =>
+                      updatePomodoro("breakSound", e.target.value)
+                    }
+                  />
+                </div>
               </TabsContent>
               <TabsContent value="flashcards" className="space-y-4">
                 <div>
