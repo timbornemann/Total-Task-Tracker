@@ -5,10 +5,58 @@ import { Button } from "@/components/ui/button";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { useSettings, SettingsProvider } from "@/hooks/useSettings";
+import { hslToHex, hexToHsl, complementaryColor } from "@/utils/color";
 import {
   usePomodoroHistory,
   PomodoroHistoryProvider,
 } from "@/hooks/usePomodoroHistory.tsx";
+
+type AudioContextConstructor = typeof AudioContext;
+
+const getAudioContext = (): AudioContext | null => {
+  const Ctor =
+    window.AudioContext ||
+    (window as unknown as { webkitAudioContext?: AudioContextConstructor })
+      .webkitAudioContext;
+  return Ctor ? new Ctor() : null;
+};
+
+const playSound = (url?: string) => {
+  if (url) {
+    if (url.startsWith("tone:")) {
+      const [, freqStr, durStr] = url.split(":");
+      const freq = parseFloat(freqStr) || 440;
+      const dur = parseFloat(durStr) || 0.4;
+      const ctx = getAudioContext();
+      if (ctx) {
+        const osc = ctx.createOscillator();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        osc.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + dur);
+        return;
+      }
+    } else {
+      try {
+        const audio = new Audio(url);
+        audio.play().catch(() => {});
+        return;
+      } catch {
+        // ignore errors
+      }
+    }
+  }
+  const ctx = getAudioContext();
+  if (ctx) {
+    const osc = ctx.createOscillator();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(440, ctx.currentTime);
+    osc.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.4);
+  }
+};
 
 interface PomodoroState {
   isRunning: boolean;
@@ -163,7 +211,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
     setStartTime,
     startTime,
   } = usePomodoroStore();
-  const { pomodoro, updatePomodoro } = useSettings();
+  const { pomodoro, updatePomodoro, theme } = useSettings();
   const { addSession, endBreak } = usePomodoroHistory();
   const { t } = useTranslation();
   const pipWindowRef = useRef<Window | null>(null);
@@ -349,6 +397,39 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
   useEffect(() => {
     setDurations(pomodoro.workMinutes * 60, pomodoro.breakMinutes * 60);
   }, [pomodoro, setDurations]);
+
+  const prevMode = useRef(mode);
+  useEffect(() => {
+    if (prevMode.current !== mode) {
+      if (mode === "break") {
+        playSound(pomodoro.workSound);
+      } else {
+        playSound(pomodoro.breakSound);
+      }
+      prevMode.current = mode;
+    }
+    const breakColor = theme["pomodoro-break-ring"];
+    if (mode === "break") {
+      const comp = hexToHsl(
+        complementaryColor(hslToHex(breakColor)),
+      );
+      document.documentElement.style.setProperty("--background", breakColor);
+      document.documentElement.style.setProperty("--pomodoro-break-ring", comp);
+    } else {
+      document.documentElement.style.setProperty("--background", theme.background);
+      document.documentElement.style.setProperty(
+        "--pomodoro-break-ring",
+        breakColor,
+      );
+    }
+    return () => {
+      document.documentElement.style.setProperty("--background", theme.background);
+      document.documentElement.style.setProperty(
+        "--pomodoro-break-ring",
+        breakColor,
+      );
+    };
+  }, [mode, pomodoro.workSound, pomodoro.breakSound, theme]);
 
   if (compact && !isRunning) return null;
 

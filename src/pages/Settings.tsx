@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Navbar from "@/components/Navbar";
 import { useSettings, themePresets } from "@/hooks/useSettings";
+import { builtInSounds } from "@/utils/sounds";
 import { Task, Category, Note, Flashcard, Deck } from "@/types";
 import { Input } from "@/components/ui/input";
 import KeyInput from "@/components/KeyInput";
@@ -110,6 +111,8 @@ const SettingsPage: React.FC = () => {
     updateShortcut,
     pomodoro,
     updatePomodoro,
+    addPomodoroSound,
+    deletePomodoroSound,
     defaultTaskPriority,
     updateDefaultTaskPriority,
     theme,
@@ -204,6 +207,7 @@ const SettingsPage: React.FC = () => {
   );
 
   const [newThemeName, setNewThemeName] = useState("");
+  const [newSound, setNewSound] = useState("");
 
   const baseColors = [
     { key: "background", label: "bgColor", desc: "bgColorDesc" },
@@ -843,6 +847,100 @@ const SettingsPage: React.FC = () => {
                     }
                   />
                 </div>
+                <div>
+                  <Label htmlFor="workSound">
+                    {t("settingsPage.workSound")}
+                  </Label>
+                  <Select
+                    value={pomodoro.workSound}
+                    onValueChange={(v) => updatePomodoro("workSound", v)}
+                  >
+                    <SelectTrigger id="workSound">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">
+                        {t("common.none")}
+                      </SelectItem>
+                      {builtInSounds.map((s) => (
+                        <SelectItem key={s.url} value={s.url}>
+                          {s.label}
+                        </SelectItem>
+                      ))}
+                      {pomodoro.customSounds.map((url) => (
+                        <SelectItem key={url} value={url}>
+                          {url}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="breakSound">
+                    {t("settingsPage.breakSound")}
+                  </Label>
+                  <Select
+                    value={pomodoro.breakSound}
+                    onValueChange={(v) => updatePomodoro("breakSound", v)}
+                  >
+                    <SelectTrigger id="breakSound">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">
+                        {t("common.none")}
+                      </SelectItem>
+                      {builtInSounds.map((s) => (
+                        <SelectItem key={s.url} value={s.url}>
+                          {s.label}
+                        </SelectItem>
+                      ))}
+                      {pomodoro.customSounds.map((url) => (
+                        <SelectItem key={url} value={url}>
+                          {url}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex items-center gap-2 mt-2">
+                  <Input
+                    value={newSound}
+                    onChange={(e) => setNewSound(e.target.value)}
+                    placeholder={t("settingsPage.customSoundUrl") || ""}
+                  />
+                  <Button
+                    onClick={() => {
+                      if (newSound.trim()) {
+                        addPomodoroSound(newSound.trim());
+                        setNewSound("");
+                      }
+                    }}
+                  >
+                    {t("settingsPage.addSound")}
+                  </Button>
+                </div>
+                {pomodoro.customSounds.length > 0 && (
+                  <div>
+                    <p className="text-sm font-medium mt-2">
+                      {t("settingsPage.yourSounds")}
+                    </p>
+                    <ul className="space-y-1 mt-1">
+                      {pomodoro.customSounds.map((url) => (
+                        <li key={url} className="flex items-center gap-2">
+                          <span className="flex-1 break-all">{url}</span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => deletePomodoroSound(url)}
+                          >
+                            {t("common.delete")}
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </TabsContent>
               <TabsContent value="flashcards" className="space-y-4">
                 <div>

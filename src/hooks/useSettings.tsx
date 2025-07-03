@@ -16,7 +16,13 @@ const defaultShortcuts: ShortcutKeys = {
   newFlashcard: "ctrl+alt+f",
 };
 
-const defaultPomodoro = { workMinutes: 25, breakMinutes: 5 };
+const defaultPomodoro = {
+  workMinutes: 25,
+  breakMinutes: 5,
+  workSound: "",
+  breakSound: "",
+  customSounds: [] as string[],
+};
 const defaultFlashcardSettings = {
   timerSeconds: 10,
   sessionSize: 5,
@@ -950,8 +956,19 @@ export const defaultHomeSectionColors: Record<string, number> =
 interface SettingsContextValue {
   shortcuts: ShortcutKeys;
   updateShortcut: (key: keyof ShortcutKeys, value: string) => void;
-  pomodoro: { workMinutes: number; breakMinutes: number };
-  updatePomodoro: (key: "workMinutes" | "breakMinutes", value: number) => void;
+  pomodoro: {
+    workMinutes: number;
+    breakMinutes: number;
+    workSound: string;
+    breakSound: string;
+    customSounds: string[];
+  };
+  updatePomodoro: (
+    key: "workMinutes" | "breakMinutes" | "workSound" | "breakSound",
+    value: number | string,
+  ) => void;
+  addPomodoroSound: (url: string) => void;
+  deletePomodoroSound: (url: string) => void;
   defaultTaskPriority: "low" | "medium" | "high";
   updateDefaultTaskPriority: (value: "low" | "medium" | "high") => void;
   theme: typeof defaultTheme;
@@ -1340,10 +1357,24 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const updatePomodoro = (
-    key: "workMinutes" | "breakMinutes",
-    value: number,
+    key: "workMinutes" | "breakMinutes" | "workSound" | "breakSound",
+    value: number | string,
   ) => {
     setPomodoro((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const addPomodoroSound = (url: string) => {
+    setPomodoro((prev) => {
+      if (prev.customSounds.includes(url)) return prev;
+      return { ...prev, customSounds: [url, ...prev.customSounds] };
+    });
+  };
+
+  const deletePomodoroSound = (url: string) => {
+    setPomodoro((prev) => ({
+      ...prev,
+      customSounds: prev.customSounds.filter((s) => s !== url),
+    }));
   };
 
   const updateDefaultTaskPriority = (value: "low" | "medium" | "high") => {
@@ -1510,6 +1541,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
         updateShortcut,
         pomodoro,
         updatePomodoro,
+        addPomodoroSound,
+        deletePomodoroSound,
         defaultTaskPriority: priority,
         updateDefaultTaskPriority,
         theme,
