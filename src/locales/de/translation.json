@@ -503,6 +503,7 @@
     "stop": "Stopp",
     "extend": "Verlängern",
     "detailTitle": "Timer",
+    "deleteConfirm": "Soll \"{{title}}\" wirklich gelöscht werden?",
     "none": "Keine Timer vorhanden"
   },
   "commandPalette": {

@@ -38,6 +38,7 @@ interface TimersState {
     id: string,
     data: Pick<Timer, "title" | "color" | "duration">,
   ) => void;
+  reorderTimers: (startIndex: number, endIndex: number) => void;
   tick: () => void;
 }
 
@@ -107,6 +108,7 @@ export const useTimers = create<TimersState>()(
                   ...t,
                   isRunning: false,
                   isPaused: false,
+                  remaining: t.duration,
                   startTime: undefined,
                   lastTick: undefined,
                   pauseStart: undefined,
@@ -142,6 +144,13 @@ export const useTimers = create<TimersState>()(
               : t,
           ),
         })),
+      reorderTimers: (startIndex, endIndex) =>
+        set((state) => {
+          const updated = Array.from(state.timers);
+          const [removed] = updated.splice(startIndex, 1);
+          updated.splice(endIndex, 0, removed);
+          return { timers: updated };
+        }),
       tick: () => {
         const now = Date.now();
         set((state) => ({
