@@ -10,6 +10,7 @@ import {
   Tooltip,
 } from "recharts";
 import { useTranslation } from "react-i18next";
+import { formatDuration } from "@/utils/time";
 
 const PomodoroStats: React.FC = () => {
   const stats = usePomodoroStats();
@@ -24,10 +25,10 @@ const PomodoroStats: React.FC = () => {
         </CardHeader>
         <CardContent>
           <p className="text-sm">
-            {t("pomodoroStats.work")}: {stats.totalWorkMinutes} min
+            {t("pomodoroStats.work")}: {formatDuration(stats.totalWorkMinutes, t)}
           </p>
           <p className="text-sm">
-            {t("pomodoroStats.break")}: {stats.totalBreakMinutes} min
+            {t("pomodoroStats.break")}: {formatDuration(stats.totalBreakMinutes, t)}
           </p>
           <p className="text-sm mb-2">
             {t("pomodoroStats.cycles")}: {stats.totalCycles}
@@ -69,10 +70,10 @@ const PomodoroStats: React.FC = () => {
         </CardHeader>
         <CardContent>
           <p className="text-sm">
-            {t("pomodoroStats.work")}: {stats.todayTotals.workMinutes} min
+            {t("pomodoroStats.work")}: {formatDuration(stats.todayTotals.workMinutes, t)}
           </p>
           <p className="text-sm">
-            {t("pomodoroStats.break")}: {stats.todayTotals.breakMinutes} min
+            {t("pomodoroStats.break")}: {formatDuration(stats.todayTotals.breakMinutes, t)}
           </p>
           <p className="text-sm mb-2">
             {t("pomodoroStats.cycles")}: {stats.todayTotals.cycles}

@@ -656,6 +656,20 @@
     "friday": "Freitag",
     "saturday": "Samstag"
   },
+  "timeUnits": {
+    "minute": "Minute",
+    "minutes": "Minuten",
+    "hour": "Stunde",
+    "hours": "Stunden",
+    "day": "Tag",
+    "days": "Tage",
+    "week": "Woche",
+    "weeks": "Wochen",
+    "month": "Monat",
+    "months": "Monate",
+    "year": "Jahr",
+    "years": "Jahre"
+  },
   "ui": {
     "previous": "Zurück",
     "next": "Weiter",

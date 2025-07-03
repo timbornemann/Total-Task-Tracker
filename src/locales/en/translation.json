@@ -656,6 +656,20 @@
     "friday": "Friday",
     "saturday": "Saturday"
   },
+  "timeUnits": {
+    "minute": "minute",
+    "minutes": "minutes",
+    "hour": "hour",
+    "hours": "hours",
+    "day": "day",
+    "days": "days",
+    "week": "week",
+    "weeks": "weeks",
+    "month": "month",
+    "months": "months",
+    "year": "year",
+    "years": "years"
+  },
   "ui": {
     "previous": "Previous",
     "next": "Next",
