@@ -69,11 +69,6 @@ const TimersPage: React.FC = () => {
     addTimer({ title: data.title, color: data.color, duration });
   };
 
-  const sorted = [...timers].sort((a, b) => {
-    if (a.isRunning === b.isRunning) return 0;
-    return a.isRunning ? -1 : 1;
-  });
-
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar title={t("navbar.timers")} />
@@ -81,7 +76,7 @@ const TimersPage: React.FC = () => {
         <div className="mb-4 flex justify-center">
           <Button onClick={() => setOpen(true)}>{t("timers.new")}</Button>
         </div>
-        {sorted.length === 0 && (
+        {timers.length === 0 && (
           <p className="text-center text-muted-foreground">
             {t("timers.none")}
           </p>
@@ -96,7 +91,7 @@ const TimersPage: React.FC = () => {
             strategy={rectSortingStrategy}
           >
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 auto-rows-fr">
-              {sorted.map((t) => (
+              {timers.map((t) => (
                 <SortableTimer key={t.id} id={t.id} />
               ))}
             </div>

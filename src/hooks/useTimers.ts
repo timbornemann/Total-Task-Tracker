@@ -5,6 +5,7 @@ export interface Timer {
   id: string;
   title: string;
   color: number;
+  baseDuration: number;
   duration: number;
   remaining: number;
   isRunning: boolean;
@@ -26,6 +27,7 @@ interface TimersState {
       | "startTime"
       | "lastTick"
       | "pauseStart"
+      | "baseDuration"
     >,
   ) => string;
   removeTimer: (id: string) => void;
@@ -55,6 +57,7 @@ export const useTimers = create<TimersState>()(
               id,
               title: data.title,
               color: data.color,
+              baseDuration: data.duration,
               duration: data.duration,
               remaining: data.duration,
               isRunning: false,
@@ -74,7 +77,8 @@ export const useTimers = create<TimersState>()(
                   ...t,
                   isRunning: true,
                   isPaused: false,
-                  remaining: t.duration,
+                  duration: t.baseDuration,
+                  remaining: t.baseDuration,
                   startTime: Date.now(),
                   lastTick: Date.now(),
                 }
@@ -108,7 +112,8 @@ export const useTimers = create<TimersState>()(
                   ...t,
                   isRunning: false,
                   isPaused: false,
-                  remaining: t.duration,
+                  duration: t.baseDuration,
+                  remaining: t.baseDuration,
                   startTime: undefined,
                   lastTick: undefined,
                   pauseStart: undefined,
@@ -136,6 +141,7 @@ export const useTimers = create<TimersState>()(
                   ...t,
                   title: data.title,
                   color: data.color,
+                  baseDuration: data.duration,
                   duration: data.duration,
                   remaining: t.isRunning
                     ? Math.min(t.remaining, data.duration)
@@ -164,7 +170,8 @@ export const useTimers = create<TimersState>()(
                 ...t,
                 isRunning: false,
                 isPaused: false,
-                remaining: t.duration,
+                duration: t.baseDuration,
+                remaining: t.baseDuration,
                 startTime: undefined,
                 lastTick: undefined,
                 pauseStart: undefined,
