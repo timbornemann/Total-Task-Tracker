@@ -4,6 +4,7 @@ import { Play, Pause, RotateCcw, Plus } from "lucide-react";
 import TimerCircle from "./TimerCircle";
 import { useTimers } from "@/hooks/useTimers";
 import { useSettings } from "@/hooks/useSettings";
+import { isColorDark, complementaryColor } from "@/utils/color";
 import { Button } from "@/components/ui/button";
 
 interface Props {
@@ -14,17 +15,24 @@ const TimerCard: React.FC<Props> = ({ id }) => {
   const navigate = useNavigate();
   const timer = useTimers((state) => state.timers.find((t) => t.id === id));
   const { startTimer, pauseTimer, resumeTimer, extendTimer } = useTimers();
-  const { timerExtendSeconds } = useSettings();
+  const { timerExtendSeconds, colorPalette } = useSettings();
   if (!timer) return null;
   const { title, color, duration, remaining, isRunning, isPaused } = timer;
+  const baseColor = colorPalette[color] ?? colorPalette[0];
+  const textColor = isColorDark(baseColor) ? "#fff" : "#000";
+  const ringColor = complementaryColor(baseColor);
   const handleClick = () => navigate(`/timers/${id}`);
   return (
-    <div className="p-4 border rounded shadow flex flex-col items-center">
+    <div
+      className="p-4 border rounded shadow flex flex-col items-center"
+      style={{ backgroundColor: baseColor, color: textColor }}
+    >
       <div className="cursor-pointer" onClick={handleClick}>
         <TimerCircle
           remaining={remaining}
           duration={duration}
           color={color}
+          ringColor={ringColor}
           size={60}
           paused={isPaused}
         />
@@ -50,11 +58,10 @@ const TimerCard: React.FC<Props> = ({ id }) => {
         )}
         {isRunning && (
           <Button
-            size="icon"
             variant="outline"
             onClick={() => extendTimer(id, timerExtendSeconds)}
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-4 w-4 mr-1" />+{timerExtendSeconds}s
           </Button>
         )}
         {!isRunning && remaining === 0 && (

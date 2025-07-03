@@ -263,6 +263,10 @@
     "back": "Rückseite *",
     "chooseDeck": "Deck wählen"
   },
+  "timerModal": {
+    "editTitle": "Timer bearbeiten",
+    "newTitle": "Neuer Timer"
+  },
   "notFound": {
     "title": "404",
     "message": "Oops! Seite nicht gefunden",

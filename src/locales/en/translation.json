@@ -263,6 +263,10 @@
     "back": "Back *",
     "chooseDeck": "Choose deck"
   },
+  "timerModal": {
+    "editTitle": "Edit Timer",
+    "newTitle": "New Timer"
+  },
   "notFound": {
     "title": "404",
     "message": "Oops! Page not found",
