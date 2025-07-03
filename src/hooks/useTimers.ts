@@ -149,7 +149,7 @@ export const useTimers = create<TimersState>()(
             if (!t.isRunning || t.isPaused) return t;
             const last = t.lastTick ?? now;
             const elapsed = (now - last) / 1000;
-            let remaining = t.remaining - elapsed;
+            const remaining = t.remaining - elapsed;
             if (remaining <= 0) {
               return {
                 ...t,
