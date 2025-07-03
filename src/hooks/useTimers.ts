@@ -5,6 +5,7 @@ export interface Timer {
   id: string;
   title: string;
   color: number;
+  baseDuration: number;
   duration: number;
   remaining: number;
   isRunning: boolean;
@@ -26,6 +27,7 @@ interface TimersState {
       | "startTime"
       | "lastTick"
       | "pauseStart"
+      | "baseDuration"
     >,
   ) => string;
   removeTimer: (id: string) => void;
@@ -38,6 +40,7 @@ interface TimersState {
     id: string,
     data: Pick<Timer, "title" | "color" | "duration">,
   ) => void;
+  reorderTimers: (startIndex: number, endIndex: number) => void;
   tick: () => void;
 }
 
@@ -54,6 +57,7 @@ export const useTimers = create<TimersState>()(
               id,
               title: data.title,
               color: data.color,
+              baseDuration: data.duration,
               duration: data.duration,
               remaining: data.duration,
               isRunning: false,
@@ -73,7 +77,8 @@ export const useTimers = create<TimersState>()(
                   ...t,
                   isRunning: true,
                   isPaused: false,
-                  remaining: t.duration,
+                  duration: t.baseDuration,
+                  remaining: t.baseDuration,
                   startTime: Date.now(),
                   lastTick: Date.now(),
                 }
@@ -107,6 +112,8 @@ export const useTimers = create<TimersState>()(
                   ...t,
                   isRunning: false,
                   isPaused: false,
+                  duration: t.baseDuration,
+                  remaining: t.baseDuration,
                   startTime: undefined,
                   lastTick: undefined,
                   pauseStart: undefined,
@@ -134,6 +141,7 @@ export const useTimers = create<TimersState>()(
                   ...t,
                   title: data.title,
                   color: data.color,
+                  baseDuration: data.duration,
                   duration: data.duration,
                   remaining: t.isRunning
                     ? Math.min(t.remaining, data.duration)
@@ -142,6 +150,13 @@ export const useTimers = create<TimersState>()(
               : t,
           ),
         })),
+      reorderTimers: (startIndex, endIndex) =>
+        set((state) => {
+          const updated = Array.from(state.timers);
+          const [removed] = updated.splice(startIndex, 1);
+          updated.splice(endIndex, 0, removed);
+          return { timers: updated };
+        }),
       tick: () => {
         const now = Date.now();
         set((state) => ({
@@ -155,7 +170,8 @@ export const useTimers = create<TimersState>()(
                 ...t,
                 isRunning: false,
                 isPaused: false,
-                remaining: t.duration,
+                duration: t.baseDuration,
+                remaining: t.baseDuration,
                 startTime: undefined,
                 lastTick: undefined,
                 pauseStart: undefined,
