@@ -50,7 +50,7 @@ const TimerCircle: React.FC<Props> = ({
       <svg
         width={radius * 2}
         height={radius * 2}
-        className="transform -rotate-90 scale-x-[-1]"
+        className="transform -rotate-90"
       >
         <circle
           stroke={trackColor}

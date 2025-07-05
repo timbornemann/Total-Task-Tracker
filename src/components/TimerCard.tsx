@@ -12,7 +12,7 @@ import {
 import TimerCircle from "./TimerCircle";
 import { useTimers } from "@/hooks/useTimers";
 import { useSettings } from "@/hooks/useSettings";
-import { isColorDark, complementaryColor } from "@/utils/color";
+import { isColorDark, complementaryColor, adjustColor } from "@/utils/color";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -50,7 +50,14 @@ const TimerCard: React.FC<Props> = ({ id }) => {
   const baseColor = colorPalette[color] ?? colorPalette[0];
   const textColor = isColorDark(baseColor) ? "#fff" : "#000";
   const ringColor = complementaryColor(baseColor);
-  const actionStyle = { color: ringColor, borderColor: ringColor };
+  const trackColor = isColorDark(baseColor)
+    ? adjustColor(baseColor, -30)
+    : adjustColor(baseColor, 30);
+  const actionStyle = {
+    color: ringColor,
+    borderColor: ringColor,
+    "--hover-color": trackColor,
+  } as React.CSSProperties;
   const iconColor = isColorDark(ringColor) ? "#fff" : "#000";
   const handleClick = () => navigate(`/timers/${id}`);
   const handleEditSave = (data: {
@@ -75,6 +82,7 @@ const TimerCard: React.FC<Props> = ({ id }) => {
               size="icon"
               variant="ghost"
               style={actionStyle}
+              className="hover:[background-color:var(--hover-color)]"
               onClick={(e) => e.stopPropagation()}
             >
               <Settings className="h-4 w-4" style={{ color: iconColor }} />
@@ -117,6 +125,7 @@ const TimerCard: React.FC<Props> = ({ id }) => {
               size="icon"
               variant="outline"
               style={actionStyle}
+              className="hover:[background-color:var(--hover-color)]"
               onClick={() => startTimer(id)}
             >
               <Play className="h-4 w-4" style={{ color: iconColor }} />
@@ -127,6 +136,7 @@ const TimerCard: React.FC<Props> = ({ id }) => {
               size="icon"
               variant="outline"
               style={actionStyle}
+              className="hover:[background-color:var(--hover-color)]"
               onClick={() => pauseTimer(id)}
             >
               <Pause className="h-4 w-4" style={{ color: iconColor }} />
@@ -137,6 +147,7 @@ const TimerCard: React.FC<Props> = ({ id }) => {
               size="icon"
               variant="outline"
               style={actionStyle}
+              className="hover:[background-color:var(--hover-color)]"
               onClick={() => resumeTimer(id)}
             >
               <Play className="h-4 w-4" style={{ color: iconColor }} />
@@ -146,6 +157,7 @@ const TimerCard: React.FC<Props> = ({ id }) => {
             <Button
               variant="outline"
               style={actionStyle}
+              className="hover:[background-color:var(--hover-color)]"
               onClick={() => extendTimer(id, timerExtendSeconds)}
             >
               <Plus className="h-4 w-4 mr-1" style={{ color: iconColor }} />
@@ -157,6 +169,7 @@ const TimerCard: React.FC<Props> = ({ id }) => {
               size="icon"
               variant="outline"
               style={actionStyle}
+              className="hover:[background-color:var(--hover-color)]"
               onClick={() => stopTimer(id)}
             >
               <RotateCcw className="h-4 w-4" style={{ color: iconColor }} />
@@ -167,6 +180,7 @@ const TimerCard: React.FC<Props> = ({ id }) => {
               size="icon"
               variant="outline"
               style={actionStyle}
+              className="hover:[background-color:var(--hover-color)]"
               onClick={() => startTimer(id)}
             >
               <RotateCcw className="h-4 w-4" style={{ color: iconColor }} />
