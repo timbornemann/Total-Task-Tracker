@@ -103,7 +103,9 @@ const TimerDetail: React.FC = () => {
               onClick={() => extendTimer(id!, timerExtendSeconds)}
             >
               <Plus className="h-4 w-4 mr-2" style={{ color: iconColor }} />
-              {t("timers.extend")} +{timerExtendSeconds}s
+              <span style={{ color: iconColor }}>
+                {t("timers.extend")} +{timerExtendSeconds}s
+              </span>
             </Button>
           )}
           {isRunning && (

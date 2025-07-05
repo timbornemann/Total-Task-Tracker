@@ -1,12 +1,26 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Play, Pause, RotateCcw, Plus, Edit, Trash2 } from "lucide-react";
+import {
+  Play,
+  Pause,
+  RotateCcw,
+  Plus,
+  Edit,
+  Trash2,
+  Settings,
+} from "lucide-react";
 import TimerCircle from "./TimerCircle";
 import { useTimers } from "@/hooks/useTimers";
 import { useSettings } from "@/hooks/useSettings";
 import { isColorDark, complementaryColor } from "@/utils/color";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import TimerModal from "./TimerModal";
 import { useTranslation } from "react-i18next";
@@ -54,23 +68,32 @@ const TimerCard: React.FC<Props> = ({ id }) => {
       className="relative flex flex-col items-center p-4 min-h-[220px] min-w-[160px]"
       style={{ backgroundColor: baseColor, color: textColor }}
     >
-      <div className="absolute right-2 top-2 flex space-x-1">
-        <Button
-          size="icon"
-          variant="ghost"
-          style={actionStyle}
-          onClick={() => setEditOpen(true)}
-        >
-          <Edit className="h-4 w-4" style={{ color: iconColor }} />
-        </Button>
-        <Button
-          size="icon"
-          variant="ghost"
-          style={actionStyle}
-          onClick={() => setDeleteOpen(true)}
-        >
-          <Trash2 className="h-4 w-4" style={{ color: iconColor }} />
-        </Button>
+      <div className="absolute right-2 top-2">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              size="icon"
+              variant="ghost"
+              style={actionStyle}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Settings className="h-4 w-4" style={{ color: iconColor }} />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="bg-background z-50">
+            <DropdownMenuItem onClick={() => setEditOpen(true)}>
+              <Edit className="h-4 w-4 mr-2" />
+              {t("common.edit")}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => setDeleteOpen(true)}
+              className="text-destructive"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              {t("common.delete")}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       <div className="cursor-pointer" onClick={handleClick}>
         <TimerCircle
@@ -125,8 +148,8 @@ const TimerCard: React.FC<Props> = ({ id }) => {
               style={actionStyle}
               onClick={() => extendTimer(id, timerExtendSeconds)}
             >
-              <Plus className="h-4 w-4 mr-1" style={{ color: iconColor }} />+
-              {timerExtendSeconds}s
+              <Plus className="h-4 w-4 mr-1" style={{ color: iconColor }} />
+              <span style={{ color: iconColor }}>+{timerExtendSeconds}s</span>
             </Button>
           )}
           {isRunning && (
