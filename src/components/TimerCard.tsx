@@ -37,6 +37,7 @@ const TimerCard: React.FC<Props> = ({ id }) => {
   const textColor = isColorDark(baseColor) ? "#fff" : "#000";
   const ringColor = complementaryColor(baseColor);
   const actionStyle = { color: ringColor, borderColor: ringColor };
+  const iconColor = isColorDark(ringColor) ? "#fff" : "#000";
   const handleClick = () => navigate(`/timers/${id}`);
   const handleEditSave = (data: {
     title: string;
@@ -50,7 +51,7 @@ const TimerCard: React.FC<Props> = ({ id }) => {
   };
   return (
     <Card
-      className="relative flex flex-col items-center p-4"
+      className="relative flex flex-col items-center p-4 min-h-[220px] min-w-[160px]"
       style={{ backgroundColor: baseColor, color: textColor }}
     >
       <div className="absolute right-2 top-2 flex space-x-1">
@@ -60,7 +61,7 @@ const TimerCard: React.FC<Props> = ({ id }) => {
           style={actionStyle}
           onClick={() => setEditOpen(true)}
         >
-          <Edit className="h-4 w-4" style={{ color: ringColor }} />
+          <Edit className="h-4 w-4" style={{ color: iconColor }} />
         </Button>
         <Button
           size="icon"
@@ -68,7 +69,7 @@ const TimerCard: React.FC<Props> = ({ id }) => {
           style={actionStyle}
           onClick={() => setDeleteOpen(true)}
         >
-          <Trash2 className="h-4 w-4" style={{ color: ringColor }} />
+          <Trash2 className="h-4 w-4" style={{ color: iconColor }} />
         </Button>
       </div>
       <div className="cursor-pointer" onClick={handleClick}>
@@ -95,7 +96,7 @@ const TimerCard: React.FC<Props> = ({ id }) => {
               style={actionStyle}
               onClick={() => startTimer(id)}
             >
-              <Play className="h-4 w-4" style={{ color: ringColor }} />
+              <Play className="h-4 w-4" style={{ color: iconColor }} />
             </Button>
           )}
           {isRunning && !isPaused && (
@@ -105,7 +106,7 @@ const TimerCard: React.FC<Props> = ({ id }) => {
               style={actionStyle}
               onClick={() => pauseTimer(id)}
             >
-              <Pause className="h-4 w-4" style={{ color: ringColor }} />
+              <Pause className="h-4 w-4" style={{ color: iconColor }} />
             </Button>
           )}
           {isRunning && isPaused && (
@@ -115,7 +116,7 @@ const TimerCard: React.FC<Props> = ({ id }) => {
               style={actionStyle}
               onClick={() => resumeTimer(id)}
             >
-              <Play className="h-4 w-4" style={{ color: ringColor }} />
+              <Play className="h-4 w-4" style={{ color: iconColor }} />
             </Button>
           )}
           {isRunning && (
@@ -124,8 +125,8 @@ const TimerCard: React.FC<Props> = ({ id }) => {
               style={actionStyle}
               onClick={() => extendTimer(id, timerExtendSeconds)}
             >
-              <Plus className="h-4 w-4 mr-1" style={{ color: ringColor }} />
-              +{timerExtendSeconds}s
+              <Plus className="h-4 w-4 mr-1" style={{ color: iconColor }} />+
+              {timerExtendSeconds}s
             </Button>
           )}
           {isRunning && (
@@ -135,7 +136,7 @@ const TimerCard: React.FC<Props> = ({ id }) => {
               style={actionStyle}
               onClick={() => stopTimer(id)}
             >
-              <RotateCcw className="h-4 w-4" style={{ color: ringColor }} />
+              <RotateCcw className="h-4 w-4" style={{ color: iconColor }} />
             </Button>
           )}
           {!isRunning && remaining === 0 && (
@@ -145,7 +146,7 @@ const TimerCard: React.FC<Props> = ({ id }) => {
               style={actionStyle}
               onClick={() => startTimer(id)}
             >
-              <RotateCcw className="h-4 w-4" style={{ color: ringColor }} />
+              <RotateCcw className="h-4 w-4" style={{ color: iconColor }} />
             </Button>
           )}
         </div>

@@ -38,6 +38,8 @@ const TimerDetail: React.FC = () => {
   const baseColor = colorPalette[color] ?? colorPalette[0];
   const textColor = isColorDark(baseColor) ? "#fff" : "#000";
   const ringColor = complementaryColor(baseColor);
+  const actionStyle = { color: ringColor, borderColor: ringColor };
+  const iconColor = isColorDark(ringColor) ? "#fff" : "#000";
 
   const handleEditSave = (data: {
     title: string;
@@ -69,36 +71,61 @@ const TimerDetail: React.FC = () => {
         </div>
         <div className="flex space-x-2">
           {!isRunning && (
-            <Button onClick={() => startTimer(id!)}>
-              <Play className="h-4 w-4 mr-2" /> {t("timers.start")}
+            <Button style={actionStyle} onClick={() => startTimer(id!)}>
+              <Play className="h-4 w-4 mr-2" style={{ color: iconColor }} />
+              {t("timers.start")}
             </Button>
           )}
           {isRunning && !isPaused && (
-            <Button variant="outline" onClick={() => pauseTimer(id!)}>
-              <Pause className="h-4 w-4 mr-2" /> {t("timers.pause")}
+            <Button
+              variant="outline"
+              style={actionStyle}
+              onClick={() => pauseTimer(id!)}
+            >
+              <Pause className="h-4 w-4 mr-2" style={{ color: iconColor }} />
+              {t("timers.pause")}
             </Button>
           )}
           {isRunning && isPaused && (
-            <Button variant="outline" onClick={() => resumeTimer(id!)}>
-              <Play className="h-4 w-4 mr-2" /> {t("timers.resume")}
+            <Button
+              variant="outline"
+              style={actionStyle}
+              onClick={() => resumeTimer(id!)}
+            >
+              <Play className="h-4 w-4 mr-2" style={{ color: iconColor }} />
+              {t("timers.resume")}
             </Button>
           )}
           {isRunning && (
             <Button
               variant="outline"
+              style={actionStyle}
               onClick={() => extendTimer(id!, timerExtendSeconds)}
             >
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-4 w-4 mr-2" style={{ color: iconColor }} />
               {t("timers.extend")} +{timerExtendSeconds}s
             </Button>
           )}
           {isRunning && (
-            <Button variant="outline" onClick={() => stopTimer(id!)}>
-              <RotateCcw className="h-4 w-4 mr-2" /> {t("timers.stop")}
+            <Button
+              variant="outline"
+              style={actionStyle}
+              onClick={() => stopTimer(id!)}
+            >
+              <RotateCcw
+                className="h-4 w-4 mr-2"
+                style={{ color: iconColor }}
+              />
+              {t("timers.stop")}
             </Button>
           )}
-          <Button variant="outline" onClick={() => setEditOpen(true)}>
-            <Edit className="h-4 w-4 mr-2" /> {t("common.edit")}
+          <Button
+            variant="outline"
+            style={actionStyle}
+            onClick={() => setEditOpen(true)}
+          >
+            <Edit className="h-4 w-4 mr-2" style={{ color: iconColor }} />
+            {t("common.edit")}
           </Button>
         </div>
       </div>

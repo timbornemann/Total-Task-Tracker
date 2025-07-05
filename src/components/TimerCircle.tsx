@@ -37,7 +37,8 @@ const TimerCircle: React.FC<Props> = ({
   const stroke = 8;
   const normalizedRadius = radius - stroke / 2;
   const circumference = normalizedRadius * 2 * Math.PI;
-  const progress = remaining / duration;
+  const progress =
+    duration > 0 ? Math.max(0, Math.min(1, remaining / duration)) : 0;
   const strokeDashoffset = circumference - progress * circumference;
   const baseColor = colorPalette[color] ?? colorPalette[0];
   const ringColor = ringColorProp ?? complementaryColor(baseColor);
