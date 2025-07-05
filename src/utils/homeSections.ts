@@ -6,6 +6,7 @@ import {
   BookOpen,
   Pencil,
   Timer,
+  Clock,
   List,
   Flame,
   Cog,
@@ -73,6 +74,12 @@ export const allHomeSections: HomeSection[] = [
     labelKey: "homeSections.timers",
     path: "/timers",
     icon: Timer,
+  },
+  {
+    key: "clock",
+    labelKey: "homeSections.clock",
+    path: "/clock",
+    icon: Clock,
   },
   { key: "notes", labelKey: "homeSections.notes", path: "/notes", icon: List },
   {

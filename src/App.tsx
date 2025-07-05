@@ -29,6 +29,7 @@ import PomodoroTicker from "@/components/PomodoroTicker";
 import TimerTicker from "@/components/TimerTicker";
 import TimersPage from "./pages/Timers";
 import TimerDetailPage from "./pages/TimerDetail";
+import ClockPage from "./pages/Clock";
 import { PomodoroHistoryProvider } from "@/hooks/usePomodoroHistory.tsx";
 import ReleaseNotesModal from "@/components/ReleaseNotesModal";
 import SurprisePage from "./pages/Surprise";
@@ -90,6 +91,7 @@ const App = () => (
                     />
                     <Route path="/timers" element={<TimersPage />} />
                     <Route path="/timers/:id" element={<TimerDetailPage />} />
+                    <Route path="/clock" element={<ClockPage />} />
                     <Route path="/surprise" element={<SurprisePage />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
