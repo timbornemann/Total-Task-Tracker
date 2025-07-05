@@ -1,6 +1,6 @@
 import React from "react";
 import { useSettings } from "@/hooks/useSettings";
-import { complementaryColor } from "@/utils/color";
+import { complementaryColor, isColorDark, adjustColor } from "@/utils/color";
 
 interface Props {
   remaining: number;
@@ -42,15 +42,18 @@ const TimerCircle: React.FC<Props> = ({
   const strokeDashoffset = circumference - progress * circumference;
   const baseColor = colorPalette[color] ?? colorPalette[0];
   const ringColor = ringColorProp ?? complementaryColor(baseColor);
+  const trackColor = isColorDark(baseColor)
+    ? adjustColor(baseColor, -30)
+    : adjustColor(baseColor, 30);
   return (
     <div className="relative" style={{ width: radius * 2, height: radius * 2 }}>
       <svg
         width={radius * 2}
         height={radius * 2}
-        className="transform -rotate-90"
+        className="transform -rotate-90 scale-x-[-1]"
       >
         <circle
-          stroke="hsl(var(--muted))"
+          stroke={trackColor}
           fill="transparent"
           strokeWidth={stroke}
           r={normalizedRadius}
