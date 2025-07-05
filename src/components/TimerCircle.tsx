@@ -73,7 +73,13 @@ const TimerCircle: React.FC<Props> = ({
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
         <div
-          className={size > 100 ? "text-4xl font-bold" : "text-2xl font-bold"}
+          className={
+            size >= 200
+              ? "text-7xl font-bold"
+              : size > 100
+                ? "text-4xl font-bold"
+                : "text-2xl font-bold"
+          }
         >
           {formatTime(remaining)}
         </div>

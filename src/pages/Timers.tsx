@@ -72,7 +72,7 @@ const TimersPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar title={t("navbar.timers")} />
-      <div className="p-4 flex-1">
+      <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="mb-4 flex justify-center">
           <Button onClick={() => setOpen(true)}>{t("timers.new")}</Button>
         </div>
