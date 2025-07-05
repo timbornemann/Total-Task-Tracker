@@ -1120,7 +1120,13 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
             setShortcuts({ ...defaultShortcuts, ...data.shortcuts });
           }
           if (data.pomodoro) {
-            setPomodoro({ ...defaultPomodoro, ...data.pomodoro });
+            setPomodoro({
+              ...defaultPomodoro,
+              ...data.pomodoro,
+              customSounds: Array.isArray(data.pomodoro.customSounds)
+                ? data.pomodoro.customSounds
+                : defaultPomodoro.customSounds,
+            });
           }
           if (data.defaultTaskPriority) {
             setPriority(data.defaultTaskPriority);
