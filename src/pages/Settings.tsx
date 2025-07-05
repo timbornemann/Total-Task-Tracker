@@ -852,16 +852,16 @@ const SettingsPage: React.FC = () => {
                     {t("settingsPage.workSound")}
                   </Label>
                   <Select
-                    value={pomodoro.workSound}
-                    onValueChange={(v) => updatePomodoro("workSound", v)}
+                    value={pomodoro.workSound || "none"}
+                    onValueChange={(v) =>
+                      updatePomodoro("workSound", v === "none" ? "" : v)
+                    }
                   >
                     <SelectTrigger id="workSound">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">
-                        {t("common.none")}
-                      </SelectItem>
+                      <SelectItem value="none">{t("common.none")}</SelectItem>
                       {builtInSounds.map((s) => (
                         <SelectItem key={s.url} value={s.url}>
                           {s.label}
@@ -880,16 +880,16 @@ const SettingsPage: React.FC = () => {
                     {t("settingsPage.breakSound")}
                   </Label>
                   <Select
-                    value={pomodoro.breakSound}
-                    onValueChange={(v) => updatePomodoro("breakSound", v)}
+                    value={pomodoro.breakSound || "none"}
+                    onValueChange={(v) =>
+                      updatePomodoro("breakSound", v === "none" ? "" : v)
+                    }
                   >
                     <SelectTrigger id="breakSound">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">
-                        {t("common.none")}
-                      </SelectItem>
+                      <SelectItem value="none">{t("common.none")}</SelectItem>
                       {builtInSounds.map((s) => (
                         <SelectItem key={s.url} value={s.url}>
                           {s.label}
