@@ -10,7 +10,7 @@ const ServiceWorkerManager: React.FC = () => {
     if (offlineCache) {
       const swPath = import.meta.env.DEV ? "/dev-sw.js?dev-sw" : "/sw.js";
       navigator.serviceWorker
-        .register(swPath, { type: "module" })
+        .register(swPath, import.meta.env.DEV ? undefined : { type: "module" })
         .catch((err) => console.error("SW registration failed", err));
     } else {
       navigator.serviceWorker.getRegistrations().then((regs) => {
