@@ -61,7 +61,7 @@ const TimerDetail: React.FC = () => {
           duration={duration}
           color={color}
           ringColor={ringColor}
-          size={150}
+          size={200}
           paused={isPaused}
         />
         <div className="text-xl font-semibold" style={{ color: textColor }}>
