@@ -91,6 +91,23 @@ export const adjustColor = (hex: string, percent: number): string => {
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 };
 
+export const complementarySameHue = (
+  hex: string,
+  start = 60,
+  threshold = 128,
+): string => {
+  const dark = isColorDark(hex);
+  let perc = dark ? start : -start;
+  let adjusted = adjustColor(hex, perc);
+  let contrast = colorContrast(hex, adjusted);
+  while (contrast < threshold && Math.abs(perc) < 100) {
+    perc += perc > 0 ? 10 : -10;
+    adjusted = adjustColor(hex, perc);
+    contrast = colorContrast(hex, adjusted);
+  }
+  return adjusted;
+};
+
 export const complementaryColor = (hex: string): string => {
   const dark = isColorDark(hex);
   const adjusted = adjustColor(hex, dark ? 60 : -60);

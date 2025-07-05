@@ -12,7 +12,7 @@ import {
 import TimerCircle from "./TimerCircle";
 import { useTimers } from "@/hooks/useTimers";
 import { useSettings } from "@/hooks/useSettings";
-import { isColorDark, complementaryColor, adjustColor } from "@/utils/color";
+import { isColorDark, complementarySameHue, adjustColor } from "@/utils/color";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -49,14 +49,15 @@ const TimerCard: React.FC<Props> = ({ id }) => {
   const { title, color, duration, remaining, isRunning, isPaused } = timer;
   const baseColor = colorPalette[color] ?? colorPalette[0];
   const textColor = isColorDark(baseColor) ? "#fff" : "#000";
-  const ringColor = complementaryColor(baseColor);
   const trackColor = isColorDark(baseColor)
     ? adjustColor(baseColor, -30)
     : adjustColor(baseColor, 30);
+  const ringColor = complementarySameHue(trackColor);
+  const hoverColor = complementarySameHue(ringColor);
   const actionStyle = {
     color: ringColor,
     borderColor: ringColor,
-    "--hover-color": trackColor,
+    "--hover-color": hoverColor,
   } as React.CSSProperties;
   const iconColor = isColorDark(ringColor) ? "#fff" : "#000";
   const handleClick = () => navigate(`/timers/${id}`);
