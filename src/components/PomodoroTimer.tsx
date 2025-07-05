@@ -6,57 +6,11 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { useSettings, SettingsProvider } from "@/hooks/useSettings";
 import { hslToHex, hexToHsl, complementaryColor } from "@/utils/color";
+import { playSound } from "@/utils/sounds";
 import {
   usePomodoroHistory,
   PomodoroHistoryProvider,
 } from "@/hooks/usePomodoroHistory.tsx";
-
-type AudioContextConstructor = typeof AudioContext;
-
-const getAudioContext = (): AudioContext | null => {
-  const Ctor =
-    window.AudioContext ||
-    (window as unknown as { webkitAudioContext?: AudioContextConstructor })
-      .webkitAudioContext;
-  return Ctor ? new Ctor() : null;
-};
-
-const playSound = (url?: string) => {
-  if (url) {
-    if (url.startsWith("tone:")) {
-      const [, freqStr, durStr] = url.split(":");
-      const freq = parseFloat(freqStr) || 440;
-      const dur = parseFloat(durStr) || 0.4;
-      const ctx = getAudioContext();
-      if (ctx) {
-        const osc = ctx.createOscillator();
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(freq, ctx.currentTime);
-        osc.connect(ctx.destination);
-        osc.start();
-        osc.stop(ctx.currentTime + dur);
-        return;
-      }
-    } else {
-      try {
-        const audio = new Audio(url);
-        audio.play().catch(() => {});
-        return;
-      } catch {
-        // ignore errors
-      }
-    }
-  }
-  const ctx = getAudioContext();
-  if (ctx) {
-    const osc = ctx.createOscillator();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(440, ctx.currentTime);
-    osc.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.4);
-  }
-};
 
 interface PomodoroState {
   isRunning: boolean;
