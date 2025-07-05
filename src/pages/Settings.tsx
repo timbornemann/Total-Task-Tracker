@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Navbar from "@/components/Navbar";
 import { useSettings, themePresets } from "@/hooks/useSettings";
-import { builtInSounds } from "@/utils/sounds";
+import { builtInSounds, playSound } from "@/utils/sounds";
 import { Task, Category, Note, Flashcard, Deck } from "@/types";
 import { Input } from "@/components/ui/input";
 import KeyInput from "@/components/KeyInput";
@@ -851,57 +851,75 @@ const SettingsPage: React.FC = () => {
                   <Label htmlFor="workSound">
                     {t("settingsPage.workSound")}
                   </Label>
-                  <Select
-                    value={pomodoro.workSound || "none"}
-                    onValueChange={(v) =>
-                      updatePomodoro("workSound", v === "none" ? "" : v)
-                    }
-                  >
-                    <SelectTrigger id="workSound">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">{t("common.none")}</SelectItem>
-                      {builtInSounds.map((s) => (
-                        <SelectItem key={s.url} value={s.url}>
-                          {s.label}
-                        </SelectItem>
-                      ))}
-                      {pomodoro.customSounds.map((url) => (
-                        <SelectItem key={url} value={url}>
-                          {url}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="flex items-center gap-2">
+                    <Select
+                      value={pomodoro.workSound || "none"}
+                      onValueChange={(v) =>
+                        updatePomodoro("workSound", v === "none" ? "" : v)
+                      }
+                    >
+                      <SelectTrigger id="workSound">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">{t("common.none")}</SelectItem>
+                        {builtInSounds.map((s) => (
+                          <SelectItem key={s.url} value={s.url}>
+                            {s.label}
+                          </SelectItem>
+                        ))}
+                        {pomodoro.customSounds.map((url) => (
+                          <SelectItem key={url} value={url}>
+                            {url}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => playSound(pomodoro.workSound)}
+                    >
+                      {t("settingsPage.testSound")}
+                    </Button>
+                  </div>
                 </div>
                 <div>
                   <Label htmlFor="breakSound">
                     {t("settingsPage.breakSound")}
                   </Label>
-                  <Select
-                    value={pomodoro.breakSound || "none"}
-                    onValueChange={(v) =>
-                      updatePomodoro("breakSound", v === "none" ? "" : v)
-                    }
-                  >
-                    <SelectTrigger id="breakSound">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">{t("common.none")}</SelectItem>
-                      {builtInSounds.map((s) => (
-                        <SelectItem key={s.url} value={s.url}>
-                          {s.label}
-                        </SelectItem>
-                      ))}
-                      {pomodoro.customSounds.map((url) => (
-                        <SelectItem key={url} value={url}>
-                          {url}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="flex items-center gap-2">
+                    <Select
+                      value={pomodoro.breakSound || "none"}
+                      onValueChange={(v) =>
+                        updatePomodoro("breakSound", v === "none" ? "" : v)
+                      }
+                    >
+                      <SelectTrigger id="breakSound">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">{t("common.none")}</SelectItem>
+                        {builtInSounds.map((s) => (
+                          <SelectItem key={s.url} value={s.url}>
+                            {s.label}
+                          </SelectItem>
+                        ))}
+                        {pomodoro.customSounds.map((url) => (
+                          <SelectItem key={url} value={url}>
+                            {url}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => playSound(pomodoro.breakSound)}
+                    >
+                      {t("settingsPage.testSound")}
+                    </Button>
+                  </div>
                 </div>
                 <div className="flex items-center gap-2 mt-2">
                   <Input
