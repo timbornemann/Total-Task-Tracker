@@ -31,7 +31,7 @@ import TimersPage from "./pages/Timers";
 import TimerDetailPage from "./pages/TimerDetail";
 import ClockPage from "./pages/Clock";
 import { PomodoroHistoryProvider } from "@/hooks/usePomodoroHistory.tsx";
-import { TimersProvider } from "@/hooks/useTimers";
+import { TimersProvider } from "@/hooks/useTimers.tsx";
 import ReleaseNotesModal from "@/components/ReleaseNotesModal";
 import SurprisePage from "./pages/Surprise";
 import SurpriseListener from "@/components/SurpriseListener";
