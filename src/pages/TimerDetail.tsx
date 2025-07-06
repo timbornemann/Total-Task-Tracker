@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import Navbar from "@/components/Navbar";
 import TimerCircle from "@/components/TimerCircle";
 import { Button } from "@/components/ui/button";
-import { useTimers } from "@/hooks/useTimers";
+import { useTimers } from "@/hooks/useTimers.tsx";
 import { Play, Pause, RotateCcw, Plus, Edit } from "lucide-react";
 import { useSettings } from "@/hooks/useSettings";
 import { isColorDark, complementaryColor } from "@/utils/color";

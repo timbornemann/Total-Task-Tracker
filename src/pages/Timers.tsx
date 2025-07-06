@@ -3,7 +3,7 @@ import Navbar from "@/components/Navbar";
 import TimerCard from "@/components/TimerCard";
 import TimerModal from "@/components/TimerModal";
 import { Button } from "@/components/ui/button";
-import { useTimers } from "@/hooks/useTimers";
+import { useTimers } from "@/hooks/useTimers.tsx";
 import { useTranslation } from "react-i18next";
 import {
   DndContext,
