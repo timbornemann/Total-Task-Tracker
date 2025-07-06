@@ -1,4 +1,13 @@
-import { Task, Category, Note, Flashcard, Deck, Deletion } from "@/types";
+import {
+  Task,
+  Category,
+  Note,
+  Flashcard,
+  Deck,
+  Deletion,
+  PomodoroSession,
+  Timer,
+} from "@/types";
 
 export interface AllData {
   tasks: Task[];
@@ -7,6 +16,8 @@ export interface AllData {
   recurring: Task[];
   flashcards: Flashcard[];
   decks: Deck[];
+  pomodoroSessions: PomodoroSession[];
+  timers: Timer[];
   deletions: Deletion[];
 }
 
@@ -38,6 +49,12 @@ export function mergeData(curr: AllData, inc: AllData): AllData {
     recurring: mergeLists(curr.recurring, inc.recurring),
     flashcards: mergeLists(curr.flashcards, inc.flashcards, null),
     decks: mergeLists(curr.decks, inc.decks, null),
+    pomodoroSessions: mergeLists(
+      curr.pomodoroSessions,
+      inc.pomodoroSessions,
+      null,
+    ),
+    timers: mergeLists(curr.timers, inc.timers, null),
     deletions: mergeLists(curr.deletions, inc.deletions, "deletedAt"),
   };
 }
@@ -69,5 +86,9 @@ export function applyDeletions(data: AllData): AllData {
     shouldKeep("flashcard", f),
   );
   data.decks = (data.decks || []).filter((d) => shouldKeep("deck", d));
+  data.pomodoroSessions = (data.pomodoroSessions || []).filter((s) =>
+    shouldKeep("pomodoro", s as any),
+  );
+  data.timers = (data.timers || []).filter((t) => shouldKeep("timer", t as any));
   return data;
 }

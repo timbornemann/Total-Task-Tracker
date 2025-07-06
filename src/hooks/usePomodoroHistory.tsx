@@ -1,5 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { PomodoroSession } from "@/types";
+import {
+  loadOfflineData,
+  updateOfflineData,
+  syncWithServer,
+} from "@/utils/offline";
 
 const API_URL = "/api/pomodoro-sessions";
 
@@ -10,11 +15,10 @@ const usePomodoroHistoryImpl = () => {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await fetch(API_URL);
-        if (res.ok) {
-          const data = await res.json();
-          setSessions(data || []);
-        }
+        const offline = loadOfflineData();
+        if (offline) setSessions(offline.pomodoroSessions || []);
+        const synced = await syncWithServer();
+        setSessions(synced.pomodoroSessions || []);
       } catch (err) {
         console.error("Error loading Pomodoro sessions", err);
       } finally {
@@ -28,14 +32,18 @@ const usePomodoroHistoryImpl = () => {
     if (!loaded) return;
     const save = async () => {
       try {
-        await fetch(API_URL, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(sessions),
-        });
+        updateOfflineData({ pomodoroSessions: sessions });
+        if (navigator.onLine) {
+          await fetch(API_URL, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(sessions),
+          });
+        }
       } catch (err) {
         console.error("Error saving Pomodoro sessions", err);
       }
+      if (navigator.onLine) await syncWithServer();
     };
     save();
   }, [sessions, loaded]);

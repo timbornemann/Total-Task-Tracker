@@ -1,5 +1,7 @@
+import React, { useEffect, useState } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { loadOfflineData, updateOfflineData, syncWithServer } from "@/utils/offline";
 
 export interface Timer {
   id: string;
@@ -17,6 +19,7 @@ export interface Timer {
 
 interface TimersState {
   timers: Timer[];
+  setTimers: (list: Timer[]) => void;
   addTimer: (
     data: Omit<
       Timer,
@@ -48,6 +51,7 @@ export const useTimers = create<TimersState>()(
   persist(
     (set, get) => ({
       timers: [],
+      setTimers: (list) => set({ timers: list }),
       addTimer: (data) => {
         const id = crypto.randomUUID();
         set((state) => ({
@@ -190,3 +194,44 @@ export const useTimers = create<TimersState>()(
     { name: "timers" },
   ),
 );
+
+export const TimersProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const setTimers = useTimers((s) => s.setTimers);
+  const timers = useTimers((s) => s.timers);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const load = async () => {
+      const offline = loadOfflineData();
+      if (offline) setTimers(offline.timers || []);
+      const synced = await syncWithServer();
+      setTimers(synced.timers || []);
+      setLoaded(true);
+    };
+    load();
+  }, [setTimers]);
+
+  useEffect(() => {
+    if (!loaded) return;
+    const save = async () => {
+      try {
+        updateOfflineData({ timers });
+        if (navigator.onLine) {
+          await fetch("/api/timers", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(timers),
+          });
+          await syncWithServer();
+        }
+      } catch (err) {
+        console.error("Error saving timers", err);
+      }
+    };
+    save();
+  }, [timers, loaded]);
+
+  return <>{children}</>;
+};

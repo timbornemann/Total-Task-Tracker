@@ -126,8 +126,30 @@ export interface Deck {
 
 export interface Deletion {
   id: string;
-  type: "task" | "category" | "note" | "recurring" | "flashcard" | "deck";
+  type:
+    | "task"
+    | "category"
+    | "note"
+    | "recurring"
+    | "flashcard"
+    | "deck"
+    | "timer"
+    | "pomodoro";
   deletedAt: Date;
+}
+
+export interface Timer {
+  id: string;
+  title: string;
+  color: number;
+  baseDuration: number;
+  duration: number;
+  remaining: number;
+  isRunning: boolean;
+  isPaused: boolean;
+  startTime?: number;
+  lastTick?: number;
+  pauseStart?: number;
 }
 
 export interface TaskStats {
