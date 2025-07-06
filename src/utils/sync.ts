@@ -87,8 +87,13 @@ export function applyDeletions(data: AllData): AllData {
   );
   data.decks = (data.decks || []).filter((d) => shouldKeep("deck", d));
   data.pomodoroSessions = (data.pomodoroSessions || []).filter((s) =>
-    shouldKeep("pomodoro", s as any),
+    shouldKeep(
+      "pomodoro",
+      s as unknown as { id: string; updatedAt?: Date },
+    ),
   );
-  data.timers = (data.timers || []).filter((t) => shouldKeep("timer", t as any));
+  data.timers = (data.timers || []).filter((t) =>
+    shouldKeep("timer", t as unknown as { id: string; updatedAt?: Date }),
+  );
   return data;
 }
