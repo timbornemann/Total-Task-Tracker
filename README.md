@@ -16,6 +16,7 @@ Die Daten werden dabei vollständig lokal auf dem Server gespeichert, entweder p
 - [Installation für die lokale Entwicklung](#installation-für-die-lokale-entwicklung)
 - [Entwicklung starten](#entwicklung-starten)
 - [Manuelle Produktion ohne Docker](#manuelle-produktion-ohne-docker)
+- [Android APK erstellen](#android-apk-erstellen)
 - [Funktionen](#funktionen)
 - [Verwendung](#verwendung)
 - [Tastenkürzel](#tastenkürzel)
@@ -124,6 +125,25 @@ Möchtest du ohne Docker deployen, kannst du die Anwendung lokal bauen und den N
 npm run build
 npm start    # startet die gebaute App auf Port 3002
 ```
+
+## Android APK erstellen
+
+Mit [Capacitor](https://capacitorjs.com/) kannst du den Tracker auch als Android-App bauen.
+
+1. Projekt einmalig initialisieren:
+   ```bash
+   npm install
+   npx cap init total-task-tracker com.example.total_task_tracker --web-dir=dist
+   npx cap add android
+   ```
+2. Produktionsbuild erstellen und Dateien kopieren:
+   ```bash
+   npm run build:android
+   ```
+3. Android-Projekt in Android Studio öffnen und ein signiertes APK erzeugen:
+   ```bash
+   npm run open:android
+   ```
 
 ## Funktionen
 
