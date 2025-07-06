@@ -15,6 +15,8 @@ import { formatDuration } from "@/utils/time";
 const PomodoroStats: React.FC = () => {
   const stats = usePomodoroStats();
   const { t } = useTranslation();
+
+  const formatMinutes = (value: number) => formatDuration(value, t);
   return (
     <div className="w-full grid gap-4 md:grid-cols-2">
       <Card>
@@ -117,8 +119,8 @@ const PomodoroStats: React.FC = () => {
                 margin={{ top: 10, right: 20, left: 0, bottom: 20 }}
               >
                 <XAxis dataKey="time" fontSize={12} />
-                <YAxis fontSize={12} />
-                <Tooltip />
+                <YAxis fontSize={12} tickFormatter={formatMinutes} />
+                <Tooltip formatter={(v: number) => formatMinutes(Number(v))} />
                 <Bar dataKey="work" stackId="a" fill="hsl(var(--primary))" />
                 <Bar dataKey="break" stackId="a" fill="hsl(var(--accent))" />
               </BarChart>
@@ -158,8 +160,8 @@ const PomodoroStats: React.FC = () => {
                 margin={{ top: 10, right: 20, left: 0, bottom: 20 }}
               >
                 <XAxis dataKey="time" fontSize={12} />
-                <YAxis fontSize={12} />
-                <Tooltip />
+                <YAxis fontSize={12} tickFormatter={formatMinutes} />
+                <Tooltip formatter={(v: number) => formatMinutes(Number(v))} />
                 <Bar dataKey="value" fill="hsl(var(--primary))" />
               </BarChart>
             </ResponsiveContainer>
@@ -181,8 +183,8 @@ const PomodoroStats: React.FC = () => {
                 margin={{ top: 10, right: 20, left: 0, bottom: 20 }}
               >
                 <XAxis dataKey="date" fontSize={12} />
-                <YAxis fontSize={12} />
-                <Tooltip />
+                <YAxis fontSize={12} tickFormatter={formatMinutes} />
+                <Tooltip formatter={(v: number) => formatMinutes(Number(v))} />
                 <Bar dataKey="work" stackId="a" fill="hsl(var(--primary))" />
                 <Bar dataKey="break" stackId="a" fill="hsl(var(--accent))" />
               </BarChart>
@@ -205,8 +207,8 @@ const PomodoroStats: React.FC = () => {
                 margin={{ top: 10, right: 20, left: 0, bottom: 20 }}
               >
                 <XAxis dataKey="date" fontSize={12} />
-                <YAxis fontSize={12} />
-                <Tooltip />
+                <YAxis fontSize={12} tickFormatter={formatMinutes} />
+                <Tooltip formatter={(v: number) => formatMinutes(Number(v))} />
                 <Bar dataKey="work" stackId="a" fill="hsl(var(--primary))" />
                 <Bar dataKey="break" stackId="a" fill="hsl(var(--accent))" />
               </BarChart>
@@ -229,8 +231,8 @@ const PomodoroStats: React.FC = () => {
                 margin={{ top: 10, right: 20, left: 0, bottom: 20 }}
               >
                 <XAxis dataKey="month" fontSize={12} />
-                <YAxis fontSize={12} />
-                <Tooltip />
+                <YAxis fontSize={12} tickFormatter={formatMinutes} />
+                <Tooltip formatter={(v: number) => formatMinutes(Number(v))} />
                 <Bar dataKey="work" stackId="a" fill="hsl(var(--primary))" />
                 <Bar dataKey="break" stackId="a" fill="hsl(var(--accent))" />
               </BarChart>
