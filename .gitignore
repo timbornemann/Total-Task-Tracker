@@ -26,3 +26,5 @@ server/data
 
 # Vite PWA dev build output
 dev-dist/
+
+android/
