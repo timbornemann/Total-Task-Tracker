@@ -31,6 +31,7 @@ import TimersPage from "./pages/Timers";
 import TimerDetailPage from "./pages/TimerDetail";
 import ClockPage from "./pages/Clock";
 import { PomodoroHistoryProvider } from "@/hooks/usePomodoroHistory.tsx";
+import { TimersProvider } from "@/hooks/useTimers";
 import ReleaseNotesModal from "@/components/ReleaseNotesModal";
 import SurprisePage from "./pages/Surprise";
 import SurpriseListener from "@/components/SurpriseListener";
@@ -47,9 +48,10 @@ const App = () => (
       <SettingsProvider>
         <ServiceWorkerManager />
         <PomodoroHistoryProvider>
-          <TaskStoreProvider>
-            <FlashcardStoreProvider>
-              <CurrentCategoryProvider>
+          <TimersProvider>
+            <TaskStoreProvider>
+              <FlashcardStoreProvider>
+                <CurrentCategoryProvider>
                 <Toaster />
                 <Sonner />
                 <BrowserRouter>
@@ -104,6 +106,7 @@ const App = () => (
               </CurrentCategoryProvider>
             </FlashcardStoreProvider>
           </TaskStoreProvider>
+          </TimersProvider>
         </PomodoroHistoryProvider>
       </SettingsProvider>
     </TooltipProvider>

@@ -1,4 +1,13 @@
-import { Task, Category, Note, Flashcard, Deck, Deletion } from "@/types";
+import {
+  Task,
+  Category,
+  Note,
+  Flashcard,
+  Deck,
+  Deletion,
+  PomodoroSession,
+  Timer,
+} from "@/types";
 import { applyDeletions, mergeData } from "./sync";
 
 export interface OfflineData {
@@ -8,6 +17,8 @@ export interface OfflineData {
   recurring: Task[];
   flashcards: Flashcard[];
   decks: Deck[];
+  pomodoroSessions: PomodoroSession[];
+  timers: Timer[];
   deletions: Deletion[];
 }
 
@@ -40,6 +51,8 @@ export const updateOfflineData = (partial: Partial<OfflineData>) => {
     recurring: [],
     flashcards: [],
     decks: [],
+    pomodoroSessions: [],
+    timers: [],
     deletions: [],
   };
   saveOfflineData({ ...current, ...partial });
@@ -53,6 +66,8 @@ export const syncWithServer = async (): Promise<OfflineData> => {
     recurring: [],
     flashcards: [],
     decks: [],
+    pomodoroSessions: [],
+    timers: [],
     deletions: [],
   };
   if (!navigator.onLine) return local;
