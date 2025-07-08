@@ -107,7 +107,9 @@ const HabitModal: React.FC<HabitModalProps> = ({
             <Label htmlFor="recurrence">{t("habitModal.recurrence")}</Label>
             <Select
               value={formData.recurrencePattern}
-              onValueChange={(v) => handleChange("recurrencePattern", v as any)}
+              onValueChange={(v: HabitFormData["recurrencePattern"]) =>
+                handleChange("recurrencePattern", v)
+              }
             >
               <SelectTrigger>
                 <SelectValue />
