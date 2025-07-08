@@ -225,7 +225,7 @@ const HabitTrackerPage: React.FC = () => {
             size="sm"
             onClick={() => setIsModalOpen(true)}
           >
-            <Plus className="h-4 w-4 mr-2" /> {t("recurring.template")}
+            <Plus className="h-4 w-4 mr-2" /> {t("habitModal.newTitle")}
           </Button>
         </div>
       </div>
