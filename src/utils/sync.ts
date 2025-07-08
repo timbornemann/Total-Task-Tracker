@@ -4,6 +4,7 @@ import {
   Note,
   Flashcard,
   Deck,
+  Habit,
   Deletion,
   PomodoroSession,
   Timer,
@@ -14,6 +15,7 @@ export interface AllData {
   categories: Category[];
   notes: Note[];
   recurring: Task[];
+  habits: Habit[];
   flashcards: Flashcard[];
   decks: Deck[];
   pomodoroSessions: PomodoroSession[];
@@ -47,6 +49,7 @@ export function mergeData(curr: AllData, inc: AllData): AllData {
     categories: mergeLists(curr.categories, inc.categories),
     notes: mergeLists(curr.notes, inc.notes),
     recurring: mergeLists(curr.recurring, inc.recurring),
+    habits: mergeLists(curr.habits, inc.habits),
     flashcards: mergeLists(curr.flashcards, inc.flashcards, null),
     decks: mergeLists(curr.decks, inc.decks, null),
     pomodoroSessions: mergeLists(
@@ -82,15 +85,13 @@ export function applyDeletions(data: AllData): AllData {
   data.recurring = (data.recurring || []).filter((r) =>
     shouldKeep("recurring", r),
   );
+  data.habits = (data.habits || []).filter((h) => shouldKeep("habit", h));
   data.flashcards = (data.flashcards || []).filter((f) =>
     shouldKeep("flashcard", f),
   );
   data.decks = (data.decks || []).filter((d) => shouldKeep("deck", d));
   data.pomodoroSessions = (data.pomodoroSessions || []).filter((s) =>
-    shouldKeep(
-      "pomodoro",
-      s as unknown as { id: string; updatedAt?: Date },
-    ),
+    shouldKeep("pomodoro", s as unknown as { id: string; updatedAt?: Date }),
   );
   data.timers = (data.timers || []).filter((t) =>
     shouldKeep("timer", t as unknown as { id: string; updatedAt?: Date }),

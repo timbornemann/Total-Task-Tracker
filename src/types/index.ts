@@ -119,6 +119,30 @@ export interface Flashcard {
   typedTotal?: number;
 }
 
+export interface Habit {
+  id: string;
+  title: string;
+  color: number;
+  recurrencePattern?: "daily" | "weekly" | "monthly" | "yearly";
+  customIntervalDays?: number;
+  startWeekday?: number;
+  startDate?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  order: number;
+  pinned: boolean;
+  completions: string[];
+}
+
+export interface HabitFormData {
+  title: string;
+  color: number;
+  recurrencePattern?: "daily" | "weekly" | "monthly" | "yearly";
+  customIntervalDays?: number;
+  startWeekday?: number;
+  startDate?: Date;
+}
+
 export interface Deck {
   id: string;
   name: string;

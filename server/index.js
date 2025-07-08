@@ -36,6 +36,10 @@ db.exec(`
     id TEXT PRIMARY KEY,
     data TEXT NOT NULL
   );
+  CREATE TABLE IF NOT EXISTS habits (
+    id TEXT PRIMARY KEY,
+    data TEXT NOT NULL
+  );
   CREATE TABLE IF NOT EXISTS flashcards (
     id TEXT PRIMARY KEY,
     data TEXT NOT NULL
@@ -175,6 +179,17 @@ function loadRecurring() {
   }
 }
 
+function loadHabits() {
+  try {
+    return db
+      .prepare("SELECT data FROM habits")
+      .all()
+      .map((row) => JSON.parse(row.data, dateReviver));
+  } catch {
+    return [];
+  }
+}
+
 function loadDeletions() {
   try {
     return db
@@ -196,6 +211,7 @@ function loadData() {
     categories: loadCategories(),
     notes: loadNotes(),
     recurring: loadRecurring(),
+    habits: loadHabits(),
     pomodoroSessions: loadPomodoroSessions(),
     timers: loadTimers(),
     deletions: loadDeletions(),
@@ -255,12 +271,26 @@ function saveRecurring(list) {
   tx();
 }
 
+function saveHabits(list) {
+  const tx = db.transaction(() => {
+    db.exec("DELETE FROM habits");
+    for (const item of list || []) {
+      db.prepare("INSERT INTO habits (id, data) VALUES (?, ?)").run(
+        item.id,
+        toJson(item),
+      );
+    }
+  });
+  tx();
+}
+
 function saveData(data) {
   const tx = db.transaction(() => {
     saveTasks(data.tasks || []);
     saveCategories(data.categories || []);
     saveNotes(data.notes || []);
     saveRecurring(data.recurring || []);
+    saveHabits(data.habits || []);
     savePomodoroSessions(data.pomodoroSessions || []);
     saveTimers(data.timers || []);
     saveDeletions(data.deletions || []);
@@ -401,6 +431,7 @@ function loadAllData() {
     categories: loadCategories(),
     notes: loadNotes(),
     recurring: loadRecurring(),
+    habits: loadHabits(),
     flashcards: loadFlashcards(),
     decks: loadDecks(),
     pomodoroSessions: loadPomodoroSessions(),
@@ -418,6 +449,7 @@ function saveAllData(data) {
   savePomodoroSessions(data.pomodoroSessions || []);
   saveTimers(data.timers || []);
   if (data.recurring) saveRecurring(data.recurring);
+  if (data.habits) saveHabits(data.habits);
   if (data.deletions) saveDeletions(data.deletions);
   if (data.settings) {
     saveSettings(data.settings);
@@ -468,9 +500,14 @@ function mergeData(curr, inc) {
     categories: mergeLists(curr.categories, inc.categories),
     notes: mergeLists(curr.notes, inc.notes),
     recurring: mergeLists(curr.recurring, inc.recurring),
+    habits: mergeLists(curr.habits, inc.habits),
     flashcards: mergeLists(curr.flashcards, inc.flashcards, null),
     decks: mergeLists(curr.decks, inc.decks, null),
-    pomodoroSessions: mergeLists(curr.pomodoroSessions, inc.pomodoroSessions, null),
+    pomodoroSessions: mergeLists(
+      curr.pomodoroSessions,
+      inc.pomodoroSessions,
+      null,
+    ),
     timers: mergeLists(curr.timers, inc.timers, null),
     settings: { ...curr.settings, ...inc.settings },
     deletions: mergeLists(curr.deletions, inc.deletions, "deletedAt"),
@@ -500,6 +537,7 @@ function applyDeletions(data) {
   data.recurring = (data.recurring || []).filter((r) =>
     shouldKeep("recurring", r),
   );
+  data.habits = (data.habits || []).filter((h) => shouldKeep("habit", h));
   data.flashcards = (data.flashcards || []).filter((f) =>
     shouldKeep("flashcard", f),
   );
@@ -757,6 +795,33 @@ const server = http.createServer((req, res) => {
         try {
           const list = JSON.parse(body || "[]");
           saveRecurring(list);
+          notifyClients();
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ status: "ok" }));
+        } catch {
+          res.writeHead(400);
+          res.end();
+        }
+      });
+      return;
+    }
+  }
+
+  if (parsed.pathname === "/api/habits" || parsed.pathname === "/api/habits/") {
+    if (req.method === "GET") {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(loadHabits()));
+      return;
+    }
+    if (req.method === "PUT") {
+      let body = "";
+      req.on("data", (chunk) => {
+        body += chunk;
+      });
+      req.on("end", () => {
+        try {
+          const list = JSON.parse(body || "[]");
+          saveHabits(list);
           notifyClients();
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(JSON.stringify({ status: "ok" }));

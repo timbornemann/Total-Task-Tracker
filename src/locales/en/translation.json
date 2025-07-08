@@ -21,7 +21,8 @@
   "home": {
     "pinnedTasks": "Pinned Tasks",
     "pinnedNotes": "Pinned Notes",
-    "pinnedCategories": "Pinned Categories"
+    "pinnedCategories": "Pinned Categories",
+    "pinnedHabits": "Pinned Habits"
   },
   "settings": {
     "tabs": {
@@ -88,6 +89,7 @@
     "showPinnedTasks": "Show pinned tasks",
     "showPinnedNotes": "Show pinned notes",
     "showPinnedCategories": "Show pinned categories",
+    "showPinnedHabits": "Show pinned habits",
     "offlineCache": "Enable offline cache",
     "themePreset": "Preset",
     "customThemeName": "Theme name",
@@ -183,6 +185,18 @@
     "title": "Title *",
     "text": "Text (Markdown)",
     "color": "Color"
+  },
+  "habitModal": {
+    "editTitle": "Edit Habit",
+    "newTitle": "New Habit",
+    "title": "Title *",
+    "color": "Color",
+    "recurrence": "Recurrence",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "customInterval": "Custom days"
   },
   "common": {
     "cancel": "Cancel",

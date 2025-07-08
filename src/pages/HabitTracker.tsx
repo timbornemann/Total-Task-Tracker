@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
-import { useTaskStore } from "@/hooks/useTaskStore";
+import { useHabitStore } from "@/hooks/useHabitStore";
 import { useSettings } from "@/hooks/useSettings";
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n";
@@ -19,7 +19,7 @@ import {
 import { de as deLocale, enUS } from "date-fns/locale";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import TaskModal from "@/components/TaskModal";
+import HabitModal from "@/components/HabitModal";
 import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   complementaryColor,
@@ -27,11 +27,11 @@ import {
   isColorDark,
   hslToHex,
 } from "@/utils/color";
-import { Task, TaskFormData } from "@/types";
+import { Habit, HabitFormData } from "@/types";
 
 const today = startOfDay(new Date());
 
-const getFrequencyDays = (habit: Task): number[] => {
+const getFrequencyDays = (habit: Habit): number[] => {
   if (
     habit.recurrencePattern === "weekly" &&
     typeof habit.startWeekday === "number"
@@ -41,8 +41,8 @@ const getFrequencyDays = (habit: Task): number[] => {
   return [0, 1, 2, 3, 4, 5, 6];
 };
 
-const HabitCard: React.FC<{ habit: Task }> = ({ habit }) => {
-  const { tasks, toggleHabitCompletion } = useTaskStore();
+const HabitCard: React.FC<{ habit: Habit }> = ({ habit }) => {
+  const { toggleHabitCompletion } = useHabitStore();
   const { colorPalette, theme } = useSettings();
   const { t } = useTranslation();
   const locale = i18n.language === "de" ? deLocale : enUS;
@@ -55,12 +55,7 @@ const HabitCard: React.FC<{ habit: Task }> = ({ habit }) => {
     [yearStart, weekCount],
   );
 
-  const habitTasks = tasks.filter((t) => t.recurringId === habit.id);
-  const taskMap = habitTasks.reduce<Record<string, Task>>((m, t) => {
-    const key = format(t.createdAt, "yyyy-MM-dd");
-    m[key] = t;
-    return m;
-  }, {});
+  const completionSet = new Set(habit.completions);
 
   const freqDays = getFrequencyDays(habit);
 
@@ -70,7 +65,7 @@ const HabitCard: React.FC<{ habit: Task }> = ({ habit }) => {
     while (day >= yearStart) {
       if (freqDays.includes(day.getDay())) {
         const key = format(day, "yyyy-MM-dd");
-        if (taskMap[key]?.completed) streak++;
+        if (completionSet.has(key)) streak++;
         else break;
       }
       day = addDays(day, -1);
@@ -87,7 +82,7 @@ const HabitCard: React.FC<{ habit: Task }> = ({ habit }) => {
         if (date > today || date < yearStart) return;
         total++;
         const key = format(date, "yyyy-MM-dd");
-        if (taskMap[key]?.completed) completed++;
+        if (completionSet.has(key)) completed++;
       });
     });
     return { total, completed };
@@ -100,16 +95,9 @@ const HabitCard: React.FC<{ habit: Task }> = ({ habit }) => {
   const doneColor = adjustColor(baseColor, isColorDark(baseColor) ? 20 : -20);
   const emptyColor = hslToHex(theme.muted);
   const rows = [...freqDays].sort((a, b) => a - b);
-  const firstTaskDate = habitTasks.length
-    ? startOfDay(
-        habitTasks.reduce(
-          (min, t) => (t.createdAt < min ? t.createdAt : min),
-          habitTasks[0].createdAt,
-        ),
-      )
-    : habit.startDate
-      ? startOfDay(new Date(habit.startDate))
-      : startOfDay(habit.createdAt);
+  const firstTaskDate = habit.startDate
+    ? startOfDay(new Date(habit.startDate))
+    : startOfDay(habit.createdAt);
 
   return (
     <Card style={{ backgroundColor: baseColor, color: textColor }}>
@@ -174,10 +162,10 @@ const HabitCard: React.FC<{ habit: Task }> = ({ habit }) => {
                 {weeks.map((w) => {
                   const date = addDays(w, r);
                   const dateStr = format(date, "yyyy-MM-dd");
-                  const done = taskMap[dateStr]?.completed;
+                  const done = completionSet.has(dateStr);
                   const future = date > today;
                   const beforeStart = date < firstTaskDate;
-                  const inactive = future || beforeStart || !taskMap[dateStr];
+                  const inactive = future || beforeStart;
                   const currentDay = isToday(date);
                   return (
                     <td key={dateStr} className="p-0.5">
@@ -210,23 +198,23 @@ const HabitCard: React.FC<{ habit: Task }> = ({ habit }) => {
 };
 
 const HabitTrackerPage: React.FC = () => {
-  const { recurring, categories, addRecurringTask } = useTaskStore();
+  const { habits, addHabit } = useHabitStore();
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleSave = (data: TaskFormData) => {
-    addRecurringTask({ ...data, isRecurring: true, template: true });
+  const handleSave = (data: HabitFormData) => {
+    addHabit(data);
   };
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar title={t("habits.title")} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
-        {recurring.length === 0 ? (
+        {habits.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("habits.none")}</p>
         ) : (
           <div className="space-y-6">
-            {recurring.map((habit) => (
+            {habits.map((habit) => (
               <HabitCard key={habit.id} habit={habit} />
             ))}
           </div>
@@ -241,12 +229,10 @@ const HabitTrackerPage: React.FC = () => {
           </Button>
         </div>
       </div>
-      <TaskModal
+      <HabitModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={handleSave}
-        categories={categories}
-        defaultIsRecurring
       />
     </div>
   );

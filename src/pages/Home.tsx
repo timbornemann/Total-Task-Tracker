@@ -9,6 +9,7 @@ import { allHomeSections, HomeSection } from "@/utils/homeSections";
 import TaskCard from "@/components/TaskCard";
 import CategoryCard from "@/components/CategoryCard";
 import { useTaskStore } from "@/hooks/useTaskStore";
+import { useHabitStore } from "@/hooks/useHabitStore";
 import NoteCard from "@/components/NoteCard";
 import { flattenTasks } from "@/utils/taskUtils";
 
@@ -16,6 +17,7 @@ const Home: React.FC = () => {
   const { t } = useTranslation();
   const { notes, tasks, categories, getTasksByCategory, updateCategory } =
     useTaskStore();
+  const { habits } = useHabitStore();
   const {
     homeSections,
     homeSectionOrder,
@@ -24,6 +26,7 @@ const Home: React.FC = () => {
     showPinnedTasks,
     showPinnedNotes,
     showPinnedCategories,
+    showPinnedHabits,
   } = useSettings();
 
   const orderedSections: HomeSection[] = homeSectionOrder
@@ -55,6 +58,14 @@ const Home: React.FC = () => {
         .sort((a, b) => a.order - b.order)
         .slice(0, 3),
     [categories],
+  );
+  const pinnedHabits = useMemo(
+    () =>
+      habits
+        .filter((h) => h.pinned)
+        .sort((a, b) => a.order - b.order)
+        .slice(0, 3),
+    [habits],
   );
 
   return (
@@ -141,6 +152,23 @@ const Home: React.FC = () => {
                     onViewDetails={() => {}}
                     showSubtasks={false}
                   />
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {showPinnedHabits && pinnedHabits.length > 0 && (
+          <div className="mb-6">
+            <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-3">
+              {t("home.pinnedHabits")}
+            </h2>
+            <div className="space-y-3">
+              {pinnedHabits.map((habit) => (
+                <Link key={habit.id} to="/habits" className="block">
+                  <Card>
+                    <CardContent className="p-3">{habit.title}</CardContent>
+                  </Card>
                 </Link>
               ))}
             </div>

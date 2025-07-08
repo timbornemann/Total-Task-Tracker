@@ -996,6 +996,8 @@ interface SettingsContextValue {
   toggleShowPinnedNotes: () => void;
   showPinnedCategories: boolean;
   toggleShowPinnedCategories: () => void;
+  showPinnedHabits: boolean;
+  toggleShowPinnedHabits: () => void;
   collapseSubtasksByDefault: boolean;
   toggleCollapseSubtasksByDefault: () => void;
   defaultTaskLayout: "list" | "grid";
@@ -1082,6 +1084,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
   const [showPinnedTasks, setShowPinnedTasks] = useState(true);
   const [showPinnedNotes, setShowPinnedNotes] = useState(true);
   const [showPinnedCategories, setShowPinnedCategories] = useState(true);
+  const [showPinnedHabits, setShowPinnedHabits] = useState(true);
   const [collapseSubtasksByDefault, setCollapseSubtasksByDefault] =
     useState(false);
   const [defaultTaskLayout, setDefaultTaskLayout] = useState<"list" | "grid">(
@@ -1197,6 +1200,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
           if (typeof data.showPinnedCategories === "boolean") {
             setShowPinnedCategories(data.showPinnedCategories);
           }
+          if (typeof data.showPinnedHabits === "boolean") {
+            setShowPinnedHabits(data.showPinnedHabits);
+          }
           if (typeof data.collapseSubtasksByDefault === "boolean") {
             setCollapseSubtasksByDefault(data.collapseSubtasksByDefault);
           }
@@ -1282,6 +1288,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
             showPinnedTasks,
             showPinnedNotes,
             showPinnedCategories,
+            showPinnedHabits,
             collapseSubtasksByDefault,
             defaultTaskLayout,
             showCompletedByDefault,
@@ -1323,6 +1330,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     showPinnedTasks,
     showPinnedNotes,
     showPinnedCategories,
+    showPinnedHabits,
     collapseSubtasksByDefault,
     defaultTaskLayout,
     showCompletedByDefault,
@@ -1536,6 +1544,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     setShowPinnedCategories((prev) => !prev);
   };
 
+  const toggleShowPinnedHabits = () => {
+    setShowPinnedHabits((prev) => !prev);
+  };
+
   const toggleCollapseSubtasksByDefault = () => {
     setCollapseSubtasksByDefault((prev) => !prev);
   };
@@ -1572,6 +1584,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
         toggleShowPinnedNotes,
         showPinnedCategories,
         toggleShowPinnedCategories,
+        showPinnedHabits,
+        toggleShowPinnedHabits,
         collapseSubtasksByDefault,
         toggleCollapseSubtasksByDefault,
         defaultTaskLayout,
