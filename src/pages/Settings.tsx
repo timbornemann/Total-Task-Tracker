@@ -129,6 +129,8 @@ const SettingsPage: React.FC = () => {
     toggleShowPinnedNotes,
     showPinnedCategories,
     toggleShowPinnedCategories,
+    showPinnedHabits,
+    toggleShowPinnedHabits,
     collapseSubtasksByDefault,
     toggleCollapseSubtasksByDefault,
     defaultTaskLayout,
@@ -1165,6 +1167,16 @@ const SettingsPage: React.FC = () => {
                   />
                   <Label htmlFor="showPinnedCategories">
                     {t("settingsPage.showPinnedCategories")}
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="showPinnedHabits"
+                    checked={showPinnedHabits}
+                    onCheckedChange={toggleShowPinnedHabits}
+                  />
+                  <Label htmlFor="showPinnedHabits">
+                    {t("settingsPage.showPinnedHabits")}
                   </Label>
                 </div>
                 <DndContext

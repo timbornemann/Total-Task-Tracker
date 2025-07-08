@@ -4,6 +4,7 @@ import {
   Note,
   Flashcard,
   Deck,
+  Habit,
   Deletion,
   PomodoroSession,
   Timer,
@@ -15,6 +16,7 @@ export interface OfflineData {
   categories: Category[];
   notes: Note[];
   recurring: Task[];
+  habits: Habit[];
   flashcards: Flashcard[];
   decks: Deck[];
   pomodoroSessions: PomodoroSession[];
@@ -49,6 +51,7 @@ export const updateOfflineData = (partial: Partial<OfflineData>) => {
     categories: [],
     notes: [],
     recurring: [],
+    habits: [],
     flashcards: [],
     decks: [],
     pomodoroSessions: [],
@@ -64,6 +67,7 @@ export const syncWithServer = async (): Promise<OfflineData> => {
     categories: [],
     notes: [],
     recurring: [],
+    habits: [],
     flashcards: [],
     decks: [],
     pomodoroSessions: [],
