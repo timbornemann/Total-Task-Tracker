@@ -95,7 +95,7 @@ const HabitCard: React.FC<{ habit: Habit }> = ({ habit }) => {
   const doneColor = adjustColor(baseColor, isColorDark(baseColor) ? 20 : -20);
   const emptyColor = hslToHex(theme.muted);
   const rows = [...freqDays].sort((a, b) => a - b);
-  const firstTaskDate = habit.startDate
+  const firstHabitDate = habit.startDate
     ? startOfDay(new Date(habit.startDate))
     : startOfDay(habit.createdAt);
 
@@ -164,7 +164,7 @@ const HabitCard: React.FC<{ habit: Habit }> = ({ habit }) => {
                   const dateStr = format(date, "yyyy-MM-dd");
                   const done = completionSet.has(dateStr);
                   const future = date > today;
-                  const beforeStart = date < firstTaskDate;
+                  const beforeStart = date < firstHabitDate;
                   const inactive = future || beforeStart;
                   const currentDay = isToday(date);
                   return (
@@ -225,7 +225,7 @@ const HabitTrackerPage: React.FC = () => {
             size="sm"
             onClick={() => setIsModalOpen(true)}
           >
-            <Plus className="h-4 w-4 mr-2" /> {t("recurring.template")}
+            <Plus className="h-4 w-4 mr-2" /> {t("habitModal.newTitle")}
           </Button>
         </div>
       </div>

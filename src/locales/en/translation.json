@@ -196,7 +196,8 @@
     "weekly": "Weekly",
     "monthly": "Monthly",
     "yearly": "Yearly",
-    "customInterval": "Custom days"
+    "customInterval": "Custom days",
+    "weekday": "Weekday"
   },
   "common": {
     "cancel": "Cancel",

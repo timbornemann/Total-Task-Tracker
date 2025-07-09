@@ -126,7 +126,7 @@ const HabitModal: React.FC<HabitModalProps> = ({
           </div>
           {formData.recurrencePattern === "weekly" && (
             <div>
-              <Label htmlFor="weekday">{t("taskModal.weekday")}</Label>
+              <Label htmlFor="weekday">{t("habitModal.weekday")}</Label>
               <Input
                 id="weekday"
                 type="number"

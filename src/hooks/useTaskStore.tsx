@@ -523,25 +523,6 @@ const useTaskStoreImpl = () => {
     );
   };
 
-  const toggleHabitCompletion = (id: string, date: string) => {
-    setTasks((prev) =>
-      prev.map((task) => {
-        if (task.recurringId === id) {
-          const taskDate = format(task.createdAt, "yyyy-MM-dd");
-          if (taskDate === date) {
-            const markComplete = !task.completed;
-            return {
-              ...task,
-              completed: markComplete,
-              status: markComplete ? "done" : "todo",
-              updatedAt: new Date(),
-            };
-          }
-        }
-        return task;
-      }),
-    );
-  };
 
   const deleteRecurringTask = (id: string) => {
     setRecurring((prev) => prev.filter((t) => t.id !== id));
@@ -927,7 +908,6 @@ const useTaskStoreImpl = () => {
     addRecurringTask,
     updateRecurringTask,
     deleteRecurringTask,
-    toggleHabitCompletion,
   };
 };
 
