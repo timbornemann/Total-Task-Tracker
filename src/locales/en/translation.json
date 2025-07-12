@@ -753,7 +753,10 @@
     "duration": "Duration"
   },
   "worklogDetail": {
-    "title": "Worklog Details"
+    "title": "Worklog Details",
+    "totalHours": "Total hours",
+    "averageHours": "Average per day",
+    "daysList": "Work Days"
   },
   "ui": {
     "previous": "Previous",

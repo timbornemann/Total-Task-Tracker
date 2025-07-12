@@ -4,7 +4,14 @@ import { useParams } from "react-router-dom";
 import { useWorklog } from "@/hooks/useWorklog";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+} from "recharts";
 
 const WorklogDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -26,10 +33,10 @@ const WorklogDetailPage: React.FC = () => {
   );
   const totalMinutes = days.reduce(
     (sum, d) =>
-      sum +
-      (new Date(d.end).getTime() - new Date(d.start).getTime()) / 60000,
+      sum + (new Date(d.end).getTime() - new Date(d.start).getTime()) / 60000,
     0,
   );
+  const avgHours = days.length ? totalMinutes / 60 / days.length : 0;
 
   const lastWeek: { date: string; minutes: number }[] = [];
   for (let i = 6; i >= 0; i--) {
@@ -54,7 +61,12 @@ const WorklogDetailPage: React.FC = () => {
         <h2 className="font-semibold">
           {id === "default" ? t("worklog.noTrip") : trip?.name}
         </h2>
-        <p>{(totalMinutes / 60).toFixed(2)} h</p>
+        <p>
+          {t("worklogDetail.totalHours")}: {(totalMinutes / 60).toFixed(2)} h
+        </p>
+        <p>
+          {t("worklogDetail.averageHours")}: {avgHours.toFixed(2)} h
+        </p>
         <Card>
           <CardHeader>
             <CardTitle className="text-base">
@@ -77,6 +89,21 @@ const WorklogDetailPage: React.FC = () => {
             </div>
           </CardContent>
         </Card>
+        <div>
+          <h3 className="font-semibold">{t("worklogDetail.daysList")}</h3>
+          <ul className="ml-4 list-disc">
+            {days.map((d) => (
+              <li key={d.id}>
+                {d.start.slice(0, 16)} - {d.end.slice(0, 16)} ({" "}
+                {(
+                  (new Date(d.end).getTime() - new Date(d.start).getTime()) /
+                  3600000
+                ).toFixed(2)}
+                h)
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );
