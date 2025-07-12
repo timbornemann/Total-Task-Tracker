@@ -20,7 +20,15 @@ import { de as deLocale, enUS } from "date-fns/locale";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import HabitModal from "@/components/HabitModal";
-import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Plus,
+  ChevronLeft,
+  ChevronRight,
+  Star,
+  StarOff,
+  Edit,
+  Trash2,
+} from "lucide-react";
 import {
   complementaryColor,
   adjustColor,
@@ -41,7 +49,12 @@ const getFrequencyDays = (habit: Habit): number[] => {
   return [0, 1, 2, 3, 4, 5, 6];
 };
 
-const HabitCard: React.FC<{ habit: Habit }> = ({ habit }) => {
+const HabitCard: React.FC<{
+  habit: Habit;
+  onEdit: (habit: Habit) => void;
+  onDelete: (id: string) => void;
+  onTogglePinned: (id: string, val: boolean) => void;
+}> = ({ habit, onEdit, onDelete, onTogglePinned }) => {
   const { toggleHabitCompletion } = useHabitStore();
   const { colorPalette, theme } = useSettings();
   const { t } = useTranslation();
@@ -102,7 +115,39 @@ const HabitCard: React.FC<{ habit: Habit }> = ({ habit }) => {
   return (
     <Card style={{ backgroundColor: baseColor, color: textColor }}>
       <CardHeader className="pb-2 space-y-1">
-        <CardTitle className="text-base">{habit.title}</CardTitle>
+        <div className="flex items-start justify-between">
+          <CardTitle className="text-base flex-1 mr-2">{habit.title}</CardTitle>
+          <div className="flex space-x-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 w-6 p-0"
+              onClick={() => onTogglePinned(habit.id, !habit.pinned)}
+            >
+              {habit.pinned ? (
+                <Star className="h-4 w-4" />
+              ) : (
+                <StarOff className="h-4 w-4" />
+              )}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 w-6 p-0"
+              onClick={() => onEdit(habit)}
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 w-6 p-0"
+              onClick={() => onDelete(habit.id)}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
         <div className="flex items-center justify-between text-xs">
           <button
             className="p-1 rounded hover:bg-muted"
@@ -198,12 +243,17 @@ const HabitCard: React.FC<{ habit: Habit }> = ({ habit }) => {
 };
 
 const HabitTrackerPage: React.FC = () => {
-  const { habits, addHabit } = useHabitStore();
+  const { habits, addHabit, updateHabit, deleteHabit } = useHabitStore();
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editHabit, setEditHabit] = useState<Habit | undefined>(undefined);
 
   const handleSave = (data: HabitFormData) => {
-    addHabit(data);
+    if (editHabit) {
+      updateHabit(editHabit.id, data);
+    } else {
+      addHabit(data);
+    }
   };
 
   return (
@@ -215,7 +265,16 @@ const HabitTrackerPage: React.FC = () => {
         ) : (
           <div className="space-y-6">
             {habits.map((habit) => (
-              <HabitCard key={habit.id} habit={habit} />
+              <HabitCard
+                key={habit.id}
+                habit={habit}
+                onEdit={(h) => {
+                  setEditHabit(h);
+                  setIsModalOpen(true);
+                }}
+                onDelete={deleteHabit}
+                onTogglePinned={(id, val) => updateHabit(id, { pinned: val })}
+              />
             ))}
           </div>
         )}
@@ -231,8 +290,12 @@ const HabitTrackerPage: React.FC = () => {
       </div>
       <HabitModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditHabit(undefined);
+        }}
         onSave={handleSave}
+        habit={editHabit}
       />
     </div>
   );

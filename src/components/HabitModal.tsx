@@ -33,10 +33,12 @@ const HabitModal: React.FC<HabitModalProps> = ({
   habit,
 }) => {
   const { t } = useTranslation();
-  const { colorPalette } = useSettings();
+  const { colorPalette, defaultHabitColor, defaultHabitRecurrence } =
+    useSettings();
   const [formData, setFormData] = useState<HabitFormData>({
     title: "",
-    color: 0,
+    color: defaultHabitColor,
+    recurrencePattern: defaultHabitRecurrence,
   });
 
   useEffect(() => {
@@ -51,7 +53,11 @@ const HabitModal: React.FC<HabitModalProps> = ({
         startDate: habit.startDate ? new Date(habit.startDate) : undefined,
       });
     } else {
-      setFormData({ title: "", color: 0 });
+      setFormData({
+        title: "",
+        color: defaultHabitColor,
+        recurrencePattern: defaultHabitRecurrence,
+      });
     }
   }, [isOpen, habit]);
 

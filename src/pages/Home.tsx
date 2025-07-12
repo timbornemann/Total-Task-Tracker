@@ -4,12 +4,15 @@ import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { useSettings } from "@/hooks/useSettings";
-import { isColorDark, adjustColor } from "@/utils/color";
+import { isColorDark, adjustColor, complementaryColor } from "@/utils/color";
 import { allHomeSections, HomeSection } from "@/utils/homeSections";
 import TaskCard from "@/components/TaskCard";
 import CategoryCard from "@/components/CategoryCard";
 import { useTaskStore } from "@/hooks/useTaskStore";
 import { useHabitStore } from "@/hooks/useHabitStore";
+import { format, startOfDay } from "date-fns";
+import { Habit } from "@/types";
+import { Check, Circle } from "lucide-react";
 import NoteCard from "@/components/NoteCard";
 import { flattenTasks } from "@/utils/taskUtils";
 
@@ -67,6 +70,18 @@ const Home: React.FC = () => {
         .slice(0, 3),
     [habits],
   );
+  const today = startOfDay(new Date());
+  const todayStr = format(today, "yyyy-MM-dd");
+
+  const getFrequencyDays = (habit: Habit): number[] => {
+    if (
+      habit.recurrencePattern === "weekly" &&
+      typeof habit.startWeekday === "number"
+    ) {
+      return [habit.startWeekday];
+    }
+    return [0, 1, 2, 3, 4, 5, 6];
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -164,13 +179,45 @@ const Home: React.FC = () => {
               {t("home.pinnedHabits")}
             </h2>
             <div className="space-y-3">
-              {pinnedHabits.map((habit) => (
-                <Link key={habit.id} to="/habits" className="block">
-                  <Card>
-                    <CardContent className="p-3">{habit.title}</CardContent>
-                  </Card>
-                </Link>
-              ))}
+              {pinnedHabits.map((habit) => {
+                const base = colorPalette[habit.color] ?? colorPalette[0];
+                const text = complementaryColor(base);
+                const active =
+                  getFrequencyDays(habit).includes(today.getDay()) &&
+                  (!habit.startDate ||
+                    startOfDay(new Date(habit.startDate)) <= today);
+                const done = habit.completions.includes(todayStr);
+                return (
+                  <Link key={habit.id} to="/habits" className="block">
+                    <Card style={{ backgroundColor: base, color: text }}>
+                      <CardContent className="p-3 flex items-center justify-between">
+                        <span>{habit.title}</span>
+                        <button
+                          type="button"
+                          aria-label={t("habits.clickToToggle")}
+                          disabled={!active}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            if (active)
+                              toggleHabitCompletion(habit.id, todayStr);
+                          }}
+                          className="h-6 w-6 p-0 rounded-full flex items-center justify-center disabled:opacity-50"
+                          style={{
+                            backgroundColor: done ? text : "transparent",
+                            color: done ? base : text,
+                          }}
+                        >
+                          {done ? (
+                            <Check className="h-4 w-4" />
+                          ) : (
+                            <Circle className="h-4 w-4" />
+                          )}
+                        </button>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         )}
