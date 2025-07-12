@@ -5,12 +5,10 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import TripModal from "@/components/TripModal";
 import WorkDayModal from "@/components/WorkDayModal";
-import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import { useWorklog } from "@/hooks/useWorklog";
 import { useSettings } from "@/hooks/useSettings";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
-import "leaflet/dist/leaflet.css";
 
 const WorklogPage: React.FC = () => {
   const { t } = useTranslation();
@@ -24,7 +22,7 @@ const WorklogPage: React.FC = () => {
     updateWorkDay,
     deleteWorkDay,
   } = useWorklog();
-  const { worklogCardShadow, defaultWorkLat, defaultWorkLng } = useSettings();
+  const { worklogCardShadow } = useSettings();
   const [showTripModal, setShowTripModal] = useState(false);
   const [editingTrip, setEditingTrip] = useState<string | null>(null);
   const [showDayModal, setShowDayModal] = useState(false);
@@ -36,7 +34,7 @@ const WorklogPage: React.FC = () => {
   const currentTrip = trips.find((t) => t.id === editingTrip);
   const currentDay = workDays.find((d) => d.id === editingDay);
 
-  const handleSaveTrip = (data: { name: string }) => {
+  const handleSaveTrip = (data: { name: string; location: string }) => {
     if (editingTrip) {
       updateTrip(editingTrip, data);
     } else {
@@ -85,6 +83,11 @@ const WorklogPage: React.FC = () => {
                   <Link to={`/worklog/${trip.id}`} className="hover:underline">
                     {trip.name}
                   </Link>
+                  {trip.location && (
+                    <span className="ml-2 text-sm text-muted-foreground">
+                      ({trip.location})
+                    </span>
+                  )}
                 </span>
                 <span className="space-x-2">
                   <Button
@@ -177,16 +180,6 @@ const WorklogPage: React.FC = () => {
             >
               {t("worklog.addDay")}
             </Button>
-            {defaultWorkLat !== null && defaultWorkLng !== null && (
-              <MapContainer
-                center={[defaultWorkLat, defaultWorkLng]}
-                zoom={6}
-                className="h-40 w-full rounded mb-2"
-              >
-                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                <Marker position={[defaultWorkLat, defaultWorkLng]} />
-              </MapContainer>
-            )}
             <ul className="ml-4 list-disc">
               {workDays
                 .filter((d) => !d.tripId)

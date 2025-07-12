@@ -34,6 +34,7 @@
       "pomodoro": "Pomodoro",
       "flashcards": "Cards",
       "timers": "Timers",
+      "worklog": "Worklog",
       "tasks": "Tasks",
       "habits": "Habits",
       "home": "Home",
@@ -46,7 +47,7 @@
     "groups": {
       "general": "General",
       "customization": "Customization",
-      "productivity": "Productivity",
+      "features": "Features",
       "data": "Data & Server",
       "info": "Info"
     },
@@ -98,8 +99,7 @@
     "showPinnedHabits": "Show pinned habits",
     "enableWorklog": "Enable worklog feature",
     "worklogCardShadow": "Shadow on worklog cards",
-    "defaultWorkLat": "Default work latitude",
-    "defaultWorkLng": "Default work longitude",
+    "defaultWorkLocation": "Default work location",
     "offlineCache": "Enable offline cache",
     "themePreset": "Preset",
     "customThemeName": "Theme name",
@@ -223,8 +223,7 @@
     "editTitle": "Edit Trip",
     "newTitle": "New Trip",
     "name": "Name",
-    "latitude": "Latitude",
-    "longitude": "Longitude"
+    "location": "Location"
   },
   "workDayModal": {
     "editTitle": "Edit Work Day",
