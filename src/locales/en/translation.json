@@ -753,7 +753,8 @@
     "workTime": "Work Time",
     "duration": "Duration",
     "totalTime": "Total: {{hours}}h {{minutes}}m",
-    "exportCsv": "Export CSV"
+    "exportCsv": "Export CSV",
+    "importCsv": "Import CSV"
   },
   "worklogDetail": {
     "title": "Worklog Details",

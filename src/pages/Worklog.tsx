@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -38,6 +39,8 @@ const WorklogPage: React.FC = () => {
   const [tripIdForNewDay, setTripIdForNewDay] = useState<string | undefined>(
     undefined,
   );
+  const [importTripId, setImportTripId] = useState<string | undefined>(undefined);
+  const csvInputRef = useRef<HTMLInputElement>(null);
 
   const currentTrip = trips.find((t) => t.id === editingTrip);
   const currentDay = workDays.find((d) => d.id === editingDay);
@@ -83,6 +86,26 @@ const WorklogPage: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
+  const openImportCsv = (tripId?: string) => {
+    setImportTripId(tripId);
+    csvInputRef.current?.click();
+  };
+
+  const handleCsvFile = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+    const lines = text.trim().split(/\r?\n/).slice(1);
+    for (const line of lines) {
+      const [start, end] = line.split(',');
+      if (start && end)
+        addWorkDay({ start, end, tripId: importTripId });
+    }
+    e.target.value = '';
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar title={t("navbar.worklog") as string} />
@@ -114,9 +137,41 @@ const WorklogPage: React.FC = () => {
           return (
             <Card
               key={trip.id}
-              className={`mb-6 p-2 ${worklogCardShadow ? "shadow" : ""}`}
+              className={`relative mb-6 p-2 ${worklogCardShadow ? "shadow" : ""}`}
               style={{ backgroundColor: baseColor, color: textColor }}
             >
+            <div className="absolute right-2 top-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-5 w-5 p-0">
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-background z-50">
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setEditingTrip(trip.id);
+                      setShowTripModal(true);
+                    }}
+                  >
+                    <Edit className="h-4 w-4 mr-2" />
+                    {t("common.edit")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => deleteTrip(trip.id)}>
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    {t("common.delete")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => exportCsv(trip.id)}>
+                    <FileDown className="h-4 w-4 mr-2" />
+                    {t("worklog.exportCsv")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => openImportCsv(trip.id)}>
+                    <FileDown className="h-4 w-4 mr-2 rotate-180" />
+                    {t("worklog.importCsv")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
             <CardHeader className="p-2 pb-0">
               <CardTitle className="text-base flex justify-between items-center">
                 <div className="flex flex-col">
@@ -134,32 +189,6 @@ const WorklogPage: React.FC = () => {
                     {t("worklog.totalTime", { hours, minutes })}
                   </span>
                 </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-5 w-5 p-0">
-                      <Settings className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="bg-background z-50">
-                    <DropdownMenuItem
-                      onClick={() => {
-                        setEditingTrip(trip.id);
-                        setShowTripModal(true);
-                      }}
-                    >
-                      <Edit className="h-4 w-4 mr-2" />
-                      {t("common.edit")}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => deleteTrip(trip.id)}>
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      {t("common.delete")}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => exportCsv(trip.id)}>
-                      <FileDown className="h-4 w-4 mr-2" />
-                      {t("worklog.exportCsv")}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-2">
@@ -214,9 +243,28 @@ const WorklogPage: React.FC = () => {
         );
       })}
       <Card
-          className={`p-2 ${worklogCardShadow ? "shadow" : ""}`}
+          className={`relative p-2 ${worklogCardShadow ? "shadow" : ""}`}
           style={{ backgroundColor: colorPalette[defaultTripColor], color: isColorDark(colorPalette[defaultTripColor]) ? "#fff" : "#000" }}
         >
+        <div className="absolute right-2 top-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-5 w-5 p-0">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-background z-50">
+              <DropdownMenuItem onClick={() => exportCsv(undefined)}>
+                <FileDown className="h-4 w-4 mr-2" />
+                {t("worklog.exportCsv")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => openImportCsv(undefined)}>
+                <FileDown className="h-4 w-4 mr-2 rotate-180" />
+                {t("worklog.importCsv")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
           <CardHeader className="p-2 pb-0 flex justify-between items-center">
             <CardTitle className="text-base">
               <Link to="/worklog/default" className="hover:underline">
@@ -249,19 +297,6 @@ const WorklogPage: React.FC = () => {
                 ),
               })}
             </span>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-5 w-5 p-0">
-                  <Settings className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-background z-50">
-                <DropdownMenuItem onClick={() => exportCsv(undefined)}>
-                  <FileDown className="h-4 w-4 mr-2" />
-                  {t("worklog.exportCsv")}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </CardHeader>
           <CardContent className="pt-2">
             <Button
@@ -328,6 +363,13 @@ const WorklogPage: React.FC = () => {
         workDay={currentDay}
         trips={trips}
         defaultTripId={tripIdForNewDay}
+      />
+      <Input
+        ref={csvInputRef}
+        type="file"
+        accept="text/csv"
+        onChange={handleCsvFile}
+        className="hidden"
       />
     </div>
   );
