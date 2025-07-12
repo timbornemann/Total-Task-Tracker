@@ -211,8 +211,9 @@ const WorklogPage: React.FC = () => {
               </ul>
             </CardContent>
           </Card>
-        ))}
-        <Card
+        );
+      })}
+      <Card
           className={`p-2 ${worklogCardShadow ? "shadow" : ""}`}
           style={{ backgroundColor: colorPalette[defaultTripColor], color: isColorDark(colorPalette[defaultTripColor]) ? "#fff" : "#000" }}
         >
