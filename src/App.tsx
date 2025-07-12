@@ -8,6 +8,7 @@ import { CurrentCategoryProvider } from "@/hooks/useCurrentCategory";
 import { SettingsProvider } from "@/hooks/useSettings";
 import { FlashcardStoreProvider } from "@/hooks/useFlashcardStore";
 import { HabitStoreProvider } from "@/hooks/useHabitStore";
+import { InventoryProvider } from "@/hooks/useInventoryStore";
 import ServiceWorkerManager from "@/components/ServiceWorkerManager";
 import CommandPalette from "@/components/CommandPalette";
 import Home from "./pages/Home";
@@ -40,6 +41,8 @@ import RecurringTasksPage from "./pages/RecurringTasks";
 import HabitTrackerPage from "./pages/HabitTracker";
 import TimeBlockingPage from "./pages/TimeBlocking";
 import TaskDetailPage from "./pages/TaskDetail";
+import InventoryPage from "./pages/Inventory";
+import InventoryDetailPage from "./pages/InventoryDetail";
 
 const queryClient = new QueryClient();
 
@@ -53,7 +56,8 @@ const App = () => (
             <TaskStoreProvider>
               <HabitStoreProvider>
                 <FlashcardStoreProvider>
-                  <CurrentCategoryProvider>
+                  <InventoryProvider>
+                    <CurrentCategoryProvider>
                 <Toaster />
                 <Sonner />
                 <BrowserRouter>
@@ -83,6 +87,8 @@ const App = () => (
                     />
                     <Route path="/notes" element={<NotesPage />} />
                     <Route path="/notes/:id" element={<NoteDetailPage />} />
+                    <Route path="/inventory" element={<InventoryPage />} />
+                    <Route path="/inventory/:id" element={<InventoryDetailPage />} />
                     <Route path="/settings" element={<SettingsPage />} />
                     <Route
                       path="/release-notes"
@@ -106,7 +112,8 @@ const App = () => (
                 <TimerTicker />
                 <ReleaseNotesModal />
               </CurrentCategoryProvider>
-            </FlashcardStoreProvider>
+            </InventoryProvider>
+          </FlashcardStoreProvider>
           </HabitStoreProvider>
           </TaskStoreProvider>
           </TimersProvider>

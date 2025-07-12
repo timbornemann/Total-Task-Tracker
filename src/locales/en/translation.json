@@ -13,6 +13,7 @@
     "pomodoro": "Pomodoro",
     "timers": "Timers",
     "clock": "Clock",
+    "inventory": "Inventory",
     "cardStatistics": "Statistics",
     "notes": "Notes",
     "settings": "Settings",
@@ -202,6 +203,16 @@
     "customInterval": "Custom days",
     "weekday": "Weekday"
   },
+  "inventoryModal": {
+    "editTitle": "Edit Item",
+    "newTitle": "New Item",
+    "name": "Name",
+    "description": "Description",
+    "quantity": "Quantity",
+    "category": "Category",
+    "tags": "Tags (comma separated)",
+    "buyAgain": "Need to restock"
+  },
   "common": {
     "cancel": "Cancel",
     "save": "Save",
@@ -210,6 +221,8 @@
     "delete": "Delete",
     "none": "None",
     "back": "Back",
+    "yes": "Yes",
+    "no": "No",
     "undo": "Undo",
     "continue": "Continue"
   },
@@ -314,6 +327,18 @@
     "clickToToggle": "Click to toggle completion",
     "streak": "Streak: {{count}}",
     "progress": "{{completed}}/{{total}} done"
+  },
+  "inventory": {
+    "title": "Inventory",
+    "newItem": "New Item",
+    "none": "No items available.",
+    "quantity": "Quantity",
+    "description": "Description",
+    "buyAgain": "Need to restock",
+    "category": "Category",
+    "tags": "Tags",
+    "categoryFilter": "Filter category",
+    "tagFilter": "Filter tag"
   },
   "statistics": {
     "title": "Task Statistics",

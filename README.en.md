@@ -163,6 +163,7 @@ Use [Capacitor](https://capacitorjs.com/) to wrap the tracker as an Android app.
 - Timed mode with customizable countdown per card; The timer is started once and can be paused. In the event of expiry, "heavy" is automatically evaluated
 - Statistics page for learning cards
 - Deck statistics with an overview of due cards
+- Inventory management with categories and tags
 - Storage of the data on the local server
 - can be installed as a progressive web app (desktop and smartphone)
 - Pomodoro-timer continues when recharging the page
