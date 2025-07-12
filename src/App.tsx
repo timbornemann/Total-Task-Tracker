@@ -7,6 +7,7 @@ import { TaskStoreProvider } from "@/hooks/useTaskStore";
 import { CurrentCategoryProvider } from "@/hooks/useCurrentCategory";
 import { SettingsProvider } from "@/hooks/useSettings";
 import { FlashcardStoreProvider } from "@/hooks/useFlashcardStore";
+import { HabitStoreProvider } from "@/hooks/useHabitStore";
 import ServiceWorkerManager from "@/components/ServiceWorkerManager";
 import CommandPalette from "@/components/CommandPalette";
 import Home from "./pages/Home";
@@ -50,8 +51,9 @@ const App = () => (
         <PomodoroHistoryProvider>
           <TimersProvider>
             <TaskStoreProvider>
-              <FlashcardStoreProvider>
-                <CurrentCategoryProvider>
+              <HabitStoreProvider>
+                <FlashcardStoreProvider>
+                  <CurrentCategoryProvider>
                 <Toaster />
                 <Sonner />
                 <BrowserRouter>
@@ -105,6 +107,7 @@ const App = () => (
                 <ReleaseNotesModal />
               </CurrentCategoryProvider>
             </FlashcardStoreProvider>
+          </HabitStoreProvider>
           </TaskStoreProvider>
           </TimersProvider>
         </PomodoroHistoryProvider>
