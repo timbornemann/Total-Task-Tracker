@@ -40,6 +40,9 @@ const defaultTaskLayoutSetting: "list" | "grid" = "list";
 const defaultShowCompletedTasksSetting = true;
 const defaultTaskColorSetting = 0;
 const defaultTimerColorSetting = 0;
+const defaultHabitColorSetting = 0;
+const defaultHabitRecurrenceSetting: "daily" | "weekly" | "monthly" | "yearly" =
+  "daily";
 const defaultTimerExtendSetting = 60;
 const defaultLanguage = "de";
 const defaultLlmUrl = "";
@@ -1008,6 +1011,12 @@ interface SettingsContextValue {
   updateDefaultTaskColor: (val: number) => void;
   defaultTimerColor: number;
   updateDefaultTimerColor: (val: number) => void;
+  defaultHabitColor: number;
+  updateDefaultHabitColor: (val: number) => void;
+  defaultHabitRecurrence: "daily" | "weekly" | "monthly" | "yearly";
+  updateDefaultHabitRecurrence: (
+    val: "daily" | "weekly" | "monthly" | "yearly",
+  ) => void;
   timerExtendSeconds: number;
   updateTimerExtendSeconds: (val: number) => void;
   flashcardTimer: number;
@@ -1099,6 +1108,12 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
   const [defaultTimerColor, setDefaultTimerColor] = useState(
     defaultTimerColorSetting,
   );
+  const [defaultHabitColor, setDefaultHabitColor] = useState(
+    defaultHabitColorSetting,
+  );
+  const [defaultHabitRecurrence, setDefaultHabitRecurrence] = useState<
+    "daily" | "weekly" | "monthly" | "yearly"
+  >(defaultHabitRecurrenceSetting);
   const [timerExtendSeconds, setTimerExtendSeconds] = useState(
     defaultTimerExtendSetting,
   );
@@ -1218,6 +1233,12 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
           if (typeof data.defaultTimerColor === "number") {
             setDefaultTimerColor(data.defaultTimerColor);
           }
+          if (typeof data.defaultHabitColor === "number") {
+            setDefaultHabitColor(data.defaultHabitColor);
+          }
+          if (typeof data.defaultHabitRecurrence === "string") {
+            setDefaultHabitRecurrence(data.defaultHabitRecurrence);
+          }
           if (typeof data.timerExtendSeconds === "number") {
             setTimerExtendSeconds(data.timerExtendSeconds);
           }
@@ -1294,6 +1315,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
             showCompletedByDefault,
             defaultTaskColor,
             defaultTimerColor,
+            defaultHabitColor,
+            defaultHabitRecurrence,
             timerExtendSeconds,
             flashcardTimer,
             flashcardSessionSize,
@@ -1336,6 +1359,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     showCompletedByDefault,
     defaultTaskColor,
     defaultTimerColor,
+    defaultHabitColor,
+    defaultHabitRecurrence,
     timerExtendSeconds,
     flashcardTimer,
     flashcardSessionSize,
@@ -1511,6 +1536,16 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     setDefaultTimerColor(val);
   };
 
+  const updateDefaultHabitColor = (val: number) => {
+    setDefaultHabitColor(val);
+  };
+
+  const updateDefaultHabitRecurrence = (
+    val: "daily" | "weekly" | "monthly" | "yearly",
+  ) => {
+    setDefaultHabitRecurrence(val);
+  };
+
   const updateTimerExtendSeconds = (val: number) => {
     setTimerExtendSeconds(val);
   };
@@ -1596,6 +1631,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
         updateDefaultTaskColor,
         defaultTimerColor,
         updateDefaultTimerColor,
+        defaultHabitColor,
+        updateDefaultHabitColor,
+        defaultHabitRecurrence,
+        updateDefaultHabitRecurrence,
         timerExtendSeconds,
         updateTimerExtendSeconds,
         flashcardTimer,

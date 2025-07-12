@@ -141,6 +141,10 @@ const SettingsPage: React.FC = () => {
     updateDefaultTaskColor,
     defaultTimerColor,
     updateDefaultTimerColor,
+    defaultHabitColor,
+    updateDefaultHabitColor,
+    defaultHabitRecurrence,
+    updateDefaultHabitRecurrence,
     timerExtendSeconds,
     updateTimerExtendSeconds,
     flashcardTimer,
@@ -722,6 +726,9 @@ const SettingsPage: React.FC = () => {
                       <TabsTrigger className="justify-start" value="tasks">
                         {t("settings.tabs.tasks")}
                       </TabsTrigger>
+                      <TabsTrigger className="justify-start" value="habits">
+                        {t("settings.tabs.habits")}
+                      </TabsTrigger>
                       <TabsTrigger className="justify-start" value="flashcards">
                         {t("settings.tabs.flashcards")}
                       </TabsTrigger>
@@ -1103,6 +1110,53 @@ const SettingsPage: React.FC = () => {
                   <Label htmlFor="collapseSubtasks">
                     {t("settingsPage.collapseSubtasks")}
                   </Label>
+                </div>
+              </TabsContent>
+              <TabsContent value="habits" className="space-y-4">
+                <div>
+                  <Label>{t("settingsPage.defaultHabitColor")}</Label>
+                  <div className="flex space-x-1 mt-1">
+                    {colorPalette.map((c, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        className={`w-5 h-5 rounded-full border-2 transition-all ${
+                          defaultHabitColor === idx
+                            ? "border-foreground scale-110"
+                            : "border-gray-300 hover:scale-105"
+                        }`}
+                        style={{ backgroundColor: c }}
+                        onClick={() => updateDefaultHabitColor(idx)}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="habitRecurrence">
+                    {t("settingsPage.defaultHabitRecurrence")}
+                  </Label>
+                  <Select
+                    value={defaultHabitRecurrence}
+                    onValueChange={updateDefaultHabitRecurrence}
+                  >
+                    <SelectTrigger id="habitRecurrence">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="daily">
+                        {t("habitModal.daily")}
+                      </SelectItem>
+                      <SelectItem value="weekly">
+                        {t("habitModal.weekly")}
+                      </SelectItem>
+                      <SelectItem value="monthly">
+                        {t("habitModal.monthly")}
+                      </SelectItem>
+                      <SelectItem value="yearly">
+                        {t("habitModal.yearly")}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </TabsContent>
               <TabsContent value="timers" className="space-y-4">
