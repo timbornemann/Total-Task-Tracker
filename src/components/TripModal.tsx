@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 
 interface TripFormData {
   name: string;
+  location: string;
 }
 
 interface TripModalProps {
@@ -29,14 +30,14 @@ const TripModal: React.FC<TripModalProps> = ({
   trip,
 }) => {
   const { t } = useTranslation();
-  const [form, setForm] = useState<TripFormData>({ name: "" });
+  const [form, setForm] = useState<TripFormData>({ name: "", location: "" });
 
   useEffect(() => {
     if (!isOpen) return;
     if (trip) {
-      setForm({ name: trip.name });
+      setForm({ name: trip.name, location: trip.location || "" });
     } else {
-      setForm({ name: "" });
+      setForm({ name: "", location: "" });
     }
   }, [isOpen, trip]);
 
@@ -47,7 +48,7 @@ const TripModal: React.FC<TripModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (form.name.trim()) {
-      onSave({ name: form.name });
+      onSave({ name: form.name, location: form.location.trim() });
       onClose();
     }
   };
@@ -63,15 +64,23 @@ const TripModal: React.FC<TripModalProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="trip-name">{t("tripModal.name")}</Label>
-            <Input
-              id="trip-name"
-              value={form.name}
-              onChange={(e) => handleChange("name", e.target.value)}
-              required
-              autoFocus
-            />
-          </div>
-          <div className="flex justify-end space-x-2 pt-4">
+          <Input
+            id="trip-name"
+            value={form.name}
+            onChange={(e) => handleChange("name", e.target.value)}
+            required
+            autoFocus
+          />
+        </div>
+        <div>
+          <Label htmlFor="trip-location">{t("tripModal.location")}</Label>
+          <Input
+            id="trip-location"
+            value={form.location}
+            onChange={(e) => handleChange("location", e.target.value)}
+          />
+        </div>
+        <div className="flex justify-end space-x-2 pt-4">
             <Button type="button" variant="outline" onClick={onClose}>
               {t("common.cancel")}
             </Button>

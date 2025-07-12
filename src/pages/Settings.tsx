@@ -135,10 +135,8 @@ const SettingsPage: React.FC = () => {
     toggleEnableWorklog,
     worklogCardShadow,
     toggleWorklogCardShadow,
-    defaultWorkLat,
-    updateDefaultWorkLat,
-    defaultWorkLng,
-    updateDefaultWorkLng,
+    defaultWorkLocation,
+    updateDefaultWorkLocation,
     collapseSubtasksByDefault,
     toggleCollapseSubtasksByDefault,
     defaultTaskLayout,
@@ -722,9 +720,9 @@ const SettingsPage: React.FC = () => {
                     </TabsList>
                   </AccordionContent>
                 </AccordionItem>
-                <AccordionItem value="productivity">
+                <AccordionItem value="features">
                   <AccordionTrigger className="text-sm">
-                    {t("settings.groups.productivity")}
+                    {t("settings.groups.features")}
                   </AccordionTrigger>
                   <AccordionContent className="pl-2">
                     <TabsList className="flex flex-col gap-1 bg-transparent p-0 h-auto">
@@ -742,6 +740,9 @@ const SettingsPage: React.FC = () => {
                       </TabsTrigger>
                       <TabsTrigger className="justify-start" value="timers">
                         {t("settings.tabs.timers")}
+                      </TabsTrigger>
+                      <TabsTrigger className="justify-start" value="worklog">
+                        {t("settings.tabs.worklog")}
                       </TabsTrigger>
                     </TabsList>
                   </AccordionContent>
@@ -1200,6 +1201,38 @@ const SettingsPage: React.FC = () => {
                   </div>
                 </div>
               </TabsContent>
+              <TabsContent value="worklog" className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="enableWorklog"
+                    checked={enableWorklog}
+                    onCheckedChange={toggleEnableWorklog}
+                  />
+                  <Label htmlFor="enableWorklog">
+                    {t("settingsPage.enableWorklog")}
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="worklogCardShadow"
+                    checked={worklogCardShadow}
+                    onCheckedChange={toggleWorklogCardShadow}
+                  />
+                  <Label htmlFor="worklogCardShadow">
+                    {t("settingsPage.worklogCardShadow")}
+                  </Label>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="defaultWorkLocation">
+                    {t("settingsPage.defaultWorkLocation")}
+                  </Label>
+                  <Input
+                    id="defaultWorkLocation"
+                    value={defaultWorkLocation}
+                    onChange={(e) => updateDefaultWorkLocation(e.target.value)}
+                  />
+                </div>
+              </TabsContent>
               <TabsContent value="home" className="space-y-2">
                 <div className="flex items-center space-x-2">
                   <Checkbox
@@ -1240,58 +1273,6 @@ const SettingsPage: React.FC = () => {
                   <Label htmlFor="showPinnedHabits">
                     {t("settingsPage.showPinnedHabits")}
                   </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="enableWorklog"
-                    checked={enableWorklog}
-                    onCheckedChange={toggleEnableWorklog}
-                  />
-                  <Label htmlFor="enableWorklog">
-                    {t("settingsPage.enableWorklog")}
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="worklogCardShadow"
-                    checked={worklogCardShadow}
-                    onCheckedChange={toggleWorklogCardShadow}
-                  />
-                  <Label htmlFor="worklogCardShadow">
-                    {t("settingsPage.worklogCardShadow")}
-                  </Label>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="defaultWorkLat">
-                    {t("settingsPage.defaultWorkLat")}
-                  </Label>
-                  <Input
-                    id="defaultWorkLat"
-                    type="number"
-                    step="any"
-                    value={defaultWorkLat ?? ""}
-                    onChange={(e) =>
-                      updateDefaultWorkLat(
-                        e.target.value === "" ? null : Number(e.target.value),
-                      )
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="defaultWorkLng">
-                    {t("settingsPage.defaultWorkLng")}
-                  </Label>
-                  <Input
-                    id="defaultWorkLng"
-                    type="number"
-                    step="any"
-                    value={defaultWorkLng ?? ""}
-                    onChange={(e) =>
-                      updateDefaultWorkLng(
-                        e.target.value === "" ? null : Number(e.target.value),
-                      )
-                    }
-                  />
                 </div>
                 <DndContext
                   sensors={sensors}

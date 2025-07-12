@@ -241,6 +241,7 @@ export interface WorkDay {
 export interface Trip {
   id: string;
   name: string;
+  location?: string;
 }
 
 export interface InventoryItem {

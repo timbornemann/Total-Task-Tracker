@@ -34,6 +34,7 @@
       "pomodoro": "Pomodoro",
       "flashcards": "Karten",
       "timers": "Timer",
+      "worklog": "Arbeitszeiten",
       "tasks": "Tasks",
       "habits": "Gewohnheiten",
       "home": "Startseite",
@@ -46,7 +47,7 @@
     "groups": {
       "general": "Allgemein",
       "customization": "Anpassung",
-      "productivity": "Produktit\u00e4t",
+      "features": "Funktionen",
       "data": "Daten & Server",
       "info": "Info"
     },
@@ -98,8 +99,7 @@
     "showPinnedHabits": "Gepinnte Gewohnheiten anzeigen",
     "enableWorklog": "Arbeitszeiterfassung aktivieren",
     "worklogCardShadow": "Schatten bei Arbeitszeit-Karten",
-    "defaultWorkLat": "Breitengrad des Arbeitsorts",
-    "defaultWorkLng": "Längengrad des Arbeitsorts",
+    "defaultWorkLocation": "Arbeitsort",
     "offlineCache": "Offline-Cache aktivieren",
     "themePreset": "Voreinstellung",
     "customThemeName": "Name des Themes",
@@ -223,8 +223,7 @@
     "editTitle": "Reise bearbeiten",
     "newTitle": "Neue Reise",
     "name": "Name",
-    "latitude": "Breitengrad",
-    "longitude": "Längengrad"
+    "location": "Ort"
   },
   "workDayModal": {
     "editTitle": "Arbeitstag bearbeiten",
