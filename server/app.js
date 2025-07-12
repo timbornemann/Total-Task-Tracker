@@ -69,6 +69,18 @@ db.exec(`
     id TEXT PRIMARY KEY,
     data TEXT NOT NULL
   );
+  CREATE TABLE IF NOT EXISTS inventory_items (
+    id TEXT PRIMARY KEY,
+    data TEXT NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS inventory_categories (
+    id TEXT PRIMARY KEY,
+    data TEXT NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS inventory_tags (
+    id TEXT PRIMARY KEY,
+    data TEXT NOT NULL
+  );
   CREATE TABLE IF NOT EXISTS deletions (
     type TEXT NOT NULL,
     id TEXT NOT NULL,
@@ -224,6 +236,9 @@ export function loadData() {
     timers: loadTimers(),
     trips: loadTrips(),
     workDays: loadWorkDays(),
+    items: loadItems(),
+    itemCategories: loadItemCategories(),
+    itemTags: loadItemTags(),
     deletions: loadDeletions(),
   };
   return applyDeletions(data);
@@ -301,6 +316,9 @@ export function saveData(data) {
     saveNotes(data.notes || []);
     saveRecurring(data.recurring || []);
     saveHabits(data.habits || []);
+    saveItems(data.items || []);
+    saveItemCategories(data.itemCategories || []);
+    saveItemTags(data.itemTags || []);
     savePomodoroSessions(data.pomodoroSessions || []);
     saveTimers(data.timers || []);
     saveDeletions(data.deletions || []);
@@ -432,6 +450,30 @@ export function saveTrips(list) {
   tx();
 }
 
+export function loadItems() {
+  try {
+    return db
+      .prepare("SELECT data FROM inventory_items")
+      .all()
+      .map((row) => JSON.parse(row.data, dateReviver));
+  } catch {
+    return [];
+  }
+}
+
+export function saveItems(list) {
+  const tx = db.transaction(() => {
+    db.exec("DELETE FROM inventory_items");
+    for (const item of list || []) {
+      db.prepare("INSERT INTO inventory_items (id, data) VALUES (?, ?)").run(
+        item.id,
+        toJson(item),
+      );
+    }
+  });
+  tx();
+}
+
 export function saveWorkDays(list) {
   const tx = db.transaction(() => {
     db.exec("DELETE FROM workdays");
@@ -439,6 +481,52 @@ export function saveWorkDays(list) {
       db.prepare("INSERT INTO workdays (id, data) VALUES (?, ?)").run(
         d.id,
         toJson(d),
+      );
+    }
+  });
+  tx();
+}
+export function loadItemCategories() {
+  try {
+    return db
+      .prepare("SELECT data FROM inventory_categories")
+      .all()
+      .map((row) => JSON.parse(row.data));
+  } catch {
+    return [];
+  }
+}
+
+export function saveItemCategories(list) {
+  const tx = db.transaction(() => {
+    db.exec("DELETE FROM inventory_categories");
+    for (const c of list || []) {
+      db.prepare(
+        "INSERT INTO inventory_categories (id, data) VALUES (?, ?)",
+      ).run(c.id, toJson(c));
+    }
+  });
+  tx();
+}
+
+export function loadItemTags() {
+  try {
+    return db
+      .prepare("SELECT data FROM inventory_tags")
+      .all()
+      .map((row) => JSON.parse(row.data));
+  } catch {
+    return [];
+  }
+}
+
+export function saveItemTags(list) {
+  const tx = db.transaction(() => {
+    db.exec("DELETE FROM inventory_tags");
+    for (const t of list || []) {
+      db.prepare("INSERT INTO inventory_tags (id, data) VALUES (?, ?)").run(
+        t.id,
+        toJson(t),
       );
     }
   });
@@ -494,6 +582,9 @@ export function loadAllData() {
     decks: loadDecks(),
     pomodoroSessions: loadPomodoroSessions(),
     timers: loadTimers(),
+    items: loadItems(),
+    itemCategories: loadItemCategories(),
+    itemTags: loadItemTags(),
     settings: loadSettings(),
     deletions: loadDeletions(),
   };
@@ -508,6 +599,9 @@ export function saveAllData(data) {
   saveTimers(data.timers || []);
   saveTrips(data.trips || []);
   saveWorkDays(data.workDays || []);
+  saveItems(data.items || []);
+  saveItemCategories(data.itemCategories || []);
+  saveItemTags(data.itemTags || []);
   if (data.recurring) saveRecurring(data.recurring);
   if (data.habits) saveHabits(data.habits);
   if (data.deletions) saveDeletions(data.deletions);
@@ -734,6 +828,7 @@ import createDecksRouter from "./routes/decks.js";
 import createRecurringRouter from "./routes/recurring.js";
 import createHabitsRouter from "./routes/habits.js";
 import createNotesRouter from "./routes/notes.js";
+import createInventoryRouter from "./routes/inventory.js";
 import createAllRouter from "./routes/all.js";
 import createSettingsRouter from "./routes/settings.js";
 import createPomodoroRouter from "./routes/pomodoro.js";
@@ -758,6 +853,18 @@ app.use(
 );
 app.use("/api/habits", createHabitsRouter({ loadHabits, saveHabits, notifyClients }));
 app.use("/api/notes", createNotesRouter({ loadNotes, saveNotes, notifyClients }));
+app.use(
+  "/api/inventory",
+  createInventoryRouter({
+    loadItems,
+    saveItems,
+    loadItemCategories,
+    saveItemCategories,
+    loadItemTags,
+    saveItemTags,
+    notifyClients,
+  }),
+);
 app.use("/api/all", createAllRouter({ loadAllData, saveAllData }));
 app.use(
   "/api/settings",

@@ -242,3 +242,34 @@ export interface Trip {
   id: string;
   name: string;
 }
+
+export interface InventoryItem {
+  id: string;
+  name: string;
+  description: string;
+  quantity: number;
+  categoryId?: string;
+  tagIds: string[];
+  buyAgain: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ItemCategory {
+  id: string;
+  name: string;
+}
+
+export interface ItemTag {
+  id: string;
+  name: string;
+}
+
+export interface InventoryItemFormData {
+  name: string;
+  description: string;
+  quantity: number;
+  categoryId?: string;
+  tags: string[];
+  buyAgain: boolean;
+}

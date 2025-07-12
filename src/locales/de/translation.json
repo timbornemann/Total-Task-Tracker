@@ -14,6 +14,7 @@
     "timers": "Timer",
     "clock": "Uhr",
     "worklog": "Arbeitszeiten",
+    "inventory": "Inventar",
     "cardStatistics": "Statistiken",
     "notes": "Notizen",
     "settings": "Einstellungen",
@@ -204,6 +205,16 @@
     "customInterval": "Individuelle Tage",
     "weekday": "Wochentag"
   },
+  "inventoryModal": {
+    "editTitle": "Gegenstand bearbeiten",
+    "newTitle": "Neuer Gegenstand",
+    "name": "Name",
+    "description": "Beschreibung",
+    "quantity": "Menge",
+    "category": "Kategorie",
+    "tags": "Tags (kommagetrennt)",
+    "buyAgain": "Nachkaufen"
+  },
   "common": {
     "cancel": "Abbrechen",
     "save": "Speichern",
@@ -212,6 +223,8 @@
     "delete": "Löschen",
     "none": "Keiner",
     "back": "Zurück",
+    "yes": "Ja",
+    "no": "Nein",
     "undo": "Rückgängig",
     "continue": "Weiter"
   },
@@ -233,6 +246,7 @@
     "clock": "Uhr",
     "worklog": "Arbeitszeiten",
     "notes": "Notizen",
+    "inventory": "Inventar",
     "recurring": "Wiederkehrend",
     "habits": "Gewohnheiten",
     "settings": "Einstellungen"
@@ -317,6 +331,18 @@
     "clickToToggle": "Klicke zum Umschalten",
     "streak": "Serie: {{count}}",
     "progress": "{{completed}} von {{total}} erledigt"
+  },
+  "inventory": {
+    "title": "Inventar",
+    "newItem": "Neuer Gegenstand",
+    "none": "Keine Gegenstände vorhanden.",
+    "quantity": "Menge",
+    "description": "Beschreibung",
+    "buyAgain": "Nachkaufen",
+    "category": "Kategorie",
+    "tags": "Tags",
+    "categoryFilter": "Kategorie filtern",
+    "tagFilter": "Tag filtern"
   },
   "statistics": {
     "title": "Task-Statistiken",

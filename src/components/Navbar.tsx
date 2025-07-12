@@ -211,6 +211,11 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                 <List className="h-4 w-4 mr-2" /> {t("navbar.notes")}
               </Button>
             </Link>
+            <Link to="/inventory">
+              <Button variant="outline" size="sm">
+                <List className="h-4 w-4 mr-2" /> {t("navbar.inventory")}
+              </Button>
+            </Link>
             <Link to="/settings">
               <Button variant="outline" size="sm">
                 <Cog className="h-4 w-4 mr-2" /> {t("navbar.settings")}
@@ -323,6 +328,19 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                   <Button variant="outline" size="sm" className="w-full">
                     <List className="h-4 w-4 mr-2" />
                     {t("navbar.notes")}
+                  </Button>
+                </Link>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <p className="text-xs font-semibold text-muted-foreground">
+                {t("navbar.inventory")}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <Link to="/inventory" className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full">
+                    <List className="h-4 w-4 mr-2" />
+                    {t("navbar.inventory")}
                   </Button>
                 </Link>
               </div>

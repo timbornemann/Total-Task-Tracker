@@ -5,6 +5,7 @@ import {
   BarChart3,
   BookOpen,
   Pencil,
+  Package,
   Timer,
   Clock,
   List,
@@ -82,6 +83,12 @@ export const allHomeSections: HomeSection[] = [
     icon: Clock,
   },
   { key: "notes", labelKey: "homeSections.notes", path: "/notes", icon: List },
+  {
+    key: "inventory",
+    labelKey: "homeSections.inventory",
+    path: "/inventory",
+    icon: Package,
+  },
   {
     key: "recurring",
     labelKey: "homeSections.recurring",

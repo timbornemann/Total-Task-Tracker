@@ -167,6 +167,7 @@ Mit [Capacitor](https://capacitorjs.com/) kannst du den Tracker auch als Android
   - Timed-Modus mit anpassbarem Countdown pro Karte; der Timer wird einmalig gestartet und kann pausiert werden. Bei Ablauf wird automatisch "schwer" gewertet
 - Statistikseite für Lernkarten
 - Deck-Statistiken mit Übersicht fälliger Karten
+- Inventarverwaltung mit Kategorien und Tags
 - Speicherung der Daten auf dem lokalen Server
 - Kann als Progressive Web App installiert werden (Desktop & Smartphone)
 - Pomodoro-Timer läuft beim Neuladen der Seite weiter
