@@ -59,7 +59,7 @@ const useWorklogImpl = () => {
     save();
   }, [trips, workDays, loaded]);
 
-  const addTrip = (data: { name: string }) => {
+  const addTrip = (data: { name: string; location?: string; color: number }) => {
     const id = crypto.randomUUID();
     setTrips((prev) => [...prev, { id, ...data }]);
     return id;

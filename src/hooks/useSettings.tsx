@@ -41,6 +41,7 @@ const defaultShowCompletedTasksSetting = true;
 const defaultTaskColorSetting = 0;
 const defaultTimerColorSetting = 0;
 const defaultHabitColorSetting = 0;
+const defaultTripColorSetting = 0;
 const defaultHabitRecurrenceSetting: "daily" | "weekly" | "monthly" | "yearly" =
   "daily";
 const defaultTimerExtendSetting = 60;
@@ -1014,6 +1015,8 @@ interface SettingsContextValue {
   updateDefaultTimerColor: (val: number) => void;
   defaultHabitColor: number;
   updateDefaultHabitColor: (val: number) => void;
+  defaultTripColor: number;
+  updateDefaultTripColor: (val: number) => void;
   defaultHabitRecurrence: "daily" | "weekly" | "monthly" | "yearly";
   updateDefaultHabitRecurrence: (
     val: "daily" | "weekly" | "monthly" | "yearly",
@@ -1117,6 +1120,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
   );
   const [defaultHabitColor, setDefaultHabitColor] = useState(
     defaultHabitColorSetting,
+  );
+  const [defaultTripColor, setDefaultTripColor] = useState(
+    defaultTripColorSetting,
   );
   const [defaultHabitRecurrence, setDefaultHabitRecurrence] = useState<
     "daily" | "weekly" | "monthly" | "yearly"
@@ -1246,6 +1252,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
           if (typeof data.defaultHabitColor === "number") {
             setDefaultHabitColor(data.defaultHabitColor);
           }
+          if (typeof data.defaultTripColor === "number") {
+            setDefaultTripColor(data.defaultTripColor);
+          }
           if (typeof data.defaultHabitRecurrence === "string") {
             setDefaultHabitRecurrence(data.defaultHabitRecurrence);
           }
@@ -1335,6 +1344,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
             defaultTaskColor,
             defaultTimerColor,
             defaultHabitColor,
+            defaultTripColor,
             defaultHabitRecurrence,
             timerExtendSeconds,
             flashcardTimer,
@@ -1382,6 +1392,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     defaultTaskColor,
     defaultTimerColor,
     defaultHabitColor,
+    defaultTripColor,
     defaultHabitRecurrence,
     timerExtendSeconds,
     flashcardTimer,
@@ -1576,6 +1587,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     setDefaultHabitColor(val);
   };
 
+  const updateDefaultTripColor = (val: number) => {
+    setDefaultTripColor(val);
+  };
+
   const updateDefaultHabitRecurrence = (
     val: "daily" | "weekly" | "monthly" | "yearly",
   ) => {
@@ -1669,6 +1684,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
         updateDefaultTimerColor,
         defaultHabitColor,
         updateDefaultHabitColor,
+        defaultTripColor,
+        updateDefaultTripColor,
         defaultHabitRecurrence,
         updateDefaultHabitRecurrence,
         timerExtendSeconds,

@@ -87,6 +87,7 @@
     "defaultTaskColor": "Default task color",
     "defaultTimerColor": "Default timer color",
     "defaultHabitColor": "Default habit color",
+    "defaultTripColor": "Default trip color",
     "defaultHabitRecurrence": "Default recurrence",
     "timerExtend": "Extend step (seconds)",
     "low": "Low",
@@ -745,15 +746,19 @@
     "title": "Worklog",
     "addTrip": "Add Trip",
     "tripName": "Trip name",
+    "color": "Color",
     "addDay": "Add Work Day",
     "start": "Start",
     "end": "End",
     "workTime": "Work Time",
-    "duration": "Duration"
+    "duration": "Duration",
+    "totalTime": "Total: {{hours}}h {{minutes}}m",
+    "exportCsv": "Export CSV"
   },
   "worklogDetail": {
     "title": "Worklog Details",
     "totalHours": "Total hours",
+    "allDays": "All Days",
     "averageHours": "Average per day",
     "daysList": "Work Days"
   },
