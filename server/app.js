@@ -582,6 +582,8 @@ export function loadAllData() {
     decks: loadDecks(),
     pomodoroSessions: loadPomodoroSessions(),
     timers: loadTimers(),
+    trips: loadTrips(),
+    workDays: loadWorkDays(),
     items: loadItems(),
     itemCategories: loadItemCategories(),
     itemTags: loadItemTags(),
@@ -846,13 +848,22 @@ app.use(
   "/api/flashcards",
   createFlashcardsRouter({ loadFlashcards, saveFlashcards, notifyClients }),
 );
-app.use("/api/decks", createDecksRouter({ loadDecks, saveDecks, notifyClients }));
+app.use(
+  "/api/decks",
+  createDecksRouter({ loadDecks, saveDecks, notifyClients }),
+);
 app.use(
   "/api/recurring",
   createRecurringRouter({ loadRecurring, saveRecurring, notifyClients }),
 );
-app.use("/api/habits", createHabitsRouter({ loadHabits, saveHabits, notifyClients }));
-app.use("/api/notes", createNotesRouter({ loadNotes, saveNotes, notifyClients }));
+app.use(
+  "/api/habits",
+  createHabitsRouter({ loadHabits, saveHabits, notifyClients }),
+);
+app.use(
+  "/api/notes",
+  createNotesRouter({ loadNotes, saveNotes, notifyClients }),
+);
 app.use(
   "/api/inventory",
   createInventoryRouter({
@@ -883,10 +894,20 @@ app.use(
 );
 app.use(
   "/api/pomodoro-sessions",
-  createPomodoroRouter({ loadPomodoroSessions, savePomodoroSessions, notifyClients }),
+  createPomodoroRouter({
+    loadPomodoroSessions,
+    savePomodoroSessions,
+    notifyClients,
+  }),
 );
-app.use("/api/timers", createTimersRouter({ loadTimers, saveTimers, notifyClients }));
-app.use("/api/trips", createTripsRouter({ loadTrips, saveTrips, notifyClients }));
+app.use(
+  "/api/timers",
+  createTimersRouter({ loadTimers, saveTimers, notifyClients }),
+);
+app.use(
+  "/api/trips",
+  createTripsRouter({ loadTrips, saveTrips, notifyClients }),
+);
 app.use(
   "/api/workdays",
   createWorkdaysRouter({ loadWorkDays, saveWorkDays, notifyClients }),
@@ -902,7 +923,10 @@ app.use(
     syncRole: () => syncRole,
   }),
 );
-app.use("/api/sync-log", createSyncLogRouter({ syncLogs, syncRole: () => syncRole }));
+app.use(
+  "/api/sync-log",
+  createSyncLogRouter({ syncLogs, syncRole: () => syncRole }),
+);
 let activePort = 3002;
 const publicIp = process.env.SERVER_PUBLIC_IP || null;
 export function setActivePort(p) {
@@ -914,7 +938,13 @@ app.use(
 );
 app.use(
   "/api/sync-status",
-  createSyncStatusRouter({ getStatus: () => ({ last: lastSyncTime, error: lastSyncError, enabled: syncEnabled }) }),
+  createSyncStatusRouter({
+    getStatus: () => ({
+      last: lastSyncTime,
+      error: lastSyncError,
+      enabled: syncEnabled,
+    }),
+  }),
 );
 app.use(
   "/api/llm",

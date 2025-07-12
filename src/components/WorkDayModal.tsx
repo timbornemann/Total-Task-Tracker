@@ -23,6 +23,7 @@ interface WorkDayModalProps {
   onSave: (data: WorkDayFormData) => void;
   workDay?: WorkDay;
   trips: Trip[];
+  defaultTripId?: string;
 }
 
 const WorkDayModal: React.FC<WorkDayModalProps> = ({
@@ -31,6 +32,7 @@ const WorkDayModal: React.FC<WorkDayModalProps> = ({
   onSave,
   workDay,
   trips,
+  defaultTripId,
 }) => {
   const { t } = useTranslation();
   const [form, setForm] = useState<WorkDayFormData>({
@@ -48,9 +50,9 @@ const WorkDayModal: React.FC<WorkDayModalProps> = ({
         tripId: workDay.tripId,
       });
     } else {
-      setForm({ start: "", end: "", tripId: "" });
+      setForm({ start: "", end: "", tripId: defaultTripId || "" });
     }
-  }, [isOpen, workDay]);
+  }, [isOpen, workDay, defaultTripId]);
 
   const handleChange = (field: keyof WorkDayFormData, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));

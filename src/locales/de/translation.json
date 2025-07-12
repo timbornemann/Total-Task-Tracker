@@ -753,7 +753,10 @@
     "duration": "Dauer"
   },
   "worklogDetail": {
-    "title": "Arbeitszeit-Details"
+    "title": "Arbeitszeit-Details",
+    "totalHours": "Gesamtstunden",
+    "averageHours": "Durchschnitt pro Tag",
+    "daysList": "Arbeitstage"
   },
   "ui": {
     "previous": "Zurück",

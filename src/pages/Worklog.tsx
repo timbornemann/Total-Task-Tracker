@@ -63,7 +63,7 @@ const WorklogPage: React.FC = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar title={t("navbar.worklog") as string} />
       <div className="flex-1 max-w-3xl mx-auto px-4 py-4 space-y-6">
-        <div className="flex justify-between">
+        <div className="flex justify-between items-center flex-wrap gap-2">
           <h2 className="font-semibold mb-2">{t("worklog.title")}</h2>
           <Button
             onClick={() => {
@@ -120,61 +120,74 @@ const WorklogPage: React.FC = () => {
                 {t("worklog.addDay")}
               </Button>
               <ul className="ml-4 list-disc">
-              {workDays
-                .filter((d) => d.tripId === trip.id)
-                .map((d) => (
-                  <li key={d.id} className="flex justify-between items-center">
-                    <span>
-                      {format(new Date(d.start), "yyyy-MM-dd HH:mm")} -{" "}
-                      {format(new Date(d.end), "yyyy-MM-dd HH:mm")} ({" "}
-                      {duration(d.start, d.end).toFixed(2)} h)
-                    </span>
-                    <span className="space-x-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                          setEditingDay(d.id);
-                          setShowDayModal(true);
-                        }}
-                      >
-                        {t("common.edit")}
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => deleteWorkDay(d.id)}
-                      >
-                        {t("common.delete")}
-                      </Button>
-                    </span>
-                  </li>
-                ))}
+                {workDays
+                  .filter((d) => d.tripId === trip.id)
+                  .map((d) => (
+                    <li
+                      key={d.id}
+                      className="flex justify-between items-center"
+                    >
+                      <span>
+                        {format(new Date(d.start), "yyyy-MM-dd HH:mm")} -{" "}
+                        {format(new Date(d.end), "yyyy-MM-dd HH:mm")} ({" "}
+                        {duration(d.start, d.end).toFixed(2)} h)
+                      </span>
+                      <span className="space-x-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setEditingDay(d.id);
+                            setShowDayModal(true);
+                          }}
+                        >
+                          {t("common.edit")}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => deleteWorkDay(d.id)}
+                        >
+                          {t("common.delete")}
+                        </Button>
+                      </span>
+                    </li>
+                  ))}
               </ul>
             </CardContent>
           </Card>
         ))}
-        {workDays.filter((d) => !d.tripId).length > 0 && (
-          <Card className={`p-2 ${worklogCardShadow ? "shadow" : ""}`}>
-            <CardHeader className="p-2 pb-0">
-              <CardTitle className="text-base">
-                <Link to="/worklog/default" className="hover:underline">
-                  {t("worklog.noTrip")}
-                </Link>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-2">
-              {defaultWorkLat !== null && defaultWorkLng !== null && (
-                <MapContainer
-                  center={[defaultWorkLat, defaultWorkLng]}
-                  zoom={6}
-                  className="h-40 w-full rounded mb-2"
-                >
-                  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                  <Marker position={[defaultWorkLat, defaultWorkLng]} />
-                </MapContainer>
-              )}
-              <ul className="ml-4 list-disc">
+        <Card className={`p-2 ${worklogCardShadow ? "shadow" : ""}`}>
+          <CardHeader className="p-2 pb-0">
+            <CardTitle className="text-base">
+              <Link to="/worklog/default" className="hover:underline">
+                {t("worklog.noTrip")}
+              </Link>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-2">
+            <Button
+              size="sm"
+              className="mb-2"
+              onClick={() => {
+                setTripIdForNewDay(undefined);
+                setEditingDay(null);
+                setShowDayModal(true);
+              }}
+            >
+              {t("worklog.addDay")}
+            </Button>
+            {defaultWorkLat !== null && defaultWorkLng !== null && (
+              <MapContainer
+                center={[defaultWorkLat, defaultWorkLng]}
+                zoom={6}
+                className="h-40 w-full rounded mb-2"
+              >
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <Marker position={[defaultWorkLat, defaultWorkLng]} />
+              </MapContainer>
+            )}
+            <ul className="ml-4 list-disc">
               {workDays
                 .filter((d) => !d.tripId)
                 .map((d) => (
@@ -205,10 +218,9 @@ const WorklogPage: React.FC = () => {
                     </span>
                   </li>
                 ))}
-              </ul>
-            </CardContent>
-          </Card>
-        )}
+            </ul>
+          </CardContent>
+        </Card>
       </div>
       <TripModal
         isOpen={showTripModal}
@@ -227,6 +239,7 @@ const WorklogPage: React.FC = () => {
         }
         workDay={currentDay}
         trips={trips}
+        defaultTripId={tripIdForNewDay}
       />
     </div>
   );
