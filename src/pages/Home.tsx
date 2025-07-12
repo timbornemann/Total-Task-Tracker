@@ -20,7 +20,7 @@ const Home: React.FC = () => {
   const { t } = useTranslation();
   const { notes, tasks, categories, getTasksByCategory, updateCategory } =
     useTaskStore();
-  const { habits } = useHabitStore();
+  const { habits, toggleHabitCompletion } = useHabitStore();
   const {
     homeSections,
     homeSectionOrder,
@@ -198,6 +198,7 @@ const Home: React.FC = () => {
                           disabled={!active}
                           onClick={(e) => {
                             e.preventDefault();
+                            e.stopPropagation();
                             if (active)
                               toggleHabitCompletion(habit.id, todayStr);
                           }}
