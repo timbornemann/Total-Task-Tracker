@@ -753,7 +753,8 @@
     "workTime": "Arbeitszeit",
     "duration": "Dauer",
     "totalTime": "Insgesamt: {{hours}}h {{minutes}}m",
-    "exportCsv": "CSV exportieren"
+    "exportCsv": "CSV exportieren",
+    "importCsv": "CSV importieren"
   },
   "worklogDetail": {
     "title": "Arbeitszeit-Details",

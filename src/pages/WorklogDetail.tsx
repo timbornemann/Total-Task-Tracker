@@ -5,6 +5,8 @@ import { useWorklog } from "@/hooks/useWorklog";
 import { useTranslation } from "react-i18next";
 import { useSettings } from "@/hooks/useSettings";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
 import {
   ResponsiveContainer,
   BarChart,
@@ -24,14 +26,7 @@ const WorklogDetailPage: React.FC = () => {
   const { colorPalette } = useSettings();
 
   const trip = id === "default" ? null : trips.find((tr) => tr.id === id);
-  if (id !== "default" && !trip) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Navbar title={t("worklogDetail.title") as string} />
-        <div className="p-4">Not found</div>
-      </div>
-    );
-  }
+  const notFound = id !== "default" && !trip;
 
   const days = workDays.filter((d) =>
     id === "default" ? !d.tripId : d.tripId === id,
@@ -88,6 +83,14 @@ const WorklogDetailPage: React.FC = () => {
     [weekData, colorPalette],
   );
 
+  if (notFound) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar title={t("worklogDetail.title") as string} />
+        <div className="p-4">Not found</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
