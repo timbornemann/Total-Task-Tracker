@@ -82,6 +82,12 @@ export const allHomeSections: HomeSection[] = [
     path: "/clock",
     icon: Clock,
   },
+  {
+    key: "worklog",
+    labelKey: "homeSections.worklog",
+    path: "/worklog",
+    icon: Clock,
+  },
   { key: "notes", labelKey: "homeSections.notes", path: "/notes", icon: List },
   {
     key: "inventory",

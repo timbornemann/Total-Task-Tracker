@@ -14,6 +14,7 @@
     "timers": "Timer",
     "clock": "Uhr",
     "worklog": "Arbeitszeiten",
+    "worklogStats": "Arbeitszeit-Statistik",
     "inventory": "Inventar",
     "cardStatistics": "Statistiken",
     "notes": "Notizen",
@@ -214,6 +215,24 @@
     "category": "Kategorie",
     "tags": "Tags (kommagetrennt)",
     "buyAgain": "Nachkaufen"
+  },
+  "tripModal": {
+    "editTitle": "Reise bearbeiten",
+    "newTitle": "Neue Reise",
+    "name": "Name",
+    "latitude": "Breitengrad",
+    "longitude": "Längengrad"
+  },
+  "workDayModal": {
+    "editTitle": "Arbeitstag bearbeiten",
+    "newTitle": "Neuer Arbeitstag",
+    "start": "Start",
+    "end": "Ende",
+    "trip": "Reise"
+  },
+  "worklogStats": {
+    "perTrip": "Stunden pro Reise",
+    "lastWeek": "Letzte Woche"
   },
   "common": {
     "cancel": "Abbrechen",

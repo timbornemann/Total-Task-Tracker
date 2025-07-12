@@ -14,6 +14,7 @@
     "timers": "Timers",
     "clock": "Clock",
     "worklog": "Worklog",
+    "worklogStats": "Worklog Statistics",
     "inventory": "Inventory",
     "cardStatistics": "Statistics",
     "notes": "Notes",
@@ -214,6 +215,24 @@
     "category": "Category",
     "tags": "Tags (comma separated)",
     "buyAgain": "Need to restock"
+  },
+  "tripModal": {
+    "editTitle": "Edit Trip",
+    "newTitle": "New Trip",
+    "name": "Name",
+    "latitude": "Latitude",
+    "longitude": "Longitude"
+  },
+  "workDayModal": {
+    "editTitle": "Edit Work Day",
+    "newTitle": "New Work Day",
+    "start": "Start",
+    "end": "End",
+    "trip": "Trip"
+  },
+  "worklogStats": {
+    "perTrip": "Hours per Trip",
+    "lastWeek": "Last Week"
   },
   "common": {
     "cancel": "Cancel",
