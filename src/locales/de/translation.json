@@ -87,6 +87,7 @@
     "defaultTaskColor": "Standardfarbe für Tasks",
     "defaultTimerColor": "Standardfarbe für Timer",
     "defaultHabitColor": "Standardfarbe für Gewohnheiten",
+    "defaultTripColor": "Standardfarbe für Reisen",
     "defaultHabitRecurrence": "Standard-Wiederholung",
     "timerExtend": "Verlängerungsschritt (Sekunden)",
     "low": "Niedrig",
@@ -745,15 +746,19 @@
     "title": "Arbeitszeiten",
     "addTrip": "Dienstreise hinzufügen",
     "tripName": "Name der Reise",
+    "color": "Farbe",
     "addDay": "Arbeitstag hinzufügen",
     "start": "Start",
     "end": "Ende",
     "workTime": "Arbeitszeit",
-    "duration": "Dauer"
+    "duration": "Dauer",
+    "totalTime": "Insgesamt: {{hours}}h {{minutes}}m",
+    "exportCsv": "CSV exportieren"
   },
   "worklogDetail": {
     "title": "Arbeitszeit-Details",
     "totalHours": "Gesamtstunden",
+    "allDays": "Alle Tage",
     "averageHours": "Durchschnitt pro Tag",
     "daysList": "Arbeitstage"
   },

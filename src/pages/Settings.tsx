@@ -1222,6 +1222,24 @@ const SettingsPage: React.FC = () => {
                     {t("settingsPage.worklogCardShadow")}
                   </Label>
                 </div>
+                <div>
+                  <Label>{t("settingsPage.defaultTripColor")}</Label>
+                  <div className="flex space-x-1 mt-1">
+                    {colorPalette.map((c, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        className={`w-5 h-5 rounded-full border-2 transition-all ${
+                          defaultTripColor === idx
+                            ? "border-foreground scale-110"
+                            : "border-gray-300 hover:scale-105"
+                        }`}
+                        style={{ backgroundColor: c }}
+                        onClick={() => updateDefaultTripColor(idx)}
+                      />
+                    ))}
+                  </div>
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="defaultWorkLocation">
                     {t("settingsPage.defaultWorkLocation")}

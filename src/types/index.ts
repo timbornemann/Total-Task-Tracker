@@ -242,6 +242,7 @@ export interface Trip {
   id: string;
   name: string;
   location?: string;
+  color?: number;
 }
 
 export interface InventoryItem {

@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import { useParams } from "react-router-dom";
 import { useWorklog } from "@/hooks/useWorklog";
 import { useTranslation } from "react-i18next";
+import { useSettings } from "@/hooks/useSettings";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ResponsiveContainer,
@@ -11,12 +12,16 @@ import {
   XAxis,
   YAxis,
   Tooltip,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
 
 const WorklogDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { trips, workDays } = useWorklog();
   const { t } = useTranslation();
+  const { colorPalette } = useSettings();
 
   const trip = id === "default" ? null : trips.find((tr) => tr.id === id);
   if (id !== "default" && !trip) {
@@ -38,21 +43,51 @@ const WorklogDetailPage: React.FC = () => {
   );
   const avgHours = days.length ? totalMinutes / 60 / days.length : 0;
 
-  const lastWeek: { date: string; minutes: number }[] = [];
-  for (let i = 6; i >= 0; i--) {
-    const day = new Date();
-    day.setDate(day.getDate() - i);
-    const dateStr = day.toISOString().slice(0, 10);
-    const minutes = days
-      .filter((d) => d.start.slice(0, 10) === dateStr)
-      .reduce(
-        (sum, d) =>
-          sum +
-          (new Date(d.end).getTime() - new Date(d.start).getTime()) / 60000,
-        0,
-      );
-    lastWeek.push({ date: dateStr, minutes });
-  }
+  const [weekOffset, setWeekOffset] = React.useState(0);
+
+  const weekData = React.useMemo(() => {
+    const result: { date: string; minutes: number }[] = [];
+    const base = new Date();
+    base.setDate(base.getDate() - ((base.getDay() + 6) % 7) - weekOffset * 7);
+    for (let i = 0; i < 7; i++) {
+      const day = new Date(base);
+      day.setDate(base.getDate() + i);
+      const dateStr = day.toISOString().slice(0, 10);
+      const minutes = days
+        .filter((d) => d.start.slice(0, 10) === dateStr)
+        .reduce(
+          (sum, d) =>
+            sum + (new Date(d.end).getTime() - new Date(d.start).getTime()) / 60000,
+          0,
+        );
+      result.push({ date: dateStr, minutes });
+    }
+    return result;
+  }, [weekOffset, days]);
+
+  const allDays = React.useMemo(() => {
+    const map: Record<string, number> = {};
+    days.forEach((d) => {
+      const key = d.start.slice(0, 10);
+      map[key] =
+        (map[key] || 0) +
+        (new Date(d.end).getTime() - new Date(d.start).getTime()) / 60000;
+    });
+    return Object.entries(map)
+      .sort()
+      .map(([date, minutes]) => ({ date, minutes }));
+  }, [days]);
+
+  const pieData = React.useMemo(
+    () =>
+      weekData.map((d, i) => ({
+        name: d.date,
+        value: d.minutes,
+        color: colorPalette[i % colorPalette.length],
+      })),
+    [weekData, colorPalette],
+  );
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -68,16 +103,74 @@ const WorklogDetailPage: React.FC = () => {
           {t("worklogDetail.averageHours")}: {avgHours.toFixed(2)} h
         </p>
         <Card>
-          <CardHeader>
+          <CardHeader className="flex justify-between items-center">
             <CardTitle className="text-base">
               {t("worklogStats.lastWeek")}
+            </CardTitle>
+            <div className="space-x-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setWeekOffset((w) => w + 1)}
+              >
+                {t("ui.previous")}
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setWeekOffset((w) => Math.max(0, w - 1))}
+              >
+                {t("ui.next")}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="h-60">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={weekData}
+                  margin={{ top: 10, right: 20, left: 0, bottom: 20 }}
+                >
+                  <XAxis dataKey="date" fontSize={12} />
+                  <YAxis fontSize={12} />
+                  <Tooltip />
+                  <Bar dataKey="minutes" fill="hsl(var(--primary))" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="h-60 mt-4">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={30}
+                    outerRadius={60}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={index} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">
+              {t("worklogDetail.allDays")}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-60">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
-                  data={lastWeek}
+                  data={allDays}
                   margin={{ top: 10, right: 20, left: 0, bottom: 20 }}
                 >
                   <XAxis dataKey="date" fontSize={12} />
@@ -94,7 +187,10 @@ const WorklogDetailPage: React.FC = () => {
           <ul className="ml-4 list-disc">
             {days.map((d) => (
               <li key={d.id}>
-                {d.start.slice(0, 16)} - {d.end.slice(0, 16)} ({" "}
+                {format(new Date(d.start), "dd.MM.yyyy HH:mm")} - {format(
+                  new Date(d.end),
+                  "dd.MM.yyyy HH:mm",
+                )} ({" "}
                 {(
                   (new Date(d.end).getTime() - new Date(d.start).getTime()) /
                   3600000

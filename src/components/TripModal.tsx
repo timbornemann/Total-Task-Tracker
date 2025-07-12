@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Trip } from "@/types";
+import { useSettings } from "@/hooks/useSettings";
 import { useTranslation } from "react-i18next";
 import {
   Dialog,
@@ -14,6 +15,7 @@ import { Label } from "@/components/ui/label";
 interface TripFormData {
   name: string;
   location: string;
+  color: number;
 }
 
 interface TripModalProps {
@@ -30,25 +32,38 @@ const TripModal: React.FC<TripModalProps> = ({
   trip,
 }) => {
   const { t } = useTranslation();
-  const [form, setForm] = useState<TripFormData>({ name: "", location: "" });
+  const { colorPalette, defaultTripColor } = useSettings();
+  const [form, setForm] = useState<TripFormData>({
+    name: "",
+    location: "",
+    color: defaultTripColor,
+  });
 
   useEffect(() => {
     if (!isOpen) return;
     if (trip) {
-      setForm({ name: trip.name, location: trip.location || "" });
+      setForm({
+        name: trip.name,
+        location: trip.location || "",
+        color: trip.color ?? defaultTripColor,
+      });
     } else {
-      setForm({ name: "", location: "" });
+      setForm({ name: "", location: "", color: defaultTripColor });
     }
-  }, [isOpen, trip]);
+  }, [isOpen, trip, defaultTripColor]);
 
-  const handleChange = (field: keyof TripFormData, value: string) => {
+  const handleChange = (field: keyof TripFormData, value: string | number) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (form.name.trim()) {
-      onSave({ name: form.name, location: form.location.trim() });
+      onSave({
+        name: form.name,
+        location: form.location.trim(),
+        color: form.color,
+      });
       onClose();
     }
   };
@@ -80,10 +95,28 @@ const TripModal: React.FC<TripModalProps> = ({
             onChange={(e) => handleChange("location", e.target.value)}
           />
         </div>
+        <div>
+          <Label>{t("tripModal.color")}</Label>
+          <div className="flex space-x-2 mt-2">
+            {colorPalette.map((c, idx) => (
+              <button
+                key={idx}
+                type="button"
+                className={`w-8 h-8 rounded-full border-2 transition-all ${
+                  form.color === idx
+                    ? "border-gray-800 scale-110"
+                    : "border-gray-300 hover:scale-105"
+                }`}
+                style={{ backgroundColor: c }}
+                onClick={() => handleChange("color", idx)}
+              />
+            ))}
+          </div>
+        </div>
         <div className="flex justify-end space-x-2 pt-4">
-            <Button type="button" variant="outline" onClick={onClose}>
-              {t("common.cancel")}
-            </Button>
+          <Button type="button" variant="outline" onClick={onClose}>
+            {t("common.cancel")}
+          </Button>
             <Button type="submit">
               {trip ? t("common.save") : t("common.create")}
             </Button>
