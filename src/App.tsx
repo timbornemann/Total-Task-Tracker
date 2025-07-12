@@ -30,9 +30,11 @@ import PomodoroTicker from "@/components/PomodoroTicker";
 import TimerTicker from "@/components/TimerTicker";
 import TimersPage from "./pages/Timers";
 import TimerDetailPage from "./pages/TimerDetail";
+import WorklogPage from "./pages/Worklog";
 import ClockPage from "./pages/Clock";
 import { PomodoroHistoryProvider } from "@/hooks/usePomodoroHistory.tsx";
 import { TimersProvider } from "@/hooks/useTimers.tsx";
+import { WorklogProvider } from "@/hooks/useWorklog";
 import ReleaseNotesModal from "@/components/ReleaseNotesModal";
 import SurprisePage from "./pages/Surprise";
 import SurpriseListener from "@/components/SurpriseListener";
@@ -50,6 +52,7 @@ const App = () => (
         <ServiceWorkerManager />
         <PomodoroHistoryProvider>
           <TimersProvider>
+            <WorklogProvider>
             <TaskStoreProvider>
               <HabitStoreProvider>
                 <FlashcardStoreProvider>
@@ -96,6 +99,7 @@ const App = () => (
                     <Route path="/timers" element={<TimersPage />} />
                     <Route path="/timers/:id" element={<TimerDetailPage />} />
                     <Route path="/clock" element={<ClockPage />} />
+                    <Route path="/worklog" element={<WorklogPage />} />
                     <Route path="/surprise" element={<SurprisePage />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
@@ -109,6 +113,7 @@ const App = () => (
             </FlashcardStoreProvider>
           </HabitStoreProvider>
           </TaskStoreProvider>
+            </WorklogProvider>
           </TimersProvider>
         </PomodoroHistoryProvider>
       </SettingsProvider>

@@ -158,7 +158,9 @@ export interface Deletion {
     | "flashcard"
     | "deck"
     | "timer"
-    | "pomodoro";
+    | "pomodoro"
+    | "workday"
+    | "trip";
   deletedAt: Date;
 }
 
@@ -227,4 +229,16 @@ export interface PomodoroStats {
   week: { date: string; work: number; break: number }[];
   month: { date: string; work: number; break: number }[];
   year: { month: string; work: number; break: number }[];
+}
+
+export interface WorkDay {
+  id: string;
+  start: string;
+  end: string;
+  tripId?: string;
+}
+
+export interface Trip {
+  id: string;
+  name: string;
 }

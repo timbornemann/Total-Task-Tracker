@@ -36,7 +36,7 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
   const { t } = useTranslation();
-  const { colorPalette } = useSettings();
+  const { colorPalette, enableWorklog } = useSettings();
   const [showMobileMenu, setShowMobileMenu] = React.useState(false);
   const [openMenu, setOpenMenu] = React.useState<string | null>(null);
   return (
@@ -190,6 +190,13 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                     <Clock className="h-4 w-4 mr-2" /> {t("navbar.clock")}
                   </Link>
                 </DropdownMenuItem>
+                {enableWorklog && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/worklog" className="flex items-center">
+                      <Clock className="h-4 w-4 mr-2" /> {t("navbar.worklog")}
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem asChild>
                   <Link to="/flashcards/stats" className="flex items-center">
                     <BarChart3 className="h-4 w-4 mr-2" />{" "}
@@ -291,6 +298,14 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                     {t("navbar.clock")}
                   </Button>
                 </Link>
+                {enableWorklog && (
+                  <Link to="/worklog" className="flex-1">
+                    <Button variant="outline" size="sm" className="w-full">
+                      <Clock className="h-4 w-4 mr-2" />
+                      {t("navbar.worklog")}
+                    </Button>
+                  </Link>
+                )}
                 <Link to="/flashcards/stats" className="flex-1">
                   <Button variant="outline" size="sm" className="w-full">
                     <BarChart3 className="h-4 w-4 mr-2" />
