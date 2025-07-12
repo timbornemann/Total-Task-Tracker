@@ -168,6 +168,7 @@ Use [Capacitor](https://capacitorjs.com/) to wrap the tracker as an Android app.
 - can be installed as a progressive web app (desktop and smartphone)
 - Pomodoro-timer continues when recharging the page
 - Dedicated clock page displaying the current time
+- Worklog for regular days and trips with editing, map view and statistics
   -Can be displayed as a floating window (picture-in-picture)
   -Statistics page on the Pomodoro page with daily, weekly, monthly and annual overview
 - Evaluation after times of day (tomorrow, noon, evening, night)

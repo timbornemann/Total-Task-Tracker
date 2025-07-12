@@ -1,6 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Trip, WorkDay } from "@/types";
-import { loadOfflineData, updateOfflineData, syncWithServer } from "@/utils/offline";
+import {
+  loadOfflineData,
+  updateOfflineData,
+  syncWithServer,
+} from "@/utils/offline";
 
 const API_TRIPS = "/api/trips";
 const API_WORKDAYS = "/api/workdays";
@@ -50,10 +54,14 @@ const useWorklogImpl = () => {
     save();
   }, [trips, workDays, loaded]);
 
-  const addTrip = (name: string) => {
+  const addTrip = (data: { name: string; lat?: number; lng?: number }) => {
     const id = crypto.randomUUID();
-    setTrips((prev) => [...prev, { id, name }]);
+    setTrips((prev) => [...prev, { id, ...data }]);
     return id;
+  };
+
+  const updateTrip = (id: string, data: Partial<Trip>) => {
+    setTrips((prev) => prev.map((t) => (t.id === id ? { ...t, ...data } : t)));
   };
 
   const deleteTrip = (id: string) => {
@@ -61,25 +69,48 @@ const useWorklogImpl = () => {
     setWorkDays((prev) => prev.filter((d) => d.tripId !== id));
   };
 
-  const addWorkDay = (data: { start: string; end: string; tripId?: string }) => {
+  const addWorkDay = (data: {
+    start: string;
+    end: string;
+    tripId?: string;
+  }) => {
     const id = crypto.randomUUID();
     setWorkDays((prev) => [...prev, { id, ...data }]);
+  };
+
+  const updateWorkDay = (id: string, data: Partial<WorkDay>) => {
+    setWorkDays((prev) =>
+      prev.map((d) => (d.id === id ? { ...d, ...data } : d)),
+    );
   };
 
   const deleteWorkDay = (id: string) => {
     setWorkDays((prev) => prev.filter((d) => d.id !== id));
   };
 
-  return { trips, workDays, addTrip, deleteTrip, addWorkDay, deleteWorkDay };
+  return {
+    trips,
+    workDays,
+    addTrip,
+    updateTrip,
+    deleteTrip,
+    addWorkDay,
+    updateWorkDay,
+    deleteWorkDay,
+  };
 };
 
 type Store = ReturnType<typeof useWorklogImpl>;
 
 const WorklogContext = createContext<Store | null>(null);
 
-export const WorklogProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const WorklogProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const store = useWorklogImpl();
-  return <WorklogContext.Provider value={store}>{children}</WorklogContext.Provider>;
+  return (
+    <WorklogContext.Provider value={store}>{children}</WorklogContext.Provider>
+  );
 };
 
 export const useWorklog = () => {
@@ -87,4 +118,3 @@ export const useWorklog = () => {
   if (!ctx) throw new Error("useWorklog must be used within WorklogProvider");
   return ctx;
 };
-
