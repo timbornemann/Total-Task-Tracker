@@ -43,7 +43,10 @@ const InventoryModal: React.FC<InventoryModalProps> = ({ isOpen, onClose, onSave
     }
   }, [item, isOpen, tags, categories]);
 
-  const handleChange = (field: keyof InventoryItemFormData, value: any) => {
+  const handleChange = (
+    field: keyof InventoryItemFormData,
+    value: string | number | boolean | string[],
+  ) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
