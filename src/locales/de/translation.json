@@ -748,7 +748,7 @@
     "addDay": "Arbeitstag hinzufügen",
     "start": "Start",
     "end": "Ende",
-    "noTrip": "Keine Reise",
+    "workTime": "Arbeitszeit",
     "duration": "Dauer"
   },
   "worklogDetail": {

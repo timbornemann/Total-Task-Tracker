@@ -164,7 +164,7 @@ const WorklogPage: React.FC = () => {
           <CardHeader className="p-2 pb-0">
             <CardTitle className="text-base">
               <Link to="/worklog/default" className="hover:underline">
-                {t("worklog.noTrip")}
+                {t("worklog.workTime")}
               </Link>
             </CardTitle>
           </CardHeader>

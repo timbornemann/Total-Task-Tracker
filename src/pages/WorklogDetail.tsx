@@ -59,7 +59,7 @@ const WorklogDetailPage: React.FC = () => {
       <Navbar title={t("worklogDetail.title") as string} />
       <div className="max-w-4xl mx-auto px-4 py-4 space-y-6">
         <h2 className="font-semibold">
-          {id === "default" ? t("worklog.noTrip") : trip?.name}
+          {id === "default" ? t("worklog.workTime") : trip?.name}
         </h2>
         <p>
           {t("worklogDetail.totalHours")}: {(totalMinutes / 60).toFixed(2)} h

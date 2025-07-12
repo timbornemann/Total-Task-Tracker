@@ -103,7 +103,7 @@ const WorkDayModal: React.FC<WorkDayModalProps> = ({
               value={form.tripId || ""}
               onChange={(e) => handleChange("tripId", e.target.value)}
             >
-              <option value="">{t("worklog.noTrip")}</option>
+              <option value="">{t("worklog.workTime")}</option>
               {trips.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.name}
