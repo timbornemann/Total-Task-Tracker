@@ -1048,6 +1048,12 @@ interface SettingsContextValue {
   toggleOfflineCache: () => void;
   enableWorklog: boolean;
   toggleEnableWorklog: () => void;
+  worklogCardShadow: boolean;
+  toggleWorklogCardShadow: () => void;
+  defaultWorkLat: number | null;
+  updateDefaultWorkLat: (val: number | null) => void;
+  defaultWorkLng: number | null;
+  updateDefaultWorkLng: (val: number | null) => void;
 }
 
 const SettingsContext = createContext<SettingsContextValue | undefined>(
@@ -1130,6 +1136,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
   const [llmModel, setLlmModel] = useState(defaultLlmModel);
   const [offlineCache, setOfflineCache] = useState(defaultOfflineCache);
   const [enableWorklog, setEnableWorklog] = useState(defaultWorklogEnabled);
+  const [worklogCardShadow, setWorklogCardShadow] = useState(true);
+  const [defaultWorkLat, setDefaultWorkLat] = useState<number | null>(null);
+  const [defaultWorkLng, setDefaultWorkLng] = useState<number | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -1286,6 +1295,15 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
           if (typeof data.enableWorklog === "boolean") {
             setEnableWorklog(data.enableWorklog);
           }
+          if (typeof data.worklogCardShadow === "boolean") {
+            setWorklogCardShadow(data.worklogCardShadow);
+          }
+          if (typeof data.defaultWorkLat === "number") {
+            setDefaultWorkLat(data.defaultWorkLat);
+          }
+          if (typeof data.defaultWorkLng === "number") {
+            setDefaultWorkLng(data.defaultWorkLng);
+          }
         }
       } catch (err) {
         console.error("Error loading settings", err);
@@ -1338,6 +1356,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
             llmModel,
             offlineCache,
             enableWorklog,
+            worklogCardShadow,
+            defaultWorkLat,
+            defaultWorkLng,
           }),
         });
       } catch (err) {
@@ -1382,6 +1403,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     llmToken,
     llmModel,
     offlineCache,
+    worklogCardShadow,
+    defaultWorkLat,
+    defaultWorkLng,
   ]);
 
   useEffect(() => {
@@ -1513,6 +1537,18 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const toggleEnableWorklog = () => {
     setEnableWorklog((prev) => !prev);
+  };
+
+  const toggleWorklogCardShadow = () => {
+    setWorklogCardShadow((prev) => !prev);
+  };
+
+  const updateDefaultWorkLat = (value: number | null) => {
+    setDefaultWorkLat(value);
+  };
+
+  const updateDefaultWorkLng = (value: number | null) => {
+    setDefaultWorkLng(value);
   };
 
   const updateLanguage = (lang: string) => {
@@ -1675,6 +1711,12 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
         toggleOfflineCache,
         enableWorklog,
         toggleEnableWorklog,
+        worklogCardShadow,
+        toggleWorklogCardShadow,
+        defaultWorkLat,
+        updateDefaultWorkLat,
+        defaultWorkLng,
+        updateDefaultWorkLng,
       }}
     >
       {children}

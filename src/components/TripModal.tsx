@@ -13,8 +13,6 @@ import { Label } from "@/components/ui/label";
 
 interface TripFormData {
   name: string;
-  lat?: number;
-  lng?: number;
 }
 
 interface TripModalProps {
@@ -36,9 +34,9 @@ const TripModal: React.FC<TripModalProps> = ({
   useEffect(() => {
     if (!isOpen) return;
     if (trip) {
-      setForm({ name: trip.name, lat: trip.lat, lng: trip.lng });
+      setForm({ name: trip.name });
     } else {
-      setForm({ name: "", lat: undefined, lng: undefined });
+      setForm({ name: "" });
     }
   }, [isOpen, trip]);
 
@@ -49,12 +47,7 @@ const TripModal: React.FC<TripModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (form.name.trim()) {
-      const data: TripFormData = {
-        name: form.name,
-        lat: form.lat ? Number(form.lat) : undefined,
-        lng: form.lng ? Number(form.lng) : undefined,
-      };
-      onSave(data);
+      onSave({ name: form.name });
       onClose();
     }
   };
@@ -76,26 +69,6 @@ const TripModal: React.FC<TripModalProps> = ({
               onChange={(e) => handleChange("name", e.target.value)}
               required
               autoFocus
-            />
-          </div>
-          <div>
-            <Label htmlFor="trip-lat">{t("tripModal.latitude")}</Label>
-            <Input
-              id="trip-lat"
-              type="number"
-              step="any"
-              value={form.lat ?? ""}
-              onChange={(e) => handleChange("lat", e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="trip-lng">{t("tripModal.longitude")}</Label>
-            <Input
-              id="trip-lng"
-              type="number"
-              step="any"
-              value={form.lng ?? ""}
-              onChange={(e) => handleChange("lng", e.target.value)}
             />
           </div>
           <div className="flex justify-end space-x-2 pt-4">

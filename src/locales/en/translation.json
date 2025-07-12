@@ -97,6 +97,9 @@
     "showPinnedCategories": "Show pinned categories",
     "showPinnedHabits": "Show pinned habits",
     "enableWorklog": "Enable worklog feature",
+    "worklogCardShadow": "Shadow on worklog cards",
+    "defaultWorkLat": "Default work latitude",
+    "defaultWorkLng": "Default work longitude",
     "offlineCache": "Enable offline cache",
     "themePreset": "Preset",
     "customThemeName": "Theme name",
@@ -748,6 +751,9 @@
     "end": "End",
     "noTrip": "No Trip",
     "duration": "Duration"
+  },
+  "worklogDetail": {
+    "title": "Worklog Details"
   },
   "ui": {
     "previous": "Previous",

@@ -97,6 +97,9 @@
     "showPinnedCategories": "Gepinnte Kategorien anzeigen",
     "showPinnedHabits": "Gepinnte Gewohnheiten anzeigen",
     "enableWorklog": "Arbeitszeiterfassung aktivieren",
+    "worklogCardShadow": "Schatten bei Arbeitszeit-Karten",
+    "defaultWorkLat": "Breitengrad des Arbeitsorts",
+    "defaultWorkLng": "Längengrad des Arbeitsorts",
     "offlineCache": "Offline-Cache aktivieren",
     "themePreset": "Voreinstellung",
     "customThemeName": "Name des Themes",
@@ -748,6 +751,9 @@
     "end": "Ende",
     "noTrip": "Keine Reise",
     "duration": "Dauer"
+  },
+  "worklogDetail": {
+    "title": "Arbeitszeit-Details"
   },
   "ui": {
     "previous": "Zurück",
