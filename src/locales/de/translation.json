@@ -243,6 +243,7 @@
     "timers": "Timer",
     "clock": "Uhr",
     "notes": "Notizen",
+    "inventory": "Inventar",
     "recurring": "Wiederkehrend",
     "habits": "Gewohnheiten",
     "settings": "Einstellungen"

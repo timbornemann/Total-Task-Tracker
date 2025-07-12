@@ -12,8 +12,8 @@ const InventoryPage: React.FC = () => {
   const { items, categories, tags, addItem } = useInventoryStore();
   const { t } = useTranslation();
   const [search, setSearch] = useState("");
-  const [catFilter, setCatFilter] = useState<string>("");
-  const [tagFilter, setTagFilter] = useState<string>("");
+  const [catFilter, setCatFilter] = useState<string>("all");
+  const [tagFilter, setTagFilter] = useState<string>("all");
   const [open, setOpen] = useState(false);
 
   const filtered = items.filter((i) => {
@@ -23,8 +23,8 @@ const InventoryPage: React.FC = () => {
       .map((id) => tags.find((t) => t.id === id)?.name)
       .filter(Boolean)
       .join(" ");
-    if (catFilter && i.categoryId !== catFilter) return false;
-    if (tagFilter && !i.tagIds.includes(tagFilter)) return false;
+    if (catFilter !== "all" && i.categoryId !== catFilter) return false;
+    if (tagFilter !== "all" && !i.tagIds.includes(tagFilter)) return false;
     return (
       text.includes(search.toLowerCase()) ||
       catName.toLowerCase().includes(search.toLowerCase()) ||
@@ -48,7 +48,7 @@ const InventoryPage: React.FC = () => {
               <SelectValue placeholder={t("inventory.categoryFilter")}/>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">{t("common.none")}</SelectItem>
+              <SelectItem value="all">{t("common.none")}</SelectItem>
               {categories.map((c) => (
                 <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
               ))}
@@ -59,7 +59,7 @@ const InventoryPage: React.FC = () => {
               <SelectValue placeholder={t("inventory.tagFilter")}/>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">{t("common.none")}</SelectItem>
+              <SelectItem value="all">{t("common.none")}</SelectItem>
               {tags.map((t) => (
                 <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
               ))}
