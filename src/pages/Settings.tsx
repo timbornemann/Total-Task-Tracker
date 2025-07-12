@@ -133,6 +133,12 @@ const SettingsPage: React.FC = () => {
     toggleShowPinnedHabits,
     enableWorklog,
     toggleEnableWorklog,
+    worklogCardShadow,
+    toggleWorklogCardShadow,
+    defaultWorkLat,
+    updateDefaultWorkLat,
+    defaultWorkLng,
+    updateDefaultWorkLng,
     collapseSubtasksByDefault,
     toggleCollapseSubtasksByDefault,
     defaultTaskLayout,
@@ -1244,6 +1250,48 @@ const SettingsPage: React.FC = () => {
                   <Label htmlFor="enableWorklog">
                     {t("settingsPage.enableWorklog")}
                   </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="worklogCardShadow"
+                    checked={worklogCardShadow}
+                    onCheckedChange={toggleWorklogCardShadow}
+                  />
+                  <Label htmlFor="worklogCardShadow">
+                    {t("settingsPage.worklogCardShadow")}
+                  </Label>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="defaultWorkLat">
+                    {t("settingsPage.defaultWorkLat")}
+                  </Label>
+                  <Input
+                    id="defaultWorkLat"
+                    type="number"
+                    step="any"
+                    value={defaultWorkLat ?? ""}
+                    onChange={(e) =>
+                      updateDefaultWorkLat(
+                        e.target.value === "" ? null : Number(e.target.value),
+                      )
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="defaultWorkLng">
+                    {t("settingsPage.defaultWorkLng")}
+                  </Label>
+                  <Input
+                    id="defaultWorkLng"
+                    type="number"
+                    step="any"
+                    value={defaultWorkLng ?? ""}
+                    onChange={(e) =>
+                      updateDefaultWorkLng(
+                        e.target.value === "" ? null : Number(e.target.value),
+                      )
+                    }
+                  />
                 </div>
                 <DndContext
                   sensors={sensors}

@@ -32,7 +32,7 @@ import TimerTicker from "@/components/TimerTicker";
 import TimersPage from "./pages/Timers";
 import TimerDetailPage from "./pages/TimerDetail";
 import WorklogPage from "./pages/Worklog";
-import WorklogStatsPage from "./pages/WorklogStats";
+import WorklogDetailPage from "./pages/WorklogDetail";
 import ClockPage from "./pages/Clock";
 import { PomodoroHistoryProvider } from "@/hooks/usePomodoroHistory.tsx";
 import { TimersProvider } from "@/hooks/useTimers.tsx";
@@ -144,8 +144,8 @@ const App = () => (
                             <Route path="/clock" element={<ClockPage />} />
                             <Route path="/worklog" element={<WorklogPage />} />
                             <Route
-                              path="/worklog/stats"
-                              element={<WorklogStatsPage />}
+                              path="/worklog/:id"
+                              element={<WorklogDetailPage />}
                             />
                             <Route
                               path="/surprise"

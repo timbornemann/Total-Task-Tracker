@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import TripModal from "@/components/TripModal";
 import WorkDayModal from "@/components/WorkDayModal";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import { useWorklog } from "@/hooks/useWorklog";
+import { useSettings } from "@/hooks/useSettings";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
 import "leaflet/dist/leaflet.css";
@@ -21,6 +24,7 @@ const WorklogPage: React.FC = () => {
     updateWorkDay,
     deleteWorkDay,
   } = useWorklog();
+  const { worklogCardShadow, defaultWorkLat, defaultWorkLng } = useSettings();
   const [showTripModal, setShowTripModal] = useState(false);
   const [editingTrip, setEditingTrip] = useState<string | null>(null);
   const [showDayModal, setShowDayModal] = useState(false);
@@ -32,11 +36,7 @@ const WorklogPage: React.FC = () => {
   const currentTrip = trips.find((t) => t.id === editingTrip);
   const currentDay = workDays.find((d) => d.id === editingDay);
 
-  const handleSaveTrip = (data: {
-    name: string;
-    lat?: number;
-    lng?: number;
-  }) => {
+  const handleSaveTrip = (data: { name: string }) => {
     if (editingTrip) {
       updateTrip(editingTrip, data);
     } else {
@@ -75,51 +75,51 @@ const WorklogPage: React.FC = () => {
           </Button>
         </div>
         {trips.map((trip) => (
-          <div key={trip.id} className="mb-6 border rounded p-2">
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="font-medium">{trip.name}</h3>
-              <div className="space-x-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    setEditingTrip(trip.id);
-                    setShowTripModal(true);
-                  }}
-                >
-                  {t("common.edit")}
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => deleteTrip(trip.id)}
-                >
-                  {t("common.delete")}
-                </Button>
-              </div>
-            </div>
-            {trip.lat !== undefined && trip.lng !== undefined && (
-              <MapContainer
-                center={[trip.lat, trip.lng]}
-                zoom={6}
-                className="h-40 w-full rounded mb-2"
+          <Card
+            key={trip.id}
+            className={`mb-6 p-2 ${worklogCardShadow ? "shadow" : ""}`}
+          >
+            <CardHeader className="p-2 pb-0">
+              <CardTitle className="text-base flex justify-between items-center">
+                <span>
+                  <Link to={`/worklog/${trip.id}`} className="hover:underline">
+                    {trip.name}
+                  </Link>
+                </span>
+                <span className="space-x-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setEditingTrip(trip.id);
+                      setShowTripModal(true);
+                    }}
+                  >
+                    {t("common.edit")}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => deleteTrip(trip.id)}
+                  >
+                    {t("common.delete")}
+                  </Button>
+                </span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-2">
+              <Button
+                size="sm"
+                className="mb-2"
+                onClick={() => {
+                  setTripIdForNewDay(trip.id);
+                  setEditingDay(null);
+                  setShowDayModal(true);
+                }}
               >
-                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                <Marker position={[trip.lat, trip.lng]} />
-              </MapContainer>
-            )}
-            <Button
-              size="sm"
-              className="mb-2"
-              onClick={() => {
-                setTripIdForNewDay(trip.id);
-                setEditingDay(null);
-                setShowDayModal(true);
-              }}
-            >
-              {t("worklog.addDay")}
-            </Button>
-            <ul className="ml-4 list-disc">
+                {t("worklog.addDay")}
+              </Button>
+              <ul className="ml-4 list-disc">
               {workDays
                 .filter((d) => d.tripId === trip.id)
                 .map((d) => (
@@ -150,13 +150,31 @@ const WorklogPage: React.FC = () => {
                     </span>
                   </li>
                 ))}
-            </ul>
-          </div>
+              </ul>
+            </CardContent>
+          </Card>
         ))}
         {workDays.filter((d) => !d.tripId).length > 0 && (
-          <div className="border rounded p-2">
-            <h3 className="font-medium mb-2">{t("worklog.noTrip")}</h3>
-            <ul className="ml-4 list-disc">
+          <Card className={`p-2 ${worklogCardShadow ? "shadow" : ""}`}>
+            <CardHeader className="p-2 pb-0">
+              <CardTitle className="text-base">
+                <Link to="/worklog/default" className="hover:underline">
+                  {t("worklog.noTrip")}
+                </Link>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-2">
+              {defaultWorkLat !== null && defaultWorkLng !== null && (
+                <MapContainer
+                  center={[defaultWorkLat, defaultWorkLng]}
+                  zoom={6}
+                  className="h-40 w-full rounded mb-2"
+                >
+                  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                  <Marker position={[defaultWorkLat, defaultWorkLng]} />
+                </MapContainer>
+              )}
+              <ul className="ml-4 list-disc">
               {workDays
                 .filter((d) => !d.tripId)
                 .map((d) => (
@@ -187,8 +205,9 @@ const WorklogPage: React.FC = () => {
                     </span>
                   </li>
                 ))}
-            </ul>
-          </div>
+              </ul>
+            </CardContent>
+          </Card>
         )}
       </div>
       <TripModal

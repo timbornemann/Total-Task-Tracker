@@ -13,6 +13,7 @@ const useWorklogImpl = () => {
   const [trips, setTrips] = useState<Trip[]>([]);
   const [workDays, setWorkDays] = useState<WorkDay[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -31,6 +32,10 @@ const useWorklogImpl = () => {
 
   useEffect(() => {
     if (!loaded) return;
+    if (!initialized) {
+      setInitialized(true);
+      return;
+    }
     const save = async () => {
       try {
         updateOfflineData({ trips, workDays });
@@ -54,7 +59,7 @@ const useWorklogImpl = () => {
     save();
   }, [trips, workDays, loaded]);
 
-  const addTrip = (data: { name: string; lat?: number; lng?: number }) => {
+  const addTrip = (data: { name: string }) => {
     const id = crypto.randomUUID();
     setTrips((prev) => [...prev, { id, ...data }]);
     return id;
