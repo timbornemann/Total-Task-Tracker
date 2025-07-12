@@ -49,6 +49,7 @@ const defaultLlmUrl = "";
 const defaultLlmToken = "";
 const defaultLlmModel = "gpt-3.5-turbo";
 const defaultOfflineCache = true;
+const defaultWorklogEnabled = true;
 const defaultTheme = {
   background: "0 0% 100%",
   foreground: "222.2 84% 4.9%",
@@ -1045,6 +1046,8 @@ interface SettingsContextValue {
   updateLlmModel: (model: string) => void;
   offlineCache: boolean;
   toggleOfflineCache: () => void;
+  enableWorklog: boolean;
+  toggleEnableWorklog: () => void;
 }
 
 const SettingsContext = createContext<SettingsContextValue | undefined>(
@@ -1126,6 +1129,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
   const [llmToken, setLlmToken] = useState(defaultLlmToken);
   const [llmModel, setLlmModel] = useState(defaultLlmModel);
   const [offlineCache, setOfflineCache] = useState(defaultOfflineCache);
+  const [enableWorklog, setEnableWorklog] = useState(defaultWorklogEnabled);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -1279,6 +1283,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
           if (typeof data.offlineCache === "boolean") {
             setOfflineCache(data.offlineCache);
           }
+          if (typeof data.enableWorklog === "boolean") {
+            setEnableWorklog(data.enableWorklog);
+          }
         }
       } catch (err) {
         console.error("Error loading settings", err);
@@ -1330,6 +1337,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
             llmToken,
             llmModel,
             offlineCache,
+            enableWorklog,
           }),
         });
       } catch (err) {
@@ -1503,6 +1511,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     setOfflineCache((prev) => !prev);
   };
 
+  const toggleEnableWorklog = () => {
+    setEnableWorklog((prev) => !prev);
+  };
+
   const updateLanguage = (lang: string) => {
     setLanguage(lang);
     i18n.changeLanguage(lang);
@@ -1661,6 +1673,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
         updateLlmModel,
         offlineCache,
         toggleOfflineCache,
+        enableWorklog,
+        toggleEnableWorklog,
       }}
     >
       {children}

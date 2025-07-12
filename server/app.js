@@ -61,6 +61,14 @@ db.exec(`
     id TEXT PRIMARY KEY,
     data TEXT NOT NULL
   );
+  CREATE TABLE IF NOT EXISTS trips (
+    id TEXT PRIMARY KEY,
+    data TEXT NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS workdays (
+    id TEXT PRIMARY KEY,
+    data TEXT NOT NULL
+  );
   CREATE TABLE IF NOT EXISTS inventory_items (
     id TEXT PRIMARY KEY,
     data TEXT NOT NULL
@@ -226,6 +234,8 @@ export function loadData() {
     habits: loadHabits(),
     pomodoroSessions: loadPomodoroSessions(),
     timers: loadTimers(),
+    trips: loadTrips(),
+    workDays: loadWorkDays(),
     items: loadItems(),
     itemCategories: loadItemCategories(),
     itemTags: loadItemTags(),
@@ -380,6 +390,28 @@ export function loadTimers() {
   }
 }
 
+export function loadTrips() {
+  try {
+    return db
+      .prepare("SELECT data FROM trips")
+      .all()
+      .map((row) => JSON.parse(row.data, dateReviver));
+  } catch {
+    return [];
+  }
+}
+
+export function loadWorkDays() {
+  try {
+    return db
+      .prepare("SELECT data FROM workdays")
+      .all()
+      .map((row) => JSON.parse(row.data, dateReviver));
+  } catch {
+    return [];
+  }
+}
+
 export function savePomodoroSessions(sessions) {
   const tx = db.transaction(() => {
     db.exec("DELETE FROM pomodoro_sessions");
@@ -397,6 +429,19 @@ export function saveTimers(list) {
     db.exec("DELETE FROM timers");
     for (const t of list || []) {
       db.prepare("INSERT INTO timers (id, data) VALUES (?, ?)").run(
+        t.id,
+        toJson(t),
+      );
+    }
+  });
+  tx();
+}
+
+export function saveTrips(list) {
+  const tx = db.transaction(() => {
+    db.exec("DELETE FROM trips");
+    for (const t of list || []) {
+      db.prepare("INSERT INTO trips (id, data) VALUES (?, ?)").run(
         t.id,
         toJson(t),
       );
@@ -429,6 +474,18 @@ export function saveItems(list) {
   tx();
 }
 
+export function saveWorkDays(list) {
+  const tx = db.transaction(() => {
+    db.exec("DELETE FROM workdays");
+    for (const d of list || []) {
+      db.prepare("INSERT INTO workdays (id, data) VALUES (?, ?)").run(
+        d.id,
+        toJson(d),
+      );
+    }
+  });
+  tx();
+}
 export function loadItemCategories() {
   try {
     return db
@@ -540,6 +597,8 @@ export function saveAllData(data) {
   saveDecks(data.decks || []);
   savePomodoroSessions(data.pomodoroSessions || []);
   saveTimers(data.timers || []);
+  saveTrips(data.trips || []);
+  saveWorkDays(data.workDays || []);
   saveItems(data.items || []);
   saveItemCategories(data.itemCategories || []);
   saveItemTags(data.itemTags || []);
@@ -604,6 +663,8 @@ function mergeData(curr, inc) {
       null,
     ),
     timers: mergeLists(curr.timers, inc.timers, null),
+    trips: mergeLists(curr.trips, inc.trips, null),
+    workDays: mergeLists(curr.workDays, inc.workDays, null),
     settings: { ...curr.settings, ...inc.settings },
     deletions: mergeLists(curr.deletions, inc.deletions, "deletedAt"),
   };
@@ -637,6 +698,8 @@ function applyDeletions(data) {
     shouldKeep("flashcard", f),
   );
   data.decks = (data.decks || []).filter((d) => shouldKeep("deck", d));
+  data.trips = (data.trips || []).filter((t) => shouldKeep("trip", t));
+  data.workDays = (data.workDays || []).filter((d) => shouldKeep("workday", d));
   data.pomodoroSessions = (data.pomodoroSessions || []).filter((s) =>
     shouldKeep("pomodoro", s),
   );
@@ -770,6 +833,8 @@ import createAllRouter from "./routes/all.js";
 import createSettingsRouter from "./routes/settings.js";
 import createPomodoroRouter from "./routes/pomodoro.js";
 import createTimersRouter from "./routes/timers.js";
+import createTripsRouter from "./routes/trips.js";
+import createWorkdaysRouter from "./routes/workdays.js";
 import createSyncRouter from "./routes/sync.js";
 import createSyncLogRouter from "./routes/syncLog.js";
 import createServerInfoRouter from "./routes/serverInfo.js";
@@ -821,6 +886,11 @@ app.use(
   createPomodoroRouter({ loadPomodoroSessions, savePomodoroSessions, notifyClients }),
 );
 app.use("/api/timers", createTimersRouter({ loadTimers, saveTimers, notifyClients }));
+app.use("/api/trips", createTripsRouter({ loadTrips, saveTrips, notifyClients }));
+app.use(
+  "/api/workdays",
+  createWorkdaysRouter({ loadWorkDays, saveWorkDays, notifyClients }),
+);
 app.use(
   "/api/sync",
   createSyncRouter({

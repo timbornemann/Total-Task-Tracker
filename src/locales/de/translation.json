@@ -13,6 +13,7 @@
     "pomodoro": "Pomodoro",
     "timers": "Timer",
     "clock": "Uhr",
+    "worklog": "Arbeitszeiten",
     "inventory": "Inventar",
     "cardStatistics": "Statistiken",
     "notes": "Notizen",
@@ -94,6 +95,7 @@
     "showPinnedNotes": "Gepinnte Notizen anzeigen",
     "showPinnedCategories": "Gepinnte Kategorien anzeigen",
     "showPinnedHabits": "Gepinnte Gewohnheiten anzeigen",
+    "enableWorklog": "Arbeitszeiterfassung aktivieren",
     "offlineCache": "Offline-Cache aktivieren",
     "themePreset": "Voreinstellung",
     "customThemeName": "Name des Themes",
@@ -242,6 +244,7 @@
     "pomodoro": "Pomodoro",
     "timers": "Timer",
     "clock": "Uhr",
+    "worklog": "Arbeitszeiten",
     "notes": "Notizen",
     "inventory": "Inventar",
     "recurring": "Wiederkehrend",
@@ -716,6 +719,16 @@
     "months": "Monate",
     "year": "Jahr",
     "years": "Jahre"
+  },
+  "worklog": {
+    "title": "Arbeitszeiten",
+    "addTrip": "Dienstreise hinzufügen",
+    "tripName": "Name der Reise",
+    "addDay": "Arbeitstag hinzufügen",
+    "start": "Start",
+    "end": "Ende",
+    "noTrip": "Keine Reise",
+    "duration": "Dauer"
   },
   "ui": {
     "previous": "Zurück",

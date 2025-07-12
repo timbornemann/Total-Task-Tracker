@@ -8,6 +8,8 @@ import {
   Deletion,
   PomodoroSession,
   Timer,
+  Trip,
+  WorkDay,
 } from "@/types";
 
 export interface AllData {
@@ -20,6 +22,8 @@ export interface AllData {
   decks: Deck[];
   pomodoroSessions: PomodoroSession[];
   timers: Timer[];
+  trips: Trip[];
+  workDays: WorkDay[];
   deletions: Deletion[];
 }
 
@@ -58,6 +62,8 @@ export function mergeData(curr: AllData, inc: AllData): AllData {
       null,
     ),
     timers: mergeLists(curr.timers, inc.timers, null),
+    trips: mergeLists(curr.trips, inc.trips, null),
+    workDays: mergeLists(curr.workDays, inc.workDays, null),
     deletions: mergeLists(curr.deletions, inc.deletions, "deletedAt"),
   };
 }
@@ -90,6 +96,8 @@ export function applyDeletions(data: AllData): AllData {
     shouldKeep("flashcard", f),
   );
   data.decks = (data.decks || []).filter((d) => shouldKeep("deck", d));
+  data.trips = (data.trips || []).filter((t) => shouldKeep("trip", t));
+  data.workDays = (data.workDays || []).filter((d) => shouldKeep("workday", d));
   data.pomodoroSessions = (data.pomodoroSessions || []).filter((s) =>
     shouldKeep("pomodoro", s as unknown as { id: string; updatedAt?: Date }),
   );

@@ -131,6 +131,8 @@ const SettingsPage: React.FC = () => {
     toggleShowPinnedCategories,
     showPinnedHabits,
     toggleShowPinnedHabits,
+    enableWorklog,
+    toggleEnableWorklog,
     collapseSubtasksByDefault,
     toggleCollapseSubtasksByDefault,
     defaultTaskLayout,
@@ -1231,6 +1233,16 @@ const SettingsPage: React.FC = () => {
                   />
                   <Label htmlFor="showPinnedHabits">
                     {t("settingsPage.showPinnedHabits")}
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="enableWorklog"
+                    checked={enableWorklog}
+                    onCheckedChange={toggleEnableWorklog}
+                  />
+                  <Label htmlFor="enableWorklog">
+                    {t("settingsPage.enableWorklog")}
                   </Label>
                 </div>
                 <DndContext

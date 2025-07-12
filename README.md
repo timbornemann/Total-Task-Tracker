@@ -172,6 +172,7 @@ Mit [Capacitor](https://capacitorjs.com/) kannst du den Tracker auch als Android
 - Kann als Progressive Web App installiert werden (Desktop & Smartphone)
 - Pomodoro-Timer läuft beim Neuladen der Seite weiter
 - Separate Uhr-Seite zeigt stets die aktuelle Zeit
+- Arbeitszeiterfassung für normale Arbeitstage und Dienstreisen
 - Kann als schwebendes Fenster (Picture-in-Picture) angezeigt werden
 - Statistikseite auf der Pomodoro-Seite mit Tages-, Wochen-, Monats- und Jahresübersicht
   - Auswertung nach Tageszeiten (Morgen, Mittag, Abend, Nacht)

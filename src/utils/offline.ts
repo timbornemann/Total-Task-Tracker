@@ -8,6 +8,8 @@ import {
   Deletion,
   PomodoroSession,
   Timer,
+  Trip,
+  WorkDay,
 } from "@/types";
 import { applyDeletions, mergeData } from "./sync";
 
@@ -21,6 +23,8 @@ export interface OfflineData {
   decks: Deck[];
   pomodoroSessions: PomodoroSession[];
   timers: Timer[];
+  trips: Trip[];
+  workDays: WorkDay[];
   deletions: Deletion[];
 }
 
@@ -56,6 +60,8 @@ export const updateOfflineData = (partial: Partial<OfflineData>) => {
     decks: [],
     pomodoroSessions: [],
     timers: [],
+    trips: [],
+    workDays: [],
     deletions: [],
   };
   saveOfflineData({ ...current, ...partial });
@@ -72,6 +78,8 @@ export const syncWithServer = async (): Promise<OfflineData> => {
     decks: [],
     pomodoroSessions: [],
     timers: [],
+    trips: [],
+    workDays: [],
     deletions: [],
   };
   if (!navigator.onLine) return local;
