@@ -5,6 +5,7 @@ import {
   updateOfflineData,
   syncWithServer,
 } from "@/utils/offline";
+import { mergeLists } from "@/utils/sync";
 
 const API_TRIPS = "/api/trips";
 const API_WORKDAYS = "/api/workdays";
@@ -23,8 +24,8 @@ const useWorklogImpl = () => {
         setWorkDays(offline.workDays || []);
       }
       const synced = await syncWithServer();
-      setTrips(synced.trips || []);
-      setWorkDays(synced.workDays || []);
+      setTrips((prev) => mergeLists(prev, synced.trips || [], null));
+      setWorkDays((prev) => mergeLists(prev, synced.workDays || [], null));
       setLoaded(true);
     };
     load();

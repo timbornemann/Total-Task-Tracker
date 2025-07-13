@@ -188,9 +188,7 @@ const WorklogPage: React.FC = () => {
                       {trip.name}
                     </Link>
                     {trip.location && (
-                      <span className="ml-2 text-sm text-muted-foreground">
-                        ({trip.location})
-                      </span>
+                      <span className="ml-2 text-sm">({trip.location})</span>
                     )}
                   </span>
                   <span className="text-xs">
@@ -200,24 +198,13 @@ const WorklogPage: React.FC = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-2">
-              <Button
-                size="sm"
-                className="mb-2"
-                onClick={() => {
-                  setTripIdForNewDay(trip.id);
-                  setEditingDay(null);
-                  setShowDayModal(true);
-                }}
-              >
-                {t("worklog.addDay")}
-              </Button>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>{t("worklog.date")}</TableHead>
-                    <TableHead>{t("worklog.time")}</TableHead>
-                    <TableHead>{t("worklog.duration")}</TableHead>
-                    <TableHead className="text-right">
+                    <TableHead className="text-foreground">{t("worklog.date")}</TableHead>
+                    <TableHead className="text-foreground">{t("worklog.time")}</TableHead>
+                    <TableHead className="text-foreground">{t("worklog.duration")}</TableHead>
+                    <TableHead className="text-right text-foreground">
                       {t("worklog.actions")}
                     </TableHead>
                   </TableRow>
@@ -303,6 +290,18 @@ const WorklogPage: React.FC = () => {
                     })}
                 </TableBody>
               </Table>
+              <div className="mt-2 flex justify-center">
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    setTripIdForNewDay(trip.id);
+                    setEditingDay(null);
+                    setShowDayModal(true);
+                  }}
+                >
+                  {t("worklog.addDay")}
+                </Button>
+              </div>
             </CardContent>
           </Card>
         );
@@ -364,24 +363,13 @@ const WorklogPage: React.FC = () => {
             </span>
           </CardHeader>
           <CardContent className="pt-2">
-            <Button
-              size="sm"
-              className="mb-2"
-              onClick={() => {
-                setTripIdForNewDay(undefined);
-                setEditingDay(null);
-                setShowDayModal(true);
-              }}
-            >
-              {t("worklog.addDay")}
-            </Button>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t("worklog.date")}</TableHead>
-                  <TableHead>{t("worklog.time")}</TableHead>
-                  <TableHead>{t("worklog.duration")}</TableHead>
-                  <TableHead className="text-right">
+                  <TableHead className="text-foreground">{t("worklog.date")}</TableHead>
+                  <TableHead className="text-foreground">{t("worklog.time")}</TableHead>
+                  <TableHead className="text-foreground">{t("worklog.duration")}</TableHead>
+                  <TableHead className="text-right text-foreground">
                     {t("worklog.actions")}
                   </TableHead>
                 </TableRow>
@@ -467,6 +455,18 @@ const WorklogPage: React.FC = () => {
                   })}
               </TableBody>
             </Table>
+            <div className="mt-2 flex justify-center">
+              <Button
+                size="sm"
+                onClick={() => {
+                  setTripIdForNewDay(undefined);
+                  setEditingDay(null);
+                  setShowDayModal(true);
+                }}
+              >
+                {t("worklog.addDay")}
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
