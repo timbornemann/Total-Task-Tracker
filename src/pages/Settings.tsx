@@ -184,6 +184,8 @@ const SettingsPage: React.FC = () => {
     updatePaletteColor,
     homeSectionColors,
     updateHomeSectionColor,
+    defaultTripColor,
+    updateDefaultTripColor,
   } = useSettings();
 
   const { t } = useTranslation();
