@@ -752,6 +752,9 @@
     "end": "Ende",
     "workTime": "Arbeitszeit",
     "duration": "Dauer",
+    "date": "Datum",
+    "time": "Uhrzeit",
+    "actions": "Aktionen",
     "totalTime": "Insgesamt: {{hours}}h {{minutes}}m",
     "exportCsv": "CSV exportieren",
     "importCsv": "CSV importieren"

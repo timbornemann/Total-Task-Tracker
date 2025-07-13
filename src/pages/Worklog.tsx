@@ -5,6 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+  TableCell,
+} from "@/components/ui/table";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -203,41 +211,98 @@ const WorklogPage: React.FC = () => {
               >
                 {t("worklog.addDay")}
               </Button>
-              <ul className="ml-4 list-disc">
-                {workDays
-                  .filter((d) => d.tripId === trip.id)
-                  .map((d) => (
-                    <li
-                      key={d.id}
-                      className="flex justify-between items-center"
-                    >
-                      <span>
-                        {format(new Date(d.start), "dd.MM.yyyy HH:mm")} -{" "}
-                        {format(new Date(d.end), "dd.MM.yyyy HH:mm")} ({" "}
-                        {duration(d.start, d.end).toFixed(2)} h)
-                      </span>
-                      <span className="space-x-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            setEditingDay(d.id);
-                            setShowDayModal(true);
-                          }}
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t("worklog.date")}</TableHead>
+                    <TableHead>{t("worklog.time")}</TableHead>
+                    <TableHead>{t("worklog.duration")}</TableHead>
+                    <TableHead className="text-right">
+                      {t("worklog.actions")}
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {workDays
+                    .filter((d) => d.tripId === trip.id)
+                    .map((d) => {
+                      const dur = duration(d.start, d.end);
+                      return (
+                        <TableRow
+                          key={d.id}
+                          className={dur > 10 ? "bg-destructive/20" : ""}
                         >
-                          {t("common.edit")}
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => deleteWorkDay(d.id)}
-                        >
-                          {t("common.delete")}
-                        </Button>
-                      </span>
-                    </li>
-                  ))}
-              </ul>
+                          <TableCell>
+                            {format(new Date(d.start), "dd.MM.yyyy")}
+                          </TableCell>
+                          <TableCell>
+                            {format(new Date(d.start), "HH:mm")} - {format(
+                              new Date(d.end),
+                              "HH:mm",
+                            )}
+                          </TableCell>
+                          <TableCell>{dur.toFixed(2)} h</TableCell>
+                          <TableCell className="text-right space-x-1">
+                            <div className="hidden sm:inline-flex space-x-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 p-0"
+                                onClick={() => {
+                                  setEditingDay(d.id);
+                                  setShowDayModal(true);
+                                }}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 p-0"
+                                onClick={() => deleteWorkDay(d.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                            <div className="sm:hidden inline-block">
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 p-0"
+                                  >
+                                    <Settings className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent
+                                  align="end"
+                                  className="bg-background z-50"
+                                >
+                                  <DropdownMenuItem
+                                    onClick={() => {
+                                      setEditingDay(d.id);
+                                      setShowDayModal(true);
+                                    }}
+                                  >
+                                    <Edit className="h-4 w-4 mr-2" />
+                                    {t("common.edit")}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={() => deleteWorkDay(d.id)}
+                                  >
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    {t("common.delete")}
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
         );
@@ -310,38 +375,98 @@ const WorklogPage: React.FC = () => {
             >
               {t("worklog.addDay")}
             </Button>
-            <ul className="ml-4 list-disc">
-              {workDays
-                .filter((d) => !d.tripId)
-                .map((d) => (
-                  <li key={d.id} className="flex justify-between items-center">
-                    <span>
-                      {format(new Date(d.start), "dd.MM.yyyy HH:mm")} -{" "}
-                      {format(new Date(d.end), "dd.MM.yyyy HH:mm")} ({" "}
-                      {duration(d.start, d.end).toFixed(2)} h)
-                    </span>
-                    <span className="space-x-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                          setEditingDay(d.id);
-                          setShowDayModal(true);
-                        }}
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t("worklog.date")}</TableHead>
+                  <TableHead>{t("worklog.time")}</TableHead>
+                  <TableHead>{t("worklog.duration")}</TableHead>
+                  <TableHead className="text-right">
+                    {t("worklog.actions")}
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {workDays
+                  .filter((d) => !d.tripId)
+                  .map((d) => {
+                    const dur = duration(d.start, d.end);
+                    return (
+                      <TableRow
+                        key={d.id}
+                        className={dur > 10 ? "bg-destructive/20" : ""}
                       >
-                        {t("common.edit")}
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => deleteWorkDay(d.id)}
-                      >
-                        {t("common.delete")}
-                      </Button>
-                    </span>
-                  </li>
-                ))}
-            </ul>
+                        <TableCell>
+                          {format(new Date(d.start), "dd.MM.yyyy")}
+                        </TableCell>
+                        <TableCell>
+                          {format(new Date(d.start), "HH:mm")} - {format(
+                            new Date(d.end),
+                            "HH:mm",
+                          )}
+                        </TableCell>
+                        <TableCell>{dur.toFixed(2)} h</TableCell>
+                        <TableCell className="text-right space-x-1">
+                          <div className="hidden sm:inline-flex space-x-1">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 p-0"
+                              onClick={() => {
+                                setEditingDay(d.id);
+                                setShowDayModal(true);
+                              }}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 p-0"
+                              onClick={() => deleteWorkDay(d.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                          <div className="sm:hidden inline-block">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 p-0"
+                                >
+                                  <Settings className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent
+                                align="end"
+                                className="bg-background z-50"
+                              >
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    setEditingDay(d.id);
+                                    setShowDayModal(true);
+                                  }}
+                                >
+                                  <Edit className="h-4 w-4 mr-2" />
+                                  {t("common.edit")}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => deleteWorkDay(d.id)}
+                                >
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  {t("common.delete")}
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       </div>
