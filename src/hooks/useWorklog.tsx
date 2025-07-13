@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+} from "react";
 import { Trip, WorkDay } from "@/types";
 import {
   loadOfflineData,
@@ -15,6 +21,8 @@ const useWorklogImpl = () => {
   const [workDays, setWorkDays] = useState<WorkDay[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [initialized, setInitialized] = useState(false);
+  const lastDataRef = useRef("");
+  const saveTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     const load = async () => {
@@ -37,9 +45,13 @@ const useWorklogImpl = () => {
       setInitialized(true);
       return;
     }
-    const save = async () => {
+    const dataStr = JSON.stringify({ trips, workDays });
+    if (dataStr === lastDataRef.current) return;
+    lastDataRef.current = dataStr;
+    updateOfflineData({ trips, workDays });
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = window.setTimeout(async () => {
       try {
-        updateOfflineData({ trips, workDays });
         if (navigator.onLine) {
           await fetch(API_TRIPS, {
             method: "PUT",
@@ -51,14 +63,19 @@ const useWorklogImpl = () => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(workDays),
           });
+          await syncWithServer();
         }
       } catch (err) {
         console.error("Error saving worklog", err);
       }
-      if (navigator.onLine) await syncWithServer();
-    };
-    save();
+    }, 500);
   }, [trips, workDays, loaded]);
+
+  useEffect(() => {
+    return () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    };
+  }, []);
 
   const addTrip = (data: { name: string; location?: string; color: number }) => {
     const id = crypto.randomUUID();
