@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import { hslToHex, hexToHsl, themeToGradient } from "@/utils/color";
 import { Checkbox } from "@/components/ui/checkbox";
 import { allHomeSections } from "@/utils/homeSections";
+import { allNavbarItems } from "@/utils/navbarItems";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -123,6 +124,8 @@ const SettingsPage: React.FC = () => {
     homeSectionOrder,
     toggleHomeSection,
     reorderHomeSections,
+    navbarItems,
+    toggleNavbarItem,
     showPinnedTasks,
     toggleShowPinnedTasks,
     showPinnedNotes,
@@ -715,6 +718,9 @@ const SettingsPage: React.FC = () => {
                     <TabsList className="flex flex-col gap-1 bg-transparent p-0 h-auto">
                       <TabsTrigger className="justify-start" value="home">
                         {t("settings.tabs.home")}
+                      </TabsTrigger>
+                      <TabsTrigger className="justify-start" value="navbar">
+                        {t("settings.tabs.navbar")}
                       </TabsTrigger>
                       <TabsTrigger className="justify-start" value="theme">
                         {t("settings.tabs.theme")}
@@ -1347,6 +1353,49 @@ const SettingsPage: React.FC = () => {
                     </div>
                   </SortableContext>
                 </DndContext>
+              </TabsContent>
+              <TabsContent value="navbar" className="space-y-2">
+                {[
+                  { group: "tasks", keys: ["overview", "kanban", "schedule", "recurring", "habits", "statistics"] },
+                  { group: "learning", keys: ["cards", "decks", "pomodoro", "timers", "clock", "worklog", "cardStatistics"] },
+                ].map((grp) => (
+                  <div key={grp.group} className="space-y-1">
+                    <p className="text-xs font-semibold text-muted-foreground">
+                      {t(`navbar.${grp.group}`)}
+                    </p>
+                    {grp.keys.map((k) => {
+                      const item = allNavbarItems.find((i) => i.key === k);
+                      if (!item) return null;
+                      return (
+                        <div key={k} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`nav-${k}`}
+                            checked={navbarItems.includes(k)}
+                            onCheckedChange={() => toggleNavbarItem(k)}
+                          />
+                          <Label htmlFor={`nav-${k}`}>{t(item.labelKey)}</Label>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
+                <div className="space-y-1">
+                  <p className="text-xs font-semibold text-muted-foreground">
+                    {t("settingsPage.otherLinks")}
+                  </p>
+                  {allNavbarItems
+                    .filter((i) => i.group === "other")
+                    .map((item) => (
+                      <div key={item.key} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`nav-${item.key}`}
+                          checked={navbarItems.includes(item.key)}
+                          onCheckedChange={() => toggleNavbarItem(item.key)}
+                        />
+                        <Label htmlFor={`nav-${item.key}`}>{t(item.labelKey)}</Label>
+                      </div>
+                    ))}
+                </div>
               </TabsContent>
               <TabsContent value="theme" className="space-y-4">
                 <div>

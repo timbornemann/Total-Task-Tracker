@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { allHomeSections } from "@/utils/homeSections";
+import { allNavbarItems } from "@/utils/navbarItems";
 import i18n from "@/lib/i18n";
 
 export type ShortcutKeys = {
@@ -995,6 +996,8 @@ interface SettingsContextValue {
   homeSectionOrder: string[];
   toggleHomeSection: (section: string) => void;
   reorderHomeSections: (start: number, end: number) => void;
+  navbarItems: string[];
+  toggleNavbarItem: (key: string) => void;
   showPinnedTasks: boolean;
   toggleShowPinnedTasks: () => void;
   showPinnedNotes: boolean;
@@ -1100,6 +1103,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     "flashcards",
     "notes",
   ]);
+  const [navbarItems, setNavbarItems] = useState<string[]>(
+    allNavbarItems.map((i) => i.key),
+  );
   const [showPinnedTasks, setShowPinnedTasks] = useState(true);
   const [showPinnedNotes, setShowPinnedNotes] = useState(true);
   const [showPinnedCategories, setShowPinnedCategories] = useState(true);
@@ -1219,6 +1225,15 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
               ...data.homeSectionColors,
             });
           }
+          if (Array.isArray(data.navbarItems)) {
+            setNavbarItems(
+              data.navbarItems.concat(
+                allNavbarItems
+                  .map((i) => i.key)
+                  .filter((k) => !data.navbarItems.includes(k)),
+              ),
+            );
+          }
           if (Array.isArray(data.homeSections)) {
             setHomeSections(data.homeSections);
           }
@@ -1334,6 +1349,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
             homeSectionColors,
             homeSections,
             homeSectionOrder,
+            navbarItems,
             showPinnedTasks,
             showPinnedNotes,
             showPinnedCategories,
@@ -1382,6 +1398,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     homeSectionColors,
     homeSections,
     homeSectionOrder,
+    navbarItems,
     showPinnedTasks,
     showPinnedNotes,
     showPinnedCategories,
@@ -1618,6 +1635,12 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
+  const toggleNavbarItem = (key: string) => {
+    setNavbarItems((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
+    );
+  };
+
   const toggleShowPinnedTasks = () => {
     setShowPinnedTasks((prev) => !prev);
   };
@@ -1664,6 +1687,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
         homeSectionOrder,
         toggleHomeSection,
         reorderHomeSections,
+        navbarItems,
+        toggleNavbarItem,
         showPinnedTasks,
         toggleShowPinnedTasks,
         showPinnedNotes,
