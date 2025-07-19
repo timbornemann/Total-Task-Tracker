@@ -42,6 +42,7 @@ const useTaskStoreImpl = () => {
   const [recurring, setRecurring] = useState<Task[]>([]);
   const [deletions, setDeletions] = useState<Deletion[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [initializing, setInitializing] = useState(true);
   const lastDataRef = useRef("");
   const saveTimerRef = useRef<number | null>(null);
   const lastSaveTimeRef = useRef(0);
@@ -187,7 +188,14 @@ const useTaskStoreImpl = () => {
         saveOfflineData(data);
       }
     }
+    // Längere Schutzzeit nach initialem Load - verhindert Race Conditions mit SSE Events
+    lastChangeTimeRef.current = Date.now();
     setLoaded(true);
+    
+    // Initialisierung abschließen nach 10 Sekunden
+    setTimeout(() => {
+      setInitializing(false);
+    }, 10000);
   };
 
   const mergeServerUpdates = async () => {
@@ -223,12 +231,19 @@ const useTaskStoreImpl = () => {
   useEffect(() => {
     const es = new EventSource("/api/updates");
     es.onmessage = () => {
-      if (Date.now() - lastChangeTimeRef.current > 3000) {
+      // Blockiere SSE Events während Initialisierung
+      if (initializing) {
+        console.log("SSE Event während Initialisierung ignoriert");
+        return;
+      }
+      
+      // Längere Schutzzeit: 10 Sekunden
+      if (Date.now() - lastChangeTimeRef.current > 10000) {
         mergeServerUpdates();
       }
     };
     return () => es.close();
-  }, []);
+  }, [initializing]);
 
   // Save to server whenever data changes after initial load
   useEffect(() => {
@@ -282,6 +297,11 @@ const useTaskStoreImpl = () => {
       visible?: boolean;
     },
   ) => {
+    // Beende Initialisierung bei erster User-Aktion
+    if (initializing) {
+      setInitializing(false);
+    }
+    
     lastChangeTimeRef.current = Date.now();
     const newTask: Task = {
       ...taskData,
@@ -394,6 +414,11 @@ const useTaskStoreImpl = () => {
   };
 
   const updateTask = (taskId: string, updates: Partial<Task>) => {
+    // Beende Initialisierung bei erster User-Aktion
+    if (initializing) {
+      setInitializing(false);
+    }
+    
     lastChangeTimeRef.current = Date.now();
     const normalizedUpdates = { ...updates };
     if (
@@ -440,6 +465,11 @@ const useTaskStoreImpl = () => {
   };
 
   const deleteTask = (taskId: string) => {
+    // Beende Initialisierung bei erster User-Aktion
+    if (initializing) {
+      setInitializing(false);
+    }
+    
     lastChangeTimeRef.current = Date.now();
     const deleteTaskRecursively = (tasks: Task[]): Task[] => {
       return tasks.filter((task) => {
