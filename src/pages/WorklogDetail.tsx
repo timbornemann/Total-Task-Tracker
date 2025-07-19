@@ -49,7 +49,11 @@ const WorklogDetailPage: React.FC = () => {
       day.setDate(base.getDate() + i);
       const dateStr = day.toISOString().slice(0, 10);
       const minutes = days
-        .filter((d) => d.start.slice(0, 10) === dateStr)
+        .filter((d) =>
+          (typeof d.start === "string"
+            ? d.start.slice(0, 10)
+            : d.start.toISOString().slice(0, 10)) === dateStr,
+        )
         .reduce(
           (sum, d) =>
             sum + (new Date(d.end).getTime() - new Date(d.start).getTime()) / 60000,
@@ -63,7 +67,10 @@ const WorklogDetailPage: React.FC = () => {
   const allDays = React.useMemo(() => {
     const map: Record<string, number> = {};
     days.forEach((d) => {
-      const key = d.start.slice(0, 10);
+      const key =
+        typeof d.start === "string"
+          ? d.start.slice(0, 10)
+          : d.start.toISOString().slice(0, 10);
       map[key] =
         (map[key] || 0) +
         (new Date(d.end).getTime() - new Date(d.start).getTime()) / 60000;
