@@ -147,6 +147,9 @@ const SettingsPage: React.FC = () => {
     reorderHomeSections,
     navbarGroups,
     addNavbarGroup,
+    deleteNavbarGroup,
+    addNavbarItemToGroup,
+    resetNavbarSettings,
     navbarItems,
     toggleNavbarItem,
     navbarItemOrder,
@@ -225,6 +228,7 @@ const SettingsPage: React.FC = () => {
   const allInputRef = React.useRef<HTMLInputElement>(null);
 
   const [newGroupName, setNewGroupName] = useState("");
+  const [newNavItems, setNewNavItems] = useState<Record<string, string>>({});
 
   const [currentTab, setCurrentTab] = useState(
     () => localStorage.getItem("settingsTab") || "overview",
@@ -1422,9 +1426,18 @@ const SettingsPage: React.FC = () => {
                 </div>
                 {navbarGroups.map((grp) => (
                   <div key={grp} className="space-y-1">
-                    <p className="text-xs font-semibold text-muted-foreground">
-                      {t(`navbar.${grp}`, grp)}
-                    </p>
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs font-semibold text-muted-foreground">
+                        {t(`navbar.${grp}`, grp)}
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => deleteNavbarGroup(grp)}
+                      >
+                        {t("common.delete")}
+                      </Button>
+                    </div>
                     <DndContext
                       sensors={sensors}
                       collisionDetection={closestCenter}
@@ -1457,25 +1470,60 @@ const SettingsPage: React.FC = () => {
                         </div>
                       </SortableContext>
                     </DndContext>
+                    <div className="flex items-end space-x-2 pt-1">
+                      <Select
+                        value={newNavItems[grp] || ""}
+                        onValueChange={(val) =>
+                          setNewNavItems((prev) => ({ ...prev, [grp]: val }))
+                        }
+                      >
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue
+                            placeholder={t("settingsPage.addNavbarItem")}
+                          />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-60 overflow-y-auto">
+                          {allNavbarItems.map((item) => (
+                            <SelectItem key={item.key} value={item.key}>
+                              {t(item.labelKey)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const val = newNavItems[grp];
+                          if (val) {
+                            addNavbarItemToGroup(grp, val);
+                            setNewNavItems((prev) => ({ ...prev, [grp]: "" }));
+                          }
+                        }}
+                      >
+                        {t("settingsPage.addNavbarItem")}
+                      </Button>
+                    </div>
                   </div>
                 ))}
                 <div className="space-y-1">
                   <p className="text-xs font-semibold text-muted-foreground">
                     {t("settingsPage.otherLinks")}
                   </p>
-                  {allNavbarItems
-                    .filter((i) => i.group === "other")
-                    .map((item) => (
-                      <div key={item.key} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`nav-${item.key}`}
-                          checked={navbarItems.includes(item.key)}
-                          onCheckedChange={() => toggleNavbarItem(item.key)}
-                        />
-                        <Label htmlFor={`nav-${item.key}`}>{t(item.labelKey)}</Label>
-                      </div>
-                    ))}
+                  {allNavbarItems.map((item) => (
+                    <div key={item.key} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`nav-${item.key}`}
+                        checked={navbarItems.includes(item.key)}
+                        onCheckedChange={() => toggleNavbarItem(item.key)}
+                      />
+                      <Label htmlFor={`nav-${item.key}`}>{t(item.labelKey)}</Label>
+                    </div>
+                  ))}
                 </div>
+                <Button variant="outline" onClick={resetNavbarSettings}>
+                  {t("settingsPage.resetNavbar")}
+                </Button>
               </TabsContent>
               <TabsContent value="theme" className="space-y-4">
                 <div>

@@ -1009,6 +1009,9 @@ interface SettingsContextValue {
   toggleNavbarItem: (key: string) => void;
   navbarGroups: string[];
   addNavbarGroup: (name: string) => void;
+  deleteNavbarGroup: (name: string) => void;
+  addNavbarItemToGroup: (group: string, key: string) => void;
+  resetNavbarSettings: () => void;
   navbarItemOrder: Record<string, string[]>;
   reorderNavbarItems: (group: string, start: number, end: number) => void;
   showPinnedTasks: boolean;
@@ -1708,6 +1711,29 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     setNavbarItemOrder((prev) => ({ ...prev, [name]: prev[name] || [] }));
   };
 
+  const deleteNavbarGroup = (name: string) => {
+    setNavbarGroups((prev) => prev.filter((g) => g !== name));
+    setNavbarItemOrder((prev) => {
+      const updated = { ...prev };
+      delete updated[name];
+      return updated;
+    });
+  };
+
+  const addNavbarItemToGroup = (group: string, key: string) => {
+    setNavbarItemOrder((prev) => {
+      const items = prev[group] ? Array.from(prev[group]) : [];
+      if (!items.includes(key)) items.push(key);
+      return { ...prev, [group]: items };
+    });
+  };
+
+  const resetNavbarSettings = () => {
+    setNavbarGroups([...defaultNavbarGroups]);
+    setNavbarItems(allNavbarItems.map((i) => i.key));
+    setNavbarItemOrder({ ...defaultNavbarItemOrder });
+  };
+
   const toggleNavbarItem = (key: string) => {
     setNavbarItems((prev) =>
       prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
@@ -1762,6 +1788,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
         reorderHomeSections,
         navbarGroups,
         addNavbarGroup,
+        deleteNavbarGroup,
+        addNavbarItemToGroup,
+        resetNavbarSettings,
         navbarItems,
         toggleNavbarItem,
         navbarItemOrder,
