@@ -1,10 +1,16 @@
-import React, { useEffect, useState, createContext, useContext } from "react";
+import React, { useEffect, useState, createContext, useContext, useRef } from "react";
 import {
   InventoryItem,
   InventoryItemFormData,
   ItemCategory,
   ItemTag,
 } from "@/types";
+import {
+  loadOfflineData,
+  updateOfflineData,
+  syncWithServer,
+} from "@/utils/offline";
+import { mergeLists } from "@/utils/sync";
 
 const ITEMS_URL = "/api/inventory/items";
 const CATS_URL = "/api/inventory/item-categories";
@@ -19,17 +25,39 @@ const useInventoryImpl = () => {
   const [categories, setCategories] = useState<ItemCategory[]>([]);
   const [tags, setTags] = useState<ItemTag[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [initialized, setInitialized] = useState(false);
+  const lastDataRef = useRef("");
+  const saveTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     const load = async () => {
+      const offline = loadOfflineData();
+      if (offline) {
+        setItems(offline.items || []);
+        setCategories(offline.itemCategories || []);
+        setTags(offline.itemTags || []);
+      }
       const [iRes, cRes, tRes] = await Promise.all([
         fetch(ITEMS_URL),
         fetch(CATS_URL),
         fetch(TAGS_URL),
       ]);
-      if (iRes.ok) setItems((await iRes.json()) as InventoryItem[]);
-      if (cRes.ok) setCategories((await cRes.json()) as ItemCategory[]);
-      if (tRes.ok) setTags((await tRes.json()) as ItemTag[]);
+      if (iRes.ok) {
+        const list = (await iRes.json()) as InventoryItem[];
+        setItems((prev) => mergeLists(prev, list, null));
+      }
+      if (cRes.ok) {
+        const list = (await cRes.json()) as ItemCategory[];
+        setCategories((prev) => mergeLists(prev, list, null));
+      }
+      if (tRes.ok) {
+        const list = (await tRes.json()) as ItemTag[];
+        setTags((prev) => mergeLists(prev, list, null));
+      }
+      const synced = await syncWithServer();
+      setItems((prev) => mergeLists(prev, synced.items || [], null));
+      setCategories((prev) => mergeLists(prev, synced.itemCategories || [], null));
+      setTags((prev) => mergeLists(prev, synced.itemTags || [], null));
       setLoaded(true);
     };
     load();
@@ -37,8 +65,17 @@ const useInventoryImpl = () => {
 
   useEffect(() => {
     if (!loaded) return;
+    if (!initialized) {
+      setInitialized(true);
+      return;
+    }
     const save = async () => {
       try {
+        const dataStr = JSON.stringify({ items, itemCategories: categories, itemTags: tags });
+        if (dataStr !== lastDataRef.current) {
+          lastDataRef.current = dataStr;
+          updateOfflineData({ items, itemCategories: categories, itemTags: tags });
+        }
         await fetch(ITEMS_URL, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -54,12 +91,20 @@ const useInventoryImpl = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(tags),
         });
+        await syncWithServer();
       } catch (err) {
         console.error("Error saving inventory", err);
       }
     };
-    save();
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = window.setTimeout(save, 500);
   }, [items, categories, tags, loaded]);
+
+  useEffect(() => {
+    return () => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    };
+  }, []);
 
   const addItem = (data: InventoryItemFormData) => {
     let catId: string | undefined;

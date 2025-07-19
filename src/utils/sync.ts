@@ -10,6 +10,9 @@ import {
   Timer,
   Trip,
   WorkDay,
+  InventoryItem,
+  ItemCategory,
+  ItemTag,
 } from "@/types";
 
 export interface AllData {
@@ -24,6 +27,9 @@ export interface AllData {
   timers: Timer[];
   trips: Trip[];
   workDays: WorkDay[];
+  items: InventoryItem[];
+  itemCategories: ItemCategory[];
+  itemTags: ItemTag[];
   deletions: Deletion[];
 }
 
@@ -64,6 +70,9 @@ export function mergeData(curr: AllData, inc: AllData): AllData {
     timers: mergeLists(curr.timers, inc.timers, null),
     trips: mergeLists(curr.trips, inc.trips, null),
     workDays: mergeLists(curr.workDays, inc.workDays, null),
+    items: mergeLists(curr.items, inc.items, null),
+    itemCategories: mergeLists(curr.itemCategories, inc.itemCategories, null),
+    itemTags: mergeLists(curr.itemTags, inc.itemTags, null),
     deletions: mergeLists(curr.deletions, inc.deletions, "deletedAt"),
   };
 }
@@ -98,6 +107,13 @@ export function applyDeletions(data: AllData): AllData {
   data.decks = (data.decks || []).filter((d) => shouldKeep("deck", d));
   data.trips = (data.trips || []).filter((t) => shouldKeep("trip", t));
   data.workDays = (data.workDays || []).filter((d) => shouldKeep("workday", d));
+  data.items = (data.items || []).filter((i) => shouldKeep("inventoryItem", i));
+  data.itemCategories = (data.itemCategories || []).filter((c) =>
+    shouldKeep("inventoryCategory", c),
+  );
+  data.itemTags = (data.itemTags || []).filter((t) =>
+    shouldKeep("inventoryTag", t),
+  );
   data.pomodoroSessions = (data.pomodoroSessions || []).filter((s) =>
     shouldKeep("pomodoro", s as unknown as { id: string; updatedAt?: Date }),
   );

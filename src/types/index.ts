@@ -160,7 +160,10 @@ export interface Deletion {
     | "timer"
     | "pomodoro"
     | "workday"
-    | "trip";
+    | "trip"
+    | "inventoryItem"
+    | "inventoryCategory"
+    | "inventoryTag";
   deletedAt: Date;
 }
 

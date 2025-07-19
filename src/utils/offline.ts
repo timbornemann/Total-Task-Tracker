@@ -10,6 +10,9 @@ import {
   Timer,
   Trip,
   WorkDay,
+  InventoryItem,
+  ItemCategory,
+  ItemTag,
 } from "@/types";
 import { applyDeletions, mergeData } from "./sync";
 
@@ -25,6 +28,9 @@ export interface OfflineData {
   timers: Timer[];
   trips: Trip[];
   workDays: WorkDay[];
+  items: InventoryItem[];
+  itemCategories: ItemCategory[];
+  itemTags: ItemTag[];
   deletions: Deletion[];
 }
 
@@ -62,6 +68,9 @@ export const updateOfflineData = (partial: Partial<OfflineData>) => {
     timers: [],
     trips: [],
     workDays: [],
+    items: [],
+    itemCategories: [],
+    itemTags: [],
     deletions: [],
   };
   saveOfflineData({ ...current, ...partial });
@@ -80,6 +89,9 @@ export const syncWithServer = async (): Promise<OfflineData> => {
     timers: [],
     trips: [],
     workDays: [],
+    items: [],
+    itemCategories: [],
+    itemTags: [],
     deletions: [],
   };
   if (!navigator.onLine) return local;
