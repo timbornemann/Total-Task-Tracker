@@ -397,18 +397,17 @@ const SettingsPage: React.FC = () => {
     }
   };
 
-  const handleNavbarDrag = (group: string) => ({
-    active,
-    over,
-  }: DragEndEvent) => {
-    if (!over || active.id === over.id) return;
-    const list = navbarItemOrder[group] || [];
-    const oldIndex = list.indexOf(active.id as string);
-    const newIndex = list.indexOf(over.id as string);
-    if (oldIndex !== -1 && newIndex !== -1) {
-      reorderNavbarItems(group, oldIndex, newIndex);
-    }
-  };
+  const handleNavbarDrag =
+    (group: string) =>
+    ({ active, over }: DragEndEvent) => {
+      if (!over || active.id === over.id) return;
+      const list = navbarItemOrder[group] || [];
+      const oldIndex = list.indexOf(active.id as string);
+      const newIndex = list.indexOf(over.id as string);
+      if (oldIndex !== -1 && newIndex !== -1) {
+        reorderNavbarItems(group, oldIndex, newIndex);
+      }
+    };
 
   const download = (data: unknown, name: string) => {
     const blob = new Blob([JSON.stringify(data, null, 2)], {
@@ -1449,7 +1448,9 @@ const SettingsPage: React.FC = () => {
                       >
                         <div className="space-y-1">
                           {navbarItemOrder[grp].map((k) => {
-                            const item = allNavbarItems.find((i) => i.key === k);
+                            const item = allNavbarItems.find(
+                              (i) => i.key === k,
+                            );
                             if (!item) return null;
                             return (
                               <SortableNavItem key={k} id={k}>
@@ -1458,9 +1459,13 @@ const SettingsPage: React.FC = () => {
                                     <Checkbox
                                       id={`nav-${k}`}
                                       checked={navbarItems.includes(k)}
-                                      onCheckedChange={() => toggleNavbarItem(k)}
+                                      onCheckedChange={() =>
+                                        toggleNavbarItem(k)
+                                      }
                                     />
-                                    <Label htmlFor={`nav-${k}`}>{t(item.labelKey)}</Label>
+                                    <Label htmlFor={`nav-${k}`}>
+                                      {t(item.labelKey)}
+                                    </Label>
                                   </div>
                                   <GripVertical className="h-4 w-4 text-muted-foreground" />
                                 </div>
@@ -1510,16 +1515,40 @@ const SettingsPage: React.FC = () => {
                   <p className="text-xs font-semibold text-muted-foreground">
                     {t("settingsPage.otherLinks")}
                   </p>
-                  {allNavbarItems.map((item) => (
-                    <div key={item.key} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`nav-${item.key}`}
-                        checked={navbarItems.includes(item.key)}
-                        onCheckedChange={() => toggleNavbarItem(item.key)}
-                      />
-                      <Label htmlFor={`nav-${item.key}`}>{t(item.labelKey)}</Label>
-                    </div>
-                  ))}
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleNavbarDrag("standalone")}
+                  >
+                    <SortableContext
+                      items={navbarItemOrder.standalone}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <div className="space-y-1">
+                        {navbarItemOrder.standalone.map((k) => {
+                          const item = allNavbarItems.find((i) => i.key === k);
+                          if (!item) return null;
+                          return (
+                            <SortableNavItem key={k} id={k}>
+                              <div className="flex items-center justify-between border rounded p-2 bg-card">
+                                <div className="flex items-center space-x-2">
+                                  <Checkbox
+                                    id={`nav-${k}`}
+                                    checked={navbarItems.includes(k)}
+                                    onCheckedChange={() => toggleNavbarItem(k)}
+                                  />
+                                  <Label htmlFor={`nav-${k}`}>
+                                    {t(item.labelKey)}
+                                  </Label>
+                                </div>
+                                <GripVertical className="h-4 w-4 text-muted-foreground" />
+                              </div>
+                            </SortableNavItem>
+                          );
+                        })}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
                 </div>
                 <Button variant="outline" onClick={resetNavbarSettings}>
                   {t("settingsPage.resetNavbar")}
