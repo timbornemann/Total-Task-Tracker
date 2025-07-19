@@ -113,6 +113,8 @@
     "yourThemes": "Your Themes",
     "otherLinks": "Other links",
     "dragHint": "Drag items to reorder",
+    "addNavbarGroup": "Add Navbar Group",
+    "navbarGroupName": "Group name",
     "custom": "custom",
     "bgColor": "Background (App)",
     "fgColor": "Text color",

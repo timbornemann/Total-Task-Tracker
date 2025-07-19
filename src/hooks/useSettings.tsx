@@ -966,6 +966,8 @@ export const defaultNavbarItemOrder: Record<string, string[]> = {
     .map((i) => i.key),
 };
 
+export const defaultNavbarGroups = ["tasks", "learning"];
+
 interface SettingsContextValue {
   shortcuts: ShortcutKeys;
   updateShortcut: (key: keyof ShortcutKeys, value: string) => void;
@@ -1005,6 +1007,8 @@ interface SettingsContextValue {
   reorderHomeSections: (start: number, end: number) => void;
   navbarItems: string[];
   toggleNavbarItem: (key: string) => void;
+  navbarGroups: string[];
+  addNavbarGroup: (name: string) => void;
   navbarItemOrder: Record<string, string[]>;
   reorderNavbarItems: (group: string, start: number, end: number) => void;
   showPinnedTasks: boolean;
@@ -1112,6 +1116,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     "flashcards",
     "notes",
   ]);
+  const [navbarGroups, setNavbarGroups] = useState<string[]>([...defaultNavbarGroups]);
   const [navbarItems, setNavbarItems] = useState<string[]>(
     allNavbarItems.map((i) => i.key),
   );
@@ -1237,34 +1242,49 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
               ...data.homeSectionColors,
             });
           }
-         if (Array.isArray(data.navbarItems)) {
-            setNavbarItems(
-              data.navbarItems.concat(
-                allNavbarItems
-                  .map((i) => i.key)
-                  .filter((k) => !data.navbarItems.includes(k)),
+        if (Array.isArray(data.navbarGroups)) {
+          setNavbarGroups(
+            data.navbarGroups.concat(
+              defaultNavbarGroups.filter((g) => !data.navbarGroups.includes(g)),
+            ),
+          );
+        }
+        if (Array.isArray(data.navbarItems)) {
+          setNavbarItems(
+            data.navbarItems.concat(
+              allNavbarItems
+                .map((i) => i.key)
+                .filter((k) => !data.navbarItems.includes(k)),
               ),
             );
           }
-          if (
-            data.navbarItemOrder &&
-            typeof data.navbarItemOrder === "object"
-          ) {
-            const order: Record<string, string[]> = {
-              ...defaultNavbarItemOrder,
-              ...data.navbarItemOrder,
-            };
-            for (const key of Object.keys(defaultNavbarItemOrder)) {
-              if (Array.isArray(order[key])) {
-                order[key] = order[key].concat(
-                  defaultNavbarItemOrder[key].filter((k) => !order[key].includes(k)),
-                );
-              } else {
-                order[key] = [...defaultNavbarItemOrder[key]];
-              }
+        if (
+          data.navbarItemOrder &&
+          typeof data.navbarItemOrder === "object"
+        ) {
+          const order: Record<string, string[]> = {
+            ...defaultNavbarItemOrder,
+            ...data.navbarItemOrder,
+          };
+          const groups = Array.isArray(data.navbarGroups)
+            ? data.navbarGroups
+            : defaultNavbarGroups;
+          for (const key of groups) {
+            if (Array.isArray(order[key])) {
+              order[key] = order[key].concat(
+                  (defaultNavbarItemOrder[key] || []).filter(
+                    (k) => !order[key].includes(k),
+                  ),
+              );
+            } else {
+              order[key] = [...(defaultNavbarItemOrder[key] || [])];
             }
-            setNavbarItemOrder(order);
           }
+          groups.forEach((g) => {
+            if (!order[g]) order[g] = [];
+          });
+          setNavbarItemOrder(order);
+        }
           if (Array.isArray(data.homeSections)) {
             setHomeSections(data.homeSections);
           }
@@ -1380,6 +1400,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
             homeSectionColors,
             homeSections,
             homeSectionOrder,
+            navbarGroups,
             navbarItems,
             navbarItemOrder,
             showPinnedTasks,
@@ -1430,6 +1451,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     homeSectionColors,
     homeSections,
     homeSectionOrder,
+    navbarGroups,
     navbarItems,
     navbarItemOrder,
     showPinnedTasks,
@@ -1681,6 +1703,11 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
+  const addNavbarGroup = (name: string) => {
+    setNavbarGroups((prev) => (prev.includes(name) ? prev : [...prev, name]));
+    setNavbarItemOrder((prev) => ({ ...prev, [name]: prev[name] || [] }));
+  };
+
   const toggleNavbarItem = (key: string) => {
     setNavbarItems((prev) =>
       prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
@@ -1733,6 +1760,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
         homeSectionOrder,
         toggleHomeSection,
         reorderHomeSections,
+        navbarGroups,
+        addNavbarGroup,
         navbarItems,
         toggleNavbarItem,
         navbarItemOrder,
