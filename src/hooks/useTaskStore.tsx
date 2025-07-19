@@ -43,6 +43,7 @@ const useTaskStoreImpl = () => {
   const [loaded, setLoaded] = useState(false);
   const lastDataRef = useRef("");
   const saveTimerRef = useRef<number | null>(null);
+  const lastSaveTimeRef = useRef(0);
   const [recentlyDeletedCategories, setRecentlyDeletedCategories] = useState<
     { category: Category; taskIds: string[] }[]
   >([]);
@@ -202,7 +203,11 @@ const useTaskStoreImpl = () => {
 
   useEffect(() => {
     const es = new EventSource("/api/updates");
-    es.onmessage = () => fetchData(false);
+    es.onmessage = () => {
+      if (Date.now() - lastSaveTimeRef.current > 1000) {
+        fetchData(false);
+      }
+    };
     return () => es.close();
   }, []);
 
@@ -217,6 +222,9 @@ const useTaskStoreImpl = () => {
 
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = window.setTimeout(async () => {
+      // record save time before sending data so incoming SSE events from this
+      // update are ignored
+      lastSaveTimeRef.current = Date.now();
       try {
         if (navigator.onLine) {
           await fetch(API_URL, {
@@ -233,7 +241,9 @@ const useTaskStoreImpl = () => {
       } catch (error) {
         console.error("Error saving data:", error);
       }
-      if (navigator.onLine) await syncWithServer();
+      // Syncing immediately after saving caused duplicate updates via SSE
+      // which toggled task completion multiple times. Skip direct sync here.
+      // if (navigator.onLine) await syncWithServer();
     }, 500);
   }, [tasks, categories, notes, recurring, deletions, loaded]);
 
