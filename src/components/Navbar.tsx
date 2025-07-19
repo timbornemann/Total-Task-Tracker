@@ -64,17 +64,8 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
     inventory: <List className="h-4 w-4 mr-2" />,
     settings: <Cog className="h-4 w-4 mr-2" />,
   };
-  const groupedSet = React.useMemo(() => {
-    const set = new Set<string>();
-    navbarGroups.forEach((g) => {
-      (navbarItemOrder[g] || []).forEach((k) => set.add(k));
-    });
-    return set;
-  }, [navbarGroups, navbarItemOrder]);
   const standalone = (navbarItemOrder["standalone"] || [])
-    .filter(
-      (k) => !groupedSet.has(k) && (navbarItems.standalone || []).includes(k),
-    )
+    .filter((k) => (navbarItems.standalone || []).includes(k))
     .map((k) => itemMap[k])
     .filter(Boolean) as typeof allNavbarItems;
   const [showMobileMenu, setShowMobileMenu] = React.useState(false);
