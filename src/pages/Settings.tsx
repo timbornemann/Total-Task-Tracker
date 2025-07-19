@@ -1614,6 +1614,40 @@ const SettingsPage: React.FC = () => {
                       </div>
                     </SortableContext>
                   </DndContext>
+                  <div className="flex items-end space-x-2 pt-1">
+                    <Select
+                      value={newNavItems.standalone || ""}
+                      onValueChange={(val) =>
+                        setNewNavItems((prev) => ({ ...prev, standalone: val }))
+                      }
+                    >
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue
+                          placeholder={t("settingsPage.addNavbarItem")}
+                        />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-60 overflow-y-auto">
+                        {allNavbarItems.map((item) => (
+                          <SelectItem key={item.key} value={item.key}>
+                            {t(item.labelKey)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const val = newNavItems.standalone;
+                        if (val) {
+                          addNavbarItemToGroup("standalone", val);
+                          setNewNavItems((prev) => ({ ...prev, standalone: "" }));
+                        }
+                      }}
+                    >
+                      {t("settingsPage.addNavbarItem")}
+                    </Button>
+                  </div>
                 </div>
                 <Button variant="outline" onClick={resetNavbarSettings}>
                   {t("settingsPage.resetNavbar")}
