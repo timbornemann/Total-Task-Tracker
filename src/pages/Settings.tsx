@@ -80,6 +80,27 @@ const SortableHomeSection: React.FC<SortableHomeSectionProps> = ({
   );
 };
 
+interface SortableNavItemProps {
+  id: string;
+  children: React.ReactNode;
+}
+
+const SortableNavItem: React.FC<SortableNavItemProps> = ({ id, children }) => {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      {children}
+    </div>
+  );
+};
+
 interface ServerInfo {
   ips: string[];
   port: number;
@@ -126,6 +147,8 @@ const SettingsPage: React.FC = () => {
     reorderHomeSections,
     navbarItems,
     toggleNavbarItem,
+    navbarItemOrder,
+    reorderNavbarItems,
     showPinnedTasks,
     toggleShowPinnedTasks,
     showPinnedNotes,
@@ -363,6 +386,19 @@ const SettingsPage: React.FC = () => {
     const newIndex = homeSectionOrder.indexOf(over.id as string);
     if (oldIndex !== -1 && newIndex !== -1) {
       reorderHomeSections(oldIndex, newIndex);
+    }
+  };
+
+  const handleNavbarDrag = (group: string) => ({
+    active,
+    over,
+  }: DragEndEvent) => {
+    if (!over || active.id === over.id) return;
+    const list = navbarItemOrder[group] || [];
+    const oldIndex = list.indexOf(active.id as string);
+    const newIndex = list.indexOf(over.id as string);
+    if (oldIndex !== -1 && newIndex !== -1) {
+      reorderNavbarItems(group, oldIndex, newIndex);
     }
   };
 
@@ -1355,28 +1391,46 @@ const SettingsPage: React.FC = () => {
                 </DndContext>
               </TabsContent>
               <TabsContent value="navbar" className="space-y-2">
-                {[
-                  { group: "tasks", keys: ["overview", "kanban", "schedule", "recurring", "habits", "statistics"] },
-                  { group: "learning", keys: ["cards", "decks", "pomodoro", "timers", "clock", "worklog", "cardStatistics"] },
-                ].map((grp) => (
-                  <div key={grp.group} className="space-y-1">
+                <p className="text-xs text-muted-foreground">
+                  {t("settingsPage.dragHint")}
+                </p>
+                {["tasks", "learning"].map((grp) => (
+                  <div key={grp} className="space-y-1">
                     <p className="text-xs font-semibold text-muted-foreground">
-                      {t(`navbar.${grp.group}`)}
+                      {t(`navbar.${grp}`)}
                     </p>
-                    {grp.keys.map((k) => {
-                      const item = allNavbarItems.find((i) => i.key === k);
-                      if (!item) return null;
-                      return (
-                        <div key={k} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`nav-${k}`}
-                            checked={navbarItems.includes(k)}
-                            onCheckedChange={() => toggleNavbarItem(k)}
-                          />
-                          <Label htmlFor={`nav-${k}`}>{t(item.labelKey)}</Label>
+                    <DndContext
+                      sensors={sensors}
+                      collisionDetection={closestCenter}
+                      onDragEnd={handleNavbarDrag(grp)}
+                    >
+                      <SortableContext
+                        items={navbarItemOrder[grp]}
+                        strategy={verticalListSortingStrategy}
+                      >
+                        <div className="space-y-1">
+                          {navbarItemOrder[grp].map((k) => {
+                            const item = allNavbarItems.find((i) => i.key === k);
+                            if (!item) return null;
+                            return (
+                              <SortableNavItem key={k} id={k}>
+                                <div className="flex items-center justify-between border rounded p-2 bg-card">
+                                  <div className="flex items-center space-x-2">
+                                    <Checkbox
+                                      id={`nav-${k}`}
+                                      checked={navbarItems.includes(k)}
+                                      onCheckedChange={() => toggleNavbarItem(k)}
+                                    />
+                                    <Label htmlFor={`nav-${k}`}>{t(item.labelKey)}</Label>
+                                  </div>
+                                  <GripVertical className="h-4 w-4 text-muted-foreground" />
+                                </div>
+                              </SortableNavItem>
+                            );
+                          })}
                         </div>
-                      );
-                    })}
+                      </SortableContext>
+                    </DndContext>
                   </div>
                 ))}
                 <div className="space-y-1">
