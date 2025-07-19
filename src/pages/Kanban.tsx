@@ -84,8 +84,15 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({ id, children }) => {
 };
 
 const Kanban: React.FC = () => {
-  const { tasks, categories, addTask, updateTask, deleteTask, findTaskById } =
-    useTaskStore();
+  const {
+    tasks,
+    categories,
+    addTask,
+    updateTask,
+    deleteTask,
+    findTaskById,
+    resetTask,
+  } = useTaskStore();
   const { toast } = useToast();
   const { t } = useTranslation();
 
@@ -165,6 +172,15 @@ const Kanban: React.FC = () => {
     toast({
       title: completed ? t("kanban.completed") : t("kanban.reactivated"),
       description: `"${task?.title}" ${completed ? t("kanban.completed") : t("kanban.reactivated")}`,
+    });
+  };
+
+  const handleResetTask = (taskId: string) => {
+    resetTask(taskId);
+    const task = findTaskById(taskId);
+    toast({
+      title: t("kanban.reset"),
+      description: `"${task?.title}" ${t("kanban.reset")}`,
     });
   };
 
@@ -346,6 +362,7 @@ const Kanban: React.FC = () => {
                         onAddSubtask={handleAddSubtask}
                         onToggleComplete={handleToggleTaskComplete}
                         onViewDetails={handleViewTaskDetails}
+                        onReset={handleResetTask}
                       />
                     </SortableKanbanTask>
                   ))}

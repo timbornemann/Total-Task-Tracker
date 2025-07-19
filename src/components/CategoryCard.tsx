@@ -11,6 +11,7 @@ import {
   MoreVertical,
   Star,
   StarOff,
+  RotateCcw,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -34,6 +35,7 @@ interface CategoryCardProps {
   onDelete: (categoryId: string) => void;
   onViewTasks: (category: Category) => void;
   onTogglePinned: (categoryId: string, pinned: boolean) => void;
+  onReset: (categoryId: string) => void;
 }
 
 const CategoryCard: React.FC<CategoryCardProps> = ({
@@ -43,6 +45,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
   onDelete,
   onViewTasks,
   onTogglePinned,
+  onReset,
 }) => {
   const { t } = useTranslation();
   const { colorPalette, theme } = useSettings();
@@ -146,6 +149,17 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
             >
               <Edit className="h-4 w-4" />
             </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onReset(category.id);
+              }}
+              className="h-8 w-8 p-0"
+            >
+              <RotateCcw className="h-4 w-4" />
+            </Button>
             {category.id !== "default" && (
               <Button
                 variant="ghost"
@@ -197,6 +211,10 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                 <DropdownMenuItem onClick={() => onEdit(category)}>
                   <Edit className="h-4 w-4 mr-2" />
                   {t("common.edit")}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onReset(category.id)}>
+                  <RotateCcw className="h-4 w-4 mr-2" />
+                  {t("categoryCard.resetTasks")}
                 </DropdownMenuItem>
                 {category.id !== "default" && (
                   <DropdownMenuItem

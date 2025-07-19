@@ -523,7 +523,6 @@ const useTaskStoreImpl = () => {
     );
   };
 
-
   const deleteRecurringTask = (id: string) => {
     setRecurring((prev) => prev.filter((t) => t.id !== id));
     setTasks((prev) =>
@@ -853,6 +852,43 @@ const useTaskStoreImpl = () => {
     });
   };
 
+  const resetTaskRecursive = (t: Task): Task => ({
+    ...t,
+    completed: false,
+    status: "todo",
+    visible: true,
+    subtasks: t.subtasks.map((st) => resetTaskRecursive(st)),
+  });
+
+  const resetTask = (taskId: string) => {
+    const update = (list: Task[]): Task[] =>
+      list.map((task) => {
+        if (task.id === taskId) {
+          return resetTaskRecursive(task);
+        }
+        if (task.subtasks.length > 0) {
+          return { ...task, subtasks: update(task.subtasks) };
+        }
+        return task;
+      });
+    setTasks((prev) => update(prev));
+  };
+
+  const resetCategoryTasks = (categoryId: string) => {
+    const update = (list: Task[]): Task[] =>
+      list.map((task) => {
+        const subs = update(task.subtasks);
+        if (task.categoryId === categoryId) {
+          return resetTaskRecursive({ ...task, subtasks: subs });
+        }
+        if (subs !== task.subtasks) {
+          return { ...task, subtasks: subs };
+        }
+        return task;
+      });
+    setTasks((prev) => update(prev));
+  };
+
   const getTasksByCategory = (categoryId: string): Task[] => {
     return tasks
       .filter(
@@ -904,6 +940,8 @@ const useTaskStoreImpl = () => {
     updateNote,
     deleteNote,
     reorderNotes,
+    resetTask,
+    resetCategoryTasks,
     recurring,
     addRecurringTask,
     updateRecurringTask,

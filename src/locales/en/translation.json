@@ -511,6 +511,7 @@
     "deleted": "Task deleted",
     "completed": "Task completed",
     "reactivated": "Task reactivated",
+    "reset": "Task reset",
     "deleteConfirm": "Are you sure you want to delete \"{{title}}\"?",
     "search": "Search...",
     "moreFilters": "More Filters",
@@ -661,6 +662,8 @@
     "taskCompletedDesc": "\"{{title}}\" was marked as completed.",
     "taskReactivated": "Task reactivated",
     "taskReactivatedDesc": "\"{{title}}\" was reactivated.",
+    "taskReset": "Task reset",
+    "taskResetDesc": "\"{{title}}\" was reset.",
     "taskDeleteConfirm": "Are you sure you want to delete \"{{title}}\"?",
     "categoryCreated": "Category created",
     "categoryCreatedDesc": "\"{{name}}\" was successfully created.",
@@ -670,13 +673,16 @@
     "categoryDeletedDesc": "The category was successfully deleted.",
     "categoryDeleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
     "categoryDeleteLastConfirm": "You are about to delete the last remaining category. Delete \"{{name}}\"?",
+    "categoryTasksReset": "Tasks reset",
+    "categoryTasksResetDesc": "All tasks in \"{{name}}\" were reset.",
     "undo": "Undo"
   },
   "categoryCard": {
     "deleteTooltip": "Delete (undo possible)",
     "deleteMenu": "Delete (undo possible)",
     "percentDone": "{{percent}}% done",
-    "completedOfTotal": "{{completed}} of {{total}} completed"
+    "completedOfTotal": "{{completed}} of {{total}} completed",
+    "resetTasks": "Reset tasks"
   },
   "taskCard": {
     "viewDetails": "View details",
@@ -685,7 +691,8 @@
     "recurring": "Recurring",
     "due": "Due on {{date}}",
     "hide": "Hide",
-    "unhide": "Unhide"
+    "unhide": "Unhide",
+    "reset": "Reset"
   },
   "taskDetail": {
     "noSubtasks": "No subtasks available.",
