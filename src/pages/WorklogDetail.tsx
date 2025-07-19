@@ -1,11 +1,12 @@
 import React from "react";
 import Navbar from "@/components/Navbar";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useWorklog } from "@/hooks/useWorklog";
 import { useTranslation } from "react-i18next";
 import { useSettings } from "@/hooks/useSettings";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 import { format } from "date-fns";
 import {
   ResponsiveContainer,
@@ -21,6 +22,7 @@ import {
 
 const WorklogDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { trips, workDays } = useWorklog();
   const { t } = useTranslation();
   const { colorPalette } = useSettings();
@@ -93,7 +95,10 @@ const WorklogDetailPage: React.FC = () => {
   if (notFound) {
     return (
       <div className="min-h-screen bg-background">
-        <Navbar title={t("worklogDetail.title") as string} />
+        <Navbar
+          title={t("worklogDetail.title") as string}
+          onHomeClick={() => navigate("/worklog")}
+        />
         <div className="p-4">Not found</div>
       </div>
     );
@@ -101,8 +106,14 @@ const WorklogDetailPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar title={t("worklogDetail.title") as string} />
-      <div className="max-w-4xl mx-auto px-4 py-4 space-y-6">
+      <Navbar
+        title={t("worklogDetail.title") as string}
+        onHomeClick={() => navigate("/worklog")}
+      />
+        <div className="max-w-4xl mx-auto px-4 py-4 space-y-6">
+          <Button variant="ghost" size="sm" onClick={() => navigate("/worklog")}>
+            <ArrowLeft className="h-4 w-4 mr-2" /> {t("common.back")}
+          </Button>
         <h2 className="font-semibold">
           {id === "default" ? t("worklog.workTime") : trip?.name}
         </h2>
