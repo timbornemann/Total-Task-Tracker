@@ -204,7 +204,7 @@ const useTaskStoreImpl = () => {
   useEffect(() => {
     const es = new EventSource("/api/updates");
     es.onmessage = () => {
-      if (Date.now() - lastSaveTimeRef.current > 1000) {
+      if (Date.now() - lastSaveTimeRef.current > 3000) {
         fetchData(false);
       }
     };
