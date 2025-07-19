@@ -16,6 +16,7 @@ import {
   syncWithServer,
   type OfflineData,
 } from "@/utils/offline";
+import { mergeData, applyDeletions } from "@/utils/sync";
 
 const API_URL = "/api/data";
 
@@ -44,6 +45,7 @@ const useTaskStoreImpl = () => {
   const lastDataRef = useRef("");
   const saveTimerRef = useRef<number | null>(null);
   const lastSaveTimeRef = useRef(0);
+  const lastChangeTimeRef = useRef(0);
   const [recentlyDeletedCategories, setRecentlyDeletedCategories] = useState<
     { category: Category; taskIds: string[] }[]
   >([]);
@@ -188,6 +190,23 @@ const useTaskStoreImpl = () => {
     setLoaded(true);
   };
 
+  const mergeServerUpdates = async () => {
+    const res = await fetch("/api/all");
+    if (!res.ok) return;
+    const serverData = (await res.json()) as OfflineData;
+    const localData: OfflineData = {
+      tasks,
+      categories,
+      notes,
+      recurring,
+      deletions,
+    } as OfflineData;
+    const merged = applyDeletions(mergeData(serverData, localData));
+    processData(merged);
+    saveOfflineData(merged);
+    setLoaded(true);
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -204,8 +223,8 @@ const useTaskStoreImpl = () => {
   useEffect(() => {
     const es = new EventSource("/api/updates");
     es.onmessage = () => {
-      if (Date.now() - lastSaveTimeRef.current > 3000) {
-        fetchData(false);
+      if (Date.now() - lastChangeTimeRef.current > 3000) {
+        mergeServerUpdates();
       }
     };
     return () => es.close();
@@ -218,6 +237,7 @@ const useTaskStoreImpl = () => {
     const dataString = JSON.stringify(data);
     if (dataString === lastDataRef.current) return;
     lastDataRef.current = dataString;
+    lastChangeTimeRef.current = Date.now();
     updateOfflineData(data);
 
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
@@ -262,6 +282,7 @@ const useTaskStoreImpl = () => {
       visible?: boolean;
     },
   ) => {
+    lastChangeTimeRef.current = Date.now();
     const newTask: Task = {
       ...taskData,
       id: generateId(),
@@ -373,6 +394,7 @@ const useTaskStoreImpl = () => {
   };
 
   const updateTask = (taskId: string, updates: Partial<Task>) => {
+    lastChangeTimeRef.current = Date.now();
     const normalizedUpdates = { ...updates };
     if (
       typeof updates.completed === "boolean" &&
@@ -418,6 +440,7 @@ const useTaskStoreImpl = () => {
   };
 
   const deleteTask = (taskId: string) => {
+    lastChangeTimeRef.current = Date.now();
     const deleteTaskRecursively = (tasks: Task[]): Task[] => {
       return tasks.filter((task) => {
         if (task.id === taskId) {
