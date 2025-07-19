@@ -113,6 +113,8 @@
     "yourThemes": "Eigene Themes",
     "otherLinks": "Weitere Links",
     "dragHint": "Zum Sortieren ziehen",
+    "addNavbarGroup": "Navbar-Gruppe hinzufügen",
+    "navbarGroupName": "Gruppenname",
     "custom": "custom",
     "bgColor": "Hintergrund (App)",
     "fgColor": "Textfarbe",

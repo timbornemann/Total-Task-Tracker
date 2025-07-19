@@ -27,6 +27,7 @@ import {
   GraduationCap,
   ChevronDown,
 } from "lucide-react";
+import { allNavbarItems } from "@/utils/navbarItems";
 
 interface NavbarProps {
   title?: string;
@@ -36,24 +37,43 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
   const { t } = useTranslation();
-  const { colorPalette, navbarItems, navbarItemOrder } = useSettings();
-  const tasksKeys = navbarItemOrder.tasks || [
-    "overview",
-    "kanban",
-    "schedule",
-    "recurring",
-    "habits",
-    "statistics",
-  ];
-  const learningKeys = navbarItemOrder.learning || [
-    "cards",
-    "decks",
-    "pomodoro",
-    "timers",
-    "clock",
-    "worklog",
-    "cardStatistics",
-  ];
+  const { colorPalette, navbarItems, navbarItemOrder, navbarGroups } =
+    useSettings();
+  const itemMap = React.useMemo(() => {
+    const map: Record<string, (typeof allNavbarItems)[0]> = {};
+    allNavbarItems.forEach((i) => {
+      map[i.key] = i;
+    });
+    return map;
+  }, []);
+  const iconMap: Record<string, JSX.Element> = {
+    overview: <LayoutGrid className="h-4 w-4 mr-2" />,
+    kanban: <Columns className="h-4 w-4 mr-2" />,
+    schedule: <CalendarIcon className="h-4 w-4 mr-2" />,
+    recurring: <List className="h-4 w-4 mr-2" />,
+    habits: <Flame className="h-4 w-4 mr-2" />,
+    statistics: <BarChart3 className="h-4 w-4 mr-2" />,
+    cards: <BookOpen className="h-4 w-4 mr-2" />,
+    decks: <Pencil className="h-4 w-4 mr-2" />,
+    pomodoro: <Timer className="h-4 w-4 mr-2" />,
+    timers: <Timer className="h-4 w-4 mr-2" />,
+    clock: <Clock className="h-4 w-4 mr-2" />,
+    worklog: <Clock className="h-4 w-4 mr-2" />,
+    cardStatistics: <BarChart3 className="h-4 w-4 mr-2" />,
+    notes: <List className="h-4 w-4 mr-2" />,
+    inventory: <List className="h-4 w-4 mr-2" />,
+    settings: <Cog className="h-4 w-4 mr-2" />,
+  };
+  const groupedSet = React.useMemo(() => {
+    const set = new Set<string>();
+    navbarGroups.forEach((g) => {
+      (navbarItemOrder[g] || []).forEach((k) => set.add(k));
+    });
+    return set;
+  }, [navbarGroups, navbarItemOrder]);
+  const standalone = allNavbarItems.filter(
+    (i) => !groupedSet.has(i.key) && navbarItems.includes(i.key),
+  );
   const [showMobileMenu, setShowMobileMenu] = React.useState(false);
   const [openMenu, setOpenMenu] = React.useState<string | null>(null);
   return (
@@ -104,326 +124,109 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
             >
               <Search className="h-4 w-4" />
             </Button>
-            {tasksKeys.some((k) => navbarItems.includes(k)) && (
-            <DropdownMenu
-              open={openMenu === "tasks"}
-              onOpenChange={(open) => setOpenMenu(open ? "tasks" : null)}
-            >
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    setOpenMenu(openMenu === "tasks" ? null : "tasks")
-                  }
-                  className="flex items-center"
+            {navbarGroups.map((grp) => {
+              const keys = navbarItemOrder[grp] || [];
+              const hasItems = keys.some((k) => navbarItems.includes(k));
+              if (!hasItems) return null;
+              const groupIcon =
+                grp === "tasks"
+                  ? <ClipboardList className="h-4 w-4 mr-2" />
+                  : grp === "learning"
+                  ? <GraduationCap className="h-4 w-4 mr-2" />
+                  : <List className="h-4 w-4 mr-2" />;
+              return (
+                <DropdownMenu
+                  key={grp}
+                  open={openMenu === grp}
+                  onOpenChange={(open) => setOpenMenu(open ? grp : null)}
                 >
-                  <ClipboardList className="h-4 w-4 mr-2" />
-                  {t("navbar.tasks")}
-                  <ChevronDown
-                    className={`ml-1 h-3 w-3 transition-transform ${openMenu === "tasks" ? "rotate-180" : ""}`}
-                  />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-background z-50">
-                {navbarItems.includes("overview") && (
-                  <DropdownMenuItem asChild>
-                    <Link to="/tasks" className="flex items-center">
-                      <LayoutGrid className="h-4 w-4 mr-2" /> {t("navbar.overview")}
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-                {navbarItems.includes("kanban") && (
-                  <DropdownMenuItem asChild>
-                    <Link to="/kanban" className="flex items-center">
-                      <Columns className="h-4 w-4 mr-2" /> {t("navbar.kanban")}
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-                {navbarItems.includes("schedule") && (
-                  <DropdownMenuItem asChild>
-                    <Link to="/timeblocks" className="flex items-center">
-                      <CalendarIcon className="h-4 w-4 mr-2" /> {t("navbar.schedule")}
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-                {navbarItems.includes("recurring") && (
-                  <DropdownMenuItem asChild>
-                    <Link to="/recurring" className="flex items-center">
-                      <List className="h-4 w-4 mr-2" /> {t("navbar.recurring")}
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-                {navbarItems.includes("habits") && (
-                  <DropdownMenuItem asChild>
-                    <Link to="/habits" className="flex items-center">
-                      <Flame className="h-4 w-4 mr-2" /> {t("navbar.habits")}
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-                {navbarItems.includes("statistics") && (
-                  <DropdownMenuItem asChild>
-                    <Link to="/statistics" className="flex items-center">
-                      <BarChart3 className="h-4 w-4 mr-2" /> {t("navbar.statistics")}
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            )}
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        setOpenMenu(openMenu === grp ? null : grp)
+                      }
+                      className="flex items-center"
+                    >
+                      {groupIcon}
+                      {t(`navbar.${grp}`, grp)}
+                      <ChevronDown
+                        className={`ml-1 h-3 w-3 transition-transform ${openMenu === grp ? "rotate-180" : ""}`}
+                      />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="bg-background z-50">
+                    {keys.map((k) => {
+                      if (!navbarItems.includes(k)) return null;
+                      const item = itemMap[k];
+                      if (!item) return null;
+                      return (
+                        <DropdownMenuItem asChild key={k}>
+                          <Link to={item.path} className="flex items-center">
+                            {iconMap[k]} {t(item.labelKey)}
+                          </Link>
+                        </DropdownMenuItem>
+                      );
+                    })}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              );
+            })}
 
-            {learningKeys.some((k) => navbarItems.includes(k)) && (
-            <DropdownMenu
-              open={openMenu === "learning"}
-              onOpenChange={(open) => setOpenMenu(open ? "learning" : null)}
-            >
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    setOpenMenu(openMenu === "learning" ? null : "learning")
-                  }
-                  className="flex items-center"
-                >
-                  <GraduationCap className="h-4 w-4 mr-2" />
-                  {t("navbar.learning")}
-                  <ChevronDown
-                    className={`ml-1 h-3 w-3 transition-transform ${openMenu === "learning" ? "rotate-180" : ""}`}
-                  />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-background z-50">
-                {navbarItems.includes("cards") && (
-                  <DropdownMenuItem asChild>
-                    <Link to="/flashcards" className="flex items-center">
-                      <BookOpen className="h-4 w-4 mr-2" /> {t("navbar.cards")}
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-                {navbarItems.includes("decks") && (
-                  <DropdownMenuItem asChild>
-                    <Link to="/flashcards/manage" className="flex items-center">
-                      <Pencil className="h-4 w-4 mr-2" /> {t("navbar.decks")}
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-                {navbarItems.includes("pomodoro") && (
-                  <DropdownMenuItem asChild>
-                    <Link to="/pomodoro" className="flex items-center">
-                      <Timer className="h-4 w-4 mr-2" /> {t("navbar.pomodoro")}
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-                {navbarItems.includes("timers") && (
-                  <DropdownMenuItem asChild>
-                    <Link to="/timers" className="flex items-center">
-                      <Timer className="h-4 w-4 mr-2" /> {t("navbar.timers")}
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-                {navbarItems.includes("clock") && (
-                  <DropdownMenuItem asChild>
-                    <Link to="/clock" className="flex items-center">
-                      <Clock className="h-4 w-4 mr-2" /> {t("navbar.clock")}
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-                {navbarItems.includes("worklog") && (
-                  <DropdownMenuItem asChild>
-                    <Link to="/worklog" className="flex items-center">
-                      <Clock className="h-4 w-4 mr-2" /> {t("navbar.worklog")}
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-                {navbarItems.includes("cardStatistics") && (
-                  <DropdownMenuItem asChild>
-                    <Link to="/flashcards/stats" className="flex items-center">
-                      <BarChart3 className="h-4 w-4 mr-2" /> {t("navbar.cardStatistics")}
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            )}
-
-            {navbarItems.includes("notes") && (
-              <Link to="/notes">
+            {standalone.map((item) => (
+              <Link key={item.key} to={item.path}>
                 <Button variant="outline" size="sm">
-                  <List className="h-4 w-4 mr-2" /> {t("navbar.notes")}
+                  {iconMap[item.key]} {t(item.labelKey)}
                 </Button>
               </Link>
-            )}
-            {navbarItems.includes("inventory") && (
-              <Link to="/inventory">
-                <Button variant="outline" size="sm">
-                  <List className="h-4 w-4 mr-2" /> {t("navbar.inventory")}
-                </Button>
-              </Link>
-            )}
-            {navbarItems.includes("settings") && (
-              <Link to="/settings">
-                <Button variant="outline" size="sm">
-                  <Cog className="h-4 w-4 mr-2" /> {t("navbar.settings")}
-                </Button>
-              </Link>
-            )}
+            ))}
           </div>
         </div>
         {showMobileMenu && (
           <div className="sm:hidden pb-4 space-y-4">
-            {tasksKeys.some((k) => navbarItems.includes(k)) && (
-              <div className="space-y-2">
-                <p className="text-xs font-semibold text-muted-foreground">
-                  {t("navbar.tasks")}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {navbarItems.includes("overview") && (
-                    <Link to="/tasks" className="flex-1">
-                      <Button variant="outline" size="sm" className="w-full">
-                        <LayoutGrid className="h-4 w-4 mr-2" />
-                        {t("navbar.overview")}
-                      </Button>
-                    </Link>
-                  )}
-                  {navbarItems.includes("kanban") && (
-                    <Link to="/kanban" className="flex-1">
-                      <Button variant="outline" size="sm" className="w-full">
-                        <Columns className="h-4 w-4 mr-2" />
-                        {t("navbar.kanban")}
-                      </Button>
-                    </Link>
-                  )}
-                  {navbarItems.includes("schedule") && (
-                    <Link to="/timeblocks" className="flex-1">
-                      <Button variant="outline" size="sm" className="w-full">
-                        <CalendarIcon className="h-4 w-4 mr-2" />
-                        {t("navbar.schedule")}
-                      </Button>
-                    </Link>
-                  )}
-                  {navbarItems.includes("recurring") && (
-                    <Link to="/recurring" className="flex-1">
-                      <Button variant="outline" size="sm" className="w-full">
-                        <List className="h-4 w-4 mr-2" />
-                        {t("navbar.recurring")}
-                      </Button>
-                    </Link>
-                  )}
-                  {navbarItems.includes("habits") && (
-                    <Link to="/habits" className="flex-1">
-                      <Button variant="outline" size="sm" className="w-full">
-                        <Flame className="h-4 w-4 mr-2" />
-                        {t("navbar.habits")}
-                      </Button>
-                    </Link>
-                  )}
-                  {navbarItems.includes("statistics") && (
-                    <Link to="/statistics" className="flex-1">
-                      <Button variant="outline" size="sm" className="w-full">
-                        <BarChart3 className="h-4 w-4 mr-2" />
-                        {t("navbar.statistics")}
-                      </Button>
-                    </Link>
-                  )}
+            {navbarGroups.map((grp) => {
+              const keys = navbarItemOrder[grp] || [];
+              const hasItems = keys.some((k) => navbarItems.includes(k));
+              if (!hasItems) return null;
+              return (
+                <div key={grp} className="space-y-2">
+                  <p className="text-xs font-semibold text-muted-foreground">
+                    {t(`navbar.${grp}`, grp)}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {keys.map((k) => {
+                      if (!navbarItems.includes(k)) return null;
+                      const item = itemMap[k];
+                      if (!item) return null;
+                      return (
+                        <Link to={item.path} className="flex-1" key={k}>
+                          <Button variant="outline" size="sm" className="w-full">
+                            {iconMap[k]}
+                            {t(item.labelKey)}
+                          </Button>
+                        </Link>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            )}
-            {learningKeys.some((k) => navbarItems.includes(k)) && (
-              <div className="space-y-2">
+              );
+            })}
+            {standalone.map((item) => (
+              <div key={item.key} className="space-y-2">
                 <p className="text-xs font-semibold text-muted-foreground">
-                  {t("navbar.learning")}
+                  {t(item.labelKey)}
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {navbarItems.includes("cards") && (
-                    <Link to="/flashcards" className="flex-1">
-                      <Button variant="outline" size="sm" className="w-full">
-                        <BookOpen className="h-4 w-4 mr-2" />
-                        {t("navbar.cards")}
-                      </Button>
-                    </Link>
-                  )}
-                  {navbarItems.includes("decks") && (
-                    <Link to="/flashcards/manage" className="flex-1">
-                      <Button variant="outline" size="sm" className="w-full">
-                        <Pencil className="h-4 w-4 mr-2" />
-                        {t("navbar.decks")}
-                      </Button>
-                    </Link>
-                  )}
-                  {navbarItems.includes("pomodoro") && (
-                    <Link to="/pomodoro" className="flex-1">
-                      <Button variant="outline" size="sm" className="w-full">
-                        <Timer className="h-4 w-4 mr-2" />
-                        {t("navbar.pomodoro")}
-                      </Button>
-                    </Link>
-                  )}
-                  {navbarItems.includes("timers") && (
-                    <Link to="/timers" className="flex-1">
-                      <Button variant="outline" size="sm" className="w-full">
-                        <Timer className="h-4 w-4 mr-2" />
-                        {t("navbar.timers")}
-                      </Button>
-                    </Link>
-                  )}
-                  {navbarItems.includes("clock") && (
-                    <Link to="/clock" className="flex-1">
-                      <Button variant="outline" size="sm" className="w-full">
-                        <Clock className="h-4 w-4 mr-2" />
-                        {t("navbar.clock")}
-                      </Button>
-                    </Link>
-                  )}
-                  {navbarItems.includes("worklog") && (
-                    <Link to="/worklog" className="flex-1">
-                      <Button variant="outline" size="sm" className="w-full">
-                        <Clock className="h-4 w-4 mr-2" />
-                        {t("navbar.worklog")}
-                      </Button>
-                    </Link>
-                  )}
-                  {navbarItems.includes("cardStatistics") && (
-                    <Link to="/flashcards/stats" className="flex-1">
-                      <Button variant="outline" size="sm" className="w-full">
-                        <BarChart3 className="h-4 w-4 mr-2" />
-                        {t("navbar.cardStatistics")}
-                      </Button>
-                    </Link>
-                  )}
-                </div>
-              </div>
-            )}
-            {navbarItems.includes("notes") && (
-              <div className="space-y-2">
-                <p className="text-xs font-semibold text-muted-foreground">
-                  {t("navbar.notes")}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <Link to="/notes" className="flex-1">
+                  <Link to={item.path} className="flex-1">
                     <Button variant="outline" size="sm" className="w-full">
-                      <List className="h-4 w-4 mr-2" />
-                      {t("navbar.notes")}
+                      {iconMap[item.key]}
+                      {t(item.labelKey)}
                     </Button>
                   </Link>
                 </div>
               </div>
-            )}
-            {navbarItems.includes("inventory") && (
-              <div className="space-y-2">
-                <p className="text-xs font-semibold text-muted-foreground">
-                  {t("navbar.inventory")}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  <Link to="/inventory" className="flex-1">
-                    <Button variant="outline" size="sm" className="w-full">
-                      <List className="h-4 w-4 mr-2" />
-                      {t("navbar.inventory")}
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            )}
+            ))}
             <div className="space-y-2">
               <p className="text-xs font-semibold text-muted-foreground">
                 {t("navbar.search")}

@@ -145,6 +145,8 @@ const SettingsPage: React.FC = () => {
     homeSectionOrder,
     toggleHomeSection,
     reorderHomeSections,
+    navbarGroups,
+    addNavbarGroup,
     navbarItems,
     toggleNavbarItem,
     navbarItemOrder,
@@ -221,6 +223,8 @@ const SettingsPage: React.FC = () => {
   const notesInputRef = React.useRef<HTMLInputElement>(null);
   const decksInputRef = React.useRef<HTMLInputElement>(null);
   const allInputRef = React.useRef<HTMLInputElement>(null);
+
+  const [newGroupName, setNewGroupName] = useState("");
 
   const [currentTab, setCurrentTab] = useState(
     () => localStorage.getItem("settingsTab") || "overview",
@@ -1394,10 +1398,32 @@ const SettingsPage: React.FC = () => {
                 <p className="text-xs text-muted-foreground">
                   {t("settingsPage.dragHint")}
                 </p>
-                {["tasks", "learning"].map((grp) => (
+                <div className="flex items-end space-x-2">
+                  <div className="flex-1 space-y-1">
+                    <Label htmlFor="newNavbarGroup">
+                      {t("settingsPage.navbarGroupName")}
+                    </Label>
+                    <Input
+                      id="newNavbarGroup"
+                      value={newGroupName}
+                      onChange={(e) => setNewGroupName(e.target.value)}
+                    />
+                  </div>
+                  <Button
+                    onClick={() => {
+                      if (newGroupName.trim()) {
+                        addNavbarGroup(newGroupName.trim());
+                        setNewGroupName("");
+                      }
+                    }}
+                  >
+                    {t("settingsPage.addNavbarGroup")}
+                  </Button>
+                </div>
+                {navbarGroups.map((grp) => (
                   <div key={grp} className="space-y-1">
                     <p className="text-xs font-semibold text-muted-foreground">
-                      {t(`navbar.${grp}`)}
+                      {t(`navbar.${grp}`, grp)}
                     </p>
                     <DndContext
                       sensors={sensors}
