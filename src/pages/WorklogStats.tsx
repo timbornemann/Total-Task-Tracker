@@ -34,7 +34,11 @@ const WorklogStatsPage: React.FC = () => {
     day.setDate(day.getDate() - i);
     const dateStr = day.toISOString().slice(0, 10);
     const minutes = workDays
-      .filter((d) => d.start.slice(0, 10) === dateStr)
+      .filter((d) =>
+        (typeof d.start === "string"
+          ? d.start.slice(0, 10)
+          : d.start.toISOString().slice(0, 10)) === dateStr,
+      )
       .reduce(
         (sum, d) =>
           sum +
