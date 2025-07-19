@@ -71,9 +71,10 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
     });
     return set;
   }, [navbarGroups, navbarItemOrder]);
-  const standalone = allNavbarItems.filter(
-    (i) => !groupedSet.has(i.key) && navbarItems.includes(i.key),
-  );
+  const standalone = (navbarItemOrder["standalone"] || [])
+    .filter((k) => !groupedSet.has(k) && navbarItems.includes(k))
+    .map((k) => itemMap[k])
+    .filter(Boolean) as typeof allNavbarItems;
   const [showMobileMenu, setShowMobileMenu] = React.useState(false);
   const [openMenu, setOpenMenu] = React.useState<string | null>(null);
   return (
@@ -129,11 +130,13 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
               const hasItems = keys.some((k) => navbarItems.includes(k));
               if (!hasItems) return null;
               const groupIcon =
-                grp === "tasks"
-                  ? <ClipboardList className="h-4 w-4 mr-2" />
-                  : grp === "learning"
-                  ? <GraduationCap className="h-4 w-4 mr-2" />
-                  : <List className="h-4 w-4 mr-2" />;
+                grp === "tasks" ? (
+                  <ClipboardList className="h-4 w-4 mr-2" />
+                ) : grp === "learning" ? (
+                  <GraduationCap className="h-4 w-4 mr-2" />
+                ) : (
+                  <List className="h-4 w-4 mr-2" />
+                );
               return (
                 <DropdownMenu
                   key={grp}
@@ -144,9 +147,7 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() =>
-                        setOpenMenu(openMenu === grp ? null : grp)
-                      }
+                      onClick={() => setOpenMenu(openMenu === grp ? null : grp)}
                       className="flex items-center"
                     >
                       {groupIcon}
@@ -201,7 +202,11 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                       if (!item) return null;
                       return (
                         <Link to={item.path} className="flex-1" key={k}>
-                          <Button variant="outline" size="sm" className="w-full">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                          >
                             {iconMap[k]}
                             {t(item.labelKey)}
                           </Button>

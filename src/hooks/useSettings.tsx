@@ -964,6 +964,7 @@ export const defaultNavbarItemOrder: Record<string, string[]> = {
   learning: allNavbarItems
     .filter((i) => i.group === "learning")
     .map((i) => i.key),
+  standalone: allNavbarItems.map((i) => i.key),
 };
 
 export const defaultNavbarGroups = ["tasks", "learning"];
@@ -1119,13 +1120,15 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     "flashcards",
     "notes",
   ]);
-  const [navbarGroups, setNavbarGroups] = useState<string[]>([...defaultNavbarGroups]);
+  const [navbarGroups, setNavbarGroups] = useState<string[]>([
+    ...defaultNavbarGroups,
+  ]);
   const [navbarItems, setNavbarItems] = useState<string[]>(
     allNavbarItems.map((i) => i.key),
   );
-  const [navbarItemOrder, setNavbarItemOrder] = useState<Record<string, string[]>>(
-    { ...defaultNavbarItemOrder },
-  );
+  const [navbarItemOrder, setNavbarItemOrder] = useState<
+    Record<string, string[]>
+  >({ ...defaultNavbarItemOrder });
   const [showPinnedTasks, setShowPinnedTasks] = useState(true);
   const [showPinnedNotes, setShowPinnedNotes] = useState(true);
   const [showPinnedCategories, setShowPinnedCategories] = useState(true);
@@ -1245,49 +1248,60 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
               ...data.homeSectionColors,
             });
           }
-        if (Array.isArray(data.navbarGroups)) {
-          setNavbarGroups(
-            data.navbarGroups.concat(
-              defaultNavbarGroups.filter((g) => !data.navbarGroups.includes(g)),
-            ),
-          );
-        }
-        if (Array.isArray(data.navbarItems)) {
-          setNavbarItems(
-            data.navbarItems.concat(
-              allNavbarItems
-                .map((i) => i.key)
-                .filter((k) => !data.navbarItems.includes(k)),
+          if (Array.isArray(data.navbarGroups)) {
+            setNavbarGroups(
+              data.navbarGroups.concat(
+                defaultNavbarGroups.filter(
+                  (g) => !data.navbarGroups.includes(g),
+                ),
               ),
             );
           }
-        if (
-          data.navbarItemOrder &&
-          typeof data.navbarItemOrder === "object"
-        ) {
-          const order: Record<string, string[]> = {
-            ...defaultNavbarItemOrder,
-            ...data.navbarItemOrder,
-          };
-          const groups = Array.isArray(data.navbarGroups)
-            ? data.navbarGroups
-            : defaultNavbarGroups;
-          for (const key of groups) {
-            if (Array.isArray(order[key])) {
-              order[key] = order[key].concat(
+          if (Array.isArray(data.navbarItems)) {
+            setNavbarItems(
+              data.navbarItems.concat(
+                allNavbarItems
+                  .map((i) => i.key)
+                  .filter((k) => !data.navbarItems.includes(k)),
+              ),
+            );
+          }
+          if (
+            data.navbarItemOrder &&
+            typeof data.navbarItemOrder === "object"
+          ) {
+            const order: Record<string, string[]> = {
+              ...defaultNavbarItemOrder,
+              ...data.navbarItemOrder,
+            };
+            const groups = Array.isArray(data.navbarGroups)
+              ? data.navbarGroups
+              : defaultNavbarGroups;
+            for (const key of groups) {
+              if (Array.isArray(order[key])) {
+                order[key] = order[key].concat(
                   (defaultNavbarItemOrder[key] || []).filter(
                     (k) => !order[key].includes(k),
                   ),
+                );
+              } else {
+                order[key] = [...(defaultNavbarItemOrder[key] || [])];
+              }
+            }
+            if (Array.isArray(order.standalone)) {
+              order.standalone = order.standalone.concat(
+                defaultNavbarItemOrder.standalone.filter(
+                  (k) => !order.standalone.includes(k),
+                ),
               );
             } else {
-              order[key] = [...(defaultNavbarItemOrder[key] || [])];
+              order.standalone = [...defaultNavbarItemOrder.standalone];
             }
+            groups.forEach((g) => {
+              if (!order[g]) order[g] = [];
+            });
+            setNavbarItemOrder(order);
           }
-          groups.forEach((g) => {
-            if (!order[g]) order[g] = [];
-          });
-          setNavbarItemOrder(order);
-        }
           if (Array.isArray(data.homeSections)) {
             setHomeSections(data.homeSections);
           }
@@ -1693,11 +1707,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
-  const reorderNavbarItems = (
-    group: string,
-    start: number,
-    end: number,
-  ) => {
+  const reorderNavbarItems = (group: string, start: number, end: number) => {
     setNavbarItemOrder((prev) => {
       const list = prev[group] ? Array.from(prev[group]) : [];
       const [removed] = list.splice(start, 1);
