@@ -28,6 +28,7 @@ import {
   Star,
   StarOff,
   Calendar as CalendarIcon,
+  RotateCcw,
   Eye,
   EyeOff,
 } from "lucide-react";
@@ -46,6 +47,7 @@ interface TaskCardProps {
   onAddSubtask: (parentTask: Task) => void;
   onToggleComplete: (taskId: string, completed: boolean) => void;
   onViewDetails: (task: Task) => void;
+  onReset: (taskId: string) => void;
   depth?: number;
   /** Titles of all parent tasks from root to immediate parent */
   parentPathTitles?: string[];
@@ -62,6 +64,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
   onAddSubtask,
   onToggleComplete,
   onViewDetails,
+  onReset,
   depth = 0,
   parentPathTitles = [],
   showSubtasks = true,
@@ -195,6 +198,10 @@ const TaskCard: React.FC<TaskCardProps> = ({
                 <Edit className="h-4 w-4 mr-2" />
                 {t("common.edit")}
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onReset(st.id)}>
+                <RotateCcw className="h-4 w-4 mr-2" />
+                {t("taskCard.reset")}
+              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() =>
                   updateTask(st.id, { visible: !(st.visible !== false) })
@@ -304,6 +311,10 @@ const TaskCard: React.FC<TaskCardProps> = ({
             <DropdownMenuItem onClick={() => onEdit(task)}>
               <Edit className="h-4 w-4 mr-2" />
               {t("common.edit")}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onReset(task.id)}>
+              <RotateCcw className="h-4 w-4 mr-2" />
+              {t("taskCard.reset")}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() =>

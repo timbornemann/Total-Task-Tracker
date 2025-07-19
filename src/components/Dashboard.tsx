@@ -121,6 +121,8 @@ const Dashboard: React.FC = () => {
     reorderCategories,
     reorderTasks,
     undoDeleteCategory,
+    resetTask,
+    resetCategoryTasks,
   } = useTaskStore();
 
   const { toast } = useToast();
@@ -385,6 +387,15 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const handleResetTask = (taskId: string) => {
+    resetTask(taskId);
+    const task = findTaskById(taskId);
+    toast({
+      title: t("dashboard.taskReset"),
+      description: t("dashboard.taskResetDesc", { title: task?.title }),
+    });
+  };
+
   const handleCreateCategory = (categoryData: CategoryFormData) => {
     addCategory(categoryData);
     toast({
@@ -414,6 +425,15 @@ const Dashboard: React.FC = () => {
 
   const handleToggleCategoryPinned = (id: string, pinned: boolean) => {
     updateCategory(id, { pinned });
+  };
+
+  const handleResetCategory = (id: string) => {
+    resetCategoryTasks(id);
+    const cat = categories.find((c) => c.id === id);
+    toast({
+      title: t("dashboard.categoryTasksReset"),
+      description: t("dashboard.categoryTasksResetDesc", { name: cat?.name }),
+    });
   };
 
   const handleViewCategoryTasks = (category: Category) => {
@@ -634,6 +654,7 @@ const Dashboard: React.FC = () => {
                           onDelete={handleDeleteCategory}
                           onViewTasks={handleViewCategoryTasks}
                           onTogglePinned={handleToggleCategoryPinned}
+                          onReset={handleResetCategory}
                         />
                       </SortableCategory>
                     ))}
@@ -739,6 +760,7 @@ const Dashboard: React.FC = () => {
                           onAddSubtask={handleAddSubtask}
                           onToggleComplete={handleToggleTaskComplete}
                           onViewDetails={handleViewTaskDetails}
+                          onReset={handleResetTask}
                           isGrid={taskLayout === "grid"}
                         />
                       </SortableTask>

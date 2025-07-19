@@ -511,6 +511,7 @@
     "deleted": "Task gelöscht",
     "completed": "Task abgeschlossen",
     "reactivated": "Task reaktiviert",
+    "reset": "Task zurückgesetzt",
     "deleteConfirm": "Sind Sie sicher, dass Sie \"{{title}}\" löschen möchten?",
     "search": "Suchen...",
     "moreFilters": "Mehr Filter",
@@ -661,6 +662,8 @@
     "taskCompletedDesc": "\"{{title}}\" wurde als erledigt markiert.",
     "taskReactivated": "Task reaktiviert",
     "taskReactivatedDesc": "\"{{title}}\" wurde reaktiviert.",
+    "taskReset": "Task zurückgesetzt",
+    "taskResetDesc": "\"{{title}}\" wurde zurückgesetzt.",
     "taskDeleteConfirm": "Sind Sie sicher, dass Sie \"{{title}}\" löschen möchten?",
     "categoryCreated": "Kategorie erstellt",
     "categoryCreatedDesc": "\"{{name}}\" wurde erfolgreich erstellt.",
@@ -670,13 +673,16 @@
     "categoryDeletedDesc": "Die Kategorie wurde erfolgreich gelöscht.",
     "categoryDeleteConfirm": "Sind Sie sicher, dass Sie \"{{name}}\" löschen möchten?",
     "categoryDeleteLastConfirm": "Sie sind dabei, die letzte verbleibende Kategorie zu löschen. \"{{name}}\" wirklich löschen?",
+    "categoryTasksReset": "Aufgaben zurückgesetzt",
+    "categoryTasksResetDesc": "Alle Aufgaben in \"{{name}}\" wurden zurückgesetzt.",
     "undo": "Rückgängig"
   },
   "categoryCard": {
     "deleteTooltip": "Löschen (rückgängig möglich)",
     "deleteMenu": "Löschen (Undo möglich)",
     "percentDone": "{{percent}}% erledigt",
-    "completedOfTotal": "{{completed}} von {{total}} abgeschlossen"
+    "completedOfTotal": "{{completed}} von {{total}} abgeschlossen",
+    "resetTasks": "Aufgaben zurücksetzen"
   },
   "taskCard": {
     "viewDetails": "Details anzeigen",
@@ -685,7 +691,8 @@
     "recurring": "Wiederholt",
     "due": "Fällig am {{date}}",
     "hide": "Verstecken",
-    "unhide": "Einblenden"
+    "unhide": "Einblenden",
+    "reset": "Zurücksetzen"
   },
   "taskDetail": {
     "noSubtasks": "Keine Unteraufgaben vorhanden.",
