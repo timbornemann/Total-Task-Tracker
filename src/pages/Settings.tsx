@@ -37,7 +37,13 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, CheckCircle, XCircle } from "lucide-react";
+import {
+  GripVertical,
+  CheckCircle,
+  XCircle,
+  Trash2,
+  Pencil,
+} from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -148,7 +154,9 @@ const SettingsPage: React.FC = () => {
     navbarGroups,
     addNavbarGroup,
     deleteNavbarGroup,
+    renameNavbarGroup,
     addNavbarItemToGroup,
+    removeNavbarItemFromGroup,
     resetNavbarSettings,
     navbarItems,
     toggleNavbarItem,
@@ -229,6 +237,7 @@ const SettingsPage: React.FC = () => {
 
   const [newGroupName, setNewGroupName] = useState("");
   const [newNavItems, setNewNavItems] = useState<Record<string, string>>({});
+  const [renameGroups, setRenameGroups] = useState<Record<string, string>>({});
 
   const [currentTab, setCurrentTab] = useState(
     () => localStorage.getItem("settingsTab") || "overview",
@@ -1414,8 +1423,10 @@ const SettingsPage: React.FC = () => {
                   </div>
                   <Button
                     onClick={() => {
-                      if (newGroupName.trim()) {
-                        addNavbarGroup(newGroupName.trim());
+                      const val = newGroupName.trim();
+                      if (val) {
+                        addNavbarGroup(val);
+                        setRenameGroups((p) => ({ ...p, [val]: val }));
                         setNewGroupName("");
                       }
                     }}
@@ -1425,17 +1436,43 @@ const SettingsPage: React.FC = () => {
                 </div>
                 {navbarGroups.map((grp) => (
                   <div key={grp} className="space-y-1">
-                    <div className="flex items-center justify-between">
-                      <p className="text-xs font-semibold text-muted-foreground">
-                        {t(`navbar.${grp}`, grp)}
-                      </p>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => deleteNavbarGroup(grp)}
-                      >
-                        {t("common.delete")}
-                      </Button>
+                    <div className="flex items-center justify-between space-x-2">
+                      <Input
+                        className="h-8 w-32"
+                        value={renameGroups[grp] ?? grp}
+                        onChange={(e) =>
+                          setRenameGroups((p) => ({
+                            ...p,
+                            [grp]: e.target.value,
+                          }))
+                        }
+                      />
+                      <div className="flex space-x-1">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => {
+                            const newName = (renameGroups[grp] || grp).trim();
+                            if (newName) {
+                              renameNavbarGroup(grp, newName);
+                              setRenameGroups((p) => {
+                                const u = { ...p };
+                                delete u[grp];
+                                return { ...u, [newName]: newName };
+                              });
+                            }
+                          }}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => deleteNavbarGroup(grp)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                     <DndContext
                       sensors={sensors}
@@ -1457,17 +1494,30 @@ const SettingsPage: React.FC = () => {
                                 <div className="flex items-center justify-between border rounded p-2 bg-card">
                                   <div className="flex items-center space-x-2">
                                     <Checkbox
-                                      id={`nav-${k}`}
-                                      checked={navbarItems.includes(k)}
+                                      id={`nav-${grp}-${k}`}
+                                      checked={(
+                                        navbarItems[grp] || []
+                                      ).includes(k)}
                                       onCheckedChange={() =>
-                                        toggleNavbarItem(k)
+                                        toggleNavbarItem(grp, k)
                                       }
                                     />
-                                    <Label htmlFor={`nav-${k}`}>
+                                    <Label htmlFor={`nav-${grp}-${k}`}>
                                       {t(item.labelKey)}
                                     </Label>
                                   </div>
-                                  <GripVertical className="h-4 w-4 text-muted-foreground" />
+                                  <div className="flex items-center space-x-1">
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() =>
+                                        removeNavbarItemFromGroup(grp, k)
+                                      }
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                    <GripVertical className="h-4 w-4 text-muted-foreground" />
+                                  </div>
                                 </div>
                               </SortableNavItem>
                             );
@@ -1533,15 +1583,30 @@ const SettingsPage: React.FC = () => {
                               <div className="flex items-center justify-between border rounded p-2 bg-card">
                                 <div className="flex items-center space-x-2">
                                   <Checkbox
-                                    id={`nav-${k}`}
-                                    checked={navbarItems.includes(k)}
-                                    onCheckedChange={() => toggleNavbarItem(k)}
+                                    id={`nav-standalone-${k}`}
+                                    checked={(
+                                      navbarItems.standalone || []
+                                    ).includes(k)}
+                                    onCheckedChange={() =>
+                                      toggleNavbarItem("standalone", k)
+                                    }
                                   />
-                                  <Label htmlFor={`nav-${k}`}>
+                                  <Label htmlFor={`nav-standalone-${k}`}>
                                     {t(item.labelKey)}
                                   </Label>
                                 </div>
-                                <GripVertical className="h-4 w-4 text-muted-foreground" />
+                                <div className="flex items-center space-x-1">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() =>
+                                      removeNavbarItemFromGroup("standalone", k)
+                                    }
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                  <GripVertical className="h-4 w-4 text-muted-foreground" />
+                                </div>
                               </div>
                             </SortableNavItem>
                           );

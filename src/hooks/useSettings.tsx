@@ -967,6 +967,12 @@ export const defaultNavbarItemOrder: Record<string, string[]> = {
   standalone: allNavbarItems.map((i) => i.key),
 };
 
+export const defaultNavbarItems: Record<string, string[]> = {
+  tasks: [...defaultNavbarItemOrder.tasks],
+  learning: [...defaultNavbarItemOrder.learning],
+  standalone: [...defaultNavbarItemOrder.standalone],
+};
+
 export const defaultNavbarGroups = ["tasks", "learning"];
 
 interface SettingsContextValue {
@@ -1006,8 +1012,10 @@ interface SettingsContextValue {
   homeSectionOrder: string[];
   toggleHomeSection: (section: string) => void;
   reorderHomeSections: (start: number, end: number) => void;
-  navbarItems: string[];
-  toggleNavbarItem: (key: string) => void;
+  navbarItems: Record<string, string[]>;
+  toggleNavbarItem: (group: string, key: string) => void;
+  removeNavbarItemFromGroup: (group: string, key: string) => void;
+  renameNavbarGroup: (oldName: string, newName: string) => void;
   navbarGroups: string[];
   addNavbarGroup: (name: string) => void;
   deleteNavbarGroup: (name: string) => void;
@@ -1123,9 +1131,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
   const [navbarGroups, setNavbarGroups] = useState<string[]>([
     ...defaultNavbarGroups,
   ]);
-  const [navbarItems, setNavbarItems] = useState<string[]>(
-    allNavbarItems.map((i) => i.key),
-  );
+  const [navbarItems, setNavbarItems] = useState<Record<string, string[]>>({
+    ...defaultNavbarItems,
+  });
   const [navbarItemOrder, setNavbarItemOrder] = useState<
     Record<string, string[]>
   >({ ...defaultNavbarItemOrder });
@@ -1257,14 +1265,15 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
               ),
             );
           }
-          if (Array.isArray(data.navbarItems)) {
-            setNavbarItems(
-              data.navbarItems.concat(
-                allNavbarItems
-                  .map((i) => i.key)
-                  .filter((k) => !data.navbarItems.includes(k)),
-              ),
-            );
+          if (
+            data.navbarItems &&
+            typeof data.navbarItems === "object" &&
+            !Array.isArray(data.navbarItems)
+          ) {
+            setNavbarItems({
+              ...defaultNavbarItems,
+              ...data.navbarItems,
+            });
           }
           if (
             data.navbarItemOrder &&
@@ -1719,6 +1728,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
   const addNavbarGroup = (name: string) => {
     setNavbarGroups((prev) => (prev.includes(name) ? prev : [...prev, name]));
     setNavbarItemOrder((prev) => ({ ...prev, [name]: prev[name] || [] }));
+    setNavbarItems((prev) => ({ ...prev, [name]: prev[name] || [] }));
   };
 
   const deleteNavbarGroup = (name: string) => {
@@ -1726,6 +1736,28 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     setNavbarItemOrder((prev) => {
       const updated = { ...prev };
       delete updated[name];
+      return updated;
+    });
+    setNavbarItems((prev) => {
+      const updated = { ...prev };
+      delete updated[name];
+      return updated;
+    });
+  };
+
+  const renameNavbarGroup = (oldName: string, newName: string) => {
+    if (!newName || oldName === newName) return;
+    setNavbarGroups((prev) => prev.map((g) => (g === oldName ? newName : g)));
+    setNavbarItemOrder((prev) => {
+      const updated = { ...prev } as Record<string, string[]>;
+      updated[newName] = updated[oldName] || [];
+      delete updated[oldName];
+      return updated;
+    });
+    setNavbarItems((prev) => {
+      const updated = { ...prev } as Record<string, string[]>;
+      updated[newName] = updated[oldName] || [];
+      delete updated[oldName];
       return updated;
     });
   };
@@ -1736,18 +1768,38 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
       if (!items.includes(key)) items.push(key);
       return { ...prev, [group]: items };
     });
+    setNavbarItems((prev) => {
+      const items = prev[group] ? Array.from(prev[group]) : [];
+      if (!items.includes(key)) items.push(key);
+      return { ...prev, [group]: items };
+    });
+  };
+
+  const removeNavbarItemFromGroup = (group: string, key: string) => {
+    setNavbarItemOrder((prev) => {
+      const items = prev[group] ? prev[group].filter((k) => k !== key) : [];
+      return { ...prev, [group]: items };
+    });
+    setNavbarItems((prev) => {
+      const items = prev[group] ? prev[group].filter((k) => k !== key) : [];
+      return { ...prev, [group]: items };
+    });
   };
 
   const resetNavbarSettings = () => {
     setNavbarGroups([...defaultNavbarGroups]);
-    setNavbarItems(allNavbarItems.map((i) => i.key));
+    setNavbarItems({ ...defaultNavbarItems });
     setNavbarItemOrder({ ...defaultNavbarItemOrder });
   };
 
-  const toggleNavbarItem = (key: string) => {
-    setNavbarItems((prev) =>
-      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
-    );
+  const toggleNavbarItem = (group: string, key: string) => {
+    setNavbarItems((prev) => {
+      const items = prev[group] ? Array.from(prev[group]) : [];
+      const idx = items.indexOf(key);
+      if (idx >= 0) items.splice(idx, 1);
+      else items.push(key);
+      return { ...prev, [group]: items };
+    });
   };
 
   const toggleShowPinnedTasks = () => {
@@ -1799,7 +1851,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
         navbarGroups,
         addNavbarGroup,
         deleteNavbarGroup,
+        renameNavbarGroup,
         addNavbarItemToGroup,
+        removeNavbarItemFromGroup,
         resetNavbarSettings,
         navbarItems,
         toggleNavbarItem,
