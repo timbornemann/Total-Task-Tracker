@@ -72,7 +72,9 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
     return set;
   }, [navbarGroups, navbarItemOrder]);
   const standalone = (navbarItemOrder["standalone"] || [])
-    .filter((k) => !groupedSet.has(k) && navbarItems.includes(k))
+    .filter(
+      (k) => !groupedSet.has(k) && (navbarItems.standalone || []).includes(k),
+    )
     .map((k) => itemMap[k])
     .filter(Boolean) as typeof allNavbarItems;
   const [showMobileMenu, setShowMobileMenu] = React.useState(false);
@@ -127,7 +129,9 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
             </Button>
             {navbarGroups.map((grp) => {
               const keys = navbarItemOrder[grp] || [];
-              const hasItems = keys.some((k) => navbarItems.includes(k));
+              const hasItems = keys.some((k) =>
+                (navbarItems[grp] || []).includes(k),
+              );
               if (!hasItems) return null;
               const groupIcon =
                 grp === "tasks" ? (
@@ -159,7 +163,7 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="bg-background z-50">
                     {keys.map((k) => {
-                      if (!navbarItems.includes(k)) return null;
+                      if (!(navbarItems[grp] || []).includes(k)) return null;
                       const item = itemMap[k];
                       if (!item) return null;
                       return (
@@ -188,7 +192,9 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
           <div className="sm:hidden pb-4 space-y-4">
             {navbarGroups.map((grp) => {
               const keys = navbarItemOrder[grp] || [];
-              const hasItems = keys.some((k) => navbarItems.includes(k));
+              const hasItems = keys.some((k) =>
+                (navbarItems[grp] || []).includes(k),
+              );
               if (!hasItems) return null;
               return (
                 <div key={grp} className="space-y-2">
@@ -197,7 +203,7 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {keys.map((k) => {
-                      if (!navbarItems.includes(k)) return null;
+                      if (!(navbarItems[grp] || []).includes(k)) return null;
                       const item = itemMap[k];
                       if (!item) return null;
                       return (
@@ -251,7 +257,9 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
                 </Button>
               </div>
             </div>
-            {navbarItems.includes("settings") && (
+            {Object.values(navbarItems).some((arr) =>
+              arr.includes("settings"),
+            ) && (
               <div className="space-y-2">
                 <p className="text-xs font-semibold text-muted-foreground">
                   {t("navbar.settings")}
