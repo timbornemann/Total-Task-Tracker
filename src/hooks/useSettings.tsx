@@ -1257,53 +1257,24 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
             });
           }
           if (Array.isArray(data.navbarGroups)) {
-            setNavbarGroups(
-              data.navbarGroups.concat(
-                defaultNavbarGroups.filter(
-                  (g) => !data.navbarGroups.includes(g),
-                ),
-              ),
-            );
+            setNavbarGroups(data.navbarGroups);
           }
           if (
             data.navbarItems &&
             typeof data.navbarItems === "object" &&
             !Array.isArray(data.navbarItems)
           ) {
-            setNavbarItems({
-              ...defaultNavbarItems,
-              ...data.navbarItems,
-            });
+            setNavbarItems({ ...data.navbarItems });
           }
           if (
             data.navbarItemOrder &&
             typeof data.navbarItemOrder === "object"
           ) {
-            const order: Record<string, string[]> = {
-              ...defaultNavbarItemOrder,
-              ...data.navbarItemOrder,
-            };
+            const order: Record<string, string[]> = { ...data.navbarItemOrder };
             const groups = Array.isArray(data.navbarGroups)
               ? data.navbarGroups
               : defaultNavbarGroups;
-            for (const key of groups) {
-              if (Array.isArray(order[key])) {
-                order[key] = order[key].concat(
-                  (defaultNavbarItemOrder[key] || []).filter(
-                    (k) => !order[key].includes(k),
-                  ),
-                );
-              } else {
-                order[key] = [...(defaultNavbarItemOrder[key] || [])];
-              }
-            }
-            if (Array.isArray(order.standalone)) {
-              order.standalone = order.standalone.concat(
-                defaultNavbarItemOrder.standalone.filter(
-                  (k) => !order.standalone.includes(k),
-                ),
-              );
-            } else {
+            if (!order.standalone) {
               order.standalone = [...defaultNavbarItemOrder.standalone];
             }
             groups.forEach((g) => {
