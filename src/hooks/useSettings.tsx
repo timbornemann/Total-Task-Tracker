@@ -959,6 +959,13 @@ export const defaultHomeSectionColors: Record<string, number> =
     {} as Record<string, number>,
   );
 
+export const defaultNavbarItemOrder: Record<string, string[]> = {
+  tasks: allNavbarItems.filter((i) => i.group === "tasks").map((i) => i.key),
+  learning: allNavbarItems
+    .filter((i) => i.group === "learning")
+    .map((i) => i.key),
+};
+
 interface SettingsContextValue {
   shortcuts: ShortcutKeys;
   updateShortcut: (key: keyof ShortcutKeys, value: string) => void;
@@ -998,6 +1005,8 @@ interface SettingsContextValue {
   reorderHomeSections: (start: number, end: number) => void;
   navbarItems: string[];
   toggleNavbarItem: (key: string) => void;
+  navbarItemOrder: Record<string, string[]>;
+  reorderNavbarItems: (group: string, start: number, end: number) => void;
   showPinnedTasks: boolean;
   toggleShowPinnedTasks: () => void;
   showPinnedNotes: boolean;
@@ -1105,6 +1114,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
   ]);
   const [navbarItems, setNavbarItems] = useState<string[]>(
     allNavbarItems.map((i) => i.key),
+  );
+  const [navbarItemOrder, setNavbarItemOrder] = useState<Record<string, string[]>>(
+    { ...defaultNavbarItemOrder },
   );
   const [showPinnedTasks, setShowPinnedTasks] = useState(true);
   const [showPinnedNotes, setShowPinnedNotes] = useState(true);
@@ -1225,7 +1237,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
               ...data.homeSectionColors,
             });
           }
-          if (Array.isArray(data.navbarItems)) {
+         if (Array.isArray(data.navbarItems)) {
             setNavbarItems(
               data.navbarItems.concat(
                 allNavbarItems
@@ -1233,6 +1245,25 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
                   .filter((k) => !data.navbarItems.includes(k)),
               ),
             );
+          }
+          if (
+            data.navbarItemOrder &&
+            typeof data.navbarItemOrder === "object"
+          ) {
+            const order: Record<string, string[]> = {
+              ...defaultNavbarItemOrder,
+              ...data.navbarItemOrder,
+            };
+            for (const key of Object.keys(defaultNavbarItemOrder)) {
+              if (Array.isArray(order[key])) {
+                order[key] = order[key].concat(
+                  defaultNavbarItemOrder[key].filter((k) => !order[key].includes(k)),
+                );
+              } else {
+                order[key] = [...defaultNavbarItemOrder[key]];
+              }
+            }
+            setNavbarItemOrder(order);
           }
           if (Array.isArray(data.homeSections)) {
             setHomeSections(data.homeSections);
@@ -1350,6 +1381,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
             homeSections,
             homeSectionOrder,
             navbarItems,
+            navbarItemOrder,
             showPinnedTasks,
             showPinnedNotes,
             showPinnedCategories,
@@ -1399,6 +1431,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     homeSections,
     homeSectionOrder,
     navbarItems,
+    navbarItemOrder,
     showPinnedTasks,
     showPinnedNotes,
     showPinnedCategories,
@@ -1635,6 +1668,19 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
+  const reorderNavbarItems = (
+    group: string,
+    start: number,
+    end: number,
+  ) => {
+    setNavbarItemOrder((prev) => {
+      const list = prev[group] ? Array.from(prev[group]) : [];
+      const [removed] = list.splice(start, 1);
+      list.splice(end, 0, removed);
+      return { ...prev, [group]: list };
+    });
+  };
+
   const toggleNavbarItem = (key: string) => {
     setNavbarItems((prev) =>
       prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
@@ -1689,6 +1735,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
         reorderHomeSections,
         navbarItems,
         toggleNavbarItem,
+        navbarItemOrder,
+        reorderNavbarItems,
         showPinnedTasks,
         toggleShowPinnedTasks,
         showPinnedNotes,

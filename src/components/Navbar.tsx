@@ -36,8 +36,8 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
   const { t } = useTranslation();
-  const { colorPalette, navbarItems } = useSettings();
-  const tasksKeys = [
+  const { colorPalette, navbarItems, navbarItemOrder } = useSettings();
+  const tasksKeys = navbarItemOrder.tasks || [
     "overview",
     "kanban",
     "schedule",
@@ -45,7 +45,7 @@ const Navbar: React.FC<NavbarProps> = ({ title, category, onHomeClick }) => {
     "habits",
     "statistics",
   ];
-  const learningKeys = [
+  const learningKeys = navbarItemOrder.learning || [
     "cards",
     "decks",
     "pomodoro",
