@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Navbar from "@/components/Navbar";
-import { useSettings, themePresets } from "@/hooks/useSettings";
+import { useSettings } from "@/hooks/useSettings";
+import { themePresets } from "@/lib/themes";
 import { builtInSounds, playSound } from "@/utils/sounds";
 import { Task, Category, Note, Flashcard, Deck } from "@/types";
 import { Input } from "@/components/ui/input";

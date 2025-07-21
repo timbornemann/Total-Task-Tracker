@@ -7,7 +7,8 @@ import React, {
 } from "react";
 import { Task, Category, Note, Deletion } from "@/types";
 import i18n from "@/lib/i18n";
-import { useSettings, defaultColorPalette } from "@/hooks/useSettings";
+import { useSettings } from "@/hooks/useSettings";
+import { defaultColorPalette } from "@/lib/themes";
 import { format } from "date-fns";
 import {
   loadOfflineData,
