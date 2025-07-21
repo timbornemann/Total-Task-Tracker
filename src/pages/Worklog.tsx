@@ -215,6 +215,11 @@ const WorklogPage: React.FC = () => {
                 <TableBody>
                   {workDays
                     .filter((d) => d.tripId === trip.id)
+                    .sort(
+                      (a, b) =>
+                        new Date(a.start).getTime() -
+                        new Date(b.start).getTime(),
+                    )
                     .map((d) => {
                       const dur = duration(d.start, d.end);
                       return (
@@ -385,6 +390,11 @@ const WorklogPage: React.FC = () => {
                 <TableBody>
                   {workDays
                     .filter((d) => !d.tripId)
+                    .sort(
+                      (a, b) =>
+                        new Date(a.start).getTime() -
+                        new Date(b.start).getTime(),
+                    )
                     .map((d) => {
                       const dur = duration(d.start, d.end);
                       return (
