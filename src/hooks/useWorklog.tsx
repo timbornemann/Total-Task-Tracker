@@ -121,7 +121,16 @@ const useWorklogImpl = () => {
   };
 
   const deleteWorkDay = (id: string) => {
-    setWorkDays((prev) => prev.filter((d) => d.id !== id));
+    const updated = workDays.filter((d) => d.id !== id);
+    setWorkDays(updated);
+    updateOfflineData({ workDays: updated.map(normalizeDay) });
+    if (navigator.onLine) {
+      fetch(API_WORKDAYS, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updated.map(normalizeDay)),
+      }).catch((err) => console.error("Error deleting workday", err));
+    }
   };
 
   return {
