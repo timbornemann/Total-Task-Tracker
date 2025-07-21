@@ -30,9 +30,12 @@ const WorklogDetailPage: React.FC = () => {
   const trip = id === "default" ? null : trips.find((tr) => tr.id === id);
   const notFound = id !== "default" && !trip;
 
-  const days = workDays.filter((d) =>
-    id === "default" ? !d.tripId : d.tripId === id,
-  );
+  const days = workDays
+    .filter((d) => (id === "default" ? !d.tripId : d.tripId === id))
+    .sort(
+      (a, b) =>
+        new Date(a.start).getTime() - new Date(b.start).getTime(),
+    );
   const totalMinutes = days.reduce(
     (sum, d) =>
       sum + (new Date(d.end).getTime() - new Date(d.start).getTime()) / 60000,
