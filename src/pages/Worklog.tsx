@@ -107,9 +107,12 @@ const WorklogPage: React.FC = () => {
     const text = await file.text();
     const lines = text.trim().split(/\r?\n/).slice(1);
     for (const line of lines) {
-      const [start, end] = line.split(',');
-      if (start && end)
+      const [rawStart, rawEnd] = line.split(',');
+      if (rawStart && rawEnd) {
+        const start = format(new Date(rawStart), 'yyyy-MM-dd HH:mm');
+        const end = format(new Date(rawEnd), 'yyyy-MM-dd HH:mm');
         addWorkDay({ start, end, tripId: importTripId });
+      }
     }
     e.target.value = '';
   };
