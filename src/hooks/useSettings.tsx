@@ -1759,7 +1759,15 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const resetNavbarSettings = () => {
     setNavbarGroups([...defaultNavbarGroups]);
-    setNavbarItems({ ...defaultNavbarItems });
+    // Create a modified version of default navbar items where only settings is enabled in standalone
+    const modifiedNavbarItems = { ...defaultNavbarItems };
+    // Find the settings item key from all navbar items
+    const settingsItemKey = allNavbarItems.find(item => item.labelKey === "navbar.settings")?.key;
+    
+    // Update the standalone items to only include settings if it exists
+    modifiedNavbarItems.standalone = settingsItemKey ? [settingsItemKey] : [];
+    
+    setNavbarItems(modifiedNavbarItems);
     setNavbarItemOrder({ ...defaultNavbarItemOrder });
   };
 
