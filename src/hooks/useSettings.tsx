@@ -1128,15 +1128,17 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     "flashcards",
     "notes",
   ]);
-  const [navbarGroups, setNavbarGroups] = useState<string[]>([
-    ...defaultNavbarGroups,
-  ]);
-  const [navbarItems, setNavbarItems] = useState<Record<string, string[]>>({
-    ...defaultNavbarItems,
-  });
-  const [navbarItemOrder, setNavbarItemOrder] = useState<
-    Record<string, string[]>
-  >({ ...defaultNavbarItemOrder });
+  // Benutze einen Ref um zu verfolgen, ob wir bereits Einstellungen geladen haben
+  const initialNavSettingsLoaded = React.useRef(false);
+  
+  // Nutze memo für die Anfangswerte, damit diese nicht bei jedem Render neu erstellt werden
+  const initialNavbarGroups = React.useMemo(() => [...defaultNavbarGroups], []);
+  const initialNavbarItems = React.useMemo(() => ({...defaultNavbarItems}), []);
+  const initialNavbarItemOrder = React.useMemo(() => ({...defaultNavbarItemOrder}), []);
+  
+  const [navbarGroups, setNavbarGroups] = useState<string[]>(initialNavbarGroups);
+  const [navbarItems, setNavbarItems] = useState<Record<string, string[]>>(initialNavbarItems);
+  const [navbarItemOrder, setNavbarItemOrder] = useState<Record<string, string[]>>(initialNavbarItemOrder);
   const [showPinnedTasks, setShowPinnedTasks] = useState(true);
   const [showPinnedNotes, setShowPinnedNotes] = useState(true);
   const [showPinnedCategories, setShowPinnedCategories] = useState(true);
@@ -1184,9 +1186,12 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     const load = async () => {
       try {
+        console.log("Loading settings...");
         const res = await fetch("/api/settings");
         if (res.ok) {
           const data = await res.json();
+          // Nach dem ersten Laden setzen wir die Ref auf true
+          initialNavSettingsLoaded.current = true;
           if (data.shortcuts) {
             setShortcuts({ ...defaultShortcuts, ...data.shortcuts });
           }
@@ -1256,31 +1261,50 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
               ...data.homeSectionColors,
             });
           }
-          if (Array.isArray(data.navbarGroups)) {
+          
+          // Handle navbar settings with improved validation and protection against resets
+          let hasNavbarData = false;
+          
+          // Only update navbar groups if data exists and is valid
+          if (Array.isArray(data.navbarGroups) && data.navbarGroups.length > 0) {
             setNavbarGroups(data.navbarGroups);
+            hasNavbarData = true;
           }
+          
+          // Only update navbar items if data exists and is valid
           if (
             data.navbarItems &&
             typeof data.navbarItems === "object" &&
-            !Array.isArray(data.navbarItems)
+            !Array.isArray(data.navbarItems) &&
+            Object.keys(data.navbarItems).length > 0
           ) {
             setNavbarItems({ ...data.navbarItems });
+            hasNavbarData = true;
           }
+          
+          // Only update navbar item order if data exists and is valid
           if (
             data.navbarItemOrder &&
-            typeof data.navbarItemOrder === "object"
+            typeof data.navbarItemOrder === "object" &&
+            Object.keys(data.navbarItemOrder).length > 0
           ) {
             const order: Record<string, string[]> = { ...data.navbarItemOrder };
-            const groups = Array.isArray(data.navbarGroups)
+            const groups = Array.isArray(data.navbarGroups) && data.navbarGroups.length > 0
               ? data.navbarGroups
-              : defaultNavbarGroups;
-            if (!order.standalone) {
-              order.standalone = [...defaultNavbarItemOrder.standalone];
+              : hasNavbarData ? navbarGroups : defaultNavbarGroups;
+              
+            // Keep existing standalone items if available
+            if (!order.standalone || order.standalone.length === 0) {
+              const settingsItemKey = allNavbarItems.find(item => item.labelKey === "navbar.settings")?.key;
+              order.standalone = settingsItemKey ? [settingsItemKey] : [];
             }
+            
             groups.forEach((g) => {
               if (!order[g]) order[g] = [];
             });
+            
             setNavbarItemOrder(order);
+            hasNavbarData = true;
           }
           if (Array.isArray(data.homeSections)) {
             setHomeSections(data.homeSections);
@@ -1383,6 +1407,16 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     if (!loaded) return;
     const save = async () => {
       try {
+        // Stelle sicher, dass wir vor dem Speichern initialisiert sind
+        console.log("Saving settings, navbarGroups length:", navbarGroups.length);
+        
+        // Leere Navbar-Einstellungen nicht speichern, wenn wir keine Daten geladen haben
+        const navSettingsToSave = initialNavSettingsLoaded.current ? {
+          navbarGroups,
+          navbarItems,
+          navbarItemOrder,
+        } : {};
+        
         await fetch("/api/settings", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -1397,9 +1431,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
             homeSectionColors,
             homeSections,
             homeSectionOrder,
-            navbarGroups,
-            navbarItems,
-            navbarItemOrder,
+            ...navSettingsToSave,
             showPinnedTasks,
             showPinnedNotes,
             showPinnedCategories,
@@ -1758,9 +1790,14 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const resetNavbarSettings = () => {
+    // Führe einen echten Reset nur durch, wenn der Benutzer tatsächlich klickt
+    console.log("Manual navbar reset triggered by user");
+    
     setNavbarGroups([...defaultNavbarGroups]);
+    
     // Create a modified version of default navbar items where only settings is enabled in standalone
     const modifiedNavbarItems = { ...defaultNavbarItems };
+    
     // Find the settings item key from all navbar items
     const settingsItemKey = allNavbarItems.find(item => item.labelKey === "navbar.settings")?.key;
     
