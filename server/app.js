@@ -4,6 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import Database from "better-sqlite3";
 import os from "os";
+import { format } from "date-fns";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -140,6 +141,11 @@ log("Initial sync settings", {
   llmConfigured: !!llmUrl,
 });
 startSyncTimer();
+try {
+  saveWorkDays(loadWorkDays());
+} catch (err) {
+  log("Failed to normalize workdays", err);
+}
 
 function dateReviver(key, value) {
   if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
@@ -153,6 +159,27 @@ function toJson(obj) {
   return JSON.stringify(obj, (key, value) =>
     value instanceof Date ? value.toISOString() : value,
   );
+}
+
+function normalizeDateField(value) {
+  if (value instanceof Date) {
+    return format(value, "yyyy-MM-dd HH:mm");
+  }
+  if (typeof value === "string") {
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(value)) {
+      return value.slice(0, 16).replace("T", " ");
+    }
+    return value;
+  }
+  return String(value || "");
+}
+
+function normalizeWorkDay(d) {
+  return {
+    ...d,
+    start: normalizeDateField(d.start),
+    end: normalizeDateField(d.end),
+  };
 }
 
 export function loadTasks() {
@@ -406,7 +433,8 @@ export function loadWorkDays() {
     return db
       .prepare("SELECT data FROM workdays")
       .all()
-      .map((row) => JSON.parse(row.data, dateReviver));
+      .map((row) => JSON.parse(row.data, dateReviver))
+      .map((d) => normalizeWorkDay(d));
   } catch {
     return [];
   }
@@ -480,7 +508,7 @@ export function saveWorkDays(list) {
     for (const d of list || []) {
       db.prepare("INSERT INTO workdays (id, data) VALUES (?, ?)").run(
         d.id,
-        toJson(d),
+        toJson(normalizeWorkDay(d)),
       );
     }
   });

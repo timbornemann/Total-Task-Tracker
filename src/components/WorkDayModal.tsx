@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Trip, WorkDay } from "@/types";
+import { normalizeDateTime } from "@/utils/time";
 import { useTranslation } from "react-i18next";
 import {
   Dialog,
@@ -41,12 +42,15 @@ const WorkDayModal: React.FC<WorkDayModalProps> = ({
     tripId: "",
   });
 
+  const toInput = (v: string) => v.replace(" ", "T");
+  const fromInput = (v: string) => v.replace("T", " ");
+
   useEffect(() => {
     if (!isOpen) return;
     if (workDay) {
       setForm({
-        start: workDay.start,
-        end: workDay.end,
+        start: toInput(normalizeDateTime(workDay.start)),
+        end: toInput(normalizeDateTime(workDay.end)),
         tripId: workDay.tripId,
       });
     } else {
@@ -61,7 +65,11 @@ const WorkDayModal: React.FC<WorkDayModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (form.start && form.end) {
-      onSave({ ...form, tripId: form.tripId || undefined });
+      onSave({
+        start: normalizeDateTime(fromInput(form.start)),
+        end: normalizeDateTime(fromInput(form.end)),
+        tripId: form.tripId || undefined,
+      });
       onClose();
     }
   };

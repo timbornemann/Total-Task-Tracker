@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+
 export const formatDuration = (
   minutes: number,
   t: (key: string) => string,
@@ -21,4 +23,14 @@ export const formatDuration = (
     }
   }
   return parts.length ? parts.join(", ") : `0 ${t("timeUnits.minutes")}`;
+};
+
+export const normalizeDateTime = (value: string | Date): string => {
+  if (value instanceof Date) {
+    return format(value, "yyyy-MM-dd HH:mm");
+  }
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(value)) {
+    return value.slice(0, 16).replace("T", " ");
+  }
+  return value;
 };

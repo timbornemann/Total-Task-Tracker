@@ -12,6 +12,7 @@ import {
   syncWithServer,
 } from "@/utils/offline";
 import { mergeLists } from "@/utils/sync";
+import { normalizeDateTime } from "@/utils/time";
 
 const API_TRIPS = "/api/trips";
 const API_WORKDAYS = "/api/workdays";
@@ -24,16 +25,24 @@ const useWorklogImpl = () => {
   const lastDataRef = useRef("");
   const saveTimerRef = useRef<number | null>(null);
 
+  const normalizeDay = (d: WorkDay): WorkDay => ({
+    ...d,
+    start: normalizeDateTime(d.start),
+    end: normalizeDateTime(d.end),
+  });
+
   useEffect(() => {
     const load = async () => {
       const offline = loadOfflineData();
       if (offline) {
         setTrips(offline.trips || []);
-        setWorkDays(offline.workDays || []);
+        setWorkDays((offline.workDays || []).map(normalizeDay));
       }
       const synced = await syncWithServer();
       setTrips((prev) => mergeLists(prev, synced.trips || [], null));
-      setWorkDays((prev) => mergeLists(prev, synced.workDays || [], null));
+      setWorkDays((prev) =>
+        mergeLists(prev, (synced.workDays || []).map(normalizeDay), null),
+      );
       setLoaded(true);
     };
     load();
@@ -45,10 +54,10 @@ const useWorklogImpl = () => {
       setInitialized(true);
       return;
     }
-    const dataStr = JSON.stringify({ trips, workDays });
+    const dataStr = JSON.stringify({ trips, workDays: workDays.map(normalizeDay) });
     if (dataStr === lastDataRef.current) return;
     lastDataRef.current = dataStr;
-    updateOfflineData({ trips, workDays });
+    updateOfflineData({ trips, workDays: workDays.map(normalizeDay) });
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = window.setTimeout(async () => {
       try {
@@ -61,7 +70,7 @@ const useWorklogImpl = () => {
           await fetch(API_WORKDAYS, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(workDays),
+            body: JSON.stringify(workDays.map(normalizeDay)),
           });
           await syncWithServer();
         }
@@ -98,12 +107,16 @@ const useWorklogImpl = () => {
     tripId?: string;
   }) => {
     const id = crypto.randomUUID();
-    setWorkDays((prev) => [...prev, { id, ...data }]);
+    setWorkDays((prev) => [...prev, normalizeDay({ id, ...data })]);
   };
 
   const updateWorkDay = (id: string, data: Partial<WorkDay>) => {
     setWorkDays((prev) =>
-      prev.map((d) => (d.id === id ? { ...d, ...data } : d)),
+      prev.map((d) =>
+        d.id === id
+          ? normalizeDay({ ...d, ...data })
+          : d,
+      ),
     );
   };
 
