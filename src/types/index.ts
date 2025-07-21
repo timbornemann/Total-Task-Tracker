@@ -239,6 +239,8 @@ export interface WorkDay {
   start: string;
   end: string;
   tripId?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface Trip {
@@ -246,6 +248,8 @@ export interface Trip {
   name: string;
   location?: string;
   color?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface InventoryItem {
