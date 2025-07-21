@@ -714,9 +714,14 @@ function applyDeletions(data) {
   const shouldKeep = (type, item) => {
     const m = maps[type];
     if (!m) return true;
-    const t = m.get(item.id);
-    if (!t) return true;
-    return !(item.updatedAt && new Date(item.updatedAt) <= t);
+    const deletedAt = m.get(item.id);
+    if (!deletedAt) return true;
+    
+    // If item has no updatedAt, it should be deleted if there's a deletion record
+    if (!item.updatedAt) return false;
+    
+    // Item should be deleted if it was updated before or at the deletion time
+    return new Date(item.updatedAt) > deletedAt;
   };
   data.tasks = (data.tasks || []).filter((t) => shouldKeep("task", t));
   data.categories = (data.categories || []).filter((c) =>

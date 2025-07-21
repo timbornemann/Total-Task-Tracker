@@ -3,29 +3,23 @@ import React, {
   useContext,
   useEffect,
   useState,
-  useRef,
 } from "react";
 import { Trip, WorkDay, Deletion } from "@/types";
 import {
   loadOfflineData,
   updateOfflineData,
-  syncWithServer,
 } from "@/utils/offline";
 import { normalizeDateTime } from "@/utils/time";
 
 const API_TRIPS = "/api/trips";
 const API_WORKDAYS = "/api/workdays";
+const API_ALL = "/api/all";
 
 const useWorklogImpl = () => {
   const [trips, setTrips] = useState<Trip[]>([]);
   const [workDays, setWorkDays] = useState<WorkDay[]>([]);
   const [deletions, setDeletions] = useState<Deletion[]>([]);
-  const [loaded, setLoaded] = useState(false);
-  const [initialized, setInitialized] = useState(false);
-  const lastDataRef = useRef("");
-  const saveTimerRef = useRef<number | null>(null);
-  const userActionInProgressRef = useRef(false);
-  const lastUserActionRef = useRef(0);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const normalizeDay = (d: WorkDay): WorkDay => ({
     ...d,
@@ -34,141 +28,146 @@ const useWorklogImpl = () => {
     updatedAt: d.updatedAt || new Date(),
   });
 
-  const preventSyncOverride = () => {
-    userActionInProgressRef.current = true;
-    lastUserActionRef.current = Date.now();
-    // Clear the flag after a delay to allow syncing again
-    setTimeout(() => {
-      userActionInProgressRef.current = false;
-    }, 2000);
-  };
-
+  // Initial data loading from local storage and server
   useEffect(() => {
-    const load = async () => {
-      const offline = loadOfflineData();
-      if (offline) {
-        setTrips(offline.trips || []);
-        setWorkDays((offline.workDays || []).map(normalizeDay));
-        setDeletions(offline.deletions || []);
-      }
-      
-      // Always sync on initial load unless very recent user action
-      if (Date.now() - lastUserActionRef.current > 500) {
-        const synced = await syncWithServer();
-        setTrips(synced.trips || []);
-        setWorkDays((synced.workDays || []).map(normalizeDay));
-        setDeletions(synced.deletions || []);
-      }
-      
-      setLoaded(true);
-    };
-    load();
-  }, []);
-
-  useEffect(() => {
-    if (!loaded) return;
-    if (!initialized) {
-      setInitialized(true);
-      return;
-    }
-    
-    const dataStr = JSON.stringify({
-      trips,
-      workDays: workDays.map(normalizeDay),
-      deletions,
-    });
-    if (dataStr === lastDataRef.current) return;
-    lastDataRef.current = dataStr;
-    
-    // Always update offline data immediately (never block this)
-    updateOfflineData({ trips, workDays: workDays.map(normalizeDay), deletions });
-    
-    // Always save to server, but be smart about re-syncing
-    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    saveTimerRef.current = window.setTimeout(async () => {
-      
+    const loadInitialData = async () => {
       try {
+        // First load from offline storage
+        const offlineData = loadOfflineData();
+        if (offlineData) {
+          setTrips(offlineData.trips || []);
+          setWorkDays((offlineData.workDays || []).map(normalizeDay));
+          setDeletions(offlineData.deletions || []);
+        }
+
+        // Then try to get from server if online
         if (navigator.onLine) {
-          await Promise.all([
-            fetch(API_TRIPS, {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(trips),
-            }),
-            fetch(API_WORKDAYS, {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(workDays.map(normalizeDay)),
-            })
-          ]);
-          
-          // Only re-sync if no recent user actions to prevent flickering
-          if (Date.now() - lastUserActionRef.current > 1000) {
-            const synced = await syncWithServer();
-            // Only update state if data actually changed and no very recent user actions
-            const syncedStr = JSON.stringify({
-              trips: synced.trips || [],
-              workDays: (synced.workDays || []).map(normalizeDay),
-              deletions: synced.deletions || []
-            });
-            // Allow sync updates but avoid them during active user interactions
-            if (syncedStr !== dataStr && Date.now() - lastUserActionRef.current > 500) {
-              setTrips(synced.trips || []);
-              setWorkDays((synced.workDays || []).map(normalizeDay));
-              setDeletions(synced.deletions || []);
-            }
+          const response = await fetch(API_ALL);
+          if (response.ok) {
+            const serverData = await response.json();
+            setTrips(serverData.trips || []);
+            setWorkDays((serverData.workDays || []).map(normalizeDay));
+            setDeletions(serverData.deletions || []);
           }
         }
-      } catch (err) {
-        console.error("Error saving worklog", err);
+      } catch (error) {
+        console.error("Failed to load initial data:", error);
+      } finally {
+        setIsLoaded(true);
       }
-    }, 1000); // Increased timeout to give user actions time to complete
-  }, [trips, workDays, deletions, loaded, initialized]);
-
-  useEffect(() => {
-    return () => {
-      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     };
+
+    loadInitialData();
   }, []);
 
+  // Helper function to save all data both offline and to server
+  const saveAllData = async (newTrips: Trip[], newWorkDays: WorkDay[], newDeletions: Deletion[]) => {
+    // Update local state
+    setTrips(newTrips);
+    setWorkDays(newWorkDays);
+    setDeletions(newDeletions);
+
+    // Save to offline storage immediately
+    updateOfflineData({
+      trips: newTrips,
+      workDays: newWorkDays.map(normalizeDay),
+      deletions: newDeletions,
+    });
+
+    // Save to server if online
+    if (navigator.onLine) {
+      try {
+        // First save specialized data
+        const saveTripPromise = fetch(API_TRIPS, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newTrips),
+        });
+
+        const saveWorkDaysPromise = fetch(API_WORKDAYS, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newWorkDays.map(normalizeDay)),
+        });
+
+        // Then also save to /api/all to ensure deletions are captured
+        const saveAllPromise = fetch(API_ALL, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            trips: newTrips,
+            workDays: newWorkDays.map(normalizeDay),
+            deletions: newDeletions,
+            // Keep other fields empty to avoid affecting other data
+            tasks: [],
+            categories: [],
+            notes: [],
+            recurring: [],
+            habits: [],
+            flashcards: [],
+            decks: [],
+            pomodoroSessions: [],
+            timers: [],
+            items: [],
+            itemCategories: [],
+            itemTags: [],
+            settings: {}
+          }),
+        });
+
+        await Promise.all([saveTripPromise, saveWorkDaysPromise, saveAllPromise]);
+      } catch (error) {
+        console.error("Failed to save to server:", error);
+        // At least we have saved to offline storage
+      }
+    }
+  };
+
   const addTrip = (data: { name: string; location?: string; color: number }) => {
-    preventSyncOverride();
     const id = crypto.randomUUID();
     const now = new Date();
-    setTrips((prev) => [...prev, { id, ...data, createdAt: now, updatedAt: now }]);
+    const newTrip = {
+      id,
+      ...data,
+      createdAt: now,
+      updatedAt: now
+    };
+    
+    const newTrips = [...trips, newTrip];
+    saveAllData(newTrips, workDays, deletions);
     return id;
   };
 
   const updateTrip = (id: string, data: Partial<Trip>) => {
-    preventSyncOverride();
-    setTrips((prev) => prev.map((t) => (t.id === id ? { ...t, ...data, updatedAt: new Date() } : t)));
+    const newTrips = trips.map(trip =>
+      trip.id === id
+        ? { ...trip, ...data, updatedAt: new Date() }
+        : trip
+    );
+    saveAllData(newTrips, workDays, deletions);
   };
 
   const deleteTrip = (id: string) => {
-    preventSyncOverride();
-    const removedDays = workDays.filter((d) => d.tripId === id);
-    const remainingTrips = trips.filter((t) => t.id !== id);
-    const remainingDays = workDays.filter((d) => d.tripId !== id);
+    const now = new Date();
+    // Find work days associated with this trip
+    const removedDays = workDays.filter(day => day.tripId === id);
     
-    setTrips(remainingTrips);
-    setWorkDays(remainingDays);
-    
+    // Create deletion records
     const newDeletions = [
       ...deletions,
-      { id, type: "trip" as const, deletedAt: new Date() },
-      ...removedDays.map((d) => ({ 
-        id: d.id, 
+      { id, type: "trip" as const, deletedAt: now },
+      ...removedDays.map(day => ({ 
+        id: day.id, 
         type: "workday" as const, 
-        deletedAt: new Date() 
-      })),
+        deletedAt: now 
+      }))
     ];
-    setDeletions(newDeletions);
     
-    updateOfflineData({
-      trips: remainingTrips,
-      workDays: remainingDays.map(normalizeDay),
-      deletions: newDeletions,
-    });
+    // Remove the trip and associated work days
+    const newTrips = trips.filter(trip => trip.id !== id);
+    const newWorkDays = workDays.filter(day => day.tripId !== id);
+    
+    saveAllData(newTrips, newWorkDays, newDeletions);
   };
 
   const addWorkDay = (data: {
@@ -176,90 +175,41 @@ const useWorklogImpl = () => {
     end: string;
     tripId?: string;
   }) => {
-    preventSyncOverride();
     const id = crypto.randomUUID();
     const now = new Date();
-    setWorkDays((prev) => [...prev, normalizeDay({ 
-      id, 
-      ...data, 
-      createdAt: now, 
-      updatedAt: now 
-    })]);
+    const newWorkDay = {
+      id,
+      ...data,
+      createdAt: now,
+      updatedAt: now
+    };
+    
+    const newWorkDays = [...workDays, normalizeDay(newWorkDay)];
+    saveAllData(trips, newWorkDays, deletions);
   };
 
   const updateWorkDay = (id: string, data: Partial<WorkDay>) => {
-    preventSyncOverride();
-    setWorkDays((prev) =>
-      prev.map((d) =>
-        d.id === id
-          ? normalizeDay({ ...d, ...data, updatedAt: new Date() })
-          : d,
-      ),
+    const newWorkDays = workDays.map(day =>
+      day.id === id
+        ? normalizeDay({ ...day, ...data, updatedAt: new Date() })
+        : day
     );
+    saveAllData(trips, newWorkDays, deletions);
   };
 
   const deleteWorkDay = async (id: string) => {
-    preventSyncOverride();
+    // Create deletion record
+    const now = new Date();
+    const newDeletions = [
+      ...deletions,
+      { id, type: "workday" as const, deletedAt: now }
+    ];
     
-    // Clear any pending save timer to prevent race conditions
-    if (saveTimerRef.current) {
-      clearTimeout(saveTimerRef.current);
-      saveTimerRef.current = null;
-    }
-
-    // Create deletion record immediately
-    const deletionRecord = { 
-      id, 
-      type: "workday" as const, 
-      deletedAt: new Date() 
-    };
+    // Remove the work day
+    const newWorkDays = workDays.filter(day => day.id !== id);
     
-    // Update local state immediately
-    const updatedWorkDays = workDays.filter((d) => d.id !== id);
-    const newDeletions = [...deletions, deletionRecord];
-    
-    setWorkDays(updatedWorkDays);
-    setDeletions(newDeletions);
-    
-    // Update offline data immediately
-    updateOfflineData({ 
-      trips,
-      workDays: updatedWorkDays.map(normalizeDay), 
-      deletions: newDeletions 
-    });
-    
-    // Try to sync with server immediately if online
-    if (navigator.onLine) {
-      try {
-        // Send workdays update first
-        await fetch(API_WORKDAYS, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(updatedWorkDays.map(normalizeDay)),
-        });
-        
-        // Force immediate sync with server after a short delay
-        setTimeout(async () => {
-          try {
-            const synced = await syncWithServer();
-            // Only update if the deleted item is still not present
-            const stillDeleted = !(synced.workDays || []).some(d => d.id === id);
-            if (stillDeleted) {
-              setTrips(synced.trips || []);
-              setWorkDays((synced.workDays || []).map(normalizeDay));
-              setDeletions(synced.deletions || []);
-            }
-          } catch (err) {
-            console.error("Error syncing after deletion", err);
-          }
-        }, 500);
-        
-      } catch (err) {
-        console.error("Error deleting workday", err);
-        // If server sync fails, the deletion record will ensure 
-        // the item stays deleted during next sync
-      }
-    }
+    // Save changes with deletion record
+    saveAllData(trips, newWorkDays, newDeletions);
   };
 
   return {
@@ -271,6 +221,7 @@ const useWorklogImpl = () => {
     addWorkDay,
     updateWorkDay,
     deleteWorkDay,
+    isLoaded
   };
 };
 
