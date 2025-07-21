@@ -5,7 +5,7 @@ import React, {
   useState,
   useRef,
 } from "react";
-import { Trip, WorkDay } from "@/types";
+import { Trip, WorkDay, Deletion } from "@/types";
 import {
   loadOfflineData,
   updateOfflineData,
@@ -20,6 +20,7 @@ const API_WORKDAYS = "/api/workdays";
 const useWorklogImpl = () => {
   const [trips, setTrips] = useState<Trip[]>([]);
   const [workDays, setWorkDays] = useState<WorkDay[]>([]);
+  const [deletions, setDeletions] = useState<Deletion[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [initialized, setInitialized] = useState(false);
   const lastDataRef = useRef("");
@@ -37,11 +38,15 @@ const useWorklogImpl = () => {
       if (offline) {
         setTrips(offline.trips || []);
         setWorkDays((offline.workDays || []).map(normalizeDay));
+        setDeletions(offline.deletions || []);
       }
       const synced = await syncWithServer();
       setTrips((prev) => mergeLists(prev, synced.trips || [], null));
       setWorkDays((prev) =>
         mergeLists(prev, (synced.workDays || []).map(normalizeDay), null),
+      );
+      setDeletions((prev) =>
+        mergeLists(prev, synced.deletions || [], "deletedAt"),
       );
       setLoaded(true);
     };
@@ -54,10 +59,14 @@ const useWorklogImpl = () => {
       setInitialized(true);
       return;
     }
-    const dataStr = JSON.stringify({ trips, workDays: workDays.map(normalizeDay) });
+    const dataStr = JSON.stringify({
+      trips,
+      workDays: workDays.map(normalizeDay),
+      deletions,
+    });
     if (dataStr === lastDataRef.current) return;
     lastDataRef.current = dataStr;
-    updateOfflineData({ trips, workDays: workDays.map(normalizeDay) });
+    updateOfflineData({ trips, workDays: workDays.map(normalizeDay), deletions });
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = window.setTimeout(async () => {
       try {
@@ -78,7 +87,7 @@ const useWorklogImpl = () => {
         console.error("Error saving worklog", err);
       }
     }, 500);
-  }, [trips, workDays, loaded]);
+  }, [trips, workDays, deletions, loaded]);
 
   useEffect(() => {
     return () => {
@@ -97,8 +106,22 @@ const useWorklogImpl = () => {
   };
 
   const deleteTrip = (id: string) => {
-    setTrips((prev) => prev.filter((t) => t.id !== id));
-    setWorkDays((prev) => prev.filter((d) => d.tripId !== id));
+    const removedDays = workDays.filter((d) => d.tripId === id);
+    const remainingTrips = trips.filter((t) => t.id !== id);
+    const remainingDays = workDays.filter((d) => d.tripId !== id);
+    setTrips(remainingTrips);
+    setWorkDays(remainingDays);
+    const newDeletions = [
+      ...deletions,
+      { id, type: "trip", deletedAt: new Date() },
+      ...removedDays.map((d) => ({ id: d.id, type: "workday", deletedAt: new Date() })),
+    ];
+    setDeletions(newDeletions);
+    updateOfflineData({
+      trips: remainingTrips,
+      workDays: remainingDays.map(normalizeDay),
+      deletions: newDeletions,
+    });
   };
 
   const addWorkDay = (data: {
@@ -123,7 +146,12 @@ const useWorklogImpl = () => {
   const deleteWorkDay = (id: string) => {
     const updated = workDays.filter((d) => d.id !== id);
     setWorkDays(updated);
-    updateOfflineData({ workDays: updated.map(normalizeDay) });
+    const newDeletions = [
+      ...deletions,
+      { id, type: "workday", deletedAt: new Date() },
+    ];
+    setDeletions(newDeletions);
+    updateOfflineData({ workDays: updated.map(normalizeDay), deletions: newDeletions });
     if (navigator.onLine) {
       fetch(API_WORKDAYS, {
         method: "PUT",
