@@ -1,143 +1,60 @@
 import express from "express";
-import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import Database from "better-sqlite3";
 import os from "os";
+import db from "./lib/db.js";
+import { registerClient, notifyClients } from "./lib/sse.js";
+import {
+  initSync,
+  startSyncTimer,
+  setSyncRole,
+  setSyncServerUrl,
+  setSyncInterval,
+  setSyncEnabled,
+  setLlmUrl,
+  setLlmToken,
+  setLlmModel,
+  getSyncRole,
+  getStatus,
+  getLlmConfig,
+  syncLogs,
+  log,
+} from "./lib/sync.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DATA_DIR = path.join(__dirname, "data");
-const DB_FILE = path.join(DATA_DIR, "data.db");
 const DIST_DIR = path.join(__dirname, "..", "dist");
 
-fs.mkdirSync(DATA_DIR, { recursive: true });
-const db = new Database(DB_FILE);
-
-function log(...args) {
-  console.log(new Date().toISOString(), ...args);
-}
-
-db.exec(`
-  CREATE TABLE IF NOT EXISTS tasks (
-    id TEXT PRIMARY KEY,
-    data TEXT NOT NULL
-  );
-  CREATE TABLE IF NOT EXISTS categories (
-    id TEXT PRIMARY KEY,
-    data TEXT NOT NULL
-  );
-  CREATE TABLE IF NOT EXISTS notes (
-    id TEXT PRIMARY KEY,
-    data TEXT NOT NULL
-  );
-  CREATE TABLE IF NOT EXISTS recurring (
-    id TEXT PRIMARY KEY,
-    data TEXT NOT NULL
-  );
-  CREATE TABLE IF NOT EXISTS habits (
-    id TEXT PRIMARY KEY,
-    data TEXT NOT NULL
-  );
-  CREATE TABLE IF NOT EXISTS flashcards (
-    id TEXT PRIMARY KEY,
-    data TEXT NOT NULL
-  );
-  CREATE TABLE IF NOT EXISTS decks (
-    id TEXT PRIMARY KEY,
-    data TEXT NOT NULL
-  );
-  CREATE TABLE IF NOT EXISTS settings (
-    key TEXT PRIMARY KEY,
-    value TEXT NOT NULL
-  );
-  CREATE TABLE IF NOT EXISTS pomodoro_sessions (
-    start INTEGER NOT NULL,
-    end INTEGER NOT NULL,
-    breakEnd INTEGER
-  );
-  CREATE TABLE IF NOT EXISTS timers (
-    id TEXT PRIMARY KEY,
-    data TEXT NOT NULL
-  );
-  CREATE TABLE IF NOT EXISTS trips (
-    id TEXT PRIMARY KEY,
-    data TEXT NOT NULL
-  );
-  CREATE TABLE IF NOT EXISTS workdays (
-    id TEXT PRIMARY KEY,
-    data TEXT NOT NULL
-  );
-  CREATE TABLE IF NOT EXISTS inventory_items (
-    id TEXT PRIMARY KEY,
-    data TEXT NOT NULL
-  );
-  CREATE TABLE IF NOT EXISTS inventory_categories (
-    id TEXT PRIMARY KEY,
-    data TEXT NOT NULL
-  );
-  CREATE TABLE IF NOT EXISTS inventory_tags (
-    id TEXT PRIMARY KEY,
-    data TEXT NOT NULL
-  );
-  CREATE TABLE IF NOT EXISTS deletions (
-    type TEXT NOT NULL,
-    id TEXT NOT NULL,
-    deletedAt TEXT NOT NULL,
-    PRIMARY KEY (type, id)
-  );
-`);
-try {
-  db.prepare("ALTER TABLE pomodoro_sessions ADD COLUMN breakEnd INTEGER").run();
-} catch {}
-
-let syncRole = "client";
-let syncServerUrl = "";
-let syncInterval = 5;
-let syncEnabled = true;
-let llmUrl = "";
-let llmToken = "";
-let llmModel = "gpt-3.5-turbo";
-let syncTimer = null;
-let lastSyncTime = 0;
-let lastSyncError = null;
-const syncLogs = [];
-const sseClients = [];
-
-export function notifyClients() {
-  const msg = "data: update\n\n";
-  sseClients.forEach((res) => res.write(msg));
-}
-
+initSync({ loadAllData, saveAllData });
 const initialSettings = loadSettings();
 if (typeof initialSettings.syncInterval === "number") {
-  syncInterval = initialSettings.syncInterval;
+  setSyncInterval(initialSettings.syncInterval);
 }
 if (initialSettings.syncRole) {
-  syncRole = initialSettings.syncRole;
+  setSyncRole(initialSettings.syncRole);
 }
 if (initialSettings.syncServerUrl) {
-  syncServerUrl = initialSettings.syncServerUrl;
+  setSyncServerUrl(initialSettings.syncServerUrl);
 }
 if (typeof initialSettings.syncEnabled === "boolean") {
-  syncEnabled = initialSettings.syncEnabled;
+  setSyncEnabled(initialSettings.syncEnabled);
 }
 if (initialSettings.llmUrl) {
-  llmUrl = initialSettings.llmUrl;
+  setLlmUrl(initialSettings.llmUrl);
 }
 if (initialSettings.llmToken) {
-  llmToken = initialSettings.llmToken;
+  setLlmToken(initialSettings.llmToken);
 }
 if (initialSettings.llmModel) {
-  llmModel = initialSettings.llmModel;
+  setLlmModel(initialSettings.llmModel);
 }
 log("Initial sync settings", {
-  role: syncRole,
-  url: syncServerUrl,
-  interval: syncInterval,
-  enabled: syncEnabled,
-  llmConfigured: !!llmUrl,
+  role: getSyncRole(),
+  url: initialSettings.syncServerUrl || "",
+  interval: initialSettings.syncInterval || 5,
+  enabled: initialSettings.syncEnabled !== false,
+  llmConfigured: !!initialSettings.llmUrl,
 });
 startSyncTimer();
 
@@ -719,103 +636,6 @@ function applyDeletions(data) {
   return data;
 }
 
-async function performSync() {
-  if (syncRole !== "client" || !syncServerUrl) return;
-  const url = `${syncServerUrl.replace(/\/$/, "")}/api/sync`;
-  try {
-    log("Starting sync with", url);
-    const data = loadAllData();
-    if (data.settings) {
-      delete data.settings.syncServerUrl;
-      delete data.settings.syncRole;
-      delete data.settings.syncEnabled;
-      delete data.settings.llmToken;
-    }
-    const post = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data, (k, v) =>
-        v instanceof Date ? v.toISOString() : v,
-      ),
-    });
-    if (!post.ok) throw new Error(`HTTP ${post.status}`);
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const incoming = await res.json();
-    const merged = applyDeletions(mergeData(loadAllData(), incoming));
-    saveAllData(merged);
-    lastSyncTime = Date.now();
-    lastSyncError = null;
-    log("Sync successful");
-  } catch (err) {
-    console.error("Sync error", err);
-    lastSyncTime = Date.now();
-    lastSyncError = err.message || String(err);
-  }
-}
-
-function startSyncTimer() {
-  if (syncTimer) clearInterval(syncTimer);
-  syncTimer = null;
-  if (
-    syncEnabled &&
-    syncRole === "client" &&
-    syncServerUrl &&
-    syncInterval > 0
-  ) {
-    log("Sync timer started with interval", syncInterval, "minutes");
-    performSync();
-    syncTimer = setInterval(performSync, syncInterval * 60 * 1000);
-  }
-}
-
-function setSyncRole(role) {
-  const newRole = role === "server" ? "server" : "client";
-  if (newRole === syncRole) return;
-  syncRole = newRole;
-  log("Sync role set to", syncRole);
-  startSyncTimer();
-}
-
-function setSyncServerUrl(url) {
-  if (url && !/^https?:\/\//i.test(url)) {
-    url = "http://" + url;
-  }
-  const normalized = url ? url.replace(/\/$/, "") : "";
-  if (normalized === syncServerUrl) return;
-  syncServerUrl = normalized;
-  log("Sync server URL set to", syncServerUrl || "(none)");
-  startSyncTimer();
-}
-
-function setSyncInterval(minutes) {
-  const val = Number(minutes) || 0;
-  if (val === syncInterval) return;
-  syncInterval = val;
-  log("Sync interval set to", syncInterval);
-  startSyncTimer();
-}
-
-function setSyncEnabled(val) {
-  const enabled = Boolean(val);
-  if (enabled === syncEnabled) return;
-  syncEnabled = enabled;
-  log("Sync enabled set to", syncEnabled);
-  startSyncTimer();
-}
-
-function setLlmUrl(url) {
-  llmUrl = url || "";
-  log("LLM URL set to", llmUrl || "(none)");
-}
-
-function setLlmToken(token) {
-  llmToken = token || "";
-}
-
-function setLlmModel(model) {
-  llmModel = model || "gpt-3.5-turbo";
-}
 
 export const app = express();
 app.use(express.json());
@@ -827,11 +647,7 @@ app.get("/api/updates", (req, res) => {
     Connection: "keep-alive",
   });
   res.write("\n");
-  sseClients.push(res);
-  req.on("close", () => {
-    const idx = sseClients.indexOf(res);
-    if (idx !== -1) sseClients.splice(idx, 1);
-  });
+  registerClient(res);
 });
 
 import createDataRouter from "./routes/data.js";
@@ -930,12 +746,12 @@ app.use(
     syncLogs,
     notifyClients,
     dateReviver,
-    syncRole: () => syncRole,
+    syncRole: getSyncRole,
   }),
 );
 app.use(
   "/api/sync-log",
-  createSyncLogRouter({ syncLogs, syncRole: () => syncRole }),
+  createSyncLogRouter({ syncLogs, syncRole: getSyncRole }),
 );
 let activePort = 3002;
 const publicIp = process.env.SERVER_PUBLIC_IP || null;
@@ -946,20 +762,8 @@ app.use(
   "/api/server-info",
   createServerInfoRouter({ os, activePort: () => activePort, publicIp }),
 );
-app.use(
-  "/api/sync-status",
-  createSyncStatusRouter({
-    getStatus: () => ({
-      last: lastSyncTime,
-      error: lastSyncError,
-      enabled: syncEnabled,
-    }),
-  }),
-);
-app.use(
-  "/api/llm",
-  createLlmRouter({ getConfig: () => ({ llmUrl, llmToken, llmModel }) }),
-);
+app.use("/api/sync-status", createSyncStatusRouter({ getStatus }));
+app.use("/api/llm", createLlmRouter({ getConfig: getLlmConfig }));
 
 app.use(express.static(DIST_DIR));
 app.get("*", (req, res) => {
