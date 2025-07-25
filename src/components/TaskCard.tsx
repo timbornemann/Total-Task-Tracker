@@ -229,10 +229,9 @@ const TaskCard: React.FC<TaskCardProps> = ({
                 <Trash2 className="h-4 w-4 mr-2" />
                 {t("common.delete")}
               </DropdownMenuItem>
-        </DropdownMenuContent>
-        </DropdownMenu>
-        )}
-      </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
         {st.subtasks.length > 0 && (
           <div className="ml-4 space-y-1">
             <div className="flex items-center justify-between">
@@ -310,49 +309,49 @@ const TaskCard: React.FC<TaskCardProps> = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-background z-50">
               <DropdownMenuItem onClick={handleTogglePinned}>
-              {task.pinned ? (
-                <Star className="h-4 w-4 mr-2" />
-              ) : (
-                <StarOff className="h-4 w-4 mr-2" />
-              )}
-              {task.pinned ? t("taskDetail.unpin") : t("taskDetail.pin")}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onViewDetails(task)}>
-              <FolderOpen className="h-4 w-4 mr-2" />
-              {t("taskCard.viewDetails")}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onAddSubtask(task)}>
-              <Plus className="h-4 w-4 mr-2" />
-              {t("taskCard.addSubtask")}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onEdit(task)}>
-              <Edit className="h-4 w-4 mr-2" />
-              {t("common.edit")}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onReset(task.id)}>
-              <RotateCcw className="h-4 w-4 mr-2" />
-              {t("taskCard.reset")}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() =>
-                updateTask(task.id, { visible: !(task.visible !== false) })
-              }
-            >
-              {task.visible === false ? (
-                <Eye className="h-4 w-4 mr-2" />
-              ) : (
-                <EyeOff className="h-4 w-4 mr-2" />
-              )}
-              {task.visible === false
-                ? t("taskCard.unhide")
-                : t("taskCard.hide")}
-            </DropdownMenuItem>
+                {task.pinned ? (
+                  <Star className="h-4 w-4 mr-2" />
+                ) : (
+                  <StarOff className="h-4 w-4 mr-2" />
+                )}
+                {task.pinned ? t("taskDetail.unpin") : t("taskDetail.pin")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onViewDetails(task)}>
+                <FolderOpen className="h-4 w-4 mr-2" />
+                {t("taskCard.viewDetails")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onAddSubtask(task)}>
+                <Plus className="h-4 w-4 mr-2" />
+                {t("taskCard.addSubtask")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onEdit(task)}>
+                <Edit className="h-4 w-4 mr-2" />
+                {t("common.edit")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onReset(task.id)}>
+                <RotateCcw className="h-4 w-4 mr-2" />
+                {t("taskCard.reset")}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() =>
+                  updateTask(task.id, { visible: !(task.visible !== false) })
+                }
+              >
+                {task.visible === false ? (
+                  <Eye className="h-4 w-4 mr-2" />
+                ) : (
+                  <EyeOff className="h-4 w-4 mr-2" />
+                )}
+                {task.visible === false
+                  ? t("taskCard.unhide")
+                  : t("taskCard.hide")}
+              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onDelete(task.id)}
                 className="text-destructive"
               >
-              <Trash2 className="h-4 w-4 mr-2" />
-              {t("common.delete")}
+                <Trash2 className="h-4 w-4 mr-2" />
+                {t("common.delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
