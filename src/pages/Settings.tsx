@@ -179,6 +179,8 @@ const SettingsPage: React.FC = () => {
     updateDefaultWorkLocation,
     collapseSubtasksByDefault,
     toggleCollapseSubtasksByDefault,
+    enableBatchTasks,
+    toggleEnableBatchTasks,
     defaultTaskLayout,
     updateDefaultTaskLayout,
     showCompletedByDefault,
@@ -1179,6 +1181,16 @@ const SettingsPage: React.FC = () => {
                   />
                   <Label htmlFor="collapseSubtasks">
                     {t("settingsPage.collapseSubtasks")}
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="enableBatchTasks"
+                    checked={enableBatchTasks}
+                    onCheckedChange={toggleEnableBatchTasks}
+                  />
+                  <Label htmlFor="enableBatchTasks">
+                    {t("settingsPage.enableBatchTasks")}
                   </Label>
                 </div>
               </TabsContent>

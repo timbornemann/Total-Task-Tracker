@@ -55,6 +55,9 @@ interface TaskCardProps {
   showSubtasks?: boolean;
   /** Display card optimized for grid layout */
   isGrid?: boolean;
+  selectMode?: boolean;
+  selected?: boolean;
+  onSelectChange?: (checked: boolean) => void;
 }
 
 const TaskCard: React.FC<TaskCardProps> = ({
@@ -69,6 +72,9 @@ const TaskCard: React.FC<TaskCardProps> = ({
   parentPathTitles = [],
   showSubtasks = true,
   isGrid = false,
+  selectMode = false,
+  selected = false,
+  onSelectChange,
 }) => {
   const isCompleted = calculateTaskCompletion(task);
   const progress = getTaskProgress(task);
@@ -268,13 +274,22 @@ const TaskCard: React.FC<TaskCardProps> = ({
         style={{ backgroundColor: displayColor, color: headerTextColor }}
       >
         <div className="flex items-center gap-2 min-w-0">
-          {task.subtasks.length === 0 && (
+          {selectMode ? (
             <input
               type="checkbox"
-              checked={task.completed}
-              onChange={handleToggleComplete}
-              className="h-4 w-4 rounded-full border-gray-300 text-primary"
+              checked={selected}
+              onChange={(e) => onSelectChange?.(e.target.checked)}
+              className="h-4 w-4"
             />
+          ) : (
+            task.subtasks.length === 0 && (
+              <input
+                type="checkbox"
+                checked={task.completed}
+                onChange={handleToggleComplete}
+                className="h-4 w-4 rounded-full border-gray-300 text-primary"
+              />
+            )
           )}
           <h3
             className={`font-semibold cursor-pointer text-sm sm:text-base break-words ${
@@ -285,60 +300,62 @@ const TaskCard: React.FC<TaskCardProps> = ({
             {task.title}
           </h3>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-              <Settings className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-background z-50">
-            <DropdownMenuItem onClick={handleTogglePinned}>
-              {task.pinned ? (
-                <Star className="h-4 w-4 mr-2" />
-              ) : (
-                <StarOff className="h-4 w-4 mr-2" />
-              )}
-              {task.pinned ? t("taskDetail.unpin") : t("taskDetail.pin")}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onViewDetails(task)}>
-              <FolderOpen className="h-4 w-4 mr-2" />
-              {t("taskCard.viewDetails")}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onAddSubtask(task)}>
-              <Plus className="h-4 w-4 mr-2" />
-              {t("taskCard.addSubtask")}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onEdit(task)}>
-              <Edit className="h-4 w-4 mr-2" />
-              {t("common.edit")}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onReset(task.id)}>
-              <RotateCcw className="h-4 w-4 mr-2" />
-              {t("taskCard.reset")}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() =>
-                updateTask(task.id, { visible: !(task.visible !== false) })
-              }
-            >
-              {task.visible === false ? (
-                <Eye className="h-4 w-4 mr-2" />
-              ) : (
-                <EyeOff className="h-4 w-4 mr-2" />
-              )}
-              {task.visible === false
-                ? t("taskCard.unhide")
-                : t("taskCard.hide")}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => onDelete(task.id)}
-              className="text-destructive"
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              {t("common.delete")}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {!selectMode && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-background z-50">
+              <DropdownMenuItem onClick={handleTogglePinned}>
+                {task.pinned ? (
+                  <Star className="h-4 w-4 mr-2" />
+                ) : (
+                  <StarOff className="h-4 w-4 mr-2" />
+                )}
+                {task.pinned ? t("taskDetail.unpin") : t("taskDetail.pin")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onViewDetails(task)}>
+                <FolderOpen className="h-4 w-4 mr-2" />
+                {t("taskCard.viewDetails")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onAddSubtask(task)}>
+                <Plus className="h-4 w-4 mr-2" />
+                {t("taskCard.addSubtask")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onEdit(task)}>
+                <Edit className="h-4 w-4 mr-2" />
+                {t("common.edit")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onReset(task.id)}>
+                <RotateCcw className="h-4 w-4 mr-2" />
+                {t("taskCard.reset")}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() =>
+                  updateTask(task.id, { visible: !(task.visible !== false) })
+                }
+              >
+                {task.visible === false ? (
+                  <Eye className="h-4 w-4 mr-2" />
+                ) : (
+                  <EyeOff className="h-4 w-4 mr-2" />
+                )}
+                {task.visible === false
+                  ? t("taskCard.unhide")
+                  : t("taskCard.hide")}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onDelete(task.id)}
+                className="text-destructive"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                {t("common.delete")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
 
       {(task.description || (showSubtasks && task.subtasks.length > 0)) && (

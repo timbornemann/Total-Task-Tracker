@@ -127,7 +127,7 @@ const Dashboard: React.FC = () => {
 
   const { toast } = useToast();
   const { setCurrentCategoryId } = useCurrentCategory();
-  const { colorPalette, defaultTaskLayout, showCompletedByDefault } =
+  const { colorPalette, defaultTaskLayout, showCompletedByDefault, enableBatchTasks } =
     useSettings();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -196,6 +196,9 @@ const Dashboard: React.FC = () => {
   const [parentTask, setParentTask] = useState<Task | null>(null);
   const [deleteTaskId, setDeleteTaskId] = useState<string | null>(null);
   const [deleteCategoryId, setDeleteCategoryId] = useState<string | null>(null);
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedTaskIds, setSelectedTaskIds] = useState<string[]>([]);
+  const [batchDeleteIds, setBatchDeleteIds] = useState<string[] | null>(null);
   const { start: startPomodoro } = usePomodoroStore();
 
   const colorOptions = useMemo(() => {
@@ -464,6 +467,44 @@ const Dashboard: React.FC = () => {
     navigate(`/tasks/${task.id}?categoryId=${catId}`);
   };
 
+  const handleSelectTask = (id: string, checked: boolean) => {
+    setSelectedTaskIds((prev) =>
+      checked ? [...prev, id] : prev.filter((t) => t !== id),
+    );
+  };
+
+  const handleBatchDelete = () => {
+    setBatchDeleteIds(selectedTaskIds);
+  };
+
+  const handleBatchReset = () => {
+    selectedTaskIds.forEach((id) => resetTask(id));
+    toast({
+      title: t("dashboard.taskReset"),
+      description: t("dashboard.selectedCount", { count: selectedTaskIds.length }),
+    });
+    setSelectedTaskIds([]);
+    setSelectionMode(false);
+  };
+
+  const handleBatchHide = () => {
+    selectedTaskIds.forEach((id) => {
+      const task = findTaskById(id);
+      if (task) updateTask(id, { visible: !(task.visible !== false) });
+    });
+    setSelectedTaskIds([]);
+    setSelectionMode(false);
+  };
+
+  const handleBatchPin = () => {
+    selectedTaskIds.forEach((id) => {
+      const task = findTaskById(id);
+      if (task) updateTask(id, { pinned: !task.pinned });
+    });
+    setSelectedTaskIds([]);
+    setSelectionMode(false);
+  };
+
   const handleBackToCategories = () => {
     setSelectedCategory(null);
     setCurrentCategoryId(null);
@@ -704,7 +745,61 @@ const Dashboard: React.FC = () => {
                 <Plus className="h-4 w-4 mr-2" />
                 {t("taskModal.newTitle")}
               </Button>
+              {enableBatchTasks && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setSelectionMode((p) => !p);
+                    setSelectedTaskIds([]);
+                  }}
+                >
+                  {selectionMode
+                    ? t("common.cancel")
+                    : t("dashboard.selectMultiple")}
+                </Button>
+              )}
             </div>
+
+            {selectionMode && (
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-sm flex-1">
+                  {t("dashboard.selectedCount", { count: selectedTaskIds.length })}
+                </span>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={handleBatchDelete}
+                  disabled={selectedTaskIds.length === 0}
+                >
+                  {t("dashboard.batchDelete")}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleBatchReset}
+                  disabled={selectedTaskIds.length === 0}
+                >
+                  {t("dashboard.batchReset")}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleBatchHide}
+                  disabled={selectedTaskIds.length === 0}
+                >
+                  {t("dashboard.batchHide")}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleBatchPin}
+                  disabled={selectedTaskIds.length === 0}
+                >
+                  {t("dashboard.batchPin")}
+                </Button>
+              </div>
+            )}
 
             {filteredTasks.length === 0 ? (
               <Card className="text-center py-8 sm:py-12">
@@ -762,6 +857,9 @@ const Dashboard: React.FC = () => {
                           onViewDetails={handleViewTaskDetails}
                           onReset={handleResetTask}
                           isGrid={taskLayout === "grid"}
+                          selectMode={selectionMode}
+                          selected={selectedTaskIds.includes(task.id)}
+                          onSelectChange={(checked) => handleSelectTask(task.id, checked)}
                         />
                       </SortableTask>
                     ))}
@@ -846,6 +944,29 @@ const Dashboard: React.FC = () => {
               description: t("dashboard.taskDeletedDesc"),
             });
             setDeleteTaskId(null);
+          }
+        }}
+        confirmText={t("common.delete")}
+        cancelText={t("common.cancel")}
+      />
+      <ConfirmDialog
+        open={!!batchDeleteIds}
+        onOpenChange={(o) => !o && setBatchDeleteIds(null)}
+        title={
+          batchDeleteIds
+            ? t("task.deleteConfirm", { title: t("dashboard.selectedCount", { count: batchDeleteIds.length }) })
+            : ""
+        }
+        onConfirm={() => {
+          if (batchDeleteIds) {
+            batchDeleteIds.forEach((id) => deleteTask(id));
+            toast({
+              title: t("task.deleted"),
+              description: t("dashboard.taskDeletedDesc"),
+            });
+            setBatchDeleteIds(null);
+            setSelectedTaskIds([]);
+            setSelectionMode(false);
           }
         }}
         confirmText={t("common.delete")}

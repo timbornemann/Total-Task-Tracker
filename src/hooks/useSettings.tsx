@@ -53,6 +53,7 @@ const defaultLlmToken = "";
 const defaultLlmModel = "gpt-3.5-turbo";
 const defaultOfflineCache = true;
 const defaultWorklogEnabled = true;
+const defaultBatchTasksEnabled = false;
 
 
 export const defaultHomeSectionColors: Record<string, number> =
@@ -188,6 +189,8 @@ interface SettingsContextValue {
   toggleWorklogCardShadow: () => void;
   defaultWorkLocation: string;
   updateDefaultWorkLocation: (val: string) => void;
+  enableBatchTasks: boolean;
+  toggleEnableBatchTasks: () => void;
 }
 
 const SettingsContext = createContext<SettingsContextValue | undefined>(
@@ -284,6 +287,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
   const [llmModel, setLlmModel] = useState(defaultLlmModel);
   const [offlineCache, setOfflineCache] = useState(defaultOfflineCache);
   const [enableWorklog, setEnableWorklog] = useState(defaultWorklogEnabled);
+  const [enableBatchTasks, setEnableBatchTasks] = useState(defaultBatchTasksEnabled);
   const [worklogCardShadow, setWorklogCardShadow] = useState(true);
   const [defaultWorkLocation, setDefaultWorkLocation] = useState("");
   const [loaded, setLoaded] = useState(false);
@@ -493,6 +497,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
           if (typeof data.enableWorklog === "boolean") {
             setEnableWorklog(data.enableWorklog);
           }
+          if (typeof data.enableBatchTasks === "boolean") {
+            setEnableBatchTasks(data.enableBatchTasks);
+          }
           if (typeof data.worklogCardShadow === "boolean") {
             setWorklogCardShadow(data.worklogCardShadow);
           }
@@ -562,6 +569,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
             llmToken,
             llmModel,
             offlineCache,
+            enableBatchTasks,
             enableWorklog,
             worklogCardShadow,
             defaultWorkLocation,
@@ -613,6 +621,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     llmToken,
     llmModel,
     offlineCache,
+    enableBatchTasks,
+    enableWorklog,
     worklogCardShadow,
     defaultWorkLocation,
   ]);
@@ -742,6 +752,10 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const toggleOfflineCache = () => {
     setOfflineCache((prev) => !prev);
+  };
+
+  const toggleEnableBatchTasks = () => {
+    setEnableBatchTasks((prev) => !prev);
   };
 
   const toggleEnableWorklog = () => {
@@ -1030,6 +1044,8 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
         updateLlmModel,
         offlineCache,
         toggleOfflineCache,
+        enableBatchTasks,
+        toggleEnableBatchTasks,
         enableWorklog,
         toggleEnableWorklog,
         worklogCardShadow,
