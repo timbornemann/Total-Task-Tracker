@@ -99,6 +99,7 @@
     "showPinnedNotes": "Gepinnte Notizen anzeigen",
     "showPinnedCategories": "Gepinnte Kategorien anzeigen",
     "showPinnedHabits": "Gepinnte Gewohnheiten anzeigen",
+    "enableBatchTasks": "Batch-Aktionen für Tasks aktivieren",
     "enableWorklog": "Arbeitszeiterfassung aktivieren",
     "worklogCardShadow": "Schatten bei Arbeitszeit-Karten",
     "defaultWorkLocation": "Arbeitsort",
@@ -675,7 +676,13 @@
     "categoryDeleteLastConfirm": "Sie sind dabei, die letzte verbleibende Kategorie zu löschen. \"{{name}}\" wirklich löschen?",
     "categoryTasksReset": "Aufgaben zurückgesetzt",
     "categoryTasksResetDesc": "Alle Aufgaben in \"{{name}}\" wurden zurückgesetzt.",
-    "undo": "Rückgängig"
+    "undo": "Rückgängig",
+    "selectMultiple": "Tasks auswählen",
+    "selectedCount": "{{count}} ausgewählt",
+    "batchDelete": "Ausgewählte löschen",
+    "batchReset": "Ausgewählte zurücksetzen",
+    "batchHide": "Ausgewählte verstecken",
+    "batchPin": "Ausgewählte anheften"
   },
   "categoryCard": {
     "deleteTooltip": "Löschen (rückgängig möglich)",

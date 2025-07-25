@@ -99,6 +99,7 @@
     "showPinnedNotes": "Show pinned notes",
     "showPinnedCategories": "Show pinned categories",
     "showPinnedHabits": "Show pinned habits",
+    "enableBatchTasks": "Enable batch task actions",
     "enableWorklog": "Enable worklog feature",
     "worklogCardShadow": "Shadow on worklog cards",
     "defaultWorkLocation": "Default work location",
@@ -675,7 +676,13 @@
     "categoryDeleteLastConfirm": "You are about to delete the last remaining category. Delete \"{{name}}\"?",
     "categoryTasksReset": "Tasks reset",
     "categoryTasksResetDesc": "All tasks in \"{{name}}\" were reset.",
-    "undo": "Undo"
+    "undo": "Undo",
+    "selectMultiple": "Select tasks",
+    "selectedCount": "{{count}} selected",
+    "batchDelete": "Delete selected",
+    "batchReset": "Reset selected",
+    "batchHide": "Hide selected",
+    "batchPin": "Pin selected"
   },
   "categoryCard": {
     "deleteTooltip": "Delete (undo possible)",
