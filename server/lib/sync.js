@@ -1,3 +1,4 @@
+import { mergeLists, mergeData, applyDeletions } from "../../src/shared/syncUtils.js";
 let syncRole = "client";
 let syncServerUrl = "";
 let syncInterval = 5;
@@ -123,3 +124,4 @@ export function setLlmToken(token) {
 export function setLlmModel(model) {
   llmModel = model || "gpt-3.5-turbo";
 }
+export { mergeLists, mergeData, applyDeletions };
