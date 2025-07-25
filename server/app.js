@@ -5,6 +5,7 @@ import os from "os";
 import { format } from "date-fns";
 import db from "./lib/db.js";
 import { loadTable, saveTable } from "./lib/table.js";
+import { notifyClients, registerClient } from "./lib/sse.js";
 import {
   initSync,
   startSyncTimer,
