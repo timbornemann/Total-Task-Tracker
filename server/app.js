@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import os from "os";
 import { format } from "date-fns";
 import db from "./lib/db.js";
+import { loadTable, saveTable } from "./lib/table.js";
 import {
   initSync,
   startSyncTimer,
@@ -39,12 +40,6 @@ function dateReviver(key, value) {
   return value;
 }
 
-function toJson(obj) {
-  return JSON.stringify(obj, (key, value) =>
-    value instanceof Date ? value.toISOString() : value,
-  );
-}
-
 function normalizeDateField(value) {
   if (value instanceof Date) {
     return format(value, "yyyy-MM-dd HH:mm");
@@ -67,58 +62,23 @@ function normalizeWorkDay(d) {
 }
 
 export function loadTasks() {
-  try {
-    return db
-      .prepare("SELECT data FROM tasks")
-      .all()
-      .map((row) => JSON.parse(row.data, dateReviver));
-  } catch {
-    return [];
-  }
+  return loadTable("tasks", dateReviver);
 }
 
 export function loadCategories() {
-  try {
-    return db
-      .prepare("SELECT data FROM categories")
-      .all()
-      .map((row) => JSON.parse(row.data, dateReviver));
-  } catch {
-    return [];
-  }
+  return loadTable("categories", dateReviver);
 }
 
 export function loadNotes() {
-  try {
-    return db
-      .prepare("SELECT data FROM notes")
-      .all()
-      .map((row) => JSON.parse(row.data, dateReviver));
-  } catch {
-    return [];
-  }
+  return loadTable("notes", dateReviver);
 }
 
 export function loadRecurring() {
-  try {
-    return db
-      .prepare("SELECT data FROM recurring")
-      .all()
-      .map((row) => JSON.parse(row.data, dateReviver));
-  } catch {
-    return [];
-  }
+  return loadTable("recurring", dateReviver);
 }
 
 export function loadHabits() {
-  try {
-    return db
-      .prepare("SELECT data FROM habits")
-      .all()
-      .map((row) => JSON.parse(row.data, dateReviver));
-  } catch {
-    return [];
-  }
+  return loadTable("habits", dateReviver);
 }
 
 export function loadDeletions() {
@@ -156,68 +116,23 @@ export function loadData() {
 }
 
 export function saveTasks(tasks) {
-  const tx = db.transaction(() => {
-    db.exec("DELETE FROM tasks");
-    for (const task of tasks || []) {
-      db.prepare("INSERT INTO tasks (id, data) VALUES (?, ?)").run(
-        task.id,
-        toJson(task),
-      );
-    }
-  });
-  tx();
+  saveTable("tasks", tasks);
 }
 
 export function saveCategories(categories) {
-  const tx = db.transaction(() => {
-    db.exec("DELETE FROM categories");
-    for (const cat of categories || []) {
-      db.prepare("INSERT INTO categories (id, data) VALUES (?, ?)").run(
-        cat.id,
-        toJson(cat),
-      );
-    }
-  });
-  tx();
+  saveTable("categories", categories);
 }
 
 export function saveNotes(notes) {
-  const tx = db.transaction(() => {
-    db.exec("DELETE FROM notes");
-    for (const note of notes || []) {
-      db.prepare("INSERT INTO notes (id, data) VALUES (?, ?)").run(
-        note.id,
-        toJson(note),
-      );
-    }
-  });
-  tx();
+  saveTable("notes", notes);
 }
 
 export function saveRecurring(list) {
-  const tx = db.transaction(() => {
-    db.exec("DELETE FROM recurring");
-    for (const item of list || []) {
-      db.prepare("INSERT INTO recurring (id, data) VALUES (?, ?)").run(
-        item.id,
-        toJson(item),
-      );
-    }
-  });
-  tx();
+  saveTable("recurring", list);
 }
 
 export function saveHabits(list) {
-  const tx = db.transaction(() => {
-    db.exec("DELETE FROM habits");
-    for (const item of list || []) {
-      db.prepare("INSERT INTO habits (id, data) VALUES (?, ?)").run(
-        item.id,
-        toJson(item),
-      );
-    }
-  });
-  tx();
+  saveTable("habits", list);
 }
 
 export function saveData(data) {
@@ -238,25 +153,11 @@ export function saveData(data) {
 }
 
 export function loadFlashcards() {
-  try {
-    return db
-      .prepare("SELECT data FROM flashcards")
-      .all()
-      .map((row) => JSON.parse(row.data, dateReviver));
-  } catch {
-    return [];
-  }
+  return loadTable("flashcards", dateReviver);
 }
 
 export function loadDecks() {
-  try {
-    return db
-      .prepare("SELECT data FROM decks")
-      .all()
-      .map((row) => JSON.parse(row.data, dateReviver));
-  } catch {
-    return [];
-  }
+  return loadTable("decks", dateReviver);
 }
 
 export function loadSettings() {
@@ -291,37 +192,15 @@ export function loadPomodoroSessions() {
 }
 
 export function loadTimers() {
-  try {
-    return db
-      .prepare("SELECT data FROM timers")
-      .all()
-      .map((row) => JSON.parse(row.data));
-  } catch {
-    return [];
-  }
+  return loadTable("timers", dateReviver);
 }
 
 export function loadTrips() {
-  try {
-    return db
-      .prepare("SELECT data FROM trips")
-      .all()
-      .map((row) => JSON.parse(row.data, dateReviver));
-  } catch {
-    return [];
-  }
+  return loadTable("trips", dateReviver);
 }
 
 export function loadWorkDays() {
-  try {
-    return db
-      .prepare("SELECT data FROM workdays")
-      .all()
-      .map((row) => JSON.parse(row.data, dateReviver))
-      .map((d) => normalizeWorkDay(d));
-  } catch {
-    return [];
-  }
+  return loadTable("workdays", dateReviver).map((d) => normalizeWorkDay(d));
 }
 
 export function savePomodoroSessions(sessions) {
@@ -337,138 +216,49 @@ export function savePomodoroSessions(sessions) {
 }
 
 export function saveTimers(list) {
-  const tx = db.transaction(() => {
-    db.exec("DELETE FROM timers");
-    for (const t of list || []) {
-      db.prepare("INSERT INTO timers (id, data) VALUES (?, ?)").run(
-        t.id,
-        toJson(t),
-      );
-    }
-  });
-  tx();
+  saveTable("timers", list);
 }
 
 export function saveTrips(list) {
-  const tx = db.transaction(() => {
-    db.exec("DELETE FROM trips");
-    for (const t of list || []) {
-      db.prepare("INSERT INTO trips (id, data) VALUES (?, ?)").run(
-        t.id,
-        toJson(t),
-      );
-    }
-  });
-  tx();
+  saveTable("trips", list);
 }
 
 export function loadItems() {
-  try {
-    return db
-      .prepare("SELECT data FROM inventory_items")
-      .all()
-      .map((row) => JSON.parse(row.data, dateReviver));
-  } catch {
-    return [];
-  }
+  return loadTable("inventory_items", dateReviver);
 }
 
 export function saveItems(list) {
-  const tx = db.transaction(() => {
-    db.exec("DELETE FROM inventory_items");
-    for (const item of list || []) {
-      db.prepare("INSERT INTO inventory_items (id, data) VALUES (?, ?)").run(
-        item.id,
-        toJson(item),
-      );
-    }
-  });
-  tx();
+  saveTable("inventory_items", list);
 }
 
 export function saveWorkDays(list) {
-  const tx = db.transaction(() => {
-    db.exec("DELETE FROM workdays");
-    for (const d of list || []) {
-      db.prepare("INSERT INTO workdays (id, data) VALUES (?, ?)").run(
-        d.id,
-        toJson(normalizeWorkDay(d)),
-      );
-    }
-  });
-  tx();
+  saveTable(
+    "workdays",
+    (list || []).map((d) => normalizeWorkDay(d)),
+  );
 }
 export function loadItemCategories() {
-  try {
-    return db
-      .prepare("SELECT data FROM inventory_categories")
-      .all()
-      .map((row) => JSON.parse(row.data));
-  } catch {
-    return [];
-  }
+  return loadTable("inventory_categories");
 }
 
 export function saveItemCategories(list) {
-  const tx = db.transaction(() => {
-    db.exec("DELETE FROM inventory_categories");
-    for (const c of list || []) {
-      db.prepare(
-        "INSERT INTO inventory_categories (id, data) VALUES (?, ?)",
-      ).run(c.id, toJson(c));
-    }
-  });
-  tx();
+  saveTable("inventory_categories", list);
 }
 
 export function loadItemTags() {
-  try {
-    return db
-      .prepare("SELECT data FROM inventory_tags")
-      .all()
-      .map((row) => JSON.parse(row.data));
-  } catch {
-    return [];
-  }
+  return loadTable("inventory_tags");
 }
 
 export function saveItemTags(list) {
-  const tx = db.transaction(() => {
-    db.exec("DELETE FROM inventory_tags");
-    for (const t of list || []) {
-      db.prepare("INSERT INTO inventory_tags (id, data) VALUES (?, ?)").run(
-        t.id,
-        toJson(t),
-      );
-    }
-  });
-  tx();
+  saveTable("inventory_tags", list);
 }
 
 export function saveFlashcards(cards) {
-  const tx = db.transaction(() => {
-    db.exec("DELETE FROM flashcards");
-    for (const card of cards || []) {
-      db.prepare("INSERT INTO flashcards (id, data) VALUES (?, ?)").run(
-        card.id,
-        toJson(card),
-      );
-    }
-  });
-  tx();
+  saveTable("flashcards", cards);
 }
 
 export function saveDecks(decks) {
-  const tx = db.transaction(() => {
-    db.exec("DELETE FROM decks");
-    for (const deck of decks || []) {
-      db.prepare("INSERT INTO decks (id, data) VALUES (?, ?)").run(
-        deck.id,
-        toJson(deck),
-      );
-    }
-  });
-  tx();
+  saveTable("decks", decks);
 }
 
 export function saveDeletions(list) {
