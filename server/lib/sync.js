@@ -1,3 +1,9 @@
+import {
+  mergeLists,
+  mergeData,
+  applyDeletions,
+} from "../../src/shared/syncUtils.ts";
+
 let syncRole = "client";
 let syncServerUrl = "";
 let syncInterval = 5;
@@ -49,7 +55,9 @@ async function performSync() {
     const post = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data, (k, v) => (v instanceof Date ? v.toISOString() : v)),
+      body: JSON.stringify(data, (k, v) =>
+        v instanceof Date ? v.toISOString() : v,
+      ),
     });
     if (!post.ok) throw new Error(`HTTP ${post.status}`);
     const res = await fetch(url);
@@ -69,7 +77,12 @@ async function performSync() {
 export function startSyncTimer() {
   if (syncTimer) clearInterval(syncTimer);
   syncTimer = null;
-  if (syncEnabled && syncRole === "client" && syncServerUrl && syncInterval > 0) {
+  if (
+    syncEnabled &&
+    syncRole === "client" &&
+    syncServerUrl &&
+    syncInterval > 0
+  ) {
     log("Sync timer started with interval", syncInterval, "minutes");
     performSync();
     syncTimer = setInterval(performSync, syncInterval * 60 * 1000);
