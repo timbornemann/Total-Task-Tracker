@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, type Request, type Response } from "express";
 
 export default function createSettingsRouter({
   loadSettings,
@@ -11,10 +11,21 @@ export default function createSettingsRouter({
   setLlmToken,
   setLlmModel,
   notifyClients,
+}: {
+  loadSettings: () => any;
+  saveSettings: (s: any) => void;
+  setSyncRole: (role: string) => void;
+  setSyncServerUrl: (url: string) => void;
+  setSyncInterval: (min: number) => void;
+  setSyncEnabled: (val: boolean) => void;
+  setLlmUrl: (url: string) => void;
+  setLlmToken: (token: string) => void;
+  setLlmModel: (model: string) => void;
+  notifyClients: () => void;
 }) {
   const router = Router();
 
-  router.get("/", (req, res) => {
+  router.get("/", (_req: Request, res: Response) => {
     res.json(loadSettings());
   });
 

@@ -1,37 +1,45 @@
 import { mergeLists, mergeData, applyDeletions } from "../../src/shared/syncUtils.js";
-let syncRole = "client";
+
+type Role = "client" | "server";
+
+let syncRole: Role = "client";
 let syncServerUrl = "";
 let syncInterval = 5;
 let syncEnabled = true;
 let llmUrl = "";
 let llmToken = "";
 let llmModel = "gpt-3.5-turbo";
-let syncTimer = null;
+let syncTimer: NodeJS.Timeout | null = null;
 let lastSyncTime = 0;
-let lastSyncError = null;
-export const syncLogs = [];
+let lastSyncError: string | null = null;
+export const syncLogs: { time: number; ip?: string; method: string }[] = [];
 
 let loadAllData = () => ({});
 let saveAllData = () => {};
 
-function log(...args) {
+function log(...args: unknown[]): void {
   console.log(new Date().toISOString(), ...args);
 }
 
-export function initSync({ loadAllData: l, saveAllData: s }) {
+interface SyncHandlers {
+  loadAllData: () => any;
+  saveAllData: (data: any) => void;
+}
+
+export function initSync({ loadAllData: l, saveAllData: s }: SyncHandlers): void {
   loadAllData = l;
   saveAllData = s;
 }
 
-export function getSyncRole() {
+export function getSyncRole(): Role {
   return syncRole;
 }
 
-export function getSyncStatus() {
+export function getSyncStatus(): { last: number; error: string | null; enabled: boolean } {
   return { last: lastSyncTime, error: lastSyncError, enabled: syncEnabled };
 }
 
-export function getLlmConfig() {
+export function getLlmConfig(): { llmUrl: string; llmToken: string; llmModel: string } {
   return { llmUrl, llmToken, llmModel };
 }
 
@@ -77,7 +85,7 @@ export function startSyncTimer() {
   }
 }
 
-export function setSyncRole(role) {
+export function setSyncRole(role: Role): void {
   const newRole = role === "server" ? "server" : "client";
   if (newRole === syncRole) return;
   syncRole = newRole;
@@ -85,7 +93,7 @@ export function setSyncRole(role) {
   startSyncTimer();
 }
 
-export function setSyncServerUrl(url) {
+export function setSyncServerUrl(url: string): void {
   if (url && !/^https?:\/\//i.test(url)) {
     url = "http://" + url;
   }
@@ -96,7 +104,7 @@ export function setSyncServerUrl(url) {
   startSyncTimer();
 }
 
-export function setSyncInterval(minutes) {
+export function setSyncInterval(minutes: number): void {
   const val = Number(minutes) || 0;
   if (val === syncInterval) return;
   syncInterval = val;
@@ -104,7 +112,7 @@ export function setSyncInterval(minutes) {
   startSyncTimer();
 }
 
-export function setSyncEnabled(val) {
+export function setSyncEnabled(val: boolean): void {
   const enabled = Boolean(val);
   if (enabled === syncEnabled) return;
   syncEnabled = enabled;
@@ -112,16 +120,16 @@ export function setSyncEnabled(val) {
   startSyncTimer();
 }
 
-export function setLlmUrl(url) {
+export function setLlmUrl(url: string): void {
   llmUrl = url || "";
   log("LLM URL set to", llmUrl || "(none)");
 }
 
-export function setLlmToken(token) {
+export function setLlmToken(token: string): void {
   llmToken = token || "";
 }
 
-export function setLlmModel(model) {
+export function setLlmModel(model: string): void {
   llmModel = model || "gpt-3.5-turbo";
 }
 export { mergeLists, mergeData, applyDeletions };

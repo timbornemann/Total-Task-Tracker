@@ -99,7 +99,7 @@ npm run dev
 
 
 # In the second terminal: start backend
-npm start
+npm run start:ts
 ```
 
 Then open `http://localhost:8081` in your browser.
@@ -119,6 +119,7 @@ If you want to deploy without a docker, you can build the application locally an
 
 ```bash
 npm run build
+npm run build:server
 npm start # starts the built app on port 3002
 ```
 

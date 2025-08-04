@@ -1,0 +1,17 @@
+{
+  "extends": "../tsconfig.node.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "./dist",
+    "rootDir": "./",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "strict": false,
+    "allowImportingTsExtensions": false,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true
+  },
+  "include": ["**/*.ts", "../src/types/**/*.ts", "../src/shared/**/*.ts"],
+  "exclude": ["dist"]
+}

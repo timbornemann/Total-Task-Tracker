@@ -4,18 +4,18 @@ function jsonReplacer(key, value) {
   return value instanceof Date ? value.toISOString() : value;
 }
 
-export function loadTable(name, reviver = null) {
+export function loadTable<T>(name: string, reviver: ((this: any, key: string, value: any) => any) | null = null): T[] {
   try {
     return db
       .prepare(`SELECT data FROM ${name}`)
       .all()
-      .map((row) => JSON.parse(row.data, reviver));
+      .map((row) => JSON.parse(row.data, reviver) as T);
   } catch {
-    return [];
+    return [] as T[];
   }
 }
 
-export function saveTable(name, items, replacer = jsonReplacer) {
+export function saveTable<T extends { id: string }>(name: string, items: T[], replacer: (this: any, key: string, value: any) => any = jsonReplacer): void {
   const tx = db.transaction(() => {
     db.exec(`DELETE FROM ${name}`);
     const insert = db.prepare(`INSERT INTO ${name} (id, data) VALUES (?, ?)`);

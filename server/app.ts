@@ -6,6 +6,22 @@ import { format } from "date-fns";
 import db from "./lib/db.js";
 import { loadTable, saveTable } from "./lib/table.js";
 import { notifyClients, registerClient } from "./lib/sse.js";
+import type {
+  Task,
+  Category,
+  Note,
+  Habit,
+  Flashcard,
+  Deck,
+  Deletion,
+  Timer,
+  Trip,
+  WorkDay,
+  InventoryItem,
+  ItemCategory,
+  ItemTag,
+  PomodoroSession,
+} from "../src/types";
 import {
   initSync,
   startSyncTimer,
@@ -63,27 +79,27 @@ function normalizeWorkDay(d) {
   };
 }
 
-export function loadTasks() {
-  return loadTable("tasks", dateReviver);
+export function loadTasks(): Task[] {
+  return loadTable<Task>("tasks", dateReviver);
 }
 
-export function loadCategories() {
-  return loadTable("categories", dateReviver);
+export function loadCategories(): Category[] {
+  return loadTable<Category>("categories", dateReviver);
 }
 
-export function loadNotes() {
-  return loadTable("notes", dateReviver);
+export function loadNotes(): Note[] {
+  return loadTable<Note>("notes", dateReviver);
 }
 
-export function loadRecurring() {
-  return loadTable("recurring", dateReviver);
+export function loadRecurring(): Task[] {
+  return loadTable<Task>("recurring", dateReviver);
 }
 
-export function loadHabits() {
-  return loadTable("habits", dateReviver);
+export function loadHabits(): Habit[] {
+  return loadTable<Habit>("habits", dateReviver);
 }
 
-export function loadDeletions() {
+export function loadDeletions(): Deletion[] {
   try {
     return db
       .prepare("SELECT type, id, deletedAt FROM deletions")
@@ -94,11 +110,11 @@ export function loadDeletions() {
         deletedAt: new Date(row.deletedAt),
       }));
   } catch {
-    return [];
+    return [] as Deletion[];
   }
 }
 
-export function loadData() {
+export function loadData(): any {
   const data = {
     tasks: loadTasks(),
     categories: loadCategories(),
@@ -117,27 +133,27 @@ export function loadData() {
   return applyDeletions(data);
 }
 
-export function saveTasks(tasks) {
-  saveTable("tasks", tasks);
+export function saveTasks(tasks: Task[]): void {
+  saveTable<Task>("tasks", tasks);
 }
 
-export function saveCategories(categories) {
-  saveTable("categories", categories);
+export function saveCategories(categories: Category[]): void {
+  saveTable<Category>("categories", categories);
 }
 
-export function saveNotes(notes) {
-  saveTable("notes", notes);
+export function saveNotes(notes: Note[]): void {
+  saveTable<Note>("notes", notes);
 }
 
-export function saveRecurring(list) {
-  saveTable("recurring", list);
+export function saveRecurring(list: Task[]): void {
+  saveTable<Task>("recurring", list);
 }
 
-export function saveHabits(list) {
-  saveTable("habits", list);
+export function saveHabits(list: Habit[]): void {
+  saveTable<Habit>("habits", list);
 }
 
-export function saveData(data) {
+export function saveData(data: any): void {
   const tx = db.transaction(() => {
     saveTasks(data.tasks || []);
     saveCategories(data.categories || []);
@@ -154,15 +170,15 @@ export function saveData(data) {
   tx();
 }
 
-export function loadFlashcards() {
-  return loadTable("flashcards", dateReviver);
+export function loadFlashcards(): Flashcard[] {
+  return loadTable<Flashcard>("flashcards", dateReviver);
 }
 
-export function loadDecks() {
-  return loadTable("decks", dateReviver);
+export function loadDecks(): Deck[] {
+  return loadTable<Deck>("decks", dateReviver);
 }
 
-export function loadSettings() {
+export function loadSettings(): Record<string, any> {
   try {
     const row = db
       .prepare("SELECT value FROM settings WHERE key = ?")
@@ -173,7 +189,7 @@ export function loadSettings() {
   }
 }
 
-export function saveSettings(settings) {
+export function saveSettings(settings: Record<string, any>): void {
   const value = JSON.stringify(settings, (key, value) =>
     value instanceof Date ? value.toISOString() : value,
   );
@@ -183,29 +199,29 @@ export function saveSettings(settings) {
   );
 }
 
-export function loadPomodoroSessions() {
+export function loadPomodoroSessions(): PomodoroSession[] {
   try {
     return db
       .prepare("SELECT start, end, breakEnd FROM pomodoro_sessions")
       .all();
   } catch {
-    return [];
+    return [] as PomodoroSession[];
   }
 }
 
-export function loadTimers() {
-  return loadTable("timers", dateReviver);
+export function loadTimers(): Timer[] {
+  return loadTable<Timer>("timers", dateReviver);
 }
 
-export function loadTrips() {
-  return loadTable("trips", dateReviver);
+export function loadTrips(): Trip[] {
+  return loadTable<Trip>("trips", dateReviver);
 }
 
-export function loadWorkDays() {
-  return loadTable("workdays", dateReviver).map((d) => normalizeWorkDay(d));
+export function loadWorkDays(): WorkDay[] {
+  return loadTable<WorkDay>("workdays", dateReviver).map((d) => normalizeWorkDay(d));
 }
 
-export function savePomodoroSessions(sessions) {
+export function savePomodoroSessions(sessions: PomodoroSession[]): void {
   const tx = db.transaction(() => {
     db.exec("DELETE FROM pomodoro_sessions");
     for (const s of sessions || []) {
@@ -217,53 +233,53 @@ export function savePomodoroSessions(sessions) {
   tx();
 }
 
-export function saveTimers(list) {
-  saveTable("timers", list);
+export function saveTimers(list: Timer[]): void {
+  saveTable<Timer>("timers", list);
 }
 
-export function saveTrips(list) {
-  saveTable("trips", list);
+export function saveTrips(list: Trip[]): void {
+  saveTable<Trip>("trips", list);
 }
 
-export function loadItems() {
-  return loadTable("inventory_items", dateReviver);
+export function loadItems(): InventoryItem[] {
+  return loadTable<InventoryItem>("inventory_items", dateReviver);
 }
 
-export function saveItems(list) {
-  saveTable("inventory_items", list);
+export function saveItems(list: InventoryItem[]): void {
+  saveTable<InventoryItem>("inventory_items", list);
 }
 
-export function saveWorkDays(list) {
+export function saveWorkDays(list: WorkDay[]): void {
   saveTable(
     "workdays",
     (list || []).map((d) => normalizeWorkDay(d)),
   );
 }
-export function loadItemCategories() {
-  return loadTable("inventory_categories");
+export function loadItemCategories(): ItemCategory[] {
+  return loadTable<ItemCategory>("inventory_categories");
 }
 
-export function saveItemCategories(list) {
-  saveTable("inventory_categories", list);
+export function saveItemCategories(list: ItemCategory[]): void {
+  saveTable<ItemCategory>("inventory_categories", list);
 }
 
-export function loadItemTags() {
-  return loadTable("inventory_tags");
+export function loadItemTags(): ItemTag[] {
+  return loadTable<ItemTag>("inventory_tags");
 }
 
-export function saveItemTags(list) {
-  saveTable("inventory_tags", list);
+export function saveItemTags(list: ItemTag[]): void {
+  saveTable<ItemTag>("inventory_tags", list);
 }
 
-export function saveFlashcards(cards) {
-  saveTable("flashcards", cards);
+export function saveFlashcards(cards: Flashcard[]): void {
+  saveTable<Flashcard>("flashcards", cards);
 }
 
-export function saveDecks(decks) {
-  saveTable("decks", decks);
+export function saveDecks(decks: Deck[]): void {
+  saveTable<Deck>("decks", decks);
 }
 
-export function saveDeletions(list) {
+export function saveDeletions(list: Deletion[]): void {
   const tx = db.transaction(() => {
     db.exec("DELETE FROM deletions");
     for (const d of list || []) {
@@ -275,7 +291,7 @@ export function saveDeletions(list) {
   tx();
 }
 
-export function loadAllData() {
+export function loadAllData(): any {
   const data = {
     tasks: loadTasks(),
     categories: loadCategories(),
@@ -297,7 +313,7 @@ export function loadAllData() {
   return applyDeletions(data);
 }
 
-export function saveAllData(data) {
+export function saveAllData(data: any): void {
   saveData(data);
   saveFlashcards(data.flashcards || []);
   saveDecks(data.decks || []);
@@ -494,7 +510,7 @@ app.use(
 );
 let activePort = 3002;
 const publicIp = process.env.SERVER_PUBLIC_IP || null;
-export function setActivePort(p) {
+export function setActivePort(p: number): void {
   activePort = p;
 }
 app.use(
