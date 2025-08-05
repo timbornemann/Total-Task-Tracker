@@ -1,6 +1,15 @@
 import { Router } from "express";
+import type { Note } from "../../src/types/index.js";
 
-export default function createNotesRouter({ loadNotes, saveNotes, notifyClients }) {
+export default function createNotesRouter({
+  loadNotes,
+  saveNotes,
+  notifyClients,
+}: {
+  loadNotes: () => Note[];
+  saveNotes: (notes: Note[]) => void;
+  notifyClients: () => void;
+}) {
   const router = Router();
 
   router.get("/", (req, res) => {
@@ -9,7 +18,7 @@ export default function createNotesRouter({ loadNotes, saveNotes, notifyClients 
 
   router.put("/", (req, res) => {
     try {
-      saveNotes(req.body || []);
+      saveNotes(req.body || ([] as Note[]));
       notifyClients();
       res.json({ status: "ok" });
     } catch {

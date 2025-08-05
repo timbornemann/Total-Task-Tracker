@@ -103,7 +103,7 @@ Im Entwicklungsmodus läuft die React-Anwendung mit Vite auf Port **8081**. Für
 npm run dev
 
 # In zweitem Terminal: Backend starten
-npm start
+npm run start:ts
 ```
 
 Rufe anschließend im Browser `http://localhost:8081` auf.
@@ -123,6 +123,7 @@ Möchtest du ohne Docker deployen, kannst du die Anwendung lokal bauen und den N
 
 ```bash
 npm run build
+npm run build:server
 npm start    # startet die gebaute App auf Port 3002
 ```
 

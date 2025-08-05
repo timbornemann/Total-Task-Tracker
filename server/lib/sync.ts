@@ -1,4 +1,11 @@
 import { mergeLists, mergeData, applyDeletions } from "../../src/shared/syncUtils.js";
+
+interface SyncLogEntry {
+  time: number;
+  ip: string | undefined;
+  method: string;
+}
+
 let syncRole = "client";
 let syncServerUrl = "";
 let syncInterval = 5;
@@ -6,13 +13,13 @@ let syncEnabled = true;
 let llmUrl = "";
 let llmToken = "";
 let llmModel = "gpt-3.5-turbo";
-let syncTimer = null;
+let syncTimer: NodeJS.Timeout | null = null;
 let lastSyncTime = 0;
-let lastSyncError = null;
-export const syncLogs = [];
+let lastSyncError: string | null = null;
+export const syncLogs: SyncLogEntry[] = [];
 
-let loadAllData = () => ({});
-let saveAllData = () => {};
+let loadAllData: () => any = () => ({});
+let saveAllData: (data: any) => void = () => {};
 
 function log(...args) {
   console.log(new Date().toISOString(), ...args);
