@@ -44,17 +44,25 @@ export function mergeLists<T>(
   compare: string | null = "updatedAt"
 ): T[] {
   const map = new Map<string | undefined, T>();
-  for (const c of curr) map.set((c as unknown as Identified).id, c);
-  for (const i of inc || []) {
-    const id = (i as unknown as Identified).id;
+  for (const c of curr) map.set((c as Identified).id, c);
+  for (const i of inc) {
+    const id = (i as Identified).id;
     if (id !== undefined && map.has(id)) {
       const ex = map.get(id)!;
-      if (compare && (ex as any)[compare] && (i as any)[compare]) {
-        if (
-          new Date((i as any)[compare]) > new Date((ex as any)[compare])
-        ) {
-          map.set(id, i);
-        }
+      const exVal = compare
+        ? (ex as Record<string, unknown>)[compare]
+        : undefined;
+      const incVal = compare
+        ? (i as Record<string, unknown>)[compare]
+        : undefined;
+      if (
+        compare &&
+        exVal !== undefined &&
+        incVal !== undefined &&
+        new Date(incVal as string | number | Date) >
+          new Date(exVal as string | number | Date)
+      ) {
+        map.set(id, i);
       }
     } else {
       map.set(id, i);
@@ -95,13 +103,19 @@ export function applyDeletions(data: SyncData): SyncData {
     const time = new Date(d.deletedAt);
     if (!curr || time > curr) maps[d.type].set(d.id, time);
   }
-  const shouldKeep = (type: string, item: any) => {
+  const shouldKeep = <T>(type: string, item: T) => {
     const m = maps[type];
     if (!m) return true;
-    const deletedAt = m.get(item.id);
+    const id = (item as Record<string, unknown>).id as string | undefined;
+    if (!id) return true;
+    const deletedAt = m.get(id);
     if (!deletedAt) return true;
-    if (!item.updatedAt) return false;
-    return new Date(item.updatedAt) > deletedAt;
+    const updatedAt = (item as Record<string, unknown>).updatedAt as
+      | string
+      | Date
+      | undefined;
+    if (!updatedAt) return false;
+    return new Date(updatedAt) > deletedAt;
   };
   data.tasks = (data.tasks || []).filter((t) => shouldKeep("task", t));
   data.categories = (data.categories || []).filter((c) => shouldKeep("category", c));
