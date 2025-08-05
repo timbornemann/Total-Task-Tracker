@@ -48,6 +48,39 @@ function log(...args) {
   console.log(new Date().toISOString(), ...args);
 }
 
+export interface Settings {
+  syncRole?: string;
+  syncServerUrl?: string;
+  syncInterval?: number;
+  syncEnabled?: boolean;
+  llmUrl?: string;
+  llmToken?: string;
+  llmModel?: string;
+  [key: string]: unknown;
+}
+
+export interface Data {
+  tasks: Task[];
+  categories: Category[];
+  notes: Note[];
+  recurring: Task[];
+  habits: Habit[];
+  pomodoroSessions: PomodoroSession[];
+  timers: Timer[];
+  trips: Trip[];
+  workDays: WorkDay[];
+  items: InventoryItem[];
+  itemCategories: ItemCategory[];
+  itemTags: ItemTag[];
+  deletions: Deletion[];
+}
+
+export interface AllData extends Data {
+  flashcards: Flashcard[];
+  decks: Deck[];
+  settings: Settings;
+}
+
 
 
 function dateReviver(key: string, value: unknown): unknown {
@@ -114,22 +147,8 @@ export function loadDeletions(): Deletion[] {
   }
 }
 
-export function loadData(): {
-  tasks: Task[];
-  categories: Category[];
-  notes: Note[];
-  recurring: Task[];
-  habits: Habit[];
-  pomodoroSessions: PomodoroSession[];
-  timers: Timer[];
-  trips: Trip[];
-  workDays: WorkDay[];
-  items: InventoryItem[];
-  itemCategories: ItemCategory[];
-  itemTags: ItemTag[];
-  deletions: Deletion[];
-} {
-  const data = {
+export function loadData(): Data {
+  const data: Data = {
     tasks: loadTasks(),
     categories: loadCategories(),
     notes: loadNotes(),
@@ -144,7 +163,7 @@ export function loadData(): {
     itemTags: loadItemTags(),
     deletions: loadDeletions(),
   };
-  return applyDeletions(data as any) as any;
+  return applyDeletions(data as unknown) as Data;
 }
 
 export function saveTasks(tasks: Task[]): void {
@@ -204,7 +223,7 @@ export function loadDecks(): Deck[] {
   return loadTable<Deck>("decks", dateReviver);
 }
 
-export function loadSettings(): Record<string, unknown> {
+export function loadSettings(): Settings {
   try {
     const row = db
       .prepare("SELECT value FROM settings WHERE key = ?")
@@ -215,7 +234,7 @@ export function loadSettings(): Record<string, unknown> {
   }
 }
 
-export function saveSettings(settings: Record<string, unknown>): void {
+export function saveSettings(settings: Settings): void {
   const value = JSON.stringify(settings, (key, value) =>
     value instanceof Date ? value.toISOString() : value,
   );
@@ -317,25 +336,8 @@ export function saveDeletions(list: Deletion[]): void {
   tx();
 }
 
-export function loadAllData(): {
-  tasks: Task[];
-  categories: Category[];
-  notes: Note[];
-  recurring: Task[];
-  habits: Habit[];
-  flashcards: Flashcard[];
-  decks: Deck[];
-  pomodoroSessions: PomodoroSession[];
-  timers: Timer[];
-  trips: Trip[];
-  workDays: WorkDay[];
-  items: InventoryItem[];
-  itemCategories: ItemCategory[];
-  itemTags: ItemTag[];
-  settings: Record<string, unknown>;
-  deletions: Deletion[];
-} {
-  const data = {
+export function loadAllData(): AllData {
+  const data: AllData = {
     tasks: loadTasks(),
     categories: loadCategories(),
     notes: loadNotes(),
@@ -353,27 +355,12 @@ export function loadAllData(): {
     settings: loadSettings(),
     deletions: loadDeletions(),
   };
-  return applyDeletions(data as any) as any;
+  return applyDeletions(data as unknown) as AllData;
 }
 
-export function saveAllData(data: {
-  tasks?: Task[];
-  categories?: Category[];
-  notes?: Note[];
-  recurring?: Task[];
-  habits?: Habit[];
-  flashcards?: Flashcard[];
-  decks?: Deck[];
-  pomodoroSessions?: PomodoroSession[];
-  timers?: Timer[];
-  trips?: Trip[];
-  workDays?: WorkDay[];
-  items?: InventoryItem[];
-  itemCategories?: ItemCategory[];
-  itemTags?: ItemTag[];
-  settings?: Record<string, unknown>;
-  deletions?: Deletion[];
-}): void {
+export function saveAllData(
+  data: Partial<AllData> & { settings?: Settings },
+): void {
   saveData(data);
   saveFlashcards(data.flashcards || []);
   saveDecks(data.decks || []);
@@ -389,26 +376,26 @@ export function saveAllData(data: {
   if (data.deletions) saveDeletions(data.deletions);
   if (data.settings) {
     saveSettings(data.settings);
-    if ((data.settings as any).syncRole !== undefined) {
-      setSyncRole((data.settings as any).syncRole);
+    if (data.settings.syncRole !== undefined) {
+      setSyncRole(data.settings.syncRole);
     }
-    if ((data.settings as any).syncServerUrl !== undefined) {
-      setSyncServerUrl((data.settings as any).syncServerUrl);
+    if (data.settings.syncServerUrl !== undefined) {
+      setSyncServerUrl(data.settings.syncServerUrl);
     }
-    if ((data.settings as any).syncInterval !== undefined) {
-      setSyncInterval((data.settings as any).syncInterval);
+    if (data.settings.syncInterval !== undefined) {
+      setSyncInterval(data.settings.syncInterval);
     }
-    if ((data.settings as any).syncEnabled !== undefined) {
-      setSyncEnabled((data.settings as any).syncEnabled);
+    if (data.settings.syncEnabled !== undefined) {
+      setSyncEnabled(data.settings.syncEnabled);
     }
-    if ((data.settings as any).llmUrl !== undefined) {
-      setLlmUrl((data.settings as any).llmUrl);
+    if (data.settings.llmUrl !== undefined) {
+      setLlmUrl(data.settings.llmUrl);
     }
-    if ((data.settings as any).llmToken !== undefined) {
-      setLlmToken((data.settings as any).llmToken);
+    if (data.settings.llmToken !== undefined) {
+      setLlmToken(data.settings.llmToken);
     }
-    if ((data.settings as any).llmModel !== undefined) {
-      setLlmModel((data.settings as any).llmModel);
+    if (data.settings.llmModel !== undefined) {
+      setLlmModel(data.settings.llmModel);
     }
   }
   notifyClients();

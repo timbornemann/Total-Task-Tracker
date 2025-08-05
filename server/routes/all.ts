@@ -31,7 +31,7 @@ interface AllData {
   items: InventoryItem[];
   itemCategories: ItemCategory[];
   itemTags: ItemTag[];
-  settings?: Record<string, any>;
+  settings?: Record<string, unknown>;
   deletions: Deletion[];
 }
 

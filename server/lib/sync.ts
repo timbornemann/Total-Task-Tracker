@@ -1,4 +1,9 @@
-import { mergeLists, mergeData, applyDeletions } from "../../src/shared/syncUtils.js";
+import {
+  mergeLists,
+  mergeData,
+  applyDeletions as applyDel,
+} from "../../src/shared/syncUtils.js";
+import type { AllData, Settings } from "../app.js";
 
 interface SyncLogEntry {
   time: number;
@@ -18,14 +23,20 @@ let lastSyncTime = 0;
 let lastSyncError: string | null = null;
 export const syncLogs: SyncLogEntry[] = [];
 
-let loadAllData: () => any = () => ({});
-let saveAllData: (data: any) => void = () => {};
+let loadAllData: () => AllData = () => ({} as AllData);
+let saveAllData: (data: Partial<AllData> & { settings?: Settings }) => void = () => {};
 
 function log(...args) {
   console.log(new Date().toISOString(), ...args);
 }
 
-export function initSync({ loadAllData: l, saveAllData: s }) {
+export function initSync({
+  loadAllData: l,
+  saveAllData: s,
+}: {
+  loadAllData: () => AllData;
+  saveAllData: (data: Partial<AllData> & { settings?: Settings }) => void;
+}) {
   loadAllData = l;
   saveAllData = s;
 }
@@ -131,4 +142,8 @@ export function setLlmToken(token) {
 export function setLlmModel(model) {
   llmModel = model || "gpt-3.5-turbo";
 }
-export { mergeLists, mergeData, applyDeletions };
+export { mergeLists, mergeData };
+
+export function applyDeletions<T>(data: T): T {
+  return (applyDel as (d: unknown) => unknown)(data) as T;
+}

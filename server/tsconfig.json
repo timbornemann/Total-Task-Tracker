@@ -16,8 +16,7 @@
   "include": [
     "**/*.ts",
     "**/*.d.ts",
-    "../src/types/**/*.ts",
-    "../src/shared/syncUtils.ts"
+    "../src/types/**/*.ts"
   ],
   "exclude": ["dist"]
 }

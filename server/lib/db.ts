@@ -84,6 +84,8 @@ db.exec(`
 `);
 try {
   db.prepare("ALTER TABLE pomodoro_sessions ADD COLUMN breakEnd INTEGER").run();
-} catch {}
+} catch (_) {
+  /* ignore */
+}
 
 export default db;
