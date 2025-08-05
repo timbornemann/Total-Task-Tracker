@@ -14,8 +14,8 @@ let lastSyncTime = 0;
 let lastSyncError: string | null = null;
 export const syncLogs: { time: number; ip?: string; method: string }[] = [];
 
-let loadAllData = () => ({});
-let saveAllData = () => {};
+let loadAllData: () => any = () => ({});
+let saveAllData: (data: any) => void = () => {};
 
 function log(...args: unknown[]): void {
   console.log(new Date().toISOString(), ...args);

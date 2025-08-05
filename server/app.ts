@@ -115,7 +115,7 @@ export function loadDeletions(): Deletion[] {
 }
 
 export function loadData(): any {
-  const data = {
+  const data: any = {
     tasks: loadTasks(),
     categories: loadCategories(),
     notes: loadNotes(),
@@ -130,7 +130,7 @@ export function loadData(): any {
     itemTags: loadItemTags(),
     deletions: loadDeletions(),
   };
-  return applyDeletions(data);
+  return applyDeletions(data as any);
 }
 
 export function saveTasks(tasks: Task[]): void {
@@ -292,7 +292,7 @@ export function saveDeletions(list: Deletion[]): void {
 }
 
 export function loadAllData(): any {
-  const data = {
+  const data: any = {
     tasks: loadTasks(),
     categories: loadCategories(),
     notes: loadNotes(),
@@ -310,7 +310,7 @@ export function loadAllData(): any {
     settings: loadSettings(),
     deletions: loadDeletions(),
   };
-  return applyDeletions(data);
+  return applyDeletions(data as any);
 }
 
 export function saveAllData(data: any): void {

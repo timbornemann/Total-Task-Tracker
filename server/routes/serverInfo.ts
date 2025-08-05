@@ -1,14 +1,25 @@
 import { Router } from "express";
+import type { NetworkInterfaceInfo } from "os";
 
-export default function createServerInfoRouter({ os, activePort, publicIp }) {
+interface ServerInfoDeps {
+  os: { networkInterfaces: () => NodeJS.Dict<NetworkInterfaceInfo[]> };
+  activePort: () => number;
+  publicIp: string | null;
+}
+
+export default function createServerInfoRouter({
+  os,
+  activePort,
+  publicIp,
+}: ServerInfoDeps) {
   const router = Router();
 
   router.get("/", (req, res) => {
-    const ips = [];
+    const ips: string[] = [];
     const ifaces = os.networkInterfaces();
-    let wifiIp = null;
+    let wifiIp: string | null = null;
     Object.entries(ifaces).forEach(([name, list]) => {
-      for (const iface of list || []) {
+      for (const iface of (list ?? []) as NetworkInterfaceInfo[]) {
         if (iface.family === "IPv4" && !iface.internal) {
           ips.push(iface.address);
           if (!wifiIp && /^(wl|wlan|wi-?fi)/i.test(name)) {
