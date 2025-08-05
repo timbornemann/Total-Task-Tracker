@@ -1,6 +1,15 @@
 import { Router } from "express";
+import type { Deck } from "../../src/types/index.js";
 
-export default function createDecksRouter({ loadDecks, saveDecks, notifyClients }) {
+export default function createDecksRouter({
+  loadDecks,
+  saveDecks,
+  notifyClients,
+}: {
+  loadDecks: () => Deck[];
+  saveDecks: (decks: Deck[]) => void;
+  notifyClients: () => void;
+}) {
   const router = Router();
 
   router.get("/", (req, res) => {
@@ -9,7 +18,7 @@ export default function createDecksRouter({ loadDecks, saveDecks, notifyClients 
 
   router.put("/", (req, res) => {
     try {
-      saveDecks(req.body || []);
+      saveDecks(req.body || ([] as Deck[]));
       notifyClients();
       res.json({ status: "ok" });
     } catch {

@@ -1,6 +1,8 @@
-const clients = [];
+import type { Request, Response } from "express";
 
-export function registerClient(req, res) {
+const clients: Response[] = [];
+
+export function registerClient(req: Request, res: Response): void {
   clients.push(res);
   req.on("close", () => {
     const idx = clients.indexOf(res);
@@ -8,7 +10,7 @@ export function registerClient(req, res) {
   });
 }
 
-export function notifyClients() {
+export function notifyClients(): void {
   const msg = "data: update\n\n";
   clients.forEach((res) => res.write(msg));
 }

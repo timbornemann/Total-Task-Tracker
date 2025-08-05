@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import Database from "better-sqlite3";
+import type { Database as DatabaseType } from "better-sqlite3";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -10,7 +11,7 @@ const DATA_DIR = path.join(__dirname, "..", "data");
 const DB_FILE = path.join(DATA_DIR, "data.db");
 
 fs.mkdirSync(DATA_DIR, { recursive: true });
-const db = new Database(DB_FILE);
+const db: DatabaseType = new Database(DB_FILE);
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS tasks (
@@ -83,6 +84,8 @@ db.exec(`
 `);
 try {
   db.prepare("ALTER TABLE pomodoro_sessions ADD COLUMN breakEnd INTEGER").run();
-} catch {}
+} catch (_) {
+  /* ignore */
+}
 
 export default db;
