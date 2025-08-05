@@ -1,44 +1,77 @@
-export interface AllData {
-  tasks: { id: string; updatedAt?: Date }[];
-  categories: { id: string; updatedAt?: Date }[];
-  notes: { id: string; updatedAt?: Date }[];
-  recurring: { id: string; updatedAt?: Date }[];
-  habits: { id: string; updatedAt?: Date }[];
-  flashcards: { id: string; updatedAt?: Date }[];
-  decks: { id: string; updatedAt?: Date }[];
-  pomodoroSessions: { id: string; updatedAt?: Date }[];
-  timers: { id: string; updatedAt?: Date }[];
-  trips: { id: string; updatedAt?: Date }[];
-  workDays: { id: string; updatedAt?: Date }[];
-  items: { id: string; updatedAt?: Date }[];
-  itemCategories: { id: string; updatedAt?: Date }[];
-  itemTags: { id: string; updatedAt?: Date }[];
-  deletions: { id: string; type: string; deletedAt: Date }[];
+import type {
+  Task,
+  Category,
+  Note,
+  Flashcard,
+  Habit,
+  PomodoroSession,
+  Timer,
+  Trip,
+  WorkDay,
+  InventoryItem,
+  ItemCategory,
+  ItemTag,
+  Deck,
+  Deletion,
+} from "../types/index.js";
+
+interface Identified {
+  id?: string;
 }
 
-export function mergeLists<T extends { id: string; [key: string]: unknown }>(
+export interface SyncData {
+  tasks?: Task[];
+  categories?: Category[];
+  notes?: Note[];
+  recurring?: Task[];
+  habits?: Habit[];
+  flashcards?: Flashcard[];
+  decks?: Deck[];
+  pomodoroSessions?: PomodoroSession[];
+  timers?: Timer[];
+  trips?: Trip[];
+  workDays?: WorkDay[];
+  items?: InventoryItem[];
+  itemCategories?: ItemCategory[];
+  itemTags?: ItemTag[];
+  deletions?: Deletion[];
+  [key: string]: unknown;
+}
+
+export function mergeLists<T>(
   curr: T[] = [],
   inc: T[] = [],
-  compare: string | null = "updatedAt",
+  compare: string | null = "updatedAt"
 ): T[] {
-  const map = new Map<string, T>();
-  for (const c of curr) map.set(c.id, c);
-  for (const i of inc || []) {
-    if (map.has(i.id)) {
-      const ex = map.get(i.id)!;
-      if (compare && ex[compare] && i[compare]) {
-        if (new Date(i[compare] as string) > new Date(ex[compare] as string)) {
-          map.set(i.id, i);
-        }
+  const map = new Map<string | undefined, T>();
+  for (const c of curr) map.set((c as Identified).id, c);
+  for (const i of inc) {
+    const id = (i as Identified).id;
+    if (id !== undefined && map.has(id)) {
+      const ex = map.get(id)!;
+      const exVal = compare
+        ? (ex as Record<string, unknown>)[compare]
+        : undefined;
+      const incVal = compare
+        ? (i as Record<string, unknown>)[compare]
+        : undefined;
+      if (
+        compare &&
+        exVal !== undefined &&
+        incVal !== undefined &&
+        new Date(incVal as string | number | Date) >
+          new Date(exVal as string | number | Date)
+      ) {
+        map.set(id, i);
       }
     } else {
-      map.set(i.id, i);
+      map.set(id, i);
     }
   }
   return Array.from(map.values());
 }
 
-export function mergeData(curr: AllData, inc: AllData): AllData {
+export function mergeData(curr: SyncData, inc: SyncData): SyncData {
   return {
     tasks: mergeLists(curr.tasks, inc.tasks),
     categories: mergeLists(curr.categories, inc.categories),
@@ -47,7 +80,11 @@ export function mergeData(curr: AllData, inc: AllData): AllData {
     habits: mergeLists(curr.habits, inc.habits),
     flashcards: mergeLists(curr.flashcards, inc.flashcards, null),
     decks: mergeLists(curr.decks, inc.decks, null),
-    pomodoroSessions: mergeLists(curr.pomodoroSessions, inc.pomodoroSessions, null),
+    pomodoroSessions: mergeLists(
+      curr.pomodoroSessions,
+      inc.pomodoroSessions,
+      null
+    ),
     timers: mergeLists(curr.timers, inc.timers, null),
     trips: mergeLists(curr.trips, inc.trips, "updatedAt"),
     workDays: mergeLists(curr.workDays, inc.workDays, "updatedAt"),
@@ -58,46 +95,46 @@ export function mergeData(curr: AllData, inc: AllData): AllData {
   };
 }
 
-export function applyDeletions(data: AllData): AllData {
+export function applyDeletions(data: SyncData): SyncData {
   const maps: Record<string, Map<string, Date>> = {};
   for (const d of data.deletions || []) {
-    maps[d.type] = maps[d.type] || new Map<string, Date>();
+    maps[d.type] = maps[d.type] || new Map();
     const curr = maps[d.type].get(d.id);
     const time = new Date(d.deletedAt);
     if (!curr || time > curr) maps[d.type].set(d.id, time);
   }
-  const shouldKeep = (type: string, item: { id: string; updatedAt?: Date }) => {
+  const shouldKeep = <T>(type: string, item: T) => {
     const m = maps[type];
     if (!m) return true;
-    const deletedAt = m.get(item.id);
+    const id = (item as Record<string, unknown>).id as string | undefined;
+    if (!id) return true;
+    const deletedAt = m.get(id);
     if (!deletedAt) return true;
-    if (!item.updatedAt) return false;
-    return new Date(item.updatedAt) > deletedAt;
+    const updatedAt = (item as Record<string, unknown>).updatedAt as
+      | string
+      | Date
+      | undefined;
+    if (!updatedAt) return false;
+    return new Date(updatedAt) > deletedAt;
   };
   data.tasks = (data.tasks || []).filter((t) => shouldKeep("task", t));
-  data.categories = (data.categories || []).filter((c) =>
-    shouldKeep("category", c),
-  );
+  data.categories = (data.categories || []).filter((c) => shouldKeep("category", c));
   data.notes = (data.notes || []).filter((n) => shouldKeep("note", n));
-  data.recurring = (data.recurring || []).filter((r) =>
-    shouldKeep("recurring", r),
-  );
+  data.recurring = (data.recurring || []).filter((r) => shouldKeep("recurring", r));
   data.habits = (data.habits || []).filter((h) => shouldKeep("habit", h));
-  data.flashcards = (data.flashcards || []).filter((f) =>
-    shouldKeep("flashcard", f),
-  );
+  data.flashcards = (data.flashcards || []).filter((f) => shouldKeep("flashcard", f));
   data.decks = (data.decks || []).filter((d) => shouldKeep("deck", d));
   data.trips = (data.trips || []).filter((t) => shouldKeep("trip", t));
   data.workDays = (data.workDays || []).filter((d) => shouldKeep("workday", d));
   data.items = (data.items || []).filter((i) => shouldKeep("inventoryItem", i));
   data.itemCategories = (data.itemCategories || []).filter((c) =>
-    shouldKeep("inventoryCategory", c),
+    shouldKeep("inventoryCategory", c)
   );
   data.itemTags = (data.itemTags || []).filter((t) =>
-    shouldKeep("inventoryTag", t),
+    shouldKeep("inventoryTag", t)
   );
   data.pomodoroSessions = (data.pomodoroSessions || []).filter((s) =>
-    shouldKeep("pomodoro", s),
+    shouldKeep("pomodoro", s)
   );
   data.timers = (data.timers || []).filter((t) => shouldKeep("timer", t));
   return data;
