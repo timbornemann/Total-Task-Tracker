@@ -20,7 +20,6 @@ import type {
   Deletion,
 } from "../src/types/index.js";
 import db from "./lib/db.js";
-import { loadTable, saveTable } from "./lib/table.js";
 import { notifyClients, registerClient } from "./lib/sse.js";
 import {
   initSync,
@@ -113,23 +112,185 @@ function normalizeWorkDay(d: WorkDay): WorkDay {
 }
 
 export function loadTasks(): Task[] {
-  return loadTable<Task>("tasks", dateReviver);
+  try {
+    const rows = db.prepare("SELECT * FROM tasks").all();
+    const byId: Record<string, Task & { subtasks: Task[] }> = {};
+    for (const r of rows) {
+      byId[r.id] = {
+        id: r.id,
+        title: r.title || "",
+        description: r.description || "",
+        priority: r.priority || "low",
+        color: typeof r.color === "number" ? r.color : 0,
+        completed: !!r.completed,
+        status: r.status || "todo",
+        categoryId: r.categoryId || "default",
+        parentId: r.parentId || undefined,
+        subtasks: [],
+        createdAt: r.createdAt ? new Date(r.createdAt) : new Date(),
+        updatedAt: r.updatedAt ? new Date(r.updatedAt) : new Date(),
+        dueDate: r.dueDate ? new Date(r.dueDate) : undefined,
+        isRecurring: !!r.isRecurring,
+        recurrencePattern: r.recurrencePattern || undefined,
+        lastCompleted: r.lastCompleted ? new Date(r.lastCompleted) : undefined,
+        nextDue: r.nextDue ? new Date(r.nextDue) : undefined,
+        dueOption: r.dueOption || undefined,
+        dueAfterDays: r.dueAfterDays ?? undefined,
+        startOption: r.startOption || undefined,
+        startWeekday: r.startWeekday ?? undefined,
+        startDate: r.startDate ? new Date(r.startDate) : undefined,
+        startTime: r.startTime || undefined,
+        endTime: r.endTime || undefined,
+        order: r.orderIndex ?? 0,
+        pinned: !!r.pinned,
+        recurringId: r.recurringId || undefined,
+        template: !!r.template,
+        titleTemplate: r.titleTemplate || undefined,
+        customIntervalDays: r.customIntervalDays ?? undefined,
+        visible: r.visible === 0 ? false : true,
+      };
+    }
+    const roots: Task[] = [];
+    for (const r of Object.values(byId)) {
+      if (r.parentId && byId[r.parentId]) {
+        byId[r.parentId].subtasks.push(r);
+      } else {
+        roots.push(r);
+      }
+    }
+    const sortTasks = (list: Task[]) => {
+      list.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+      for (const t of list) sortTasks(t.subtasks);
+    };
+    sortTasks(roots);
+    return roots;
+  } catch {
+    return [];
+  }
 }
 
 export function loadCategories(): Category[] {
-  return loadTable<Category>("categories", dateReviver);
+  try {
+    const rows = db.prepare("SELECT * FROM categories").all();
+    return rows.map((r) => ({
+      id: r.id,
+      name: r.name || "",
+      description: r.description || "",
+      color: typeof r.color === "number" ? r.color : 0,
+      createdAt: r.createdAt ? new Date(r.createdAt) : new Date(),
+      updatedAt: r.updatedAt ? new Date(r.updatedAt) : new Date(),
+      order: r.orderIndex ?? 0,
+      pinned: !!r.pinned,
+    }));
+  } catch {
+    return [];
+  }
 }
 
 export function loadNotes(): Note[] {
-  return loadTable<Note>("notes", dateReviver);
+  try {
+    const rows = db.prepare("SELECT * FROM notes").all();
+    return rows.map((r) => ({
+      id: r.id,
+      title: r.title || "",
+      text: r.text || "",
+      color: typeof r.color === "number" ? r.color : 0,
+      createdAt: r.createdAt ? new Date(r.createdAt) : new Date(),
+      updatedAt: r.updatedAt ? new Date(r.updatedAt) : new Date(),
+      order: r.orderIndex ?? 0,
+      pinned: !!r.pinned,
+    }));
+  } catch {
+    return [];
+  }
 }
 
 export function loadRecurring(): Task[] {
-  return loadTable<Task>("recurring", dateReviver);
+  try {
+    const rows = db.prepare("SELECT * FROM recurring").all();
+    const byId: Record<string, Task & { subtasks: Task[] }> = {};
+    for (const r of rows) {
+      byId[r.id] = {
+        id: r.id,
+        title: r.title || "",
+        description: r.description || "",
+        priority: r.priority || "low",
+        color: typeof r.color === "number" ? r.color : 0,
+        completed: !!r.completed,
+        status: r.status || "todo",
+        categoryId: r.categoryId || "default",
+        parentId: r.parentId || undefined,
+        subtasks: [],
+        createdAt: r.createdAt ? new Date(r.createdAt) : new Date(),
+        updatedAt: r.updatedAt ? new Date(r.updatedAt) : new Date(),
+        dueDate: r.dueDate ? new Date(r.dueDate) : undefined,
+        isRecurring: !!r.isRecurring,
+        recurrencePattern: r.recurrencePattern || undefined,
+        lastCompleted: r.lastCompleted ? new Date(r.lastCompleted) : undefined,
+        nextDue: r.nextDue ? new Date(r.nextDue) : undefined,
+        dueOption: r.dueOption || undefined,
+        dueAfterDays: r.dueAfterDays ?? undefined,
+        startOption: r.startOption || undefined,
+        startWeekday: r.startWeekday ?? undefined,
+        startDate: r.startDate ? new Date(r.startDate) : undefined,
+        startTime: r.startTime || undefined,
+        endTime: r.endTime || undefined,
+        order: r.orderIndex ?? 0,
+        pinned: !!r.pinned,
+        recurringId: r.recurringId || undefined,
+        template: !!r.template,
+        titleTemplate: r.titleTemplate || undefined,
+        customIntervalDays: r.customIntervalDays ?? undefined,
+        visible: r.visible === 0 ? false : true,
+      };
+    }
+    const roots: Task[] = [];
+    for (const r of Object.values(byId)) {
+      if (r.parentId && byId[r.parentId]) {
+        byId[r.parentId].subtasks.push(r);
+      } else {
+        roots.push(r);
+      }
+    }
+    const sortTasks = (list: Task[]) => {
+      list.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+      for (const t of list) sortTasks(t.subtasks);
+    };
+    sortTasks(roots);
+    return roots;
+  } catch {
+    return [];
+  }
 }
 
 export function loadHabits(): Habit[] {
-  return loadTable<Habit>("habits", dateReviver);
+  try {
+    const habits = db.prepare("SELECT * FROM habits").all();
+    const completions = db
+      .prepare("SELECT habitId, date FROM habit_completions")
+      .all();
+    const map: Record<string, string[]> = {};
+    for (const c of completions) {
+      if (!map[c.habitId]) map[c.habitId] = [];
+      map[c.habitId].push(c.date);
+    }
+    return habits.map((h) => ({
+      id: h.id,
+      title: h.title || "",
+      color: typeof h.color === "number" ? h.color : 0,
+      recurrencePattern: h.recurrencePattern || undefined,
+      customIntervalDays: h.customIntervalDays ?? undefined,
+      startWeekday: h.startWeekday ?? undefined,
+      startDate: h.startDate ? new Date(h.startDate) : undefined,
+      createdAt: h.createdAt ? new Date(h.createdAt) : new Date(),
+      updatedAt: h.updatedAt ? new Date(h.updatedAt) : new Date(),
+      order: h.orderIndex ?? 0,
+      pinned: !!h.pinned,
+      completions: map[h.id] || [],
+    }));
+  } catch {
+    return [];
+  }
 }
 
 export function loadDeletions(): Deletion[] {
@@ -167,23 +328,198 @@ export function loadData(): Data {
 }
 
 export function saveTasks(tasks: Task[]): void {
-  saveTable("tasks", tasks);
+  const tx = db.transaction(() => {
+    db.exec("DELETE FROM tasks");
+    const insert = db.prepare(
+      `INSERT INTO tasks (
+        id, title, description, priority, color, completed, status, categoryId, parentId,
+        createdAt, updatedAt, dueDate, isRecurring, recurrencePattern, lastCompleted, nextDue,
+        dueOption, dueAfterDays, startOption, startWeekday, startDate, startTime, endTime,
+        orderIndex, pinned, recurringId, template, titleTemplate, customIntervalDays, visible
+      ) VALUES (
+        @id, @title, @description, @priority, @color, @completed, @status, @categoryId, @parentId,
+        @createdAt, @updatedAt, @dueDate, @isRecurring, @recurrencePattern, @lastCompleted, @nextDue,
+        @dueOption, @dueAfterDays, @startOption, @startWeekday, @startDate, @startTime, @endTime,
+        @orderIndex, @pinned, @recurringId, @template, @titleTemplate, @customIntervalDays, @visible
+      )`,
+    );
+    const toRow = (t: Task, parentId: string | null, orderIndex: number): any => ({
+      id: t.id,
+      title: t.title,
+      description: t.description,
+      priority: t.priority,
+      color: t.color,
+      completed: t.completed ? 1 : 0,
+      status: t.status,
+      categoryId: t.categoryId,
+      parentId,
+      createdAt: t.createdAt ? new Date(t.createdAt).toISOString() : null,
+      updatedAt: t.updatedAt ? new Date(t.updatedAt).toISOString() : null,
+      dueDate: t.dueDate ? new Date(t.dueDate).toISOString() : null,
+      isRecurring: t.isRecurring ? 1 : 0,
+      recurrencePattern: t.recurrencePattern ?? null,
+      lastCompleted: t.lastCompleted ? new Date(t.lastCompleted).toISOString() : null,
+      nextDue: t.nextDue ? new Date(t.nextDue).toISOString() : null,
+      dueOption: t.dueOption ?? null,
+      dueAfterDays: t.dueAfterDays ?? null,
+      startOption: t.startOption ?? null,
+      startWeekday: t.startWeekday ?? null,
+      startDate: t.startDate ? new Date(t.startDate).toISOString() : null,
+      startTime: t.startTime ?? null,
+      endTime: t.endTime ?? null,
+      orderIndex: typeof t.order === "number" ? t.order : orderIndex,
+      pinned: t.pinned ? 1 : 0,
+      recurringId: t.recurringId ?? null,
+      template: t.template ? 1 : 0,
+      titleTemplate: t.titleTemplate ?? null,
+      customIntervalDays: t.customIntervalDays ?? null,
+      visible: t.visible === false ? 0 : 1,
+    });
+    const walk = (list: Task[], parent: string | null) => {
+      list.forEach((t, idx) => {
+        insert.run(toRow(t, parent, idx));
+        if (t.subtasks && t.subtasks.length) walk(t.subtasks, t.id);
+      });
+    };
+    walk(tasks || [], null);
+  });
+  tx();
 }
 
 export function saveCategories(categories: Category[]): void {
-  saveTable("categories", categories);
+  const tx = db.transaction(() => {
+    db.exec("DELETE FROM categories");
+    const insert = db.prepare(
+      `INSERT INTO categories (id, name, description, color, createdAt, updatedAt, orderIndex, pinned)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    );
+    for (const c of categories || []) {
+      insert.run(
+        c.id,
+        c.name,
+        c.description,
+        c.color,
+        c.createdAt ? new Date(c.createdAt).toISOString() : null,
+        c.updatedAt ? new Date(c.updatedAt).toISOString() : null,
+        typeof c.order === "number" ? c.order : 0,
+        c.pinned ? 1 : 0,
+      );
+    }
+  });
+  tx();
 }
 
 export function saveNotes(notes: Note[]): void {
-  saveTable("notes", notes);
+  const tx = db.transaction(() => {
+    db.exec("DELETE FROM notes");
+    const insert = db.prepare(
+      `INSERT INTO notes (id, title, text, color, createdAt, updatedAt, orderIndex, pinned)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    );
+    for (const n of notes || []) {
+      insert.run(
+        n.id,
+        n.title,
+        n.text,
+        n.color,
+        n.createdAt ? new Date(n.createdAt).toISOString() : null,
+        n.updatedAt ? new Date(n.updatedAt).toISOString() : null,
+        typeof n.order === "number" ? n.order : 0,
+        n.pinned ? 1 : 0,
+      );
+    }
+  });
+  tx();
 }
 
 export function saveRecurring(list: Task[]): void {
-  saveTable("recurring", list);
+  const tx = db.transaction(() => {
+    db.exec("DELETE FROM recurring");
+    const insert = db.prepare(
+      `INSERT INTO recurring (
+        id, title, description, priority, color, completed, status, categoryId, parentId,
+        createdAt, updatedAt, dueDate, isRecurring, recurrencePattern, lastCompleted, nextDue,
+        dueOption, dueAfterDays, startOption, startWeekday, startDate, startTime, endTime,
+        orderIndex, pinned, recurringId, template, titleTemplate, customIntervalDays, visible
+      ) VALUES (
+        @id, @title, @description, @priority, @color, @completed, @status, @categoryId, @parentId,
+        @createdAt, @updatedAt, @dueDate, @isRecurring, @recurrencePattern, @lastCompleted, @nextDue,
+        @dueOption, @dueAfterDays, @startOption, @startWeekday, @startDate, @startTime, @endTime,
+        @orderIndex, @pinned, @recurringId, @template, @titleTemplate, @customIntervalDays, @visible
+      )`,
+    );
+    const toRow = (t: Task, parentId: string | null, orderIndex: number): any => ({
+      id: t.id,
+      title: t.title,
+      description: t.description,
+      priority: t.priority,
+      color: t.color,
+      completed: t.completed ? 1 : 0,
+      status: t.status,
+      categoryId: t.categoryId,
+      parentId,
+      createdAt: t.createdAt ? new Date(t.createdAt).toISOString() : null,
+      updatedAt: t.updatedAt ? new Date(t.updatedAt).toISOString() : null,
+      dueDate: t.dueDate ? new Date(t.dueDate).toISOString() : null,
+      isRecurring: t.isRecurring ? 1 : 0,
+      recurrencePattern: t.recurrencePattern ?? null,
+      lastCompleted: t.lastCompleted ? new Date(t.lastCompleted).toISOString() : null,
+      nextDue: t.nextDue ? new Date(t.nextDue).toISOString() : null,
+      dueOption: t.dueOption ?? null,
+      dueAfterDays: t.dueAfterDays ?? null,
+      startOption: t.startOption ?? null,
+      startWeekday: t.startWeekday ?? null,
+      startDate: t.startDate ? new Date(t.startDate).toISOString() : null,
+      startTime: t.startTime ?? null,
+      endTime: t.endTime ?? null,
+      orderIndex: typeof t.order === "number" ? t.order : orderIndex,
+      pinned: t.pinned ? 1 : 0,
+      recurringId: t.recurringId ?? null,
+      template: t.template ? 1 : 0,
+      titleTemplate: t.titleTemplate ?? null,
+      customIntervalDays: t.customIntervalDays ?? null,
+      visible: t.visible === false ? 0 : 1,
+    });
+    const walk = (list: Task[], parent: string | null) => {
+      list.forEach((t, idx) => {
+        insert.run(toRow(t, parent, idx));
+        if (t.subtasks && t.subtasks.length) walk(t.subtasks, t.id);
+      });
+    };
+    walk(list || [], null);
+  });
+  tx();
 }
 
 export function saveHabits(list: Habit[]): void {
-  saveTable("habits", list);
+  const tx = db.transaction(() => {
+    db.exec("DELETE FROM habits");
+    db.exec("DELETE FROM habit_completions");
+    const insertHabit = db.prepare(
+      `INSERT INTO habits (id, title, color, recurrencePattern, customIntervalDays, startWeekday, startDate, createdAt, updatedAt, orderIndex, pinned)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    );
+    const insertCompletion = db.prepare(
+      `INSERT OR IGNORE INTO habit_completions (habitId, date) VALUES (?, ?)`,
+    );
+    for (const h of list || []) {
+      insertHabit.run(
+        h.id,
+        h.title,
+        h.color,
+        h.recurrencePattern ?? null,
+        h.customIntervalDays ?? null,
+        h.startWeekday ?? null,
+        h.startDate ? new Date(h.startDate).toISOString() : null,
+        h.createdAt ? new Date(h.createdAt).toISOString() : null,
+        h.updatedAt ? new Date(h.updatedAt).toISOString() : null,
+        typeof h.order === "number" ? h.order : 0,
+        h.pinned ? 1 : 0,
+      );
+      for (const d of h.completions || []) insertCompletion.run(h.id, d);
+    }
+  });
+  tx();
 }
 
 export function saveData(data: {
@@ -216,11 +552,33 @@ export function saveData(data: {
 }
 
 export function loadFlashcards(): Flashcard[] {
-  return loadTable<Flashcard>("flashcards", dateReviver);
+  try {
+    const rows = db.prepare("SELECT * FROM flashcards").all();
+    return rows.map((r) => ({
+      id: r.id,
+      front: r.front || "",
+      back: r.back || "",
+      deckId: r.deckId || "",
+      interval: r.interval ?? 0,
+      dueDate: r.dueDate ? new Date(r.dueDate) : new Date(),
+      easyCount: r.easyCount ?? 0,
+      mediumCount: r.mediumCount ?? 0,
+      hardCount: r.hardCount ?? 0,
+      typedCorrect: r.typedCorrect ?? undefined,
+      typedTotal: r.typedTotal ?? undefined,
+    }));
+  } catch {
+    return [];
+  }
 }
 
 export function loadDecks(): Deck[] {
-  return loadTable<Deck>("decks", dateReviver);
+  try {
+    const rows = db.prepare("SELECT * FROM decks").all();
+    return rows.map((r) => ({ id: r.id, name: r.name || "" }));
+  } catch {
+    return [];
+  }
 }
 
 export function loadSettings(): Settings {
@@ -255,15 +613,58 @@ export function loadPomodoroSessions(): PomodoroSession[] {
 }
 
 export function loadTimers(): Timer[] {
-  return loadTable<Timer>("timers", dateReviver);
+  try {
+    const rows = db.prepare("SELECT * FROM timers").all();
+    return rows.map((r) => ({
+      id: r.id,
+      title: r.title || "",
+      color: typeof r.color === "number" ? r.color : 0,
+      baseDuration: r.baseDuration ?? 0,
+      duration: r.duration ?? 0,
+      remaining: r.remaining ?? 0,
+      isRunning: !!r.isRunning,
+      isPaused: !!r.isPaused,
+      startTime: r.startTime ?? undefined,
+      lastTick: r.lastTick ?? undefined,
+      pauseStart: r.pauseStart ?? undefined,
+    }));
+  } catch {
+    return [];
+  }
 }
 
 export function loadTrips(): Trip[] {
-  return loadTable<Trip>("trips", dateReviver);
+  try {
+    const rows = db.prepare("SELECT * FROM trips").all();
+    return rows.map((r) => ({
+      id: r.id,
+      name: r.name || "",
+      location: r.location || undefined,
+      color: typeof r.color === "number" ? r.color : undefined,
+      createdAt: r.createdAt ? new Date(r.createdAt) : undefined,
+      updatedAt: r.updatedAt ? new Date(r.updatedAt) : undefined,
+    }));
+  } catch {
+    return [];
+  }
 }
 
 export function loadWorkDays(): WorkDay[] {
-  return loadTable<WorkDay>("workdays", dateReviver).map((d) => normalizeWorkDay(d));
+  try {
+    const rows = db.prepare("SELECT * FROM workdays").all();
+    return rows.map((r) =>
+      normalizeWorkDay({
+        id: r.id,
+        start: r.start,
+        end: r.end,
+        tripId: r.tripId || undefined,
+        createdAt: r.createdAt ? new Date(r.createdAt) : undefined,
+        updatedAt: r.updatedAt ? new Date(r.updatedAt) : undefined,
+      }),
+    );
+  } catch {
+    return [];
+  }
 }
 
 export function savePomodoroSessions(sessions: PomodoroSession[]): void {
@@ -279,49 +680,197 @@ export function savePomodoroSessions(sessions: PomodoroSession[]): void {
 }
 
 export function saveTimers(list: Timer[]): void {
-  saveTable("timers", list);
+  const tx = db.transaction(() => {
+    db.exec("DELETE FROM timers");
+    const insert = db.prepare(
+      `INSERT INTO timers (id, title, color, baseDuration, duration, remaining, isRunning, isPaused, startTime, lastTick, pauseStart)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    );
+    for (const t of list || []) {
+      insert.run(
+        t.id,
+        t.title,
+        t.color,
+        t.baseDuration,
+        t.duration,
+        t.remaining,
+        t.isRunning ? 1 : 0,
+        t.isPaused ? 1 : 0,
+        t.startTime ?? null,
+        t.lastTick ?? null,
+        t.pauseStart ?? null,
+      );
+    }
+  });
+  tx();
 }
 
 export function saveTrips(list: Trip[]): void {
-  saveTable("trips", list);
+  const tx = db.transaction(() => {
+    db.exec("DELETE FROM trips");
+    const insert = db.prepare(
+      `INSERT INTO trips (id, name, location, color, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?)`,
+    );
+    for (const t of list || []) {
+      insert.run(
+        t.id,
+        t.name,
+        t.location ?? null,
+        t.color ?? null,
+        t.createdAt ? new Date(t.createdAt).toISOString() : null,
+        t.updatedAt ? new Date(t.updatedAt).toISOString() : null,
+      );
+    }
+  });
+  tx();
 }
 
 export function loadItems(): InventoryItem[] {
-  return loadTable<InventoryItem>("inventory_items", dateReviver);
+  try {
+    const items = db.prepare("SELECT * FROM inventory_items").all();
+    const tagRows = db
+      .prepare("SELECT itemId, tagId FROM inventory_item_tags")
+      .all();
+    const tagsByItem: Record<string, string[]> = {};
+    for (const t of tagRows) {
+      if (!tagsByItem[t.itemId]) tagsByItem[t.itemId] = [];
+      tagsByItem[t.itemId].push(t.tagId);
+    }
+    return items.map((i) => ({
+      id: i.id,
+      name: i.name || "",
+      description: i.description || "",
+      quantity: i.quantity ?? 0,
+      categoryId: i.categoryId || undefined,
+      tagIds: tagsByItem[i.id] || [],
+      buyAgain: !!i.buyAgain,
+      createdAt: i.createdAt ? new Date(i.createdAt) : new Date(),
+      updatedAt: i.updatedAt ? new Date(i.updatedAt) : new Date(),
+    }));
+  } catch {
+    return [];
+  }
 }
 
 export function saveItems(list: InventoryItem[]): void {
-  saveTable("inventory_items", list);
+  const tx = db.transaction(() => {
+    db.exec("DELETE FROM inventory_items");
+    db.exec("DELETE FROM inventory_item_tags");
+    const insertItem = db.prepare(
+      `INSERT INTO inventory_items (id, name, description, quantity, categoryId, buyAgain, createdAt, updatedAt)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    );
+    const insertTag = db.prepare(
+      `INSERT OR IGNORE INTO inventory_item_tags (itemId, tagId) VALUES (?, ?)`,
+    );
+    for (const i of list || []) {
+      insertItem.run(
+        i.id,
+        i.name,
+        i.description,
+        i.quantity,
+        i.categoryId ?? null,
+        i.buyAgain ? 1 : 0,
+        i.createdAt ? new Date(i.createdAt).toISOString() : null,
+        i.updatedAt ? new Date(i.updatedAt).toISOString() : null,
+      );
+      for (const tagId of i.tagIds || []) insertTag.run(i.id, tagId);
+    }
+  });
+  tx();
 }
 
 export function saveWorkDays(list: WorkDay[]): void {
-  saveTable(
-    "workdays",
-    (list || []).map((d) => normalizeWorkDay(d)),
-  );
+  const tx = db.transaction(() => {
+    db.exec("DELETE FROM workdays");
+    const insert = db.prepare(
+      `INSERT INTO workdays (id, start, end, tripId, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?)`,
+    );
+    for (const d of list || []) {
+      const n = normalizeWorkDay(d);
+      insert.run(
+        n.id,
+        n.start,
+        n.end,
+        n.tripId ?? null,
+        n.createdAt ? new Date(n.createdAt).toISOString() : null,
+        n.updatedAt ? new Date(n.updatedAt).toISOString() : null,
+      );
+    }
+  });
+  tx();
 }
 export function loadItemCategories(): ItemCategory[] {
-  return loadTable<ItemCategory>("inventory_categories");
+  try {
+    const rows = db.prepare("SELECT * FROM inventory_categories").all();
+    return rows.map((r) => ({ id: r.id, name: r.name || "" }));
+  } catch {
+    return [];
+  }
 }
 
 export function saveItemCategories(list: ItemCategory[]): void {
-  saveTable("inventory_categories", list);
+  const tx = db.transaction(() => {
+    db.exec("DELETE FROM inventory_categories");
+    const insert = db.prepare(
+      `INSERT INTO inventory_categories (id, name) VALUES (?, ?)`,
+    );
+    for (const c of list || []) insert.run(c.id, c.name);
+  });
+  tx();
 }
 
 export function loadItemTags(): ItemTag[] {
-  return loadTable<ItemTag>("inventory_tags");
+  try {
+    const rows = db.prepare("SELECT * FROM inventory_tags").all();
+    return rows.map((r) => ({ id: r.id, name: r.name || "" }));
+  } catch {
+    return [];
+  }
 }
 
 export function saveItemTags(list: ItemTag[]): void {
-  saveTable("inventory_tags", list);
+  const tx = db.transaction(() => {
+    db.exec("DELETE FROM inventory_tags");
+    const insert = db.prepare(`INSERT INTO inventory_tags (id, name) VALUES (?, ?)`);
+    for (const t of list || []) insert.run(t.id, t.name);
+  });
+  tx();
 }
 
 export function saveFlashcards(cards: Flashcard[]): void {
-  saveTable("flashcards", cards);
+  const tx = db.transaction(() => {
+    db.exec("DELETE FROM flashcards");
+    const insert = db.prepare(
+      `INSERT INTO flashcards (id, front, back, deckId, interval, dueDate, easyCount, mediumCount, hardCount, typedCorrect, typedTotal)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    );
+    for (const c of cards || []) {
+      insert.run(
+        c.id,
+        c.front,
+        c.back,
+        c.deckId,
+        c.interval ?? 0,
+        c.dueDate ? new Date(c.dueDate).toISOString() : null,
+        c.easyCount ?? 0,
+        c.mediumCount ?? 0,
+        c.hardCount ?? 0,
+        c.typedCorrect ?? null,
+        c.typedTotal ?? null,
+      );
+    }
+  });
+  tx();
 }
 
 export function saveDecks(decks: Deck[]): void {
-  saveTable("decks", decks);
+  const tx = db.transaction(() => {
+    db.exec("DELETE FROM decks");
+    const insert = db.prepare(`INSERT INTO decks (id, name) VALUES (?, ?)`);
+    for (const d of decks || []) insert.run(d.id, d.name);
+  });
+  tx();
 }
 
 export function saveDeletions(list: Deletion[]): void {
