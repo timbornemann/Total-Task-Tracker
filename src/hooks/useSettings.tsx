@@ -76,7 +76,11 @@ export const defaultNavbarItemOrder: Record<string, string[]> = {
 export const defaultNavbarItems: Record<string, string[]> = {
   tasks: [...defaultNavbarItemOrder.tasks],
   learning: [...defaultNavbarItemOrder.learning],
-  standalone: [...defaultNavbarItemOrder.standalone],
+  // On startup, show only the settings entry as standalone (matches "Navigation Zurücksetzen")
+  standalone: [
+    allNavbarItems.find((item) => item.labelKey === "navbar.settings")?.key ||
+      "settings",
+  ],
 };
 
 export const defaultNavbarGroups = ["tasks", "learning"];
