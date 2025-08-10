@@ -277,7 +277,8 @@ db.exec(`
         }
         if (extract) {
           const { main, child } = extract(obj);
-          const rowValues = insertColsSql.map((c) => (main as any)[c] ?? null);
+          const mainObj = main as Record<string, unknown>;
+          const rowValues: unknown[] = insertColsSql.map((c) => mainObj[c] ?? null);
           insert.run(...rowValues);
           if (child) {
             for (const ch of child) {
@@ -293,7 +294,8 @@ db.exec(`
           }
         } else {
           // No extractor provided; assume flat object with matching columns
-          const rowValues = insertColsSql.map((c) => (c in obj ? (obj as any)[c] : null));
+          const objRec = obj as Record<string, unknown>;
+          const rowValues: unknown[] = insertColsSql.map((c) => (c in objRec ? objRec[c] : null));
           insert.run(...rowValues);
         }
       }
@@ -354,66 +356,87 @@ db.exec(`
   migrateJsonTableToNormalized("inventory_categories", null);
   migrateJsonTableToNormalized("inventory_tags", null);
   migrateJsonTableToNormalized("inventory_items", (obj) => {
+    const getAs = <T>(o: Record<string, unknown>, k: string): T | undefined => o[k] as T | undefined;
     const main = {
-      id: (obj as any).id,
-      name: (obj as any).name,
-      description: (obj as any).description,
-      quantity: (obj as any).quantity ?? 0,
-      categoryId: (obj as any).categoryId ?? null,
-      buyAgain: (obj as any).buyAgain ? 1 : 0,
-      createdAt: (obj as any).createdAt ? new Date((obj as any).createdAt).toISOString() : null,
-      updatedAt: (obj as any).updatedAt ? new Date((obj as any).updatedAt).toISOString() : null,
+      id: getAs<string>(obj, "id"),
+      name: getAs<string>(obj, "name"),
+      description: getAs<string>(obj, "description"),
+      quantity: getAs<number>(obj, "quantity") ?? 0,
+      categoryId: getAs<string>(obj, "categoryId") ?? null,
+      buyAgain: getAs<boolean>(obj, "buyAgain") ? 1 : 0,
+      createdAt: getAs<string>(obj, "createdAt")
+        ? new Date(getAs<string>(obj, "createdAt") as string).toISOString()
+        : null,
+      updatedAt: getAs<string>(obj, "updatedAt")
+        ? new Date(getAs<string>(obj, "updatedAt") as string).toISOString()
+        : null,
     };
     const child: Array<{ table: string; row: Record<string, unknown> }> = [];
-    const tagIds: string[] = Array.isArray((obj as any).tagIds) ? ((obj as any).tagIds as string[]) : [];
+    const tagIds: string[] = Array.isArray(getAs<string[]>(obj, "tagIds"))
+      ? (getAs<string[]>(obj, "tagIds") as string[])
+      : [];
     for (const tagId of tagIds) {
-      child.push({ table: "inventory_item_tags", row: { itemId: (obj as any).id, tagId } });
+      child.push({ table: "inventory_item_tags", row: { itemId: getAs<string>(obj, "id"), tagId } });
     }
     return { main, child };
   });
 
   const extractTask = (
-    obj: Record<string, any>,
+    obj: Record<string, unknown>,
     parentId: string | null,
     acc: Array<Record<string, unknown>>,
   ) => {
+    const getAs = <T>(o: Record<string, unknown>, k: string): T | undefined => o[k] as T | undefined;
     const row = {
-      id: obj.id as string,
-      title: obj.title as string,
-      description: obj.description as string,
-      priority: obj.priority as string,
-      color: (obj.color as number) ?? null,
-      completed: (obj.completed as boolean) ? 1 : 0,
-      status: obj.status as string,
-      categoryId: (obj.categoryId as string) ?? null,
+      id: getAs<string>(obj, "id") as string,
+      title: (getAs<string>(obj, "title") as string) || "",
+      description: (getAs<string>(obj, "description") as string) || "",
+      priority: (getAs<string>(obj, "priority") as string) || "low",
+      color: (getAs<number>(obj, "color") as number) ?? null,
+      completed: getAs<boolean>(obj, "completed") ? 1 : 0,
+      status: (getAs<string>(obj, "status") as string) || "todo",
+      categoryId: getAs<string>(obj, "categoryId") ?? null,
       parentId: parentId,
-      createdAt: obj.createdAt ? new Date(obj.createdAt as string).toISOString() : null,
-      updatedAt: obj.updatedAt ? new Date(obj.updatedAt as string).toISOString() : null,
-      dueDate: obj.dueDate ? new Date(obj.dueDate as string).toISOString() : null,
-      isRecurring: (obj.isRecurring as boolean) ? 1 : 0,
-      recurrencePattern: (obj.recurrencePattern as string) ?? null,
-      lastCompleted: obj.lastCompleted ? new Date(obj.lastCompleted as string).toISOString() : null,
-      nextDue: obj.nextDue ? new Date(obj.nextDue as string).toISOString() : null,
-      dueOption: (obj.dueOption as string) ?? null,
-      dueAfterDays: (obj.dueAfterDays as number) ?? null,
-      startOption: (obj.startOption as string) ?? null,
-      startWeekday: (obj.startWeekday as number) ?? null,
-      startDate: obj.startDate ? new Date(obj.startDate as string).toISOString() : null,
-      startTime: (obj.startTime as string) ?? null,
-      endTime: (obj.endTime as string) ?? null,
-      orderIndex: (obj as any).order ?? 0,
-      pinned: (obj.pinned as boolean) ? 1 : 0,
-      recurringId: (obj.recurringId as string) ?? null,
-      template: (obj.template as boolean) ? 1 : 0,
-      titleTemplate: (obj.titleTemplate as string) ?? null,
-      customIntervalDays: (obj.customIntervalDays as number) ?? null,
-      visible: obj.visible === false ? 0 : 1,
+      createdAt: getAs<string>(obj, "createdAt")
+        ? new Date(getAs<string>(obj, "createdAt") as string).toISOString()
+        : null,
+      updatedAt: getAs<string>(obj, "updatedAt")
+        ? new Date(getAs<string>(obj, "updatedAt") as string).toISOString()
+        : null,
+      dueDate: getAs<string>(obj, "dueDate")
+        ? new Date(getAs<string>(obj, "dueDate") as string).toISOString()
+        : null,
+      isRecurring: getAs<boolean>(obj, "isRecurring") ? 1 : 0,
+      recurrencePattern: getAs<string>(obj, "recurrencePattern") ?? null,
+      lastCompleted: getAs<string>(obj, "lastCompleted")
+        ? new Date(getAs<string>(obj, "lastCompleted") as string).toISOString()
+        : null,
+      nextDue: getAs<string>(obj, "nextDue")
+        ? new Date(getAs<string>(obj, "nextDue") as string).toISOString()
+        : null,
+      dueOption: getAs<string>(obj, "dueOption") ?? null,
+      dueAfterDays: getAs<number>(obj, "dueAfterDays") ?? null,
+      startOption: getAs<string>(obj, "startOption") ?? null,
+      startWeekday: getAs<number>(obj, "startWeekday") ?? null,
+      startDate: getAs<string>(obj, "startDate")
+        ? new Date(getAs<string>(obj, "startDate") as string).toISOString()
+        : null,
+      startTime: getAs<string>(obj, "startTime") ?? null,
+      endTime: getAs<string>(obj, "endTime") ?? null,
+      orderIndex: (getAs<number>(obj, "order") as number) ?? 0,
+      pinned: getAs<boolean>(obj, "pinned") ? 1 : 0,
+      recurringId: getAs<string>(obj, "recurringId") ?? null,
+      template: getAs<boolean>(obj, "template") ? 1 : 0,
+      titleTemplate: getAs<string>(obj, "titleTemplate") ?? null,
+      customIntervalDays: getAs<number>(obj, "customIntervalDays") ?? null,
+      visible: getAs<boolean>(obj, "visible") === false ? 0 : 1,
     };
     acc.push(row);
-    const subs: Array<Record<string, any>> = Array.isArray((obj as any).subtasks)
-      ? ((obj as any).subtasks as Array<Record<string, any>>)
+    const subsRaw = getAs<Array<Record<string, unknown>>>(obj, "subtasks");
+    const subs: Array<Record<string, unknown>> = Array.isArray(subsRaw)
+      ? (subsRaw as Array<Record<string, unknown>>)
       : [];
-    for (const s of subs) extractTask(s, obj.id as string, acc);
+    for (const s of subs) extractTask(s, getAs<string>(obj, "id") as string, acc);
   };
 
   const migrateTaskTable = (logicalName: "tasks" | "recurring") => {
@@ -424,7 +447,7 @@ db.exec(`
       for (let i = 1; i < acc.length; i++) {
         child.push({ table: logicalName, row: acc[i] });
       }
-      const main = acc[0] || { id: obj.id };
+      const main = acc[0] || { id: (obj as Record<string, unknown>)["id"] };
       return { main, child };
     });
   };
@@ -433,25 +456,33 @@ db.exec(`
   migrateTaskTable("recurring");
 
   migrateJsonTableToNormalized("habits", (obj) => {
+    const getAs = <T>(o: Record<string, unknown>, k: string): T | undefined => o[k] as T | undefined;
     const main = {
-      id: (obj as any).id,
-      title: (obj as any).title,
-      color: (obj as any).color ?? null,
-      recurrencePattern: (obj as any).recurrencePattern ?? null,
-      customIntervalDays: (obj as any).customIntervalDays ?? null,
-      startWeekday: (obj as any).startWeekday ?? null,
-      startDate: (obj as any).startDate ? new Date((obj as any).startDate).toISOString() : null,
-      createdAt: (obj as any).createdAt ? new Date((obj as any).createdAt).toISOString() : null,
-      updatedAt: (obj as any).updatedAt ? new Date((obj as any).updatedAt).toISOString() : null,
-      orderIndex: (obj as any).order ?? 0,
-      pinned: (obj as any).pinned ? 1 : 0,
+      id: getAs<string>(obj, "id"),
+      title: getAs<string>(obj, "title"),
+      color: getAs<number>(obj, "color") ?? null,
+      recurrencePattern: getAs<string>(obj, "recurrencePattern") ?? null,
+      customIntervalDays: getAs<number>(obj, "customIntervalDays") ?? null,
+      startWeekday: getAs<number>(obj, "startWeekday") ?? null,
+      startDate: getAs<string>(obj, "startDate")
+        ? new Date(getAs<string>(obj, "startDate") as string).toISOString()
+        : null,
+      createdAt: getAs<string>(obj, "createdAt")
+        ? new Date(getAs<string>(obj, "createdAt") as string).toISOString()
+        : null,
+      updatedAt: getAs<string>(obj, "updatedAt")
+        ? new Date(getAs<string>(obj, "updatedAt") as string).toISOString()
+        : null,
+      orderIndex: (getAs<number>(obj, "order") as number) ?? 0,
+      pinned: getAs<boolean>(obj, "pinned") ? 1 : 0,
     };
     const child: Array<{ table: string; row: Record<string, unknown> }> = [];
-    const completions: string[] = Array.isArray((obj as any).completions)
-      ? ((obj as any).completions as string[])
+    const completionsRaw = getAs<string[]>(obj, "completions");
+    const completions: string[] = Array.isArray(completionsRaw)
+      ? (completionsRaw as string[])
       : [];
     for (const d of completions) {
-      child.push({ table: "habit_completions", row: { habitId: (obj as any).id, date: d } });
+      child.push({ table: "habit_completions", row: { habitId: getAs<string>(obj, "id"), date: d } });
     }
     return { main, child };
   });
