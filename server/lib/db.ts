@@ -15,8 +15,10 @@ const db: DatabaseType = new Database(DB_FILE);
 
 function tableHasColumn(table: string, column: string): boolean {
   try {
-    const rows = db.prepare(`PRAGMA table_info(${table})`).all();
-    return rows.some((r: any) => r.name === column);
+    const rows: Array<{ name: string }> = db
+      .prepare(`PRAGMA table_info(${table})`)
+      .all();
+    return rows.some((r) => r.name === column);
   } catch {
     return false;
   }
@@ -233,7 +235,7 @@ db.exec(`
   function migrateJsonTableToNormalized(
     logicalName: keyof typeof createStatements,
     extract:
-      | ((row: any) => { main: Record<string, any>; child?: Array<{ table: string; row: Record<string, any> }> })
+      | ((row: Record<string, unknown>) => { main: Record<string, unknown>; child?: Array<{ table: string; row: Record<string, unknown> }> })
       | null,
   ) {
     const name = logicalName as string;
@@ -255,10 +257,10 @@ db.exec(`
     // Read all JSON rows
     const rows = db.prepare(`SELECT id, data FROM ${name}`).all();
 
-    const insertColsSql = db
+    const insertColsSql = (db
       .prepare(`PRAGMA table_info(${tempName})`)
-      .all()
-      .map((r: any) => r.name)
+      .all() as Array<{ name: string }>)
+      .map((r) => r.name)
       .filter((c: string) => c !== "") as string[];
     const placeholders = insertColsSql.map(() => "?").join(", ");
     const insert = db.prepare(
@@ -267,15 +269,15 @@ db.exec(`
 
     const tx = db.transaction(() => {
       for (const r of rows) {
-        let obj: any;
+        let obj: Record<string, unknown>;
         try {
           obj = JSON.parse(r.data);
         } catch {
-          obj = {};
+          obj = {} as Record<string, unknown>;
         }
         if (extract) {
           const { main, child } = extract(obj);
-          const rowValues = insertColsSql.map((c) => main[c] ?? null);
+          const rowValues = insertColsSql.map((c) => (main as any)[c] ?? null);
           insert.run(...rowValues);
           if (child) {
             for (const ch of child) {
@@ -291,7 +293,7 @@ db.exec(`
           }
         } else {
           // No extractor provided; assume flat object with matching columns
-          const rowValues = insertColsSql.map((c) => (c in obj ? obj[c] : null));
+          const rowValues = insertColsSql.map((c) => (c in obj ? (obj as any)[c] : null));
           insert.run(...rowValues);
         }
       }
@@ -353,66 +355,72 @@ db.exec(`
   migrateJsonTableToNormalized("inventory_tags", null);
   migrateJsonTableToNormalized("inventory_items", (obj) => {
     const main = {
-      id: obj.id,
-      name: obj.name,
-      description: obj.description,
-      quantity: obj.quantity ?? 0,
-      categoryId: obj.categoryId ?? null,
-      buyAgain: obj.buyAgain ? 1 : 0,
-      createdAt: obj.createdAt ? new Date(obj.createdAt).toISOString() : null,
-      updatedAt: obj.updatedAt ? new Date(obj.updatedAt).toISOString() : null,
+      id: (obj as any).id,
+      name: (obj as any).name,
+      description: (obj as any).description,
+      quantity: (obj as any).quantity ?? 0,
+      categoryId: (obj as any).categoryId ?? null,
+      buyAgain: (obj as any).buyAgain ? 1 : 0,
+      createdAt: (obj as any).createdAt ? new Date((obj as any).createdAt).toISOString() : null,
+      updatedAt: (obj as any).updatedAt ? new Date((obj as any).updatedAt).toISOString() : null,
     };
-    const child: Array<{ table: string; row: Record<string, any> }> = [];
-    const tagIds: string[] = Array.isArray(obj.tagIds) ? obj.tagIds : [];
+    const child: Array<{ table: string; row: Record<string, unknown> }> = [];
+    const tagIds: string[] = Array.isArray((obj as any).tagIds) ? ((obj as any).tagIds as string[]) : [];
     for (const tagId of tagIds) {
-      child.push({ table: "inventory_item_tags", row: { itemId: obj.id, tagId } });
+      child.push({ table: "inventory_item_tags", row: { itemId: (obj as any).id, tagId } });
     }
     return { main, child };
   });
 
-  const extractTask = (obj: any, parentId: string | null, acc: any[]) => {
+  const extractTask = (
+    obj: Record<string, any>,
+    parentId: string | null,
+    acc: Array<Record<string, unknown>>,
+  ) => {
     const row = {
-      id: obj.id,
-      title: obj.title,
-      description: obj.description,
-      priority: obj.priority,
-      color: obj.color ?? null,
-      completed: obj.completed ? 1 : 0,
-      status: obj.status,
-      categoryId: obj.categoryId ?? null,
+      id: obj.id as string,
+      title: obj.title as string,
+      description: obj.description as string,
+      priority: obj.priority as string,
+      color: (obj.color as number) ?? null,
+      completed: (obj.completed as boolean) ? 1 : 0,
+      status: obj.status as string,
+      categoryId: (obj.categoryId as string) ?? null,
       parentId: parentId,
-      createdAt: obj.createdAt ? new Date(obj.createdAt).toISOString() : null,
-      updatedAt: obj.updatedAt ? new Date(obj.updatedAt).toISOString() : null,
-      dueDate: obj.dueDate ? new Date(obj.dueDate).toISOString() : null,
-      isRecurring: obj.isRecurring ? 1 : 0,
-      recurrencePattern: obj.recurrencePattern ?? null,
-      lastCompleted: obj.lastCompleted ? new Date(obj.lastCompleted).toISOString() : null,
-      nextDue: obj.nextDue ? new Date(obj.nextDue).toISOString() : null,
-      dueOption: obj.dueOption ?? null,
-      dueAfterDays: obj.dueAfterDays ?? null,
-      startOption: obj.startOption ?? null,
-      startWeekday: obj.startWeekday ?? null,
-      startDate: obj.startDate ? new Date(obj.startDate).toISOString() : null,
-      startTime: obj.startTime ?? null,
-      endTime: obj.endTime ?? null,
-      orderIndex: obj.order ?? 0,
-      pinned: obj.pinned ? 1 : 0,
-      recurringId: obj.recurringId ?? null,
-      template: obj.template ? 1 : 0,
-      titleTemplate: obj.titleTemplate ?? null,
-      customIntervalDays: obj.customIntervalDays ?? null,
+      createdAt: obj.createdAt ? new Date(obj.createdAt as string).toISOString() : null,
+      updatedAt: obj.updatedAt ? new Date(obj.updatedAt as string).toISOString() : null,
+      dueDate: obj.dueDate ? new Date(obj.dueDate as string).toISOString() : null,
+      isRecurring: (obj.isRecurring as boolean) ? 1 : 0,
+      recurrencePattern: (obj.recurrencePattern as string) ?? null,
+      lastCompleted: obj.lastCompleted ? new Date(obj.lastCompleted as string).toISOString() : null,
+      nextDue: obj.nextDue ? new Date(obj.nextDue as string).toISOString() : null,
+      dueOption: (obj.dueOption as string) ?? null,
+      dueAfterDays: (obj.dueAfterDays as number) ?? null,
+      startOption: (obj.startOption as string) ?? null,
+      startWeekday: (obj.startWeekday as number) ?? null,
+      startDate: obj.startDate ? new Date(obj.startDate as string).toISOString() : null,
+      startTime: (obj.startTime as string) ?? null,
+      endTime: (obj.endTime as string) ?? null,
+      orderIndex: (obj as any).order ?? 0,
+      pinned: (obj.pinned as boolean) ? 1 : 0,
+      recurringId: (obj.recurringId as string) ?? null,
+      template: (obj.template as boolean) ? 1 : 0,
+      titleTemplate: (obj.titleTemplate as string) ?? null,
+      customIntervalDays: (obj.customIntervalDays as number) ?? null,
       visible: obj.visible === false ? 0 : 1,
     };
     acc.push(row);
-    const subs: any[] = Array.isArray(obj.subtasks) ? obj.subtasks : [];
-    for (const s of subs) extractTask(s, obj.id, acc);
+    const subs: Array<Record<string, any>> = Array.isArray((obj as any).subtasks)
+      ? ((obj as any).subtasks as Array<Record<string, any>>)
+      : [];
+    for (const s of subs) extractTask(s, obj.id as string, acc);
   };
 
   const migrateTaskTable = (logicalName: "tasks" | "recurring") => {
     migrateJsonTableToNormalized(logicalName, (obj) => {
-      const acc: any[] = [];
+      const acc: Array<Record<string, unknown>> = [];
       extractTask(obj, null, acc);
-      const child: Array<{ table: string; row: Record<string, any> }> = [];
+      const child: Array<{ table: string; row: Record<string, unknown> }> = [];
       for (let i = 1; i < acc.length; i++) {
         child.push({ table: logicalName, row: acc[i] });
       }
@@ -426,22 +434,24 @@ db.exec(`
 
   migrateJsonTableToNormalized("habits", (obj) => {
     const main = {
-      id: obj.id,
-      title: obj.title,
-      color: obj.color ?? null,
-      recurrencePattern: obj.recurrencePattern ?? null,
-      customIntervalDays: obj.customIntervalDays ?? null,
-      startWeekday: obj.startWeekday ?? null,
-      startDate: obj.startDate ? new Date(obj.startDate).toISOString() : null,
-      createdAt: obj.createdAt ? new Date(obj.createdAt).toISOString() : null,
-      updatedAt: obj.updatedAt ? new Date(obj.updatedAt).toISOString() : null,
-      orderIndex: obj.order ?? 0,
-      pinned: obj.pinned ? 1 : 0,
+      id: (obj as any).id,
+      title: (obj as any).title,
+      color: (obj as any).color ?? null,
+      recurrencePattern: (obj as any).recurrencePattern ?? null,
+      customIntervalDays: (obj as any).customIntervalDays ?? null,
+      startWeekday: (obj as any).startWeekday ?? null,
+      startDate: (obj as any).startDate ? new Date((obj as any).startDate).toISOString() : null,
+      createdAt: (obj as any).createdAt ? new Date((obj as any).createdAt).toISOString() : null,
+      updatedAt: (obj as any).updatedAt ? new Date((obj as any).updatedAt).toISOString() : null,
+      orderIndex: (obj as any).order ?? 0,
+      pinned: (obj as any).pinned ? 1 : 0,
     };
-    const child: Array<{ table: string; row: Record<string, any> }> = [];
-    const completions: string[] = Array.isArray(obj.completions) ? obj.completions : [];
+    const child: Array<{ table: string; row: Record<string, unknown> }> = [];
+    const completions: string[] = Array.isArray((obj as any).completions)
+      ? ((obj as any).completions as string[])
+      : [];
     for (const d of completions) {
-      child.push({ table: "habit_completions", row: { habitId: obj.id, date: d } });
+      child.push({ table: "habit_completions", row: { habitId: (obj as any).id, date: d } });
     }
     return { main, child };
   });

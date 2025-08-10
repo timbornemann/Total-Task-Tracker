@@ -159,7 +159,7 @@ export function loadTasks(): Task[] {
       }
     }
     const sortTasks = (list: Task[]) => {
-      list.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+      list.sort((a: Task, b: Task) => (a.order || 0) - (b.order || 0));
       for (const t of list) sortTasks(t.subtasks);
     };
     sortTasks(roots);
@@ -253,7 +253,7 @@ export function loadRecurring(): Task[] {
       }
     }
     const sortTasks = (list: Task[]) => {
-      list.sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+      list.sort((a: Task, b: Task) => (a.order || 0) - (b.order || 0));
       for (const t of list) sortTasks(t.subtasks);
     };
     sortTasks(roots);
@@ -343,7 +343,39 @@ export function saveTasks(tasks: Task[]): void {
         @orderIndex, @pinned, @recurringId, @template, @titleTemplate, @customIntervalDays, @visible
       )`,
     );
-    const toRow = (t: Task, parentId: string | null, orderIndex: number): any => ({
+    interface TaskRow {
+      id: string;
+      title: string;
+      description: string;
+      priority: string;
+      color: number;
+      completed: number;
+      status: string;
+      categoryId: string;
+      parentId: string | null;
+      createdAt: string | null;
+      updatedAt: string | null;
+      dueDate: string | null;
+      isRecurring: number;
+      recurrencePattern: string | null;
+      lastCompleted: string | null;
+      nextDue: string | null;
+      dueOption: string | null;
+      dueAfterDays: number | null;
+      startOption: string | null;
+      startWeekday: number | null;
+      startDate: string | null;
+      startTime: string | null;
+      endTime: string | null;
+      orderIndex: number;
+      pinned: number;
+      recurringId: string | null;
+      template: number;
+      titleTemplate: string | null;
+      customIntervalDays: number | null;
+      visible: number;
+    }
+    const toRow = (t: Task, parentId: string | null, orderIndex: number): TaskRow => ({
       id: t.id,
       title: t.title,
       description: t.description,
@@ -448,7 +480,39 @@ export function saveRecurring(list: Task[]): void {
         @orderIndex, @pinned, @recurringId, @template, @titleTemplate, @customIntervalDays, @visible
       )`,
     );
-    const toRow = (t: Task, parentId: string | null, orderIndex: number): any => ({
+    interface RecurringRow {
+      id: string;
+      title: string;
+      description: string;
+      priority: string;
+      color: number;
+      completed: number;
+      status: string;
+      categoryId: string;
+      parentId: string | null;
+      createdAt: string | null;
+      updatedAt: string | null;
+      dueDate: string | null;
+      isRecurring: number;
+      recurrencePattern: string | null;
+      lastCompleted: string | null;
+      nextDue: string | null;
+      dueOption: string | null;
+      dueAfterDays: number | null;
+      startOption: string | null;
+      startWeekday: number | null;
+      startDate: string | null;
+      startTime: string | null;
+      endTime: string | null;
+      orderIndex: number;
+      pinned: number;
+      recurringId: string | null;
+      template: number;
+      titleTemplate: string | null;
+      customIntervalDays: number | null;
+      visible: number;
+    }
+    const toRow = (t: Task, parentId: string | null, orderIndex: number): RecurringRow => ({
       id: t.id,
       title: t.title,
       description: t.description,
