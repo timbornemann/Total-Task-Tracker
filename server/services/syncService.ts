@@ -1,0 +1,15 @@
+export {
+  initSync,
+  startSyncTimer,
+  setSyncRole,
+  setSyncServerUrl,
+  setSyncInterval,
+  setSyncEnabled,
+  setLlmUrl,
+  setLlmToken,
+  setLlmModel,
+  syncLogs,
+  getSyncRole,
+  getSyncStatus,
+  getLlmConfig,
+} from "../lib/sync.js";

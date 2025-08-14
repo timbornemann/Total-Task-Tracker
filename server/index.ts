@@ -1,4 +1,5 @@
-import { app, setActivePort } from "./app.js";
+import { app } from "./app.js";
+import { setActivePort } from "./services/serverInfoService.js";
 import type { AddressInfo } from "net";
 
 const port = Number(process.env.PORT) || 3002;
