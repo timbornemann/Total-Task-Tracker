@@ -13,6 +13,7 @@ import type {
   ItemTag,
   Deletion,
 } from "../../src/types/index.js";
+import { loadData, saveData } from "../services/dataService.js";
 
 interface Data {
   tasks: Task[];
@@ -30,30 +31,19 @@ interface Data {
   deletions: Deletion[];
 }
 
-export default function createDataRouter({
-  loadData,
-  saveData,
-  notifyClients,
-}: {
-  loadData: () => Data;
-  saveData: (data: Data) => void;
-  notifyClients: () => void;
-}) {
-  const router = Router();
+const router = Router();
 
-  router.get("/", (req, res) => {
-    res.json(loadData());
-  });
+router.get("/", (req, res) => {
+  res.json(loadData());
+});
 
-  router.put("/", (req, res) => {
-    try {
-      saveData(req.body || ({} as Data));
-      notifyClients();
-      res.json({ status: "ok" });
-    } catch {
-      res.sendStatus(400);
-    }
-  });
+router.put("/", (req, res) => {
+  try {
+    saveData(req.body || ({} as Data));
+    res.json({ status: "ok" });
+  } catch {
+    res.sendStatus(400);
+  }
+});
 
-  return router;
-}
+export default router;

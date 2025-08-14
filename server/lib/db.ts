@@ -316,8 +316,12 @@ db.exec(`
       name: obj.name,
       description: obj.description,
       color: obj.color ?? null,
-      createdAt: obj.createdAt ? new Date(obj.createdAt).toISOString() : null,
-      updatedAt: obj.updatedAt ? new Date(obj.updatedAt).toISOString() : null,
+      createdAt: obj.createdAt
+        ? new Date(obj.createdAt as string).toISOString()
+        : null,
+      updatedAt: obj.updatedAt
+        ? new Date(obj.updatedAt as string).toISOString()
+        : null,
       orderIndex: obj.order ?? 0,
       pinned: obj.pinned ? 1 : 0,
     },
@@ -328,8 +332,12 @@ db.exec(`
       title: obj.title,
       text: obj.text,
       color: obj.color,
-      createdAt: obj.createdAt ? new Date(obj.createdAt).toISOString() : null,
-      updatedAt: obj.updatedAt ? new Date(obj.updatedAt).toISOString() : null,
+      createdAt: obj.createdAt
+        ? new Date(obj.createdAt as string).toISOString()
+        : null,
+      updatedAt: obj.updatedAt
+        ? new Date(obj.updatedAt as string).toISOString()
+        : null,
       orderIndex: obj.order ?? 0,
       pinned: obj.pinned ? 1 : 0,
     },
@@ -342,7 +350,9 @@ db.exec(`
       back: obj.back,
       deckId: obj.deckId,
       interval: obj.interval ?? 0,
-      dueDate: obj.dueDate ? new Date(obj.dueDate).toISOString() : null,
+      dueDate: obj.dueDate
+        ? new Date(obj.dueDate as string).toISOString()
+        : null,
       easyCount: obj.easyCount ?? 0,
       mediumCount: obj.mediumCount ?? 0,
       hardCount: obj.hardCount ?? 0,

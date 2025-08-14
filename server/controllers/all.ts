@@ -15,6 +15,7 @@ import type {
   ItemTag,
   Deletion,
 } from "../../src/types/index.js";
+import { loadAllData, saveAllData } from "../services/dataService.js";
 
 interface AllData {
   tasks: Task[];
@@ -35,33 +36,25 @@ interface AllData {
   deletions: Deletion[];
 }
 
-export default function createAllRouter({
-  loadAllData,
-  saveAllData,
-}: {
-  loadAllData: () => AllData;
-  saveAllData: (data: AllData) => void;
-}) {
-  const router = Router();
+const router = Router();
 
-  router.get("/", (req, res) => {
-    const all = loadAllData();
-    if (all.settings) {
-      delete all.settings.syncServerUrl;
-      delete all.settings.syncRole;
-      delete all.settings.llmToken;
-    }
-    res.json(all);
-  });
+router.get("/", (req, res) => {
+  const all = loadAllData();
+  if (all.settings) {
+    delete all.settings.syncServerUrl;
+    delete all.settings.syncRole;
+    delete all.settings.llmToken;
+  }
+  res.json(all);
+});
 
-  router.put("/", (req, res) => {
-    try {
-      saveAllData(req.body || ({} as AllData));
-      res.json({ status: "ok" });
-    } catch {
-      res.sendStatus(400);
-    }
-  });
+router.put("/", (req, res) => {
+  try {
+    saveAllData(req.body || ({} as AllData));
+    res.json({ status: "ok" });
+  } catch {
+    res.sendStatus(400);
+  }
+});
 
-  return router;
-}
+export default router;
