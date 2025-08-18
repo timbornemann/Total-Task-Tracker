@@ -19,16 +19,16 @@ import {
 interface TaskStoreState {
   tasks: Task[];
   allTasks: Task[];
-  filters: any;
-  sort: any;
-  stats: any;
+  filters: unknown;
+  sort: unknown;
+  stats: unknown;
 }
 
 interface CategoryStoreState {
   categories: Category[];
   allCategories: Category[];
-  recentlyDeleted: any[];
-  stats: any;
+  recentlyDeleted: unknown[];
+  stats: unknown;
 }
 
 interface NoteStoreState {
@@ -36,15 +36,15 @@ interface NoteStoreState {
   allNotes: Note[];
   pinnedNotes: Note[];
   recentNotes: Note[];
-  filters: any;
-  sort: any;
-  stats: any;
+  filters: unknown;
+  sort: unknown;
+  stats: unknown;
 }
 
 interface RecurringTaskStoreState {
   recurringTasks: RecurringTask[];
   generatedTasks: Task[];
-  stats: any;
+  stats: unknown;
 }
 
 // Task Store Selectors
@@ -407,10 +407,10 @@ export function useStorePerformance<T>(
 }
 
 // Selector composition helpers
-export function createComposedSelector<T1, T2, R>(
-  selector1: (store: T1) => any,
-  selector2: (store: T2) => any,
-  combiner: (result1: any, result2: any) => R
+export function createComposedSelector<T1, T2, R1, R2, R>(
+  selector1: (store: T1) => R1,
+  selector2: (store: T2) => R2,
+  combiner: (result1: R1, result2: R2) => R
 ) {
   return (store1: T1, store2: T2): R => {
     const result1 = selector1(store1);

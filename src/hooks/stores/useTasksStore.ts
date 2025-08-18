@@ -285,8 +285,8 @@ export function useTasksStore(options: UseTasksStoreOptions = {}) {
 
   const getSortedTasks = useCallback((tasksToSort: Task[] = tasks): Task[] => {
     return [...tasksToSort].sort((a, b) => {
-      let aValue: any;
-      let bValue: any;
+      let aValue: string | number;
+      let bValue: string | number;
 
       switch (sort.field) {
         case 'title':
@@ -305,11 +305,12 @@ export function useTasksStore(options: UseTasksStoreOptions = {}) {
           aValue = a.dueDate?.getTime() || 0;
           bValue = b.dueDate?.getTime() || 0;
           break;
-        case 'priority':
+        case 'priority': {
           const priorityOrder = { low: 1, medium: 2, high: 3 };
           aValue = priorityOrder[a.priority];
           bValue = priorityOrder[b.priority];
           break;
+        }
         case 'order':
         default:
           aValue = a.order;

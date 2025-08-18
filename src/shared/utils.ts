@@ -59,7 +59,7 @@ export function isOverdue(dueDate: Date): boolean {
 // Array utilities
 export function sortBy<T>(
   array: T[], 
-  key: keyof T | ((item: T) => any), 
+  key: keyof T | ((item: T) => unknown),
   direction: 'asc' | 'desc' = 'asc'
 ): T[] {
   const getter = typeof key === 'function' ? key : (item: T) => item[key];
@@ -279,7 +279,7 @@ export function moveItemToIndex<T>(
 }
 
 // Debouncing utility
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   delay: number
 ): T {
@@ -292,7 +292,7 @@ export function debounce<T extends (...args: any[]) => any>(
 }
 
 // Throttling utility
-export function throttle<T extends (...args: any[]) => any>(
+export function throttle<T extends (...args: unknown[]) => unknown>(
   func: T,
   delay: number
 ): T {
@@ -323,7 +323,7 @@ export function deepClone<T>(obj: T): T {
   
   const cloned = {} as T;
   Object.keys(obj).forEach(key => {
-    cloned[key as keyof T] = deepClone((obj as any)[key]);
+    cloned[key as keyof T] = deepClone((obj as Record<string, unknown>)[key]);
   });
   
   return cloned;
@@ -342,7 +342,7 @@ export function shallowEqual<T>(a: T, b: T): boolean {
   
   if (keysA.length !== keysB.length) return false;
   
-  return keysA.every(key => (a as any)[key] === (b as any)[key]);
+  return keysA.every(key => (a as Record<string, unknown>)[key] === (b as Record<string, unknown>)[key]);
 }
 
 export function deepEqual<T>(a: T, b: T): boolean {
@@ -362,7 +362,7 @@ export function deepEqual<T>(a: T, b: T): boolean {
   
   if (keysA.length !== keysB.length) return false;
   
-  return keysA.every(key => deepEqual((a as any)[key], (b as any)[key]));
+  return keysA.every(key => deepEqual((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key]));
 }
 
 // Color utilities
@@ -420,7 +420,7 @@ export function parseSearchParams(search: string): Record<string, string> {
   return result;
 }
 
-export function buildSearchParams(params: Record<string, any>): string {
+export function buildSearchParams(params: Record<string, unknown>): string {
   const searchParams = new URLSearchParams();
   
   Object.entries(params).forEach(([key, value]) => {

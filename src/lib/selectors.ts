@@ -12,7 +12,7 @@ export type Selector<T, R> = (state: T) => R;
 export type EqualityFn<T> = (a: T, b: T) => boolean;
 
 // Shallow equality function for arrays and objects
-export const shallowEqual: EqualityFn<any> = (a, b) => {
+export const shallowEqual: EqualityFn<unknown> = (a, b) => {
   if (a === b) return true;
   if (typeof a !== 'object' || typeof b !== 'object') return false;
   if (a === null || b === null) return false;
@@ -361,12 +361,12 @@ export const combinedSelectors = {
 };
 
 // Selector composition utilities
-export function createSelector<T, R1, R2>(
+export function createSelector<T, R1, R2, R3>(
   selector1: Selector<T, R1>,
   selector2: Selector<T, R2>,
-  combiner: (result1: R1, result2: R2) => any
+  combiner: (result1: R1, result2: R2) => R3
 ) {
-  return (state: T) => combiner(selector1(state), selector2(state));
+  return (state: T): R3 => combiner(selector1(state), selector2(state));
 }
 
 export function createMemoizedSelector<T, R>(

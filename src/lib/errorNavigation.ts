@@ -86,7 +86,7 @@ export function navigateToServerError(
  * Handle API errors and navigate to appropriate error page
  */
 export function handleApiErrorNavigation(
-  error: any,
+  error: unknown,
   navigate: NavigateFunction,
   options: ErrorNavigationOptions = {}
 ) {
@@ -151,7 +151,7 @@ export function handleApiErrorNavigation(
  * Global error handler that can be used as unhandled promise rejection handler
  */
 export function createGlobalErrorHandler(navigate: NavigateFunction) {
-  return (error: any) => {
+  return (error: unknown) => {
     console.error('[Global Error Handler]', error);
     
     // Don't handle certain error types that should be handled elsewhere
@@ -185,7 +185,7 @@ export function createErrorNavigationUtils(navigate: NavigateFunction) {
     navigateToServerError: (statusCode?: number, options?: ErrorNavigationOptions) => 
       navigateToServerError(navigate, statusCode, options),
     
-    handleApiError: (error: any, options?: ErrorNavigationOptions) => 
+    handleApiError: (error: unknown, options?: ErrorNavigationOptions) =>
       handleApiErrorNavigation(error, navigate, options),
     
     createGlobalHandler: () => createGlobalErrorHandler(navigate),

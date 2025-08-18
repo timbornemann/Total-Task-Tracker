@@ -4,7 +4,7 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { healthService } from '../services/healthService.js';
+import { healthService, DetailedHealthCheck, HealthCheck } from '../services/healthService.js';
 import { getRequestLogger } from '../lib/logger.js';
 import { validateQuery } from '../middleware/validation.js';
 import { z } from 'zod';
@@ -18,9 +18,11 @@ const HealthQuerySchema = z.object({
 });
 
 // Main health check endpoint
+type HealthQuery = z.infer<typeof HealthQuerySchema>;
+
 router.get('/health', validateQuery(HealthQuerySchema), async (req: Request, res: Response) => {
   const logger = getRequestLogger(req);
-  const { detailed, timeout } = (req as any).validatedQuery;
+  const { detailed, timeout } = (req as Request & { validatedQuery: HealthQuery }).validatedQuery;
   
   try {
     logger.info({ detailed, timeout }, 'Health check requested');
@@ -35,7 +37,10 @@ router.get('/health', validateQuery(HealthQuerySchema), async (req: Request, res
       setTimeout(() => reject(new Error('Health check timeout')), timeout);
     });
     
-    const healthStatus = await Promise.race([healthCheckPromise, timeoutPromise]) as any;
+    const healthStatus = await Promise.race([
+      healthCheckPromise,
+      timeoutPromise,
+    ]) as HealthCheck | DetailedHealthCheck;
     
     const statusCode = healthStatus.status === 'healthy' ? 200 : 503;
     

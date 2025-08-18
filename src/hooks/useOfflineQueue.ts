@@ -40,8 +40,8 @@ export function useOfflineQueue(options: UseOfflineQueueOptions = {}) {
     type: QueuedOperation['type'],
     endpoint: string,
     method: QueuedOperation['method'],
-    data?: any,
-    metadata?: Record<string, any>,
+    data?: unknown,
+    metadata?: Record<string, unknown>,
     maxRetries: number = 3
   ) => {
     const targetResource = resource || 'unknown';
@@ -57,19 +57,19 @@ export function useOfflineQueue(options: UseOfflineQueueOptions = {}) {
   }, [resource]);
 
   // Enqueue specific operation types
-  const enqueueCreate = useCallback((endpoint: string, data: any, metadata?: Record<string, any>) => {
+  const enqueueCreate = useCallback((endpoint: string, data: unknown, metadata?: Record<string, unknown>) => {
     return enqueue('create', endpoint, 'POST', data, metadata);
   }, [enqueue]);
 
-  const enqueueUpdate = useCallback((endpoint: string, data: any, metadata?: Record<string, any>) => {
+  const enqueueUpdate = useCallback((endpoint: string, data: unknown, metadata?: Record<string, unknown>) => {
     return enqueue('update', endpoint, 'PUT', data, metadata);
   }, [enqueue]);
 
-  const enqueueDelete = useCallback((endpoint: string, metadata?: Record<string, any>) => {
+  const enqueueDelete = useCallback((endpoint: string, metadata?: Record<string, unknown>) => {
     return enqueue('delete', endpoint, 'DELETE', undefined, metadata);
   }, [enqueue]);
 
-  const enqueueSync = useCallback((endpoint: string, data: any, metadata?: Record<string, any>) => {
+  const enqueueSync = useCallback((endpoint: string, data: unknown, metadata?: Record<string, unknown>) => {
     return enqueue('sync', endpoint, 'PUT', data, metadata);
   }, [enqueue]);
 
@@ -164,12 +164,12 @@ export function useResourceQueue(resourceName: string) {
   const queue = useOfflineQueue({ resource: resourceName });
 
   // Create convenient methods for CRUD operations
-  const create = useCallback(async (data: any, endpoint?: string) => {
+  const create = useCallback(async (data: unknown, endpoint?: string) => {
     const url = endpoint || `/api/${resourceName}`;
     return queue.enqueueCreate(url, data, { operation: 'create' });
   }, [queue, resourceName]);
 
-  const update = useCallback(async (id: string, data: any, endpoint?: string) => {
+  const update = useCallback(async (id: string, data: unknown, endpoint?: string) => {
     const url = endpoint || `/api/${resourceName}/${id}`;
     return queue.enqueueUpdate(url, data, { operation: 'update', id });
   }, [queue, resourceName]);
@@ -179,7 +179,7 @@ export function useResourceQueue(resourceName: string) {
     return queue.enqueueDelete(url, { operation: 'delete', id });
   }, [queue, resourceName]);
 
-  const sync = useCallback(async (data: any, endpoint?: string) => {
+  const sync = useCallback(async (data: unknown, endpoint?: string) => {
     const url = endpoint || `/api/${resourceName}`;
     return queue.enqueueSync(url, data, { operation: 'sync' });
   }, [queue, resourceName]);
@@ -211,7 +211,7 @@ export function useOfflineAwareApi(resourceName: string) {
       type: QueuedOperation['type'];
       endpoint: string;
       method: QueuedOperation['method'];
-      data?: any;
+      data?: unknown;
     }
   ): Promise<T | null> => {
     if (isOnline) {
@@ -219,7 +219,7 @@ export function useOfflineAwareApi(resourceName: string) {
         return await operation();
       } catch (error) {
         // If request fails and it's a network error, queue it
-        if (error instanceof TypeError || (error as any)?.message?.includes('fetch')) {
+        if (error instanceof TypeError || (error as DOMException)?.message?.includes('fetch')) {
           resourceQueue.enqueue(
             fallback.type,
             fallback.endpoint,

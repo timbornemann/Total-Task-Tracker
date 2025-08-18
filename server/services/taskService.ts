@@ -22,7 +22,7 @@ export class TaskServiceError extends Error {
     message: string,
     public code: string,
     public statusCode: number = 500,
-    public details?: any
+    public details?: unknown
   ) {
     super(message);
     this.name = 'TaskServiceError';
@@ -36,7 +36,7 @@ export class TaskNotFoundError extends TaskServiceError {
 }
 
 export class TaskValidationError extends TaskServiceError {
-  constructor(message: string, details: any) {
+  constructor(message: string, details: unknown) {
     super(message, 'TASK_VALIDATION_ERROR', 400, details);
   }
 }

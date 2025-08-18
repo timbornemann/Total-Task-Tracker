@@ -168,7 +168,7 @@ export const requestLogger = (req: Request, res: Response, next: NextFunction) =
   
   // Override res.end to log response
   const originalEnd = res.end;
-  res.end = function(chunk?: any, encoding?: any) {
+  res.end = function(chunk?: unknown, encoding?: BufferEncoding) {
     const duration = Date.now() - start;
     const size = res.get('content-length') || 0;
     
@@ -261,7 +261,7 @@ export const createIPFilter = (options: {
 
 // Request validation for common attack patterns
 export const inputSanitization = (req: Request, res: Response, next: NextFunction) => {
-  const checkForMaliciousPatterns = (obj: any): boolean => {
+  const checkForMaliciousPatterns = (obj: unknown): boolean => {
     if (typeof obj === 'string') {
       // Check for SQL injection patterns
       const sqlPatterns = [

@@ -176,8 +176,8 @@ export function useNotesStore(options: UseNotesStoreOptions = {}) {
 
   const getSortedNotes = useCallback((notesToSort: Note[] = notes): Note[] => {
     return [...notesToSort].sort((a, b) => {
-      let aValue: any;
-      let bValue: any;
+      let aValue: string | number;
+      let bValue: string | number;
 
       switch (sort.field) {
         case 'title':

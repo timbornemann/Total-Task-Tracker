@@ -76,7 +76,7 @@ export interface PaginatableStoreState<T> extends BaseStoreState<T> {
 // CRUD operation types
 export type CrudOperation = 'create' | 'read' | 'update' | 'delete';
 
-export interface CrudOperationResult<T = any> {
+export interface CrudOperationResult<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
@@ -92,7 +92,7 @@ export interface SyncMetadata {
   conflictCount: number;
 }
 
-export interface ConflictResolution<T = any> {
+export interface ConflictResolution<T = unknown> {
   strategy: 'local-wins' | 'server-wins' | 'last-write-wins' | 'manual';
   resolvedData?: T;
   timestamp: Date;
@@ -114,13 +114,13 @@ export interface TimeBasedStatistics extends BaseStatistics {
 }
 
 // Form validation types
-export interface ValidationRule<T = any> {
+export interface ValidationRule<T = unknown> {
   field: keyof T;
   required?: boolean;
   minLength?: number;
   maxLength?: number;
   pattern?: RegExp;
-  custom?: (value: any) => boolean | string;
+  custom?: (value: T) => boolean | string;
 }
 
 export interface ValidationResult {
@@ -129,7 +129,7 @@ export interface ValidationResult {
 }
 
 // API response types
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   data: T;
   success: boolean;
   message?: string;
@@ -151,14 +151,14 @@ export interface ApiErrorResponse {
 }
 
 // Event types for store communication
-export interface StoreEvent<T = any> {
+export interface StoreEvent<T = unknown> {
   type: string;
   payload: T;
   timestamp: Date;
   source: string;
 }
 
-export interface StoreEventHandler<T = any> {
+export interface StoreEventHandler<T = unknown> {
   (event: StoreEvent<T>): void | Promise<void>;
 }
 
@@ -237,7 +237,7 @@ export interface ModalProps extends BaseComponentProps {
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
 }
 
-export interface FormProps<T = any> extends BaseComponentProps {
+export interface FormProps<T = unknown> extends BaseComponentProps {
   initialData?: Partial<T>;
   onSubmit: (data: T) => void | Promise<void>;
   onCancel?: () => void;
@@ -282,30 +282,30 @@ export interface StoreConfig<T> {
 
 export interface StoreMiddleware<T> {
   name: string;
-  before?: (action: any, state: T) => any;
-  after?: (action: any, state: T, result: any) => any;
+  before?: (action: unknown, state: T) => unknown;
+  after?: (action: unknown, state: T, result: unknown) => unknown;
 }
 
 // Export utility functions for type guards
-export function isBaseEntity(obj: any): obj is BaseEntity {
+export function isBaseEntity(obj: unknown): obj is BaseEntity {
   return obj && 
     typeof obj.id === 'string' &&
     obj.createdAt instanceof Date &&
     obj.updatedAt instanceof Date;
 }
 
-export function hasCategory(obj: any): obj is CategoryMixin {
+export function hasCategory(obj: unknown): obj is CategoryMixin {
   return obj && (typeof obj.categoryId === 'string' || obj.categoryId === undefined);
 }
 
-export function isPinnable(obj: any): obj is PinnedMixin {
+export function isPinnable(obj: unknown): obj is PinnedMixin {
   return obj && typeof obj.pinned === 'boolean';
 }
 
-export function isOrderable(obj: any): obj is OrderMixin {
+export function isOrderable(obj: unknown): obj is OrderMixin {
   return obj && typeof obj.order === 'number';
 }
 
-export function isArchivable(obj: any): obj is ArchiveMixin {
+export function isArchivable(obj: unknown): obj is ArchiveMixin {
   return obj && (typeof obj.archived === 'boolean' || obj.archived === undefined);
 }

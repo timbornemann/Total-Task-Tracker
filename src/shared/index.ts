@@ -59,8 +59,8 @@ export const REQUEST_TIMEOUT = 30000; // 30 seconds
 // Common validation patterns
 export const VALIDATION_PATTERNS = {
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-  url: /^https?:\/\/.+/,
-  phone: /^\+?[\d\s\-\(\)]+$/,
+  url: /^https?:\/\/.+/, 
+  phone: /^\+?[\d\s\-()]+$/,
   alphanumeric: /^[a-zA-Z0-9]+$/,
   slug: /^[a-z0-9-]+$/,
 };
