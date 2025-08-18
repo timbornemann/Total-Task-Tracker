@@ -101,6 +101,15 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
   const colorOptions = colorPalette;
 
+  const defaultCategory = React.useMemo(
+    () =>
+      defaultCategoryId ||
+      parentTask?.categoryId ||
+      categories[0]?.id ||
+      "",
+    [defaultCategoryId, parentTask?.categoryId, categories],
+  );
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -133,11 +142,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
         description: "",
         priority: defaultTaskPriority,
         color: defaultTaskColor,
-        categoryId:
-          defaultCategoryId ||
-          parentTask?.categoryId ||
-          categories[0]?.id ||
-          "",
+        categoryId: defaultCategory,
         parentId: parentTask?.id,
         dueDate: defaultDueDate,
         isRecurring: allowRecurring ? defaultIsRecurring : false,
@@ -158,16 +163,15 @@ const TaskModal: React.FC<TaskModalProps> = ({
   }, [
     isOpen,
     task,
-    categories,
-    parentTask,
-    defaultCategoryId,
+    parentTask?.id,
+    defaultCategory,
     defaultDueDate,
     defaultTaskPriority,
+    defaultTaskColor,
     defaultIsRecurring,
     allowRecurring,
     defaultStartTime,
     defaultEndTime,
-    colorPalette,
   ]);
 
   const handleSubmit = (e: React.FormEvent) => {
