@@ -11,6 +11,7 @@ import { HabitStoreProvider } from "@/hooks/useHabitStore";
 import { InventoryProvider } from "@/hooks/useInventoryStore";
 import ServiceWorkerManager from "@/components/ServiceWorkerManager";
 import CommandPalette from "@/components/CommandPalette";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import Home from "./pages/Home";
 import TasksPage from "./pages/Tasks";
 import Statistics from "./pages/Statistics";
@@ -50,126 +51,128 @@ import InventoryDetailPage from "./pages/InventoryDetail";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <SettingsProvider>
-        <ServiceWorkerManager />
-        <PomodoroHistoryProvider>
-          <TimersProvider>
-            <WorklogProvider>
-              <TaskStoreProvider>
-                <HabitStoreProvider>
-                  <FlashcardStoreProvider>
-                    <InventoryProvider>
-                      <CurrentCategoryProvider>
-                        <Toaster />
-                        <Sonner />
-                        <BrowserRouter>
-                          <SurpriseListener />
-                          <CommandPalette />
-                          <Routes>
-                            <Route path="/" element={<Home />} />
-                            <Route path="/tasks" element={<TasksPage />} />
-                            <Route
-                              path="/tasks/:taskId"
-                              element={<TaskDetailPage />}
-                            />
-                            <Route
-                              path="/statistics"
-                              element={<Statistics />}
-                            />
-                            <Route path="/kanban" element={<Kanban />} />
-                            <Route
-                              path="/recurring"
-                              element={<RecurringTasksPage />}
-                            />
-                            <Route
-                              path="/habits"
-                              element={<HabitTrackerPage />}
-                            />
-                            <Route
-                              path="/timeblocks"
-                              element={<TimeBlockingPage />}
-                            />
-                            <Route
-                              path="/flashcards/manage"
-                              element={<FlashcardManagerPage />}
-                            />
-                            <Route
-                              path="/flashcards/deck/:deckId"
-                              element={<DeckDetailPage />}
-                            />
-                            <Route
-                              path="/flashcards"
-                              element={<FlashcardsPage />}
-                            />
-                            <Route
-                              path="/flashcards/stats"
-                              element={<FlashcardStatisticsPage />}
-                            />
-                            <Route path="/notes" element={<NotesPage />} />
-                            <Route
-                              path="/notes/:id"
-                              element={<NoteDetailPage />}
-                            />
-                            <Route
-                              path="/inventory"
-                              element={<InventoryPage />}
-                            />
-                            <Route
-                              path="/inventory/:id"
-                              element={<InventoryDetailPage />}
-                            />
-                            <Route
-                              path="/settings"
-                              element={<SettingsPage />}
-                            />
-                            <Route
-                              path="/release-notes"
-                              element={<ReleaseNotesPage />}
-                            />
-                            <Route
-                              path="/pomodoro"
-                              element={<PomodoroPage />}
-                            />
-                            <Route
-                              path="/pomodoro/history"
-                              element={<PomodoroHistoryPage />}
-                            />
-                            <Route path="/timers" element={<TimersPage />} />
-                            <Route
-                              path="/timers/:id"
-                              element={<TimerDetailPage />}
-                            />
-                            <Route path="/clock" element={<ClockPage />} />
-                            <Route path="/worklog" element={<WorklogPage />} />
-                            <Route
-                              path="/worklog/:id"
-                              element={<WorklogDetailPage />}
-                            />
-                            <Route
-                              path="/surprise"
-                              element={<SurprisePage />}
-                            />
-                            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                            <Route path="*" element={<NotFound />} />
-                          </Routes>
-                        </BrowserRouter>
-                        <PomodoroTimer compact />
-                        <PomodoroTicker />
-                        <TimerTicker />
-                        <ReleaseNotesModal />
-                      </CurrentCategoryProvider>
-                    </InventoryProvider>
-                  </FlashcardStoreProvider>
-                </HabitStoreProvider>
-              </TaskStoreProvider>
-            </WorklogProvider>
-          </TimersProvider>
-        </PomodoroHistoryProvider>
-      </SettingsProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <SettingsProvider>
+          <ServiceWorkerManager />
+          <PomodoroHistoryProvider>
+            <TimersProvider>
+              <WorklogProvider>
+                <TaskStoreProvider>
+                  <HabitStoreProvider>
+                    <FlashcardStoreProvider>
+                      <InventoryProvider>
+                        <CurrentCategoryProvider>
+                          <Toaster />
+                          <Sonner />
+                          <BrowserRouter>
+                            <SurpriseListener />
+                            <CommandPalette />
+                            <Routes>
+                              <Route path="/" element={<Home />} />
+                              <Route path="/tasks" element={<TasksPage />} />
+                              <Route
+                                path="/tasks/:taskId"
+                                element={<TaskDetailPage />}
+                              />
+                              <Route
+                                path="/statistics"
+                                element={<Statistics />}
+                              />
+                              <Route path="/kanban" element={<Kanban />} />
+                              <Route
+                                path="/recurring"
+                                element={<RecurringTasksPage />}
+                              />
+                              <Route
+                                path="/habits"
+                                element={<HabitTrackerPage />}
+                              />
+                              <Route
+                                path="/timeblocks"
+                                element={<TimeBlockingPage />}
+                              />
+                              <Route
+                                path="/flashcards/manage"
+                                element={<FlashcardManagerPage />}
+                              />
+                              <Route
+                                path="/flashcards/deck/:deckId"
+                                element={<DeckDetailPage />}
+                              />
+                              <Route
+                                path="/flashcards"
+                                element={<FlashcardsPage />}
+                              />
+                              <Route
+                                path="/flashcards/stats"
+                                element={<FlashcardStatisticsPage />}
+                              />
+                              <Route path="/notes" element={<NotesPage />} />
+                              <Route
+                                path="/notes/:id"
+                                element={<NoteDetailPage />}
+                              />
+                              <Route
+                                path="/inventory"
+                                element={<InventoryPage />}
+                              />
+                              <Route
+                                path="/inventory/:id"
+                                element={<InventoryDetailPage />}
+                              />
+                              <Route
+                                path="/settings"
+                                element={<SettingsPage />}
+                              />
+                              <Route
+                                path="/release-notes"
+                                element={<ReleaseNotesPage />}
+                              />
+                              <Route
+                                path="/pomodoro"
+                                element={<PomodoroPage />}
+                              />
+                              <Route
+                                path="/pomodoro/history"
+                                element={<PomodoroHistoryPage />}
+                              />
+                              <Route path="/timers" element={<TimersPage />} />
+                              <Route
+                                path="/timers/:id"
+                                element={<TimerDetailPage />}
+                              />
+                              <Route path="/clock" element={<ClockPage />} />
+                              <Route path="/worklog" element={<WorklogPage />} />
+                              <Route
+                                path="/worklog/:id"
+                                element={<WorklogDetailPage />}
+                              />
+                              <Route
+                                path="/surprise"
+                                element={<SurprisePage />}
+                              />
+                              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                              <Route path="*" element={<NotFound />} />
+                            </Routes>
+                          </BrowserRouter>
+                          <PomodoroTimer compact />
+                          <PomodoroTicker />
+                          <TimerTicker />
+                          <ReleaseNotesModal />
+                        </CurrentCategoryProvider>
+                      </InventoryProvider>
+                    </FlashcardStoreProvider>
+                  </HabitStoreProvider>
+                </TaskStoreProvider>
+              </WorklogProvider>
+            </TimersProvider>
+          </PomodoroHistoryProvider>
+        </SettingsProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;
