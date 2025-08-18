@@ -187,7 +187,7 @@ export class HealthService {
   private getSystemStatus(): SystemStatus {
     return {
       uptime: this.getUptime(),
-      loadAverage: process.platform !== 'win32' ? process.loadavg() : undefined,
+      loadAverage: process.platform !== 'win32' ? (process as any).loadavg?.() : undefined,
       platform: process.platform,
       nodeVersion: process.version,
       pid: process.pid,

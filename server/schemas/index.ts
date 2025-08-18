@@ -214,6 +214,7 @@ export const HealthCheckSchema = z.object({
   database: z.object({
     status: z.enum(['connected', 'disconnected']),
     responseTime: z.number().optional(),
+    error: z.string().optional(),
   }),
   memory: z.object({
     used: z.number(),

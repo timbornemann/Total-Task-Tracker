@@ -180,7 +180,7 @@ export class TaskService {
   async createTask(taskData: CreateTask): Promise<Task> {
     try {
       // Validate input
-      const validatedData = validateSchema(CreateTaskSchema, taskData);
+      const validatedData = validateSchema(CreateTaskSchema, taskData) as CreateTask;
       
       // Generate ID and timestamps
       const now = new Date();
@@ -242,7 +242,7 @@ export class TaskService {
   async updateTask(taskId: string, updates: UpdateTask): Promise<Task> {
     try {
       // Validate input
-      const validatedUpdates = validateSchema(UpdateTaskSchema, updates);
+      const validatedUpdates = validateSchema(UpdateTaskSchema, updates) as UpdateTask;
       
       // Get existing task
       const existingTask = await this.getTaskById(taskId);
@@ -326,7 +326,7 @@ export class TaskService {
   // Bulk operations
   async bulkUpdateTasks(taskIds: string[], updates: Partial<UpdateTask>): Promise<Task[]> {
     try {
-      const validatedUpdates = validateSchema(UpdateTaskSchema.partial(), updates);
+      const validatedUpdates = validateSchema(UpdateTaskSchema.partial(), updates) as Partial<UpdateTask>;
       const updatedTasks: Task[] = [];
       
       for (const taskId of taskIds) {

@@ -5,7 +5,9 @@ import { fileURLToPath } from "url";
 const router = Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const DIST_DIR = path.join(__dirname, "..", "..", "dist");
+// In compiled output, this file lives under dist/server/controllers
+// The frontend build root is dist (two levels up from dist/server)
+const DIST_DIR = path.join(__dirname, "..", "..");
 
 router.get("*", (req, res) => {
   res.sendFile(path.join(DIST_DIR, "index.html"));

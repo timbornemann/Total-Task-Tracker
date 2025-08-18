@@ -35,7 +35,7 @@ router.get('/health', validateQuery(HealthQuerySchema), async (req: Request, res
       setTimeout(() => reject(new Error('Health check timeout')), timeout);
     });
     
-    const healthStatus = await Promise.race([healthCheckPromise, timeoutPromise]);
+    const healthStatus = await Promise.race([healthCheckPromise, timeoutPromise]) as any;
     
     const statusCode = healthStatus.status === 'healthy' ? 200 : 503;
     

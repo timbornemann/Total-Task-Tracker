@@ -12,7 +12,7 @@ export interface ValidatedRequest<
   TBody = any,
   TParams = any,
   TQuery = any
-> extends Request {
+> extends Request<TParams, any, TBody, TQuery> {
   validatedBody?: TBody;
   validatedParams?: TParams;
   validatedQuery?: TQuery;
