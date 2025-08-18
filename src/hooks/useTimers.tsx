@@ -3,6 +3,10 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { loadOfflineData, updateOfflineData, syncWithServer } from "@/utils/offline";
 
+const generateId = () =>
+  (crypto as { randomUUID?: () => string }).randomUUID?.() ||
+  `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
 export interface Timer {
   id: string;
   title: string;
@@ -53,7 +57,7 @@ export const useTimers = create<TimersState>()(
       timers: [],
       setTimers: (list) => set({ timers: list }),
       addTimer: (data) => {
-        const id = crypto.randomUUID();
+        const id = generateId();
         set((state) => ({
           timers: [
             ...state.timers,

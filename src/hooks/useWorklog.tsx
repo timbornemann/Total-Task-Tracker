@@ -16,6 +16,10 @@ const API_WORKDAYS = "/api/workdays";
 const API_COMMUTES = "/api/commutes";
 const API_ALL = "/api/all";
 
+const generateId = () =>
+  (crypto as { randomUUID?: () => string }).randomUUID?.() ||
+  `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
 const useWorklogImpl = () => {
   const [trips, setTrips] = useState<Trip[]>([]);
   const [workDays, setWorkDays] = useState<WorkDay[]>([]);
@@ -147,7 +151,7 @@ const useWorklogImpl = () => {
   };
 
   const addTrip = (data: { name: string; location?: string; color: number }) => {
-    const id = crypto.randomUUID();
+    const id = generateId();
     const now = new Date();
     const newTrip = {
       id,
@@ -200,7 +204,7 @@ const useWorklogImpl = () => {
     commuteId?: string;
     commuteKm?: number;
   }) => {
-    const id = crypto.randomUUID();
+    const id = generateId();
     const now = new Date();
     const newWorkDay = {
       id,
@@ -238,7 +242,7 @@ const useWorklogImpl = () => {
   };
 
   const addCommute = (data: { name: string; kilometers: number }) => {
-    const id = crypto.randomUUID();
+    const id = generateId();
     const now = new Date();
     const newCommute = { id, ...data, createdAt: now, updatedAt: now };
     const newCommutes = [...commutes, newCommute];
