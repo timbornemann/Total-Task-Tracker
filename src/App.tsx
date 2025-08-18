@@ -26,6 +26,7 @@ import FlashcardStatisticsPage from "./pages/FlashcardStatistics";
 import SettingsPage from "./pages/Settings";
 import ReleaseNotesPage from "./pages/ReleaseNotes";
 import NotFound from "./pages/NotFound";
+import ServerError from "./pages/ServerError";
 import PomodoroPage from "./pages/Pomodoro";
 import PomodoroHistoryPage from "./pages/PomodoroHistory";
 import PomodoroTimer from "@/components/PomodoroTimer";
@@ -153,6 +154,10 @@ const App = () => (
                               <Route
                                 path="/surprise"
                                 element={<SurprisePage />}
+                              />
+                              <Route
+                                path="/error"
+                                element={<ServerError />}
                               />
                               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                               <Route path="*" element={<NotFound />} />
