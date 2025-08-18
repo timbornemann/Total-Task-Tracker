@@ -12,6 +12,7 @@ import { InventoryProvider } from "@/hooks/useInventoryStore";
 import ServiceWorkerManager from "@/components/ServiceWorkerManager";
 import CommandPalette from "@/components/CommandPalette";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { FloatingOfflineIndicator } from "@/components/OfflineStatusIndicator";
 import Home from "./pages/Home";
 import TasksPage from "./pages/Tasks";
 import Statistics from "./pages/Statistics";
@@ -161,6 +162,7 @@ const App = () => (
                           <PomodoroTicker />
                           <TimerTicker />
                           <ReleaseNotesModal />
+                          <FloatingOfflineIndicator />
                         </CurrentCategoryProvider>
                       </InventoryProvider>
                     </FlashcardStoreProvider>
