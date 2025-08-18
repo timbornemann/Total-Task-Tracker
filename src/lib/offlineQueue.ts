@@ -11,11 +11,11 @@ export interface QueuedOperation {
   resource: string;
   endpoint: string;
   method: 'POST' | 'PUT' | 'DELETE';
-  data?: any;
+  data?: unknown;
   timestamp: number;
   retries: number;
   maxRetries: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface OfflineQueueState {

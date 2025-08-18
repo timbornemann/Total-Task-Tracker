@@ -4,6 +4,7 @@
  */
 
 import { promises as fs } from 'fs';
+import os from 'os';
 import { HealthCheck, HealthCheckSchema } from '../schemas/index.js';
 import { logger, logHealthCheck } from '../lib/logger.js';
 
@@ -187,7 +188,7 @@ export class HealthService {
   private getSystemStatus(): SystemStatus {
     return {
       uptime: this.getUptime(),
-      loadAverage: process.platform !== 'win32' ? (process as any).loadavg?.() : undefined,
+      loadAverage: process.platform !== 'win32' ? os.loadavg() : undefined,
       platform: process.platform,
       nodeVersion: process.version,
       pid: process.pid,
@@ -204,8 +205,8 @@ export class HealthService {
   }
 
   // Check external dependencies
-  private async checkDependencies(): Promise<Record<string, any>> {
-    const dependencies: Record<string, any> = {};
+  private async checkDependencies(): Promise<Record<string, unknown>> {
+    const dependencies: Record<string, unknown> = {};
 
     // Check file system
     dependencies.filesystem = await this.checkFileSystemHealth();

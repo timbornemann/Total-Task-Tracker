@@ -30,8 +30,8 @@ export interface SyncState {
 export interface ConflictRecord {
   id: string;
   type: 'update' | 'delete';
-  localData: any;
-  serverData: any;
+  localData: unknown;
+  serverData: unknown;
   timestamp: Date;
 }
 
@@ -40,7 +40,7 @@ export interface PendingOperation {
   type: 'create' | 'update' | 'delete';
   entityType: string;
   entityId: string;
-  data?: any;
+  data?: unknown;
   timestamp: Date;
   retries: number;
 }
@@ -78,7 +78,7 @@ export class PersistenceManager<T extends PersistableEntity> {
   }
 
   // Local storage operations
-  private saveToStorage(key: string, data: any): void {
+  private saveToStorage(key: string, data: unknown): void {
     try {
       const serialized = JSON.stringify(data, this.dateReplacer);
       localStorage.setItem(key, serialized);
@@ -91,7 +91,7 @@ export class PersistenceManager<T extends PersistableEntity> {
     }
   }
 
-  private loadFromStorage(key: string): any | null {
+  private loadFromStorage(key: string): unknown | null {
     try {
       const stored = localStorage.getItem(key);
       return stored ? JSON.parse(stored, this.dateReviver) : null;
@@ -102,11 +102,11 @@ export class PersistenceManager<T extends PersistableEntity> {
   }
 
   // Date serialization helpers
-  private dateReplacer = (_: string, value: any): any => {
+  private dateReplacer = (_: string, value: unknown): unknown => {
     return value instanceof Date ? value.toISOString() : value;
   };
 
-  private dateReviver = (_: string, value: any): any => {
+  private dateReviver = (_: string, value: unknown): unknown => {
     if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
       return new Date(value);
     }

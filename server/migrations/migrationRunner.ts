@@ -73,11 +73,11 @@ export class MigrationRunner {
   }
 
   // Date serialization helpers
-  private dateReplacer = (_: string, value: any): any => {
+  private dateReplacer = (_: string, value: unknown): unknown => {
     return value instanceof Date ? value.toISOString() : value;
   };
 
-  private dateReviver = (_: string, value: any): any => {
+  private dateReviver = (_: string, value: unknown): unknown => {
     if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
       return new Date(value);
     }

@@ -35,7 +35,7 @@ export function useApiWithNotifications(options: UseApiOptions = {}) {
   /**
    * Create a request key for deduplication
    */
-  const createRequestKey = useCallback((method: string, url: string, body?: any) => {
+  const createRequestKey = useCallback((method: string, url: string, body?: unknown) => {
     const bodyKey = body ? JSON.stringify(body) : '';
     return `${method}:${url}:${bodyKey}`;
   }, []);
@@ -46,7 +46,7 @@ export function useApiWithNotifications(options: UseApiOptions = {}) {
   const makeApiCall = useCallback(async <T>(
     method: 'get' | 'post' | 'put' | 'delete' | 'patch',
     url: string,
-    body?: any,
+    body?: unknown,
     context: ErrorContext = {},
     config: ErrorNotificationConfig = {},
     requestConfig: Omit<ApiRequestConfig, 'method' | 'body'> = {}
@@ -132,7 +132,7 @@ export function useApiWithNotifications(options: UseApiOptions = {}) {
    */
   const post = useCallback(<T>(
     url: string,
-    body?: any,
+    body?: unknown,
     context?: ErrorContext,
     config?: ErrorNotificationConfig,
     requestConfig?: Omit<ApiRequestConfig, 'method'>
@@ -143,7 +143,7 @@ export function useApiWithNotifications(options: UseApiOptions = {}) {
    */
   const put = useCallback(<T>(
     url: string,
-    body?: any,
+    body?: unknown,
     context?: ErrorContext,
     config?: ErrorNotificationConfig,
     requestConfig?: Omit<ApiRequestConfig, 'method'>
@@ -164,7 +164,7 @@ export function useApiWithNotifications(options: UseApiOptions = {}) {
    */
   const patch = useCallback(<T>(
     url: string,
-    body?: any,
+    body?: unknown,
     context?: ErrorContext,
     config?: ErrorNotificationConfig,
     requestConfig?: Omit<ApiRequestConfig, 'method'>
@@ -183,7 +183,7 @@ export function useApiWithNotifications(options: UseApiOptions = {}) {
   /**
    * Create a pre-configured API client for a specific resource
    */
-  const createResourceApi = useCallback(<T = any>(resourceName: string) => ({
+  const createResourceApi = useCallback(<T = unknown>(resourceName: string) => ({
     create: (data: T, context?: Partial<ErrorContext>) => post<T>(
       `/api/${resourceName}`,
       data,

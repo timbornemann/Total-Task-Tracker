@@ -276,13 +276,13 @@ export function useBatchSync<T extends PersistableEntity>(
 
 // Hook for persistence statistics across multiple stores
 export function usePersistenceStats(
-  managers: PersistenceManager<any>[]
+  managers: PersistenceManager<unknown>[]
 ) {
   const [stats, setStats] = useState<{
     totalItems: number;
     totalConflicts: number;
     lastGlobalSync?: Date;
-    storeStats: Array<{ storeName: string; stats: any }>;
+    storeStats: Array<{ storeName: string; stats: unknown }>;
   }>({
     totalItems: 0,
     totalConflicts: 0,

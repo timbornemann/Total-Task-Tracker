@@ -8,7 +8,7 @@ export class ApiError extends Error {
     message: string,
     public statusCode?: number,
     public response?: Response,
-    public data?: any
+    public data?: unknown
   ) {
     super(message);
     this.name = 'ApiError';
@@ -41,7 +41,7 @@ export class ValidationError extends ApiError {
 export interface ApiRequestConfig {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   headers?: Record<string, string>;
-  body?: any;
+  body?: unknown;
   timeout?: number;
   retries?: number;
   retryDelay?: number;
@@ -50,7 +50,7 @@ export interface ApiRequestConfig {
 }
 
 // Response wrapper
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   data: T;
   status: number;
   statusText: string;
@@ -90,20 +90,20 @@ const RETRY_STATUS_CODES = [408, 429, 500, 502, 503, 504];
  * Logger interface for error reporting
  */
 interface Logger {
-  error: (message: string, data?: any) => void;
-  warn: (message: string, data?: any) => void;
-  info: (message: string, data?: any) => void;
+  error: (message: string, data?: unknown) => void;
+  warn: (message: string, data?: unknown) => void;
+  info: (message: string, data?: unknown) => void;
 }
 
 // Simple console logger (can be replaced with more sophisticated logging)
 const logger: Logger = {
-  error: (message: string, data?: any) => {
+  error: (message: string, data?: unknown) => {
     console.error(`[ApiClient] ${message}`, data);
   },
-  warn: (message: string, data?: any) => {
+  warn: (message: string, data?: unknown) => {
     console.warn(`[ApiClient] ${message}`, data);
   },
-  info: (message: string, data?: any) => {
+  info: (message: string, data?: unknown) => {
     console.info(`[ApiClient] ${message}`, data);
   },
 };
@@ -218,7 +218,7 @@ export class ApiClient {
   /**
    * Make HTTP request with retry logic and error handling
    */
-  async request<T = any>(
+  async request<T = unknown>(
     url: string,
     config: ApiRequestConfig = {}
   ): Promise<ApiResponse<T>> {
@@ -338,7 +338,7 @@ export class ApiClient {
         if (
           error instanceof TimeoutError ||
           error instanceof ValidationError ||
-          (error as any)?.name === 'AbortError'
+          (error as DOMException)?.name === 'AbortError'
         ) {
           logger.error('Non-retryable error occurred', { 
             url: fullUrl, 
@@ -396,11 +396,11 @@ export class ApiClient {
     return this.request<T>(url, { ...config, method: 'GET' });
   }
 
-  async post<T>(url: string, body?: any, config?: Omit<ApiRequestConfig, 'method'>) {
+  async post<T>(url: string, body?: unknown, config?: Omit<ApiRequestConfig, 'method'>) {
     return this.request<T>(url, { ...config, method: 'POST', body });
   }
 
-  async put<T>(url: string, body?: any, config?: Omit<ApiRequestConfig, 'method'>) {
+  async put<T>(url: string, body?: unknown, config?: Omit<ApiRequestConfig, 'method'>) {
     return this.request<T>(url, { ...config, method: 'PUT', body });
   }
 
@@ -408,7 +408,7 @@ export class ApiClient {
     return this.request<T>(url, { ...config, method: 'DELETE' });
   }
 
-  async patch<T>(url: string, body?: any, config?: Omit<ApiRequestConfig, 'method'>) {
+  async patch<T>(url: string, body?: unknown, config?: Omit<ApiRequestConfig, 'method'>) {
     return this.request<T>(url, { ...config, method: 'PATCH', body });
   }
 }
@@ -421,15 +421,15 @@ export const api = {
   get: <T>(url: string, config?: Omit<ApiRequestConfig, 'method' | 'body'>) =>
     apiClient.get<T>(url, config),
   
-  post: <T>(url: string, body?: any, config?: Omit<ApiRequestConfig, 'method'>) =>
+  post: <T>(url: string, body?: unknown, config?: Omit<ApiRequestConfig, 'method'>) =>
     apiClient.post<T>(url, body, config),
-  
-  put: <T>(url: string, body?: any, config?: Omit<ApiRequestConfig, 'method'>) =>
+
+  put: <T>(url: string, body?: unknown, config?: Omit<ApiRequestConfig, 'method'>) =>
     apiClient.put<T>(url, body, config),
-  
+
   delete: <T>(url: string, config?: Omit<ApiRequestConfig, 'method' | 'body'>) =>
     apiClient.delete<T>(url, config),
-  
-  patch: <T>(url: string, body?: any, config?: Omit<ApiRequestConfig, 'method'>) =>
+
+  patch: <T>(url: string, body?: unknown, config?: Omit<ApiRequestConfig, 'method'>) =>
     apiClient.patch<T>(url, body, config),
 };

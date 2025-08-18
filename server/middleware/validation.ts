@@ -8,16 +8,15 @@ import { ErrorResponseSchema } from '../schemas/index.js';
 import { logger } from '../lib/logger.js';
 
 // Extended Request interface for validated data  
-export interface ValidatedRequest extends Request {
-  body: any;
-  params: any;
-  query: any;
-  path: string;
-  method: string;
-  headers: any;
-  validatedBody?: any;
-  validatedParams?: any;
-  validatedQuery?: any;
+export interface ValidatedRequest<B = unknown, P = unknown, Q = unknown>
+  extends Request {
+  body: B;
+  params: P;
+  query: Q;
+  headers: Record<string, unknown>;
+  validatedBody?: B;
+  validatedParams?: P;
+  validatedQuery?: Q;
 }
 
 // Validation error class
@@ -37,7 +36,11 @@ export class ValidationError extends Error {
 }
 
 export function validateBody<T>(schema: z.ZodSchema<T>) {
-  return (req: ValidatedRequest, res: Response, next: NextFunction) => {
+  return (
+    req: ValidatedRequest<T, unknown, unknown>,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
       const validated = schema.parse(req.body);
       req.validatedBody = validated;
@@ -84,7 +87,11 @@ export function validateBody<T>(schema: z.ZodSchema<T>) {
 }
 
 export function validateParams<T>(schema: z.ZodSchema<T>) {
-  return (req: ValidatedRequest, res: Response, next: NextFunction) => {
+  return (
+    req: ValidatedRequest<unknown, T, unknown>,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
       const validated = schema.parse(req.params);
       req.validatedParams = validated;
@@ -131,7 +138,11 @@ export function validateParams<T>(schema: z.ZodSchema<T>) {
 }
 
 export function validateQuery<T>(schema: z.ZodSchema<T>) {
-  return (req: ValidatedRequest, res: Response, next: NextFunction) => {
+  return (
+    req: ValidatedRequest<unknown, unknown, T>,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
       const validated = schema.parse(req.query);
       req.validatedQuery = validated;

@@ -66,7 +66,7 @@ export const requestLoggingMiddleware = (req: Request, res: Response, next: Next
   const requestLogger = createLoggerWithCorrelationId(correlationId);
   
   // Add logger to request object
-  (req as any).logger = requestLogger;
+  (req as RequestWithLogger).logger = requestLogger;
   
   // Log request start
   requestLogger.info({
@@ -82,7 +82,7 @@ export const requestLoggingMiddleware = (req: Request, res: Response, next: Next
 
   // Override res.end to log response
   const originalEnd = res.end;
-  res.end = function(chunk?: any, encoding?: any) {
+  res.end = function(chunk?: unknown, encoding?: BufferEncoding) {
     const duration = Date.now() - startTime;
     const contentLength = res.get('content-length') || 0;
     
@@ -110,7 +110,7 @@ export const errorLoggingMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  const requestLogger = (req as any).logger || logger;
+  const requestLogger = (req as RequestWithLogger).logger || logger;
   const correlationId = req.headers['x-correlation-id'];
   
   requestLogger.error({
@@ -133,14 +133,14 @@ export const errorLoggingMiddleware = (
 // Database operation logger
 export const createDbLogger = (operation: string) => {
   return {
-    info: (data: any, message: string) => {
+    info: (data: Record<string, unknown>, message: string) => {
       logger.info({
         event: 'db_operation',
         operation,
         ...data,
       }, message);
     },
-    error: (data: any, message: string) => {
+    error: (data: Record<string, unknown>, message: string) => {
       logger.error({
         event: 'db_error',
         operation,
@@ -153,21 +153,21 @@ export const createDbLogger = (operation: string) => {
 // Service operation logger
 export const createServiceLogger = (service: string) => {
   return {
-    info: (data: any, message: string) => {
+    info: (data: Record<string, unknown>, message: string) => {
       logger.info({
         event: 'service_operation',
         service,
         ...data,
       }, message);
     },
-    warn: (data: any, message: string) => {
+    warn: (data: Record<string, unknown>, message: string) => {
       logger.warn({
         event: 'service_warning',
         service,
         ...data,
       }, message);
     },
-    error: (data: any, message: string) => {
+    error: (data: Record<string, unknown>, message: string) => {
       logger.error({
         event: 'service_error',
         service,
@@ -178,7 +178,7 @@ export const createServiceLogger = (service: string) => {
 };
 
 // Performance measurement logger
-export const logPerformance = (operation: string, startTime: number, data?: any) => {
+export const logPerformance = (operation: string, startTime: number, data?: Record<string, unknown>) => {
   const duration = Date.now() - startTime;
   
   logger.info({
@@ -190,7 +190,7 @@ export const logPerformance = (operation: string, startTime: number, data?: any)
 };
 
 // Security event logger
-export const logSecurityEvent = (event: string, data: any, req?: Request) => {
+export const logSecurityEvent = (event: string, data: Record<string, unknown>, req?: Request) => {
   const correlationId = req?.headers['x-correlation-id'];
   
   logger.warn({
@@ -204,7 +204,7 @@ export const logSecurityEvent = (event: string, data: any, req?: Request) => {
 };
 
 // Business event logger
-export const logBusinessEvent = (event: string, data: any, correlationId?: string) => {
+export const logBusinessEvent = (event: string, data: Record<string, unknown>, correlationId?: string) => {
   logger.info({
     event: 'business_event',
     businessEvent: event,
@@ -214,7 +214,7 @@ export const logBusinessEvent = (event: string, data: any, correlationId?: strin
 };
 
 // Application lifecycle logger
-export const logAppEvent = (event: string, data?: any) => {
+export const logAppEvent = (event: string, data?: Record<string, unknown>) => {
   logger.info({
     event: 'app_lifecycle',
     lifecycleEvent: event,
@@ -223,7 +223,7 @@ export const logAppEvent = (event: string, data?: any) => {
 };
 
 // Health check logger
-export const logHealthCheck = (status: 'healthy' | 'unhealthy', data: any) => {
+export const logHealthCheck = (status: 'healthy' | 'unhealthy', data: Record<string, unknown>) => {
   const logLevel = status === 'healthy' ? 'info' : 'error';
   
   logger[logLevel]({
@@ -240,7 +240,7 @@ export interface RequestWithLogger extends Request {
 
 // Utility function to get logger from request
 export const getRequestLogger = (req: Request): pino.Logger => {
-  return (req as any).logger || logger;
+  return (req as RequestWithLogger).logger || logger;
 };
 
 export default logger;
