@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Trip, WorkDay } from "@/types";
+import { Trip, WorkDay, Commute } from "@/types";
 import { normalizeDateTime } from "@/utils/time";
 import { useTranslation } from "react-i18next";
 import {
@@ -21,9 +21,11 @@ interface WorkDayFormData {
 interface WorkDayModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: WorkDayFormData) => void;
+  onSave: (data: WorkDayFormData & { commuteId?: string; commuteKm?: number }) => void;
   workDay?: WorkDay;
   trips: Trip[];
+  commutes: Commute[];
+  addCommute: (data: { name: string; kilometers: number }) => string;
   defaultTripId?: string;
 }
 
@@ -33,14 +35,15 @@ const WorkDayModal: React.FC<WorkDayModalProps> = ({
   onSave,
   workDay,
   trips,
+  commutes,
+  addCommute,
   defaultTripId,
 }) => {
   const { t } = useTranslation();
-  const [form, setForm] = useState<WorkDayFormData>({
-    start: "",
-    end: "",
-    tripId: "",
-  });
+  const [form, setForm] = useState<WorkDayFormData>({ start: "", end: "", tripId: "" });
+  const [commuteSelection, setCommuteSelection] = useState<string>("");
+  const [commuteKm, setCommuteKm] = useState<string>("");
+  const [newCommute, setNewCommute] = useState<{ name: string; km: string }>({ name: "", km: "" });
 
   const toInput = (v: string) => v.replace(" ", "T");
   const fromInput = (v: string) => v.replace("T", " ");
@@ -53,8 +56,19 @@ const WorkDayModal: React.FC<WorkDayModalProps> = ({
         end: toInput(normalizeDateTime(workDay.end)),
         tripId: workDay.tripId,
       });
+      if (workDay.commuteId) {
+        setCommuteSelection(workDay.commuteId);
+      } else if (workDay.commuteKm) {
+        setCommuteSelection("custom");
+        setCommuteKm(String(workDay.commuteKm));
+      } else {
+        setCommuteSelection("");
+      }
     } else {
       setForm({ start: "", end: "", tripId: defaultTripId || "" });
+      setCommuteSelection("");
+      setCommuteKm("");
+      setNewCommute({ name: "", km: "" });
     }
   }, [isOpen, workDay, defaultTripId]);
 
@@ -65,10 +79,24 @@ const WorkDayModal: React.FC<WorkDayModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (form.start && form.end) {
+      let commuteId: string | undefined;
+      let commuteKmNum: number | undefined;
+      if (commuteSelection === "new" && newCommute.name && newCommute.km) {
+        commuteId = addCommute({
+          name: newCommute.name,
+          kilometers: Number(newCommute.km),
+        });
+      } else if (commuteSelection === "custom" && commuteKm) {
+        commuteKmNum = Number(commuteKm);
+      } else if (commuteSelection) {
+        commuteId = commuteSelection;
+      }
       onSave({
         start: normalizeDateTime(fromInput(form.start)),
         end: normalizeDateTime(fromInput(form.end)),
         tripId: form.tripId || undefined,
+        commuteId,
+        commuteKm: commuteKmNum,
       });
       onClose();
     }
@@ -118,6 +146,52 @@ const WorkDayModal: React.FC<WorkDayModalProps> = ({
                 </option>
               ))}
             </select>
+          </div>
+          <div>
+            <Label htmlFor="wd-commute">{t("workDayModal.commute")}</Label>
+            <select
+              id="wd-commute"
+              className="border rounded px-2 py-1 w-full"
+              value={commuteSelection}
+              onChange={(e) => setCommuteSelection(e.target.value)}
+            >
+              <option value="">{t("workDayModal.noCommute")}</option>
+              {commutes.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name} ({c.kilometers} km)
+                </option>
+              ))}
+              <option value="custom">{t("workDayModal.enterKm")}</option>
+              <option value="new">{t("workDayModal.newCommute")}</option>
+            </select>
+            {commuteSelection === "custom" && (
+              <Input
+                type="number"
+                className="mt-2"
+                value={commuteKm}
+                onChange={(e) => setCommuteKm(e.target.value)}
+                placeholder={t("workDayModal.kilometers") as string}
+              />
+            )}
+            {commuteSelection === "new" && (
+              <div className="mt-2 space-y-2">
+                <Input
+                  value={newCommute.name}
+                  onChange={(e) =>
+                    setNewCommute({ ...newCommute, name: e.target.value })
+                  }
+                  placeholder={t("workDayModal.newCommuteName") as string}
+                />
+                <Input
+                  type="number"
+                  value={newCommute.km}
+                  onChange={(e) =>
+                    setNewCommute({ ...newCommute, km: e.target.value })
+                  }
+                  placeholder={t("workDayModal.kilometers") as string}
+                />
+              </div>
+            )}
           </div>
           <div className="flex justify-end space-x-2 pt-4">
             <Button type="button" variant="outline" onClick={onClose}>

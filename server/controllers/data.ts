@@ -8,6 +8,7 @@ import type {
   Timer,
   Trip,
   WorkDay,
+  Commute,
   InventoryItem,
   ItemCategory,
   ItemTag,
@@ -25,6 +26,7 @@ interface Data {
   timers: Timer[];
   trips: Trip[];
   workDays: WorkDay[];
+  commutes: Commute[];
   items: InventoryItem[];
   itemCategories: ItemCategory[];
   itemTags: ItemTag[];

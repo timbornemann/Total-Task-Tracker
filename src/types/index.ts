@@ -239,6 +239,8 @@ export interface WorkDay {
   start: string;
   end: string;
   tripId?: string;
+  commuteId?: string;
+  commuteKm?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -248,6 +250,14 @@ export interface Trip {
   name: string;
   location?: string;
   color?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface Commute {
+  id: string;
+  name: string;
+  kilometers: number;
   createdAt?: Date;
   updatedAt?: Date;
 }

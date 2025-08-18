@@ -38,6 +38,8 @@ const WorklogPage: React.FC = () => {
     addWorkDay,
     updateWorkDay,
     deleteWorkDay,
+    commutes,
+    addCommute,
   } = useWorklog();
   const { worklogCardShadow, defaultTripColor, colorPalette } = useSettings();
   const [showTripModal, setShowTripModal] = useState(false);
@@ -65,6 +67,8 @@ const WorklogPage: React.FC = () => {
     start: string;
     end: string;
     tripId?: string;
+    commuteId?: string;
+    commuteKm?: number;
   }) => {
     if (editingDay) {
       updateWorkDay(editingDay, data);
@@ -75,6 +79,14 @@ const WorklogPage: React.FC = () => {
 
   const duration = (s: string, e: string) =>
     (new Date(e).getTime() - new Date(s).getTime()) / 3600000;
+
+  const commuteDistance = (d: { commuteId?: string; commuteKm?: number }) => {
+    if (d.commuteId) {
+      const c = commutes.find((c) => c.id === d.commuteId);
+      return c?.kilometers ?? 0;
+    }
+    return d.commuteKm ?? 0;
+  };
 
   const exportCsv = (tripId?: string) => {
     const days = workDays.filter((d) =>
@@ -207,6 +219,7 @@ const WorklogPage: React.FC = () => {
                     <TableHead style={{color: textColor}}>{t("worklog.date")}</TableHead>
                     <TableHead style={{color: textColor}}>{t("worklog.time")}</TableHead>
                     <TableHead style={{color: textColor}}>{t("worklog.duration")}</TableHead>
+                    <TableHead style={{color: textColor}}>{t("worklog.commute")}</TableHead>
                     <TableHead className="text-right" style={{color: textColor}}>
                       {t("worklog.actions")}
                     </TableHead>
@@ -237,6 +250,7 @@ const WorklogPage: React.FC = () => {
                             )}
                           </TableCell>
                           <TableCell>{dur.toFixed(2)} h</TableCell>
+                          <TableCell>{commuteDistance(d)} km</TableCell>
                           <TableCell className="text-right space-x-1">
                             <div className="hidden sm:inline-flex space-x-1">
                               <Button
@@ -318,6 +332,22 @@ const WorklogPage: React.FC = () => {
       {/* Default worklog card */}
       {(() => {
         const defaultTextColor = isColorDark(colorPalette[defaultTripColor]) ? "#fff" : "#000";
+        const defaultDays = workDays.filter((d) => !d.tripId);
+        const now = new Date();
+        const weekStart = new Date(now);
+        weekStart.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+        weekStart.setHours(0, 0, 0, 0);
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 7);
+        const displayedDays = defaultDays
+          .filter((d) => {
+            const sd = new Date(d.start);
+            return sd >= weekStart && sd < weekEnd;
+          })
+          .sort(
+            (a, b) =>
+              new Date(a.start).getTime() - new Date(b.start).getTime(),
+          );
         return (
           <Card
             className={`relative p-2 ${worklogCardShadow ? "shadow" : ""}`}
@@ -382,20 +412,14 @@ const WorklogPage: React.FC = () => {
                     <TableHead style={{color: defaultTextColor}}>{t("worklog.date")}</TableHead>
                     <TableHead style={{color: defaultTextColor}}>{t("worklog.time")}</TableHead>
                     <TableHead style={{color: defaultTextColor}}>{t("worklog.duration")}</TableHead>
+                    <TableHead style={{color: defaultTextColor}}>{t("worklog.commute")}</TableHead>
                     <TableHead className="text-right" style={{color: defaultTextColor}}>
                       {t("worklog.actions")}
                     </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {workDays
-                    .filter((d) => !d.tripId)
-                    .sort(
-                      (a, b) =>
-                        new Date(a.start).getTime() -
-                        new Date(b.start).getTime(),
-                    )
-                    .map((d) => {
+                  {displayedDays.map((d) => {
                       const dur = duration(d.start, d.end);
                       return (
                         <TableRow
@@ -412,6 +436,7 @@ const WorklogPage: React.FC = () => {
                             )}
                           </TableCell>
                           <TableCell>{dur.toFixed(2)} h</TableCell>
+                          <TableCell>{commuteDistance(d)} km</TableCell>
                           <TableCell className="text-right space-x-1">
                             <div className="hidden sm:inline-flex space-x-1">
                               <Button
@@ -507,6 +532,8 @@ const WorklogPage: React.FC = () => {
         }
         workDay={currentDay}
         trips={trips}
+        commutes={commutes}
+        addCommute={addCommute}
         defaultTripId={tripIdForNewDay}
       />
       <Input

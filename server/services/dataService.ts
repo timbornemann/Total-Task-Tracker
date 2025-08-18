@@ -26,6 +26,8 @@ import {
   saveTrips as repoSaveTrips,
   loadWorkDays,
   saveWorkDays as repoSaveWorkDays,
+  loadCommutes,
+  saveCommutes as repoSaveCommutes,
   loadItems,
   saveItems as repoSaveItems,
   loadItemCategories,
@@ -53,6 +55,7 @@ export {
   loadTimers,
   loadTrips,
   loadWorkDays,
+  loadCommutes,
   loadItems,
   loadItemCategories,
   loadItemTags,
@@ -110,6 +113,10 @@ export function saveTrips(list) {
 }
 export function saveWorkDays(list) {
   repoSaveWorkDays(list);
+  notifyClients();
+}
+export function saveCommutes(list) {
+  repoSaveCommutes(list);
   notifyClients();
 }
 export function saveItems(list) {

@@ -240,11 +240,19 @@
     "newTitle": "Neuer Arbeitstag",
     "start": "Start",
     "end": "Ende",
-    "trip": "Reise"
+    "trip": "Reise",
+    "commute": "Arbeitsweg",
+    "noCommute": "Kein Arbeitsweg",
+    "enterKm": "Kilometer eingeben",
+    "newCommute": "Neuen Arbeitsweg hinzufügen",
+    "newCommuteName": "Name",
+    "kilometers": "Kilometer"
   },
   "worklogStats": {
     "perTrip": "Stunden pro Reise",
-    "lastWeek": "Letzte Woche"
+    "lastWeek": "Letzte Woche",
+    "perTripCommute": "Arbeitsweg km pro Reise",
+    "lastWeekCommute": "Arbeitsweg km letzte Woche"
   },
   "common": {
     "cancel": "Abbrechen",
@@ -774,6 +782,7 @@
     "end": "Ende",
     "workTime": "Arbeitszeit",
     "duration": "Dauer",
+    "commute": "Arbeitsweg",
     "date": "Datum",
     "time": "Uhrzeit",
     "actions": "Aktionen",

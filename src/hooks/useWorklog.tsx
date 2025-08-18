@@ -4,7 +4,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { Trip, WorkDay, Deletion } from "@/types";
+import { Trip, WorkDay, Deletion, Commute } from "@/types";
 import {
   loadOfflineData,
   updateOfflineData,
@@ -13,11 +13,13 @@ import { normalizeDateTime } from "@/utils/time";
 
 const API_TRIPS = "/api/trips";
 const API_WORKDAYS = "/api/workdays";
+const API_COMMUTES = "/api/commutes";
 const API_ALL = "/api/all";
 
 const useWorklogImpl = () => {
   const [trips, setTrips] = useState<Trip[]>([]);
   const [workDays, setWorkDays] = useState<WorkDay[]>([]);
+  const [commutes, setCommutes] = useState<Commute[]>([]);
   const [deletions, setDeletions] = useState<Deletion[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -37,6 +39,7 @@ const useWorklogImpl = () => {
         if (offlineData) {
           setTrips(offlineData.trips || []);
           setWorkDays((offlineData.workDays || []).map(normalizeDay));
+          setCommutes(offlineData.commutes || []);
           setDeletions(offlineData.deletions || []);
         }
 
@@ -47,6 +50,7 @@ const useWorklogImpl = () => {
             const serverData = await response.json();
             setTrips(serverData.trips || []);
             setWorkDays((serverData.workDays || []).map(normalizeDay));
+            setCommutes(serverData.commutes || []);
             setDeletions(serverData.deletions || []);
           }
         }
@@ -61,16 +65,23 @@ const useWorklogImpl = () => {
   }, []);
 
   // Helper function to save all data both offline and to server
-  const saveAllData = async (newTrips: Trip[], newWorkDays: WorkDay[], newDeletions: Deletion[]) => {
+  const saveAllData = async (
+    newTrips: Trip[],
+    newWorkDays: WorkDay[],
+    newCommutes: Commute[],
+    newDeletions: Deletion[],
+  ) => {
     // Update local state
     setTrips(newTrips);
     setWorkDays(newWorkDays);
+    setCommutes(newCommutes);
     setDeletions(newDeletions);
 
     // Save to offline storage immediately
     updateOfflineData({
       trips: newTrips,
       workDays: newWorkDays.map(normalizeDay),
+      commutes: newCommutes,
       deletions: newDeletions,
     });
 
@@ -90,6 +101,12 @@ const useWorklogImpl = () => {
           body: JSON.stringify(newWorkDays.map(normalizeDay)),
         });
 
+        const saveCommutesPromise = fetch(API_COMMUTES, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newCommutes),
+        });
+
         // Then also save to /api/all to ensure deletions are captured
         const saveAllPromise = fetch(API_ALL, {
           method: "PUT",
@@ -97,6 +114,7 @@ const useWorklogImpl = () => {
           body: JSON.stringify({
             trips: newTrips,
             workDays: newWorkDays.map(normalizeDay),
+            commutes: newCommutes,
             deletions: newDeletions,
             // Keep other fields empty to avoid affecting other data
             tasks: [],
@@ -115,7 +133,12 @@ const useWorklogImpl = () => {
           }),
         });
 
-        await Promise.all([saveTripPromise, saveWorkDaysPromise, saveAllPromise]);
+        await Promise.all([
+          saveTripPromise,
+          saveWorkDaysPromise,
+          saveCommutesPromise,
+          saveAllPromise,
+        ]);
       } catch (error) {
         console.error("Failed to save to server:", error);
         // At least we have saved to offline storage
@@ -134,7 +157,7 @@ const useWorklogImpl = () => {
     };
     
     const newTrips = [...trips, newTrip];
-    saveAllData(newTrips, workDays, deletions);
+    saveAllData(newTrips, workDays, commutes, deletions);
     return id;
   };
 
@@ -144,7 +167,7 @@ const useWorklogImpl = () => {
         ? { ...trip, ...data, updatedAt: new Date() }
         : trip
     );
-    saveAllData(newTrips, workDays, deletions);
+    saveAllData(newTrips, workDays, commutes, deletions);
   };
 
   const deleteTrip = (id: string) => {
@@ -167,13 +190,15 @@ const useWorklogImpl = () => {
     const newTrips = trips.filter(trip => trip.id !== id);
     const newWorkDays = workDays.filter(day => day.tripId !== id);
     
-    saveAllData(newTrips, newWorkDays, newDeletions);
+    saveAllData(newTrips, newWorkDays, commutes, newDeletions);
   };
 
   const addWorkDay = (data: {
     start: string;
     end: string;
     tripId?: string;
+    commuteId?: string;
+    commuteKm?: number;
   }) => {
     const id = crypto.randomUUID();
     const now = new Date();
@@ -185,7 +210,7 @@ const useWorklogImpl = () => {
     };
     
     const newWorkDays = [...workDays, normalizeDay(newWorkDay)];
-    saveAllData(trips, newWorkDays, deletions);
+    saveAllData(trips, newWorkDays, commutes, deletions);
   };
 
   const updateWorkDay = (id: string, data: Partial<WorkDay>) => {
@@ -194,7 +219,7 @@ const useWorklogImpl = () => {
         ? normalizeDay({ ...day, ...data, updatedAt: new Date() })
         : day
     );
-    saveAllData(trips, newWorkDays, deletions);
+    saveAllData(trips, newWorkDays, commutes, deletions);
   };
 
   const deleteWorkDay = async (id: string) => {
@@ -209,18 +234,29 @@ const useWorklogImpl = () => {
     const newWorkDays = workDays.filter(day => day.id !== id);
     
     // Save changes with deletion record
-    saveAllData(trips, newWorkDays, newDeletions);
+    saveAllData(trips, newWorkDays, commutes, newDeletions);
+  };
+
+  const addCommute = (data: { name: string; kilometers: number }) => {
+    const id = crypto.randomUUID();
+    const now = new Date();
+    const newCommute = { id, ...data, createdAt: now, updatedAt: now };
+    const newCommutes = [...commutes, newCommute];
+    saveAllData(trips, workDays, newCommutes, deletions);
+    return id;
   };
 
   return {
     trips,
     workDays,
+    commutes,
     addTrip,
     updateTrip,
     deleteTrip,
     addWorkDay,
     updateWorkDay,
     deleteWorkDay,
+    addCommute,
     isLoaded
   };
 };

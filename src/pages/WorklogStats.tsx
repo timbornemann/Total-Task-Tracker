@@ -13,7 +13,7 @@ import {
 } from "recharts";
 
 const WorklogStatsPage: React.FC = () => {
-  const { trips, workDays } = useWorklog();
+  const { trips, workDays, commutes } = useWorklog();
   const { t } = useTranslation();
 
   const tripTotals = trips.map((trip) => {
@@ -25,27 +25,43 @@ const WorklogStatsPage: React.FC = () => {
           (new Date(d.end).getTime() - new Date(d.start).getTime()) / 60000,
         0,
       );
-    return { name: trip.name, minutes };
+    const km = workDays
+      .filter((d) => d.tripId === trip.id)
+      .reduce((s, d) => {
+        if (d.commuteId) {
+          const c = commutes.find((c) => c.id === d.commuteId);
+          return s + (c?.kilometers ?? 0);
+        }
+        return s + (d.commuteKm || 0);
+      }, 0);
+    return { name: trip.name, minutes, km };
   });
 
-  const lastWeek: { date: string; minutes: number }[] = [];
+  const lastWeek: { date: string; minutes: number; km: number }[] = [];
   for (let i = 6; i >= 0; i--) {
     const day = new Date();
     day.setDate(day.getDate() - i);
     const dateStr = day.toISOString().slice(0, 10);
-    const minutes = workDays
-      .filter((d) =>
+    const days = workDays.filter(
+      (d) =>
         (typeof d.start === "string"
           ? d.start.slice(0, 10)
           : d.start.toISOString().slice(0, 10)) === dateStr,
-      )
-      .reduce(
-        (sum, d) =>
-          sum +
-          (new Date(d.end).getTime() - new Date(d.start).getTime()) / 60000,
-        0,
-      );
-    lastWeek.push({ date: dateStr, minutes });
+    );
+    const minutes = days.reduce(
+      (sum, d) =>
+        sum +
+        (new Date(d.end).getTime() - new Date(d.start).getTime()) / 60000,
+      0,
+    );
+    const km = days.reduce((s, d) => {
+      if (d.commuteId) {
+        const c = commutes.find((c) => c.id === d.commuteId);
+        return s + (c?.kilometers ?? 0);
+      }
+      return s + (d.commuteKm || 0);
+    }, 0);
+    lastWeek.push({ date: dateStr, minutes, km });
   }
 
   return (
@@ -91,6 +107,50 @@ const WorklogStatsPage: React.FC = () => {
                   <YAxis fontSize={12} />
                   <Tooltip />
                   <Bar dataKey="minutes" fill="hsl(var(--primary))" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">
+              {t("worklogStats.perTripCommute")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-60">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={tripTotals}
+                  margin={{ top: 10, right: 20, left: 0, bottom: 20 }}
+                >
+                  <XAxis dataKey="name" fontSize={12} />
+                  <YAxis fontSize={12} />
+                  <Tooltip />
+                  <Bar dataKey="km" fill="hsl(var(--primary))" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">
+              {t("worklogStats.lastWeekCommute")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-60">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={lastWeek}
+                  margin={{ top: 10, right: 20, left: 0, bottom: 20 }}
+                >
+                  <XAxis dataKey="date" fontSize={12} />
+                  <YAxis fontSize={12} />
+                  <Tooltip />
+                  <Bar dataKey="km" fill="hsl(var(--primary))" />
                 </BarChart>
               </ResponsiveContainer>
             </div>

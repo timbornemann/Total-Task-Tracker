@@ -23,7 +23,7 @@ import {
 const WorklogDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { trips, workDays } = useWorklog();
+  const { trips, workDays, commutes } = useWorklog();
   const { t } = useTranslation();
   const { colorPalette } = useSettings();
 
@@ -42,6 +42,14 @@ const WorklogDetailPage: React.FC = () => {
     0,
   );
   const avgHours = days.length ? totalMinutes / 60 / days.length : 0;
+
+  const commuteDistance = (d: { commuteId?: string; commuteKm?: number }) => {
+    if (d.commuteId) {
+      const c = commutes.find((c) => c.id === d.commuteId);
+      return c?.kilometers ?? 0;
+    }
+    return d.commuteKm ?? 0;
+  };
 
   const [weekOffset, setWeekOffset] = React.useState(0);
 
@@ -219,7 +227,7 @@ const WorklogDetailPage: React.FC = () => {
                   (new Date(d.end).getTime() - new Date(d.start).getTime()) /
                   3600000
                 ).toFixed(2)}
-                h)
+                h, {commuteDistance(d)} km)
               </li>
             ))}
           </ul>
