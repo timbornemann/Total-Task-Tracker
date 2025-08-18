@@ -31,9 +31,9 @@ Diese Liste bündelt alle anstehenden Architektur-, Design- und Qualitätsmaßna
     - [x] `useCategoriesStore.ts`
     - [x] `useNotesStore.ts`
     - [x] `useRecurringTasksStore.ts`
-  - [ ] Selektoren nutzen, um Re-Renders zu minimieren
-- [ ] Einheitliches Muster für Persistenz/Sync (Offline -> API -> Sync)
-- [ ] Gemeinsame Typen und Utilities in `src/shared/` konsolidieren
+  - [x] Selektoren nutzen, um Re-Renders zu minimieren
+- [x] Einheitliches Muster für Persistenz/Sync (Offline -> API -> Sync)
+- [x] Gemeinsame Typen und Utilities in `src/shared/` konsolidieren
 
 ## Phase 3 – Performance
 
