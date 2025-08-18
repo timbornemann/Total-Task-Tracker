@@ -79,44 +79,57 @@ export const updateOfflineData = (partial: Partial<OfflineData>) => {
   saveOfflineData({ ...current, ...partial });
 };
 
+let currentSync: Promise<OfflineData> | null = null;
+
 export const syncWithServer = async (): Promise<OfflineData> => {
-  const local = loadOfflineData() || {
-    tasks: [],
-    categories: [],
-    notes: [],
-    recurring: [],
-    habits: [],
-    flashcards: [],
-    decks: [],
-    pomodoroSessions: [],
-    timers: [],
-    trips: [],
-    workDays: [],
-    commutes: [],
-    items: [],
-    itemCategories: [],
-    itemTags: [],
-    deletions: [],
-  };
-  if (!navigator.onLine) return local;
-  try {
-    const res = await fetch("/api/all");
-    if (!res.ok) throw new Error("fetch failed");
-    const serverData = (await res.json()) as OfflineData;
-    const merged = applyDeletions(mergeData(serverData, local));
-    const mergedStr = JSON.stringify(merged, replacer);
-    const serverStr = JSON.stringify(serverData, replacer);
-    if (mergedStr !== serverStr) {
-      await fetch("/api/all", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: mergedStr,
-      });
+  if (currentSync) return currentSync;
+
+  currentSync = (async () => {
+    const local = loadOfflineData() || {
+      tasks: [],
+      categories: [],
+      notes: [],
+      recurring: [],
+      habits: [],
+      flashcards: [],
+      decks: [],
+      pomodoroSessions: [],
+      timers: [],
+      trips: [],
+      workDays: [],
+      commutes: [],
+      items: [],
+      itemCategories: [],
+      itemTags: [],
+      deletions: [],
+    };
+    if (!navigator.onLine) {
+      currentSync = null;
+      return local;
     }
-    saveOfflineData(merged);
-    return merged;
-  } catch (err) {
-    console.error("Sync failed", err);
-    return local;
-  }
+    try {
+      const res = await fetch("/api/all");
+      if (!res.ok) throw new Error("fetch failed");
+      const serverData = (await res.json()) as OfflineData;
+      const merged = applyDeletions(mergeData(serverData, local));
+      const mergedStr = JSON.stringify(merged, replacer);
+      const serverStr = JSON.stringify(serverData, replacer);
+      if (mergedStr !== serverStr) {
+        await fetch("/api/all", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: mergedStr,
+        });
+      }
+      saveOfflineData(merged);
+      return merged;
+    } catch (err) {
+      console.error("Sync failed", err);
+      return local;
+    } finally {
+      currentSync = null;
+    }
+  })();
+
+  return currentSync;
 };
