@@ -46,14 +46,14 @@ Diese Liste bündelt alle anstehenden Architektur-, Design- und Qualitätsmaßna
 
 ## Phase 4 – Backend-Modernisierung
 
-- [ ] Service-Layer zwischen Controllern und Datenzugriff einführen (`server/services/*`)
-- [ ] Eingabe-Validierung mit Zod/Joi (Request-Body/Params/Query)
-- [ ] Rate-Limiting (`express-rate-limit`) und Security-Header (`helmet`)
-- [ ] Request-Größenlimit und CORS-Konfiguration präzisieren
-- [ ] Structured Logging (`pino`/`winston`) inkl. Korrelations-IDs
-- [ ] Health-Check-Endpoint (`/health`) implementieren
-- [ ] OpenAPI/Swagger-Doku generieren und unter `/docs` bereitstellen
-- [ ] Migrationsmechanismus für SQLite einführen (`server/migrations/` + Skripte)
+- [x] Service-Layer zwischen Controllern und Datenzugriff einführen (`server/services/*`)
+- [x] Eingabe-Validierung mit Zod/Joi (Request-Body/Params/Query)
+- [x] Rate-Limiting (`express-rate-limit`) und Security-Header (`helmet`)
+- [x] Request-Größenlimit und CORS-Konfiguration präzisieren
+- [x] Structured Logging (`pino`/`winston`) inkl. Korrelations-IDs
+- [x] Health-Check-Endpoint (`/health`) implementieren
+- [x] OpenAPI/Swagger-Doku generieren und unter `/docs` bereitstellen
+- [x] Migrationsmechanismus für SQLite einführen (`server/migrations/` + Skripte)
 
 ## Phase 5 – Code-Organisation und Lesbarkeit
 
