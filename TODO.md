@@ -24,13 +24,13 @@ Diese Liste bündelt alle anstehenden Architektur-, Design- und Qualitätsmaßna
 
 ## Phase 2 – Foundation: State-Management vereinheitlichen
 
-- [ ] Provider-Verschachtelung in `src/App.tsx` reduzieren (max. 3 Ebenen)
-- [ ] Stores konsolidieren: große Stores aufteilen und fokussieren
-  - [ ] `useTaskStore.tsx` (>1000 Zeilen) in Slices aufsplitten:
-    - [ ] `useTasksStore.ts` (CRUD, Filter, Sortierung)
-    - [ ] `useCategoriesStore.ts`
-    - [ ] `useNotesStore.ts`
-    - [ ] `useRecurringTasksStore.ts`
+- [x] Provider-Verschachtelung in `src/App.tsx` reduzieren (max. 3 Ebenen)
+- [x] Stores konsolidieren: große Stores aufteilen und fokussieren
+  - [x] `useTaskStore.tsx` (>1000 Zeilen) in Slices aufsplitten:
+    - [x] `useTasksStore.ts` (CRUD, Filter, Sortierung)
+    - [x] `useCategoriesStore.ts`
+    - [x] `useNotesStore.ts`
+    - [x] `useRecurringTasksStore.ts`
   - [ ] Selektoren nutzen, um Re-Renders zu minimieren
 - [ ] Einheitliches Muster für Persistenz/Sync (Offline -> API -> Sync)
 - [ ] Gemeinsame Typen und Utilities in `src/shared/` konsolidieren
