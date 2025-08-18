@@ -983,6 +983,7 @@ export function loadAllData(): AllData {
     timers: loadTimers(),
     trips: loadTrips(),
     workDays: loadWorkDays(),
+    commutes: loadCommutes(),
     items: loadItems(),
     itemCategories: loadItemCategories(),
     itemTags: loadItemTags(),
@@ -998,17 +999,11 @@ export function saveAllData(
   saveData(data);
   saveFlashcards(data.flashcards || []);
   saveDecks(data.decks || []);
-  savePomodoroSessions(data.pomodoroSessions || []);
-  saveTimers(data.timers || []);
+  // Note: pomodoroSessions, timers, items, itemCategories, itemTags are already saved in saveData()
   saveTrips(data.trips || []);
   saveWorkDays(data.workDays || []);
   saveCommutes(data.commutes || []);
-  saveItems(data.items || []);
-  saveItemCategories(data.itemCategories || []);
-  saveItemTags(data.itemTags || []);
-  if (data.recurring) saveRecurring(data.recurring);
-  if (data.habits) saveHabits(data.habits);
-  if (data.deletions) saveDeletions(data.deletions);
+  // Note: recurring, habits, deletions are already saved in saveData() if present
   if (data.settings) {
     saveSettings(data.settings);
     if (data.settings.syncRole !== undefined) {

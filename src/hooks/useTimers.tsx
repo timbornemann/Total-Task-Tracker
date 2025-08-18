@@ -219,6 +219,10 @@ export const TimersProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     if (!loaded) return;
+    
+    // Only sync for non-tick updates (debounced approach)
+    const hasRunningTimers = timers.some(t => t.isRunning && !t.isPaused);
+    
     const save = async () => {
       try {
         updateOfflineData({ timers });
@@ -228,13 +232,24 @@ export const TimersProvider: React.FC<{ children: React.ReactNode }> = ({
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(timers),
           });
-          await syncWithServer();
+          
+          // Only sync with server for significant changes, not tick updates
+          if (!hasRunningTimers) {
+            await syncWithServer();
+          }
         }
       } catch (err) {
         console.error("Error saving timers", err);
       }
     };
-    save();
+    
+    // Debounce: Don't sync immediately if timers are running (frequent ticks)
+    if (hasRunningTimers) {
+      const timeoutId = setTimeout(save, 5000); // Sync every 5 seconds max when running
+      return () => clearTimeout(timeoutId);
+    } else {
+      save(); // Immediate sync for non-running states (start/stop/pause actions)
+    }
   }, [timers, loaded]);
 
   return <>{children}</>;

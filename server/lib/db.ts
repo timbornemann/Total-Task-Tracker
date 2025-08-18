@@ -47,6 +47,48 @@ db.exec(`
   );
   `);
 
+  // Ensure critical tables exist (especially those added later)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS commutes (
+      id TEXT PRIMARY KEY,
+      name TEXT,
+      kilometers REAL,
+      createdAt TEXT,
+      updatedAt TEXT
+    );
+    CREATE TABLE IF NOT EXISTS trips (
+      id TEXT PRIMARY KEY,
+      name TEXT,
+      location TEXT,
+      color INTEGER,
+      createdAt TEXT,
+      updatedAt TEXT
+    );
+    CREATE TABLE IF NOT EXISTS workdays (
+      id TEXT PRIMARY KEY,
+      start TEXT,
+      end TEXT,
+      tripId TEXT,
+      commuteId TEXT,
+      commuteKm REAL,
+      createdAt TEXT,
+      updatedAt TEXT
+    );
+    CREATE TABLE IF NOT EXISTS timers (
+      id TEXT PRIMARY KEY,
+      title TEXT,
+      color INTEGER,
+      baseDuration INTEGER,
+      duration INTEGER,
+      remaining INTEGER,
+      isRunning INTEGER,
+      isPaused INTEGER,
+      startTime INTEGER,
+      lastTick INTEGER,
+      pauseStart INTEGER
+    );
+  `);
+
   // If settings table does not exist, create a simple key-value store.
   // Note: The app still reads a JSON blob today; we keep compatibility for now.
   db.exec(`
@@ -513,6 +555,20 @@ try {
   db.prepare("ALTER TABLE pomodoro_sessions ADD COLUMN breakEnd INTEGER").run();
 } catch (_) {
   /* ignore */
+}
+
+// Migration for workdays table - add missing commuteId column
+try {
+  db.prepare("ALTER TABLE workdays ADD COLUMN commuteId TEXT").run();
+} catch (_) {
+  /* ignore - column already exists or other error */
+}
+
+// Migration for workdays table - add missing commuteKm column
+try {
+  db.prepare("ALTER TABLE workdays ADD COLUMN commuteKm REAL").run();
+} catch (_) {
+  /* ignore - column already exists or other error */
 }
 
 export default db;

@@ -347,7 +347,7 @@ const SettingsPage: React.FC = () => {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await fetch("/api/server-info");
+        const res = await fetch("/api/serverInfo");
         if (res.ok) {
           const data = await res.json();
           setServerInfo(data);

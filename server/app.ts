@@ -47,7 +47,7 @@ app.use("/api/workdays", workdaysController);
 app.use("/api/commutes", commutesController);
 app.use("/api/sync", syncController);
 app.use("/api/sync-log", syncLogController);
-app.use("/api/server-info", serverInfoController);
+app.use("/api/serverInfo", serverInfoController);
 app.use("/api/sync-status", syncStatusController);
 app.use("/api/llm", llmController);
 
