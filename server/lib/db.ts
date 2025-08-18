@@ -203,6 +203,15 @@ db.exec(`
       start TEXT,
       end TEXT,
       tripId TEXT,
+      commuteId TEXT,
+      commuteKm REAL,
+      createdAt TEXT,
+      updatedAt TEXT
+    );`,
+    commutes: `CREATE TABLE IF NOT EXISTS commutes (
+    id TEXT PRIMARY KEY,
+      name TEXT,
+      kilometers REAL,
       createdAt TEXT,
       updatedAt TEXT
     );`,

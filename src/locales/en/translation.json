@@ -240,11 +240,19 @@
     "newTitle": "New Work Day",
     "start": "Start",
     "end": "End",
-    "trip": "Trip"
+    "trip": "Trip",
+    "commute": "Commute",
+    "noCommute": "No commute",
+    "enterKm": "Enter kilometers",
+    "newCommute": "Add commute route",
+    "newCommuteName": "Route name",
+    "kilometers": "Kilometers"
   },
   "worklogStats": {
     "perTrip": "Hours per Trip",
-    "lastWeek": "Last Week"
+    "lastWeek": "Last Week",
+    "perTripCommute": "Commute km per Trip",
+    "lastWeekCommute": "Commute km Last Week"
   },
   "common": {
     "cancel": "Cancel",
@@ -774,6 +782,7 @@
     "end": "End",
     "workTime": "Work Time",
     "duration": "Duration",
+    "commute": "Commute",
     "date": "Date",
     "time": "Time",
     "actions": "Actions",

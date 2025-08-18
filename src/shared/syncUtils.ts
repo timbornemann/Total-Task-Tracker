@@ -8,6 +8,7 @@ import type {
   Timer,
   Trip,
   WorkDay,
+  Commute,
   InventoryItem,
   ItemCategory,
   ItemTag,
@@ -31,6 +32,7 @@ export interface SyncData {
   timers?: Timer[];
   trips?: Trip[];
   workDays?: WorkDay[];
+  commutes?: Commute[];
   items?: InventoryItem[];
   itemCategories?: ItemCategory[];
   itemTags?: ItemTag[];
@@ -88,6 +90,7 @@ export function mergeData(curr: SyncData, inc: SyncData): SyncData {
     timers: mergeLists(curr.timers, inc.timers, null),
     trips: mergeLists(curr.trips, inc.trips, "updatedAt"),
     workDays: mergeLists(curr.workDays, inc.workDays, "updatedAt"),
+    commutes: mergeLists(curr.commutes, inc.commutes, "updatedAt"),
     items: mergeLists(curr.items, inc.items, null),
     itemCategories: mergeLists(curr.itemCategories, inc.itemCategories, null),
     itemTags: mergeLists(curr.itemTags, inc.itemTags, null),
@@ -126,6 +129,7 @@ export function applyDeletions(data: SyncData): SyncData {
   data.decks = (data.decks || []).filter((d) => shouldKeep("deck", d));
   data.trips = (data.trips || []).filter((t) => shouldKeep("trip", t));
   data.workDays = (data.workDays || []).filter((d) => shouldKeep("workday", d));
+  data.commutes = (data.commutes || []).filter((c) => shouldKeep("commute", c));
   data.items = (data.items || []).filter((i) => shouldKeep("inventoryItem", i));
   data.itemCategories = (data.itemCategories || []).filter((c) =>
     shouldKeep("inventoryCategory", c)

@@ -9,6 +9,7 @@ import type {
   Timer,
   Trip,
   WorkDay,
+  Commute,
   InventoryItem,
   ItemCategory,
   ItemTag,
@@ -48,6 +49,7 @@ export interface Data {
   timers: Timer[];
   trips: Trip[];
   workDays: WorkDay[];
+  commutes: Commute[];
   items: InventoryItem[];
   itemCategories: ItemCategory[];
   itemTags: ItemTag[];
@@ -299,6 +301,7 @@ export function loadData(): Data {
     timers: loadTimers(),
     trips: loadTrips(),
     workDays: loadWorkDays(),
+    commutes: loadCommutes(),
     items: loadItems(),
     itemCategories: loadItemCategories(),
     itemTags: loadItemTags(),
@@ -693,6 +696,21 @@ export function loadTrips(): Trip[] {
   }
 }
 
+export function loadCommutes(): Commute[] {
+  try {
+    const rows = db.prepare("SELECT * FROM commutes").all();
+    return rows.map((r) => ({
+      id: r.id,
+      name: r.name || "",
+      kilometers: typeof r.kilometers === "number" ? r.kilometers : 0,
+      createdAt: r.createdAt ? new Date(r.createdAt) : undefined,
+      updatedAt: r.updatedAt ? new Date(r.updatedAt) : undefined,
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export function loadWorkDays(): WorkDay[] {
   try {
     const rows = db.prepare("SELECT * FROM workdays").all();
@@ -702,6 +720,8 @@ export function loadWorkDays(): WorkDay[] {
         start: r.start,
         end: r.end,
         tripId: r.tripId || undefined,
+        commuteId: r.commuteId || undefined,
+        commuteKm: r.commuteKm ?? undefined,
         createdAt: r.createdAt ? new Date(r.createdAt) : undefined,
         updatedAt: r.updatedAt ? new Date(r.updatedAt) : undefined,
       }),
@@ -769,6 +789,25 @@ export function saveTrips(list: Trip[]): void {
   tx();
 }
 
+export function saveCommutes(list: Commute[]): void {
+  const tx = db.transaction(() => {
+    db.exec("DELETE FROM commutes");
+    const insert = db.prepare(
+      `INSERT INTO commutes (id, name, kilometers, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)`,
+    );
+    for (const c of list || []) {
+      insert.run(
+        c.id,
+        c.name,
+        c.kilometers,
+        c.createdAt ? new Date(c.createdAt).toISOString() : null,
+        c.updatedAt ? new Date(c.updatedAt).toISOString() : null,
+      );
+    }
+  });
+  tx();
+}
+
 export function loadItems(): InventoryItem[] {
   try {
     const items = db.prepare("SELECT * FROM inventory_items").all();
@@ -828,7 +867,7 @@ export function saveWorkDays(list: WorkDay[]): void {
   const tx = db.transaction(() => {
     db.exec("DELETE FROM workdays");
     const insert = db.prepare(
-      `INSERT INTO workdays (id, start, end, tripId, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO workdays (id, start, end, tripId, commuteId, commuteKm, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     );
     for (const d of list || []) {
       const n = normalizeWorkDay(d);
@@ -837,6 +876,8 @@ export function saveWorkDays(list: WorkDay[]): void {
         n.start,
         n.end,
         n.tripId ?? null,
+        n.commuteId ?? null,
+        n.commuteKm ?? null,
         n.createdAt ? new Date(n.createdAt).toISOString() : null,
         n.updatedAt ? new Date(n.updatedAt).toISOString() : null,
       );
@@ -961,6 +1002,7 @@ export function saveAllData(
   saveTimers(data.timers || []);
   saveTrips(data.trips || []);
   saveWorkDays(data.workDays || []);
+  saveCommutes(data.commutes || []);
   saveItems(data.items || []);
   saveItemCategories(data.itemCategories || []);
   saveItemTags(data.itemTags || []);

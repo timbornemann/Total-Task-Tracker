@@ -10,6 +10,7 @@ import {
   Timer,
   Trip,
   WorkDay,
+  Commute,
   InventoryItem,
   ItemCategory,
   ItemTag,
@@ -28,6 +29,7 @@ export interface OfflineData {
   timers: Timer[];
   trips: Trip[];
   workDays: WorkDay[];
+  commutes: Commute[];
   items: InventoryItem[];
   itemCategories: ItemCategory[];
   itemTags: ItemTag[];
@@ -68,6 +70,7 @@ export const updateOfflineData = (partial: Partial<OfflineData>) => {
     timers: [],
     trips: [],
     workDays: [],
+    commutes: [],
     items: [],
     itemCategories: [],
     itemTags: [],
@@ -89,6 +92,7 @@ export const syncWithServer = async (): Promise<OfflineData> => {
     timers: [],
     trips: [],
     workDays: [],
+    commutes: [],
     items: [],
     itemCategories: [],
     itemTags: [],
