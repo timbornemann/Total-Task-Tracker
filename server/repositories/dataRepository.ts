@@ -582,20 +582,19 @@ export function saveData(data: {
   timers?: Timer[];
   deletions?: Deletion[];
 }): void {
-  const tx = db.transaction(() => {
-    saveTasks(data.tasks || []);
-    saveCategories(data.categories || []);
-    saveNotes(data.notes || []);
-    saveRecurring(data.recurring || []);
-    saveHabits(data.habits || []);
-    saveItems(data.items || []);
-    saveItemCategories(data.itemCategories || []);
-    saveItemTags(data.itemTags || []);
-    savePomodoroSessions(data.pomodoroSessions || []);
-    saveTimers(data.timers || []);
-    saveDeletions(data.deletions || []);
-  });
-  tx();
+  // Remove the outer transaction to avoid nested transactions
+  // Each individual save function already has its own transaction
+  saveTasks(data.tasks || []);
+  saveCategories(data.categories || []);
+  saveNotes(data.notes || []);
+  saveRecurring(data.recurring || []);
+  saveHabits(data.habits || []);
+  saveItems(data.items || []);
+  saveItemCategories(data.itemCategories || []);
+  saveItemTags(data.itemTags || []);
+  savePomodoroSessions(data.pomodoroSessions || []);
+  saveTimers(data.timers || []);
+  saveDeletions(data.deletions || []);
 }
 
 export function loadFlashcards(): Flashcard[] {
