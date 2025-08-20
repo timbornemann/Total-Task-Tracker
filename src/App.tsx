@@ -22,6 +22,7 @@ import TimerDetailPage from "./pages/TimerDetail";
 import WorklogPage from "./pages/Worklog";
 import WorklogDetailPage from "./pages/WorklogDetail";
 import WorklogStatsPage from "./pages/WorklogStats";
+import WorklogOverviewPage from "./pages/WorklogOverview";
 import ClockPage from "./pages/Clock";
 import SurprisePage from "./pages/Surprise";
 import RecurringTasksPage from "./pages/RecurringTasks";
@@ -59,6 +60,7 @@ const App = () => (
       <Route path="/clock" element={<ClockPage />} />
       <Route path="/worklog" element={<WorklogPage />} />
       <Route path="/worklog/:id" element={<WorklogDetailPage />} />
+      <Route path="/worklog/overview" element={<WorklogOverviewPage />} />
       <Route path="/worklog/stats" element={<WorklogStatsPage />} />
       <Route path="/surprise" element={<SurprisePage />} />
       <Route path="/error" element={<ServerError />} />
