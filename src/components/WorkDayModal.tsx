@@ -11,10 +11,18 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 interface WorkDayFormData {
   start: string;
   end: string;
+  category: string;
   tripId?: string;
 }
 
@@ -27,6 +35,7 @@ interface WorkDayModalProps {
   commutes: Commute[];
   addCommute: (data: { name: string; kilometers: number }) => string;
   defaultTripId?: string;
+  categories: string[];
 }
 
 const WorkDayModal: React.FC<WorkDayModalProps> = ({
@@ -38,12 +47,23 @@ const WorkDayModal: React.FC<WorkDayModalProps> = ({
   commutes,
   addCommute,
   defaultTripId,
+  categories,
 }) => {
   const { t } = useTranslation();
-  const [form, setForm] = useState<WorkDayFormData>({ start: "", end: "", tripId: "" });
+  const [form, setForm] = useState<WorkDayFormData>({
+    start: "",
+    end: "",
+    category: "work",
+    tripId: "",
+  });
+  const [categorySelection, setCategorySelection] = useState<string>("work");
+  const [newCategory, setNewCategory] = useState<string>("");
   const [commuteSelection, setCommuteSelection] = useState<string>("");
   const [commuteKm, setCommuteKm] = useState<string>("");
-  const [newCommute, setNewCommute] = useState<{ name: string; km: string }>({ name: "", km: "" });
+  const [newCommute, setNewCommute] = useState<{ name: string; km: string }>({
+    name: "",
+    km: "",
+  });
 
   const toInput = (v: string) => v.replace(" ", "T");
   const fromInput = (v: string) => v.replace("T", " ");
@@ -54,8 +74,11 @@ const WorkDayModal: React.FC<WorkDayModalProps> = ({
       setForm({
         start: toInput(normalizeDateTime(workDay.start)),
         end: toInput(normalizeDateTime(workDay.end)),
+        category: workDay.category || "work",
         tripId: workDay.tripId,
       });
+      setCategorySelection(workDay.category || "work");
+      setNewCategory("");
       if (workDay.commuteId) {
         setCommuteSelection(workDay.commuteId);
       } else if (workDay.commuteKm) {
@@ -65,7 +88,14 @@ const WorkDayModal: React.FC<WorkDayModalProps> = ({
         setCommuteSelection("");
       }
     } else {
-      setForm({ start: "", end: "", tripId: defaultTripId || "" });
+      setForm({
+        start: "",
+        end: "",
+        category: "work",
+        tripId: defaultTripId || "",
+      });
+      setCategorySelection("work");
+      setNewCategory("");
       setCommuteSelection("");
       setCommuteKm("");
       setNewCommute({ name: "", km: "" });
@@ -76,9 +106,18 @@ const WorkDayModal: React.FC<WorkDayModalProps> = ({
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleCategorySelect = (value: string) => {
+    setCategorySelection(value);
+    if (value === "new") {
+      setForm((prev) => ({ ...prev, category: "" }));
+    } else {
+      setForm((prev) => ({ ...prev, category: value }));
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (form.start && form.end) {
+    if (form.start && form.end && (categorySelection !== "new" || newCategory)) {
       let commuteId: string | undefined;
       let commuteKmNum: number | undefined;
       if (commuteSelection === "new" && newCommute.name && newCommute.km) {
@@ -91,9 +130,12 @@ const WorkDayModal: React.FC<WorkDayModalProps> = ({
       } else if (commuteSelection) {
         commuteId = commuteSelection;
       }
+      const finalCategory =
+        categorySelection === "new" ? newCategory : categorySelection;
       onSave({
         start: normalizeDateTime(fromInput(form.start)),
         end: normalizeDateTime(fromInput(form.end)),
+        category: finalCategory,
         tripId: form.tripId || undefined,
         commuteId,
         commuteKm: commuteKmNum,
@@ -130,6 +172,35 @@ const WorkDayModal: React.FC<WorkDayModalProps> = ({
               onChange={(e) => handleChange("end", e.target.value)}
               required
             />
+          </div>
+          <div>
+            <Label htmlFor="wd-category">{t("workDayModal.category")}</Label>
+            <Select
+              value={categorySelection}
+              onValueChange={handleCategorySelect}
+            >
+              <SelectTrigger id="wd-category">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((c) => (
+                  <SelectItem key={c} value={c}>
+                    {t(`worklog.category.${c}`, { defaultValue: c })}
+                  </SelectItem>
+                ))}
+                <SelectItem value="new">
+                  {t("workDayModal.newCategory")}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            {categorySelection === "new" && (
+              <Input
+                className="mt-2"
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value)}
+                placeholder={t("workDayModal.newCategory") as string}
+              />
+            )}
           </div>
           <div>
             <Label htmlFor="wd-trip">{t("workDayModal.trip")}</Label>

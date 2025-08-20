@@ -248,7 +248,9 @@
     "enterKm": "Kilometer eingeben",
     "newCommute": "Neue Strecke hinzufügen",
     "newCommuteName": "Name",
-    "kilometers": "Kilometer"
+    "kilometers": "Kilometer",
+    "category": "Bereich",
+    "newCategory": "Bereich hinzufügen"
   },
   "worklogStats": {
     "totalTime": "Gesamtzeit: {{hours}}h {{minutes}}m",
@@ -795,7 +797,11 @@
     "actions": "Aktionen",
     "totalTime": "Gesamt: {{hours}}h {{minutes}}m",
     "exportCsv": "CSV exportieren",
-    "importCsv": "CSV importieren"
+    "importCsv": "CSV importieren",
+    "category": {
+      "work": "Arbeit",
+      "hobby": "Hobby"
+    }
   },
   "worklogDetail": {
     "title": "Zeiteintrags-Details",

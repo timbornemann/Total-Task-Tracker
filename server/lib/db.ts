@@ -68,6 +68,7 @@ db.exec(`
       id TEXT PRIMARY KEY,
       start TEXT,
       end TEXT,
+      category TEXT,
       tripId TEXT,
       commuteId TEXT,
       commuteKm REAL,
@@ -244,6 +245,7 @@ db.exec(`
     id TEXT PRIMARY KEY,
       start TEXT,
       end TEXT,
+      category TEXT,
       tripId TEXT,
       commuteId TEXT,
       commuteKm REAL,
@@ -567,6 +569,13 @@ try {
 // Migration for workdays table - add missing commuteKm column
 try {
   db.prepare("ALTER TABLE workdays ADD COLUMN commuteKm REAL").run();
+} catch (_) {
+  /* ignore - column already exists or other error */
+}
+
+// Migration for workdays table - add missing category column
+try {
+  db.prepare("ALTER TABLE workdays ADD COLUMN category TEXT").run();
 } catch (_) {
   /* ignore - column already exists or other error */
 }

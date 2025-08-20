@@ -26,6 +26,13 @@ import { useWorklog } from "@/hooks/useWorklog";
 import { useSettings } from "@/hooks/useSettings";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 const WorklogPage: React.FC = () => {
   const { t } = useTranslation();
@@ -50,10 +57,14 @@ const WorklogPage: React.FC = () => {
     undefined,
   );
   const [importTripId, setImportTripId] = useState<string | undefined>(undefined);
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const csvInputRef = useRef<HTMLInputElement>(null);
 
   const currentTrip = trips.find((t) => t.id === editingTrip);
   const currentDay = workDays.find((d) => d.id === editingDay);
+  const categories = Array.from(
+    new Set(["work", "hobby", ...workDays.map((d) => d.category)]),
+  );
 
   const handleSaveTrip = (data: { name: string; location: string; color: number }) => {
     if (editingTrip) {
@@ -66,6 +77,7 @@ const WorklogPage: React.FC = () => {
   const handleSaveDay = (data: {
     start: string;
     end: string;
+    category: string;
     tripId?: string;
     commuteId?: string;
     commuteKm?: number;
@@ -89,13 +101,13 @@ const WorklogPage: React.FC = () => {
   };
 
   const exportCsv = (tripId?: string) => {
-    const days = workDays.filter((d) =>
-      tripId ? d.tripId === tripId : !d.tripId,
-    );
-    const rows = ["Start,End,Hours"];
+    const days = workDays
+      .filter((d) => (tripId ? d.tripId === tripId : !d.tripId))
+      .filter((d) => categoryFilter === "all" || d.category === categoryFilter);
+    const rows = ["Start,End,Category,Hours"];
     days.forEach((d) => {
       const hrs = duration(d.start, d.end).toFixed(2);
-      rows.push(`${d.start},${d.end},${hrs}`);
+      rows.push(`${d.start},${d.end},${d.category},${hrs}`);
     });
     const blob = new Blob([rows.join("\n")], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
@@ -119,11 +131,12 @@ const WorklogPage: React.FC = () => {
     const text = await file.text();
     const lines = text.trim().split(/\r?\n/).slice(1);
     for (const line of lines) {
-      const [rawStart, rawEnd] = line.split(',');
+      const [rawStart, rawEnd, rawCategory] = line.split(',');
       if (rawStart && rawEnd) {
-        const start = format(new Date(rawStart), 'yyyy-MM-dd HH:mm');
-        const end = format(new Date(rawEnd), 'yyyy-MM-dd HH:mm');
-        addWorkDay({ start, end, tripId: importTripId });
+        const start = format(new Date(rawStart), "yyyy-MM-dd HH:mm");
+        const end = format(new Date(rawEnd), "yyyy-MM-dd HH:mm");
+        const category = rawCategory || "work";
+        addWorkDay({ start, end, tripId: importTripId, category });
       }
     }
     e.target.value = '';
@@ -135,20 +148,37 @@ const WorklogPage: React.FC = () => {
       <div className="flex-1 max-w-3xl mx-auto px-4 py-4 space-y-6">
         <div className="flex justify-between items-center flex-wrap gap-2">
           <h2 className="font-semibold mb-2">{t("worklog.title")}</h2>
-          <Button
-            onClick={() => {
-              setEditingTrip(null);
-              setShowTripModal(true);
-            }}
-          >
-            {t("worklog.addTrip")}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <SelectTrigger className="w-[120px]">
+                <SelectValue placeholder={t("common.all") as string} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("common.all")}</SelectItem>
+                <SelectItem value="work">{t("worklog.category.work")}</SelectItem>
+                <SelectItem value="hobby">{t("worklog.category.hobby")}</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button
+              onClick={() => {
+                setEditingTrip(null);
+                setShowTripModal(true);
+              }}
+            >
+              {t("worklog.addTrip")}
+            </Button>
+          </div>
         </div>
         {trips.map((trip) => {
-          const baseColor = colorPalette[trip.color ?? defaultTripColor] || colorPalette[0];
+          const baseColor =
+            colorPalette[trip.color ?? defaultTripColor] || colorPalette[0];
           const textColor = isColorDark(baseColor) ? "#fff" : "#000";
           const totalMinutes = workDays
-            .filter((d) => d.tripId === trip.id)
+            .filter(
+              (d) =>
+                d.tripId === trip.id &&
+                (categoryFilter === "all" || d.category === categoryFilter),
+            )
             .reduce(
               (sum, d) =>
                 sum +
@@ -217,9 +247,18 @@ const WorklogPage: React.FC = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead style={{color: textColor}}>{t("worklog.date")}</TableHead>
-                    <TableHead style={{color: textColor}}>{t("worklog.time")}</TableHead>
-                    <TableHead style={{color: textColor}}>{t("worklog.duration")}</TableHead>
-                    <TableHead style={{color: textColor}}>{t("worklog.commute")}</TableHead>
+                  <TableHead style={{color: textColor}}>
+                    {t("worklog.time")}
+                  </TableHead>
+                  <TableHead style={{color: textColor}}>
+                    {t("worklog.duration")}
+                  </TableHead>
+                  <TableHead style={{color: textColor}}>
+                    {t("workDayModal.category")}
+                  </TableHead>
+                  <TableHead style={{color: textColor}}>
+                    {t("worklog.commute")}
+                  </TableHead>
                     <TableHead className="text-right" style={{color: textColor}}>
                       {t("worklog.actions")}
                     </TableHead>
@@ -227,7 +266,11 @@ const WorklogPage: React.FC = () => {
                 </TableHeader>
                 <TableBody>
                   {workDays
-                    .filter((d) => d.tripId === trip.id)
+                    .filter(
+                      (d) =>
+                        d.tripId === trip.id &&
+                        (categoryFilter === "all" || d.category === categoryFilter),
+                    )
                     .sort(
                       (a, b) =>
                         new Date(a.start).getTime() -
@@ -250,6 +293,11 @@ const WorklogPage: React.FC = () => {
                             )}
                           </TableCell>
                           <TableCell>{dur.toFixed(2)} h</TableCell>
+                          <TableCell>
+                            {t(`worklog.category.${d.category}`, {
+                              defaultValue: d.category,
+                            })}
+                          </TableCell>
                           <TableCell>{commuteDistance(d)} km</TableCell>
                           <TableCell className="text-right space-x-1">
                             <div className="hidden sm:inline-flex space-x-1">
@@ -331,8 +379,12 @@ const WorklogPage: React.FC = () => {
 
       {/* Default worklog card */}
       {(() => {
-        const defaultTextColor = isColorDark(colorPalette[defaultTripColor]) ? "#fff" : "#000";
-        const defaultDays = workDays.filter((d) => !d.tripId);
+        const defaultTextColor = isColorDark(colorPalette[defaultTripColor])
+          ? "#fff"
+          : "#000";
+        const defaultDays = workDays.filter(
+          (d) => !d.tripId && (categoryFilter === "all" || d.category === categoryFilter),
+        );
         const now = new Date();
         const weekStart = new Date(now);
         weekStart.setDate(now.getDate() - ((now.getDay() + 6) % 7));
@@ -382,7 +434,11 @@ const WorklogPage: React.FC = () => {
                 {t("worklog.totalTime", {
                   hours: Math.floor(
                     workDays
-                      .filter((d) => !d.tripId)
+                      .filter(
+                        (d) =>
+                          !d.tripId &&
+                          (categoryFilter === "all" || d.category === categoryFilter),
+                      )
                       .reduce(
                         (s, d) =>
                           s +
@@ -393,7 +449,11 @@ const WorklogPage: React.FC = () => {
                   ),
                   minutes: Math.round(
                     workDays
-                      .filter((d) => !d.tripId)
+                      .filter(
+                        (d) =>
+                          !d.tripId &&
+                          (categoryFilter === "all" || d.category === categoryFilter),
+                      )
                       .reduce(
                         (s, d) =>
                           s +
@@ -410,9 +470,18 @@ const WorklogPage: React.FC = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead style={{color: defaultTextColor}}>{t("worklog.date")}</TableHead>
-                    <TableHead style={{color: defaultTextColor}}>{t("worklog.time")}</TableHead>
-                    <TableHead style={{color: defaultTextColor}}>{t("worklog.duration")}</TableHead>
-                    <TableHead style={{color: defaultTextColor}}>{t("worklog.commute")}</TableHead>
+                    <TableHead style={{color: defaultTextColor}}>
+                      {t("worklog.time")}
+                    </TableHead>
+                    <TableHead style={{color: defaultTextColor}}>
+                      {t("worklog.duration")}
+                    </TableHead>
+                    <TableHead style={{color: defaultTextColor}}>
+                      {t("workDayModal.category")}
+                    </TableHead>
+                    <TableHead style={{color: defaultTextColor}}>
+                      {t("worklog.commute")}
+                    </TableHead>
                     <TableHead className="text-right" style={{color: defaultTextColor}}>
                       {t("worklog.actions")}
                     </TableHead>
@@ -436,6 +505,11 @@ const WorklogPage: React.FC = () => {
                             )}
                           </TableCell>
                           <TableCell>{dur.toFixed(2)} h</TableCell>
+                          <TableCell>
+                            {t(`worklog.category.${d.category}`, {
+                              defaultValue: d.category,
+                            })}
+                          </TableCell>
                           <TableCell>{commuteDistance(d)} km</TableCell>
                           <TableCell className="text-right space-x-1">
                             <div className="hidden sm:inline-flex space-x-1">
@@ -535,6 +609,7 @@ const WorklogPage: React.FC = () => {
         commutes={commutes}
         addCommute={addCommute}
         defaultTripId={tripIdForNewDay}
+        categories={categories}
       />
       <Input
         ref={csvInputRef}
