@@ -238,6 +238,11 @@ export interface WorkDay {
   id: string;
   start: string;
   end: string;
+  /**
+   * High-level category of the entry. Defaults to "work" or "hobby" but can
+   * also contain user-defined categories.
+   */
+  category: string;
   tripId?: string;
   commuteId?: string;
   commuteKm?: number;

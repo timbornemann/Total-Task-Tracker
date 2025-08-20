@@ -31,6 +31,7 @@ const useWorklogImpl = () => {
     ...d,
     start: normalizeDateTime(d.start),
     end: normalizeDateTime(d.end),
+    category: d.category || "work",
     updatedAt: d.updatedAt || new Date(),
   });
 
@@ -200,6 +201,7 @@ const useWorklogImpl = () => {
   const addWorkDay = (data: {
     start: string;
     end: string;
+    category: string;
     tripId?: string;
     commuteId?: string;
     commuteKm?: number;
@@ -212,7 +214,7 @@ const useWorklogImpl = () => {
       createdAt: now,
       updatedAt: now
     };
-    
+
     const newWorkDays = [...workDays, normalizeDay(newWorkDay)];
     saveAllData(trips, newWorkDays, commutes, deletions);
   };

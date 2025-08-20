@@ -90,6 +90,7 @@ function normalizeWorkDay(d: WorkDay): WorkDay {
     ...d,
     start: normalizeDateField(d.start),
     end: normalizeDateField(d.end),
+    category: d.category || "work",
   };
 }
 
@@ -718,6 +719,7 @@ export function loadWorkDays(): WorkDay[] {
         id: r.id,
         start: r.start,
         end: r.end,
+        category: r.category || "work",
         tripId: r.tripId || undefined,
         commuteId: r.commuteId || undefined,
         commuteKm: r.commuteKm ?? undefined,
@@ -866,7 +868,7 @@ export function saveWorkDays(list: WorkDay[]): void {
   const tx = db.transaction(() => {
     db.exec("DELETE FROM workdays");
     const insert = db.prepare(
-      `INSERT INTO workdays (id, start, end, tripId, commuteId, commuteKm, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO workdays (id, start, end, category, tripId, commuteId, commuteKm, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     );
     for (const d of list || []) {
       const n = normalizeWorkDay(d);
@@ -874,6 +876,7 @@ export function saveWorkDays(list: WorkDay[]): void {
         n.id,
         n.start,
         n.end,
+        n.category,
         n.tripId ?? null,
         n.commuteId ?? null,
         n.commuteKm ?? null,
