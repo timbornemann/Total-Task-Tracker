@@ -18,6 +18,13 @@ export const allNavbarItems: NavbarItem[] = [
   { key: "timers", group: "learning", labelKey: "navbar.timers", path: "/timers" },
   { key: "clock", group: "learning", labelKey: "navbar.clock", path: "/clock" },
   { key: "worklog", group: "learning", labelKey: "navbar.worklog", path: "/worklog" },
+  {
+    key: "worklogOverview",
+    group: "learning",
+    labelKey: "navbar.worklogOverview",
+    path: "/worklog/overview",
+  },
+  { key: "worklogStats", group: "learning", labelKey: "navbar.worklogStats", path: "/worklog/stats" },
   { key: "cardStatistics", group: "learning", labelKey: "navbar.cardStatistics", path: "/flashcards/stats" },
   { key: "notes", group: "other", labelKey: "navbar.notes", path: "/notes" },
   { key: "inventory", group: "other", labelKey: "navbar.inventory", path: "/inventory" },

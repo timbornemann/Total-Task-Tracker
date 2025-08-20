@@ -64,10 +64,25 @@ const WorklogStatsPage: React.FC = () => {
     lastWeek.push({ date: dateStr, minutes, km });
   }
 
+  const totalMinutes = workDays.reduce(
+    (sum, d) =>
+      sum + (new Date(d.end).getTime() - new Date(d.start).getTime()) / 60000,
+    0,
+  );
+  const totalHours = Math.floor(totalMinutes / 60);
+  const totalMins = Math.round(totalMinutes % 60);
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar title={t("navbar.worklogStats")} />
       <div className="max-w-4xl mx-auto px-4 py-4 space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">
+              {t("worklogStats.totalTime", { hours: totalHours, minutes: totalMins })}
+            </CardTitle>
+          </CardHeader>
+        </Card>
         <Card>
           <CardHeader>
             <CardTitle className="text-base">

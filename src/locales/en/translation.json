@@ -13,8 +13,9 @@
     "pomodoro": "Pomodoro",
     "timers": "Timers",
     "clock": "Clock",
-    "worklog": "Worklog",
-    "worklogStats": "Worklog Statistics",
+    "worklog": "Time Tracking",
+    "worklogOverview": "Time Overview",
+    "worklogStats": "Time Statistics",
     "inventory": "Inventory",
     "cardStatistics": "Statistics",
     "notes": "Notes",
@@ -34,7 +35,7 @@
       "pomodoro": "Pomodoro",
       "flashcards": "Cards",
       "timers": "Timers",
-      "worklog": "Worklog",
+      "worklog": "Time Tracking",
       "tasks": "Tasks",
       "habits": "Habits",
       "home": "Home",
@@ -88,7 +89,7 @@
     "defaultTaskColor": "Default task color",
     "defaultTimerColor": "Default timer color",
     "defaultHabitColor": "Default habit color",
-    "defaultTripColor": "Default trip color",
+    "defaultTripColor": "Default category color",
     "defaultHabitRecurrence": "Default recurrence",
     "timerExtend": "Extend step (seconds)",
     "low": "Low",
@@ -100,8 +101,8 @@
     "showPinnedCategories": "Show pinned categories",
     "showPinnedHabits": "Show pinned habits",
     "enableBatchTasks": "Enable batch task actions",
-    "enableWorklog": "Enable worklog feature",
-    "worklogCardShadow": "Shadow on worklog cards",
+    "enableWorklog": "Enable time tracking feature",
+    "worklogCardShadow": "Shadow on time tracking cards",
     "defaultWorkLocation": "Default work location",
     "offlineCache": "Enable offline cache",
     "themePreset": "Preset",
@@ -230,17 +231,18 @@
     "buyAgain": "Need to restock"
   },
   "tripModal": {
-    "editTitle": "Edit Trip",
-    "newTitle": "New Trip",
+    "editTitle": "Edit Category",
+    "newTitle": "New Category",
     "name": "Name",
-    "location": "Location"
+    "location": "Location",
+    "color": "Color"
   },
   "workDayModal": {
-    "editTitle": "Edit Work Day",
-    "newTitle": "New Work Day",
+    "editTitle": "Edit Time Entry",
+    "newTitle": "New Time Entry",
     "start": "Start",
     "end": "End",
-    "trip": "Trip",
+    "trip": "Category",
     "commute": "Commute",
     "noCommute": "No commute",
     "enterKm": "Enter kilometers",
@@ -249,10 +251,15 @@
     "kilometers": "Kilometers"
   },
   "worklogStats": {
-    "perTrip": "Hours per Trip",
+    "totalTime": "Total time: {{hours}}h {{minutes}}m",
+    "perTrip": "Time per Category",
     "lastWeek": "Last Week",
-    "perTripCommute": "Commute km per Trip",
+    "perTripCommute": "Commute km per Category",
     "lastWeekCommute": "Commute km Last Week"
+  },
+  "worklogOverview": {
+    "timeDistribution": "Time distribution by area",
+    "uncategorized": "Uncategorized"
   },
   "common": {
     "cancel": "Cancel",
@@ -283,7 +290,7 @@
     "pomodoro": "Pomodoro",
     "timers": "Timers",
     "clock": "Clock",
-    "worklog": "Worklog",
+    "worklog": "Time Tracking",
     "notes": "Notes",
     "inventory": "Inventory",
     "recurring": "Recurring",
@@ -773,14 +780,14 @@
     "years": "years"
   },
   "worklog": {
-    "title": "Worklog",
-    "addTrip": "Add Trip",
-    "tripName": "Trip name",
+    "title": "Time Tracking",
+    "addTrip": "Add Category",
+    "tripName": "Category name",
     "color": "Color",
-    "addDay": "Add Work Day",
+    "addDay": "Add Time Entry",
     "start": "Start",
     "end": "End",
-    "workTime": "Work Time",
+    "workTime": "General Time",
     "duration": "Duration",
     "commute": "Commute",
     "date": "Date",
@@ -791,11 +798,11 @@
     "importCsv": "Import CSV"
   },
   "worklogDetail": {
-    "title": "Worklog Details",
+    "title": "Time Entry Details",
     "totalHours": "Total hours",
-    "allDays": "All Days",
+    "allDays": "All Entries",
     "averageHours": "Average per day",
-    "daysList": "Work Days"
+    "daysList": "Entries"
   },
   "ui": {
     "previous": "Previous",

@@ -38,7 +38,7 @@ const NotFound = () => {
       suggestions.push({ label: 'Inventar', path: '/inventory' });
     }
     if (path.includes('work') || path.includes('log')) {
-      suggestions.push({ label: 'Arbeitsprotokoll', path: '/worklog' });
+      suggestions.push({ label: 'Zeiterfassung', path: '/worklog' });
     }
     if (path.includes('stat')) {
       suggestions.push({ label: 'Statistiken', path: '/statistics' });
