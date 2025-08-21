@@ -801,6 +801,10 @@
     "category": {
       "work": "Work",
       "hobby": "Hobby"
+    },
+    "stats": {
+      "work": "Work",
+      "hobby": "Hobby"
     }
   },
   "worklogDetail": {
