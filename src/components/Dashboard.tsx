@@ -127,8 +127,12 @@ const Dashboard: React.FC = () => {
 
   const { toast } = useToast();
   const { setCurrentCategoryId } = useCurrentCategory();
-  const { colorPalette, defaultTaskLayout, showCompletedByDefault, enableBatchTasks } =
-    useSettings();
+  const {
+    colorPalette,
+    defaultTaskLayout,
+    showCompletedByDefault,
+    enableBatchTasks,
+  } = useSettings();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
@@ -481,7 +485,9 @@ const Dashboard: React.FC = () => {
     selectedTaskIds.forEach((id) => resetTask(id));
     toast({
       title: t("dashboard.taskReset"),
-      description: t("dashboard.selectedCount", { count: selectedTaskIds.length }),
+      description: t("dashboard.selectedCount", {
+        count: selectedTaskIds.length,
+      }),
     });
     setSelectedTaskIds([]);
     setSelectionMode(false);
@@ -764,7 +770,9 @@ const Dashboard: React.FC = () => {
             {selectionMode && (
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-sm flex-1">
-                  {t("dashboard.selectedCount", { count: selectedTaskIds.length })}
+                  {t("dashboard.selectedCount", {
+                    count: selectedTaskIds.length,
+                  })}
                 </span>
                 <Button
                   variant="destructive"
@@ -859,7 +867,9 @@ const Dashboard: React.FC = () => {
                           isGrid={taskLayout === "grid"}
                           selectMode={selectionMode}
                           selected={selectedTaskIds.includes(task.id)}
-                          onSelectChange={(checked) => handleSelectTask(task.id, checked)}
+                          onSelectChange={(checked) =>
+                            handleSelectTask(task.id, checked)
+                          }
                         />
                       </SortableTask>
                     ))}
@@ -954,7 +964,11 @@ const Dashboard: React.FC = () => {
         onOpenChange={(o) => !o && setBatchDeleteIds(null)}
         title={
           batchDeleteIds
-            ? t("task.deleteConfirm", { title: t("dashboard.selectedCount", { count: batchDeleteIds.length }) })
+            ? t("task.deleteConfirm", {
+                title: t("dashboard.selectedCount", {
+                  count: batchDeleteIds.length,
+                }),
+              })
             : ""
         }
         onConfirm={() => {

@@ -5,6 +5,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
 ## 🏗️ 1. Projektstruktur & Architektur
 
 ### 1.1 Technische Übersicht
+
 - [ ] **Tech-Stack Dokumentation**
   - [ ] Frontend: React 18 + TypeScript + Vite
   - [ ] Backend: Node.js + Express + SQLite
@@ -15,6 +16,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
   - [ ] Mobile: Capacitor für Android APK
 
 ### 1.2 Architektur-Diagramme
+
 - [ ] **System-Architektur Diagramm**
   - [ ] Client-Server Beziehungen
   - [ ] Datenfluss-Diagramm
@@ -25,6 +27,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
   - [ ] Hook-Dependencies
 
 ### 1.3 Projektstruktur
+
 - [ ] **Dateistruktur-Dokumentation**
   - [ ] `/src` - Frontend Struktur erklären
   - [ ] `/server` - Backend Struktur erklären
@@ -34,6 +37,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
 ## 🚀 2. Installation & Setup
 
 ### 2.1 Entwicklungsumgebung
+
 - [ ] **System-Anforderungen**
   - [ ] Node.js Version Requirements
   - [ ] NPM/Yarn Requirements
@@ -45,6 +49,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
   - [ ] Development-Server starten
 
 ### 2.2 Docker-Setup
+
 - [ ] **Docker-Dokumentation**
   - [ ] Dockerfile erklären
   - [ ] docker-compose.yml Konfiguration
@@ -56,6 +61,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
   - [ ] Docker-Image aus Registry verwenden
 
 ### 2.3 Android APK
+
 - [ ] **Capacitor Setup**
   - [ ] Android Studio Requirements
   - [ ] APK Build-Prozess
@@ -64,6 +70,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
 ## 🎯 3. Feature-Dokumentation
 
 ### 3.1 Task Management
+
 - [ ] **Core Task Features**
   - [ ] Task erstellen/bearbeiten/löschen
   - [ ] Kategorien-System
@@ -79,6 +86,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
   - [ ] Task-Filter und -Suche
 
 ### 3.2 Kanban Board
+
 - [ ] **Kanban Funktionalität**
   - [ ] Board-Layout
   - [ ] Spalten-Konfiguration
@@ -86,6 +94,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
   - [ ] Filter-Optionen
 
 ### 3.3 Zeitplanung
+
 - [ ] **Time Blocking**
   - [ ] Kalender-Ansichten (Tag/Woche/Monat)
   - [ ] Task-Scheduling
@@ -97,6 +106,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
   - [ ] Settings-Konfiguration
 
 ### 3.4 Notizen-System
+
 - [ ] **Notizen-Features**
   - [ ] Markdown-Support
   - [ ] Notiz-Editor mit Toolbar
@@ -106,6 +116,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
   - [ ] Notiz-Anheftung
 
 ### 3.5 Lernkarten (Flashcards)
+
 - [ ] **Flashcard-System**
   - [ ] Deck-Management
   - [ ] Karten erstellen/bearbeiten
@@ -118,6 +129,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
   - [ ] Intervall-Berechnung
 
 ### 3.6 Weitere Features
+
 - [ ] **Habit Tracker**
   - [ ] Gewohnheiten-Management
   - [ ] Progress-Tracking
@@ -138,6 +150,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
 ## 🔌 4. API-Dokumentation
 
 ### 4.1 REST-API Endpunkte
+
 - [ ] **Task-API**
   - [ ] GET /api/tasks
   - [ ] POST /api/tasks
@@ -153,6 +166,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
   - [ ] Habits, Inventory, Worklog, Timer APIs
 
 ### 4.2 Datenstrukturen
+
 - [ ] **Schema-Dokumentation**
   - [ ] Task-Schema
   - [ ] Category-Schema
@@ -165,6 +179,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
   - [ ] Migrations-System
 
 ### 4.3 Sync-System
+
 - [ ] **Sync-Mechanismus**
   - [ ] Server-Client Sync-Protokoll
   - [ ] Conflict-Resolution
@@ -174,6 +189,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
 ## 🧪 5. Entwicklung & Testing
 
 ### 5.1 Development Workflow
+
 - [ ] **Code-Standards**
   - [ ] TypeScript-Konfiguration
   - [ ] ESLint-Regeln
@@ -185,6 +201,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
   - [ ] Utility-Funktionen
 
 ### 5.2 Code-Dokumentation & Onboarding
+
 - [ ] **Inline-Code Kommentare**
   - [ ] Komplexe Funktionen dokumentieren
   - [ ] Business-Logic erklären
@@ -224,6 +241,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
   - [ ] Common Pitfalls und deren Lösungen
 
 ### 5.3 Testing
+
 - [ ] **Test-Strategien**
   - [ ] Unit-Tests mit Vitest
   - [ ] Component-Tests mit React Testing Library
@@ -234,6 +252,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
   - [ ] Critical-Path Testing
 
 ### 5.4 Build-Prozess
+
 - [ ] **Build-Konfiguration**
   - [ ] Vite-Konfiguration erklären
   - [ ] Production-Build Optimierungen
@@ -243,6 +262,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
 ## 🚢 6. Deployment & Operations
 
 ### 6.1 Production Deployment
+
 - [ ] **Server-Deployment**
   - [ ] VPS/Cloud-Provider Setup
   - [ ] Reverse-Proxy Konfiguration (Nginx)
@@ -255,6 +275,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
   - [ ] Backup-Strategien
 
 ### 6.2 CI/CD Pipeline
+
 - [ ] **GitHub Actions**
   - [ ] Build-Pipeline
   - [ ] Test-Pipeline
@@ -262,6 +283,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
   - [ ] Automated Deployment
 
 ### 6.3 Monitoring & Maintenance
+
 - [ ] **Performance Monitoring**
   - [ ] Server-Metrics
   - [ ] Application-Metrics
@@ -274,6 +296,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
 ## 👥 7. Developer Onboarding & Code-Guides
 
 ### 7.1 Entwickler-Einarbeitung
+
 - [ ] **Onboarding-Checkliste für neue Entwickler**
   - [ ] Setup-Anleitung (Schritt-für-Schritt)
   - [ ] Entwicklungsumgebung konfigurieren
@@ -296,6 +319,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
   - [ ] Performance-Profiling Tools
 
 ### 7.2 Code-Style & Best Practices
+
 - [ ] **React-Specific Guidelines**
   - [ ] Component-Design Patterns
   - [ ] Hook-Usage Best Practices
@@ -313,6 +337,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
   - [ ] API-Design Guidelines
 
 ### 7.3 Contributing Guidelines
+
 - [ ] **Git-Workflow**
   - [ ] Branch-Naming Conventions
   - [ ] Commit-Message Standards
@@ -327,6 +352,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
 ## 📚 8. Benutzer-Dokumentation
 
 ### 8.1 Getting Started Guide
+
 - [ ] **Quick-Start Tutorial**
   - [ ] Erste Schritte nach Installation
   - [ ] Basic Task erstellen
@@ -334,6 +360,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
   - [ ] Wichtigste Features kurz erklärt
 
 ### 8.2 Feature-Guides
+
 - [ ] **Detaillierte Benutzer-Guides**
   - [ ] Task Management Best Practices
   - [ ] Lernkarten effektiv nutzen
@@ -342,6 +369,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
   - [ ] Sync zwischen Geräten einrichten
 
 ### 8.3 Troubleshooting
+
 - [ ] **Häufige Probleme**
   - [ ] Performance-Issues
   - [ ] Sync-Probleme
@@ -349,6 +377,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
   - [ ] Mobile-Device Issues
 
 ### 8.4 Keyboard Shortcuts
+
 - [ ] **Vollständige Shortcut-Liste**
   - [ ] Globale Shortcuts
   - [ ] Feature-spezifische Shortcuts
@@ -357,6 +386,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
 ## 🔧 9. Wartung & Support
 
 ### 9.1 Update-Prozeduren
+
 - [ ] **Version-Management**
   - [ ] Semantic Versioning
   - [ ] Release-Notes Prozess
@@ -367,6 +397,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
   - [ ] Database-Migrations
 
 ### 9.2 Konfiguration
+
 - [ ] **Environment-Variables**
   - [ ] Alle ENV-Vars dokumentieren
   - [ ] Default-Werte
@@ -377,6 +408,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
   - [ ] Theme-Customization
 
 ### 9.3 Security
+
 - [ ] **Security-Guidelines**
   - [ ] Data-Privacy
   - [ ] Authentication (falls implementiert)
@@ -386,6 +418,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
 ## 🌐 10. Internationalisierung
 
 ### 10.1 i18n-System
+
 - [ ] **Sprachunterstützung**
   - [ ] Aktuell: Deutsch & Englisch
   - [ ] Neue Sprachen hinzufügen
@@ -398,6 +431,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
 ## 📖 11. Zusätzliche Dokumentation
 
 ### 11.1 Design-System
+
 - [ ] **UI-Komponenten**
   - [ ] Shadcn/UI Components-Guide
   - [ ] Custom-Components
@@ -405,6 +439,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
   - [ ] Design-Tokens
 
 ### 11.2 Accessibility
+
 - [ ] **A11y-Guidelines**
   - [ ] Keyboard-Navigation
   - [ ] Screen-Reader Support
@@ -412,6 +447,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
   - [ ] ARIA-Labels
 
 ### 11.3 Performance
+
 - [ ] **Performance-Guidelines**
   - [ ] Optimization-Strategien
   - [ ] Lazy-Loading
@@ -423,6 +459,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
 ## 🎯 Prioritäten
 
 ### Hohe Priorität (Sofort)
+
 - [ ] **Developer Onboarding Guide** - Für neue Mitarbeiter essentiell
 - [ ] **Code-Kommentare & JSDoc** - Wichtigste Funktionen dokumentieren
 - [ ] **Benutzer-Dokumentation & Quick-Start Guide**
@@ -430,6 +467,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
 - [ ] **Installation & Setup-Guides**
 
 ### Mittlere Priorität (Nächste Wochen)
+
 - [ ] **Architektur-Walkthrough** - Code-Tour für Entwickler
 - [ ] **Module-spezifische READMEs** - Komponenten/Hooks/Utils
 - [ ] **Development-Guidelines & Code-Standards**
@@ -438,6 +476,7 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
 - [ ] **Troubleshooting-Guides**
 
 ### Niedrige Priorität (Langfristig)
+
 - [ ] Erweiterte Architektur-Diagramme
 - [ ] Performance-Optimierung Guides
 - [ ] A11y-Detailed Guidelines
@@ -450,4 +489,4 @@ Diese Checkliste umfasst alle Bereiche, die für eine vollständige und professi
 - Diese Checkliste sollte regelmäßig überprüft und aktualisiert werden
 - Bei neuen Features: entsprechende Dokumentations-Items hinzufügen
 - Community-Beiträge zur Dokumentation sind willkommen
-- Dokumentation sollte versioniert werden (parallel zu Software-Releases) 
+- Dokumentation sollte versioniert werden (parallel zu Software-Releases)

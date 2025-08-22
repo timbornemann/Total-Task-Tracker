@@ -3,10 +3,10 @@
  * Monitors application health including database, memory, and system metrics
  */
 
-import { promises as fs } from 'fs';
-import os from 'os';
-import { HealthCheck, HealthCheckSchema } from '../schemas/index.js';
-import { logger, logHealthCheck } from '../lib/logger.js';
+import { promises as fs } from "fs";
+import os from "os";
+import { HealthCheck, HealthCheckSchema } from "../schemas/index.js";
+import { logger, logHealthCheck } from "../lib/logger.js";
 
 export interface HealthCheckOptions {
   includeDetailed?: boolean;
@@ -14,7 +14,7 @@ export interface HealthCheckOptions {
 }
 
 export interface DatabaseHealthStatus {
-  status: 'connected' | 'disconnected';
+  status: "connected" | "disconnected";
   responseTime?: number;
   error?: string;
 }
@@ -46,7 +46,7 @@ export interface DetailedHealthCheck extends HealthCheck {
   };
   dependencies?: {
     [key: string]: {
-      status: 'healthy' | 'unhealthy';
+      status: "healthy" | "unhealthy";
       responseTime?: number;
       error?: string;
     };
@@ -59,17 +59,19 @@ export class HealthService {
 
   constructor() {
     this.startTime = Date.now();
-    this.version = process.env.npm_package_version || '1.0.0';
+    this.version = process.env.npm_package_version || "1.0.0";
   }
 
   // Main health check endpoint
-  async getHealthStatus(options: HealthCheckOptions = {}): Promise<HealthCheck | DetailedHealthCheck> {
+  async getHealthStatus(
+    options: HealthCheckOptions = {},
+  ): Promise<HealthCheck | DetailedHealthCheck> {
     const startTime = Date.now();
-    
+
     try {
       // Basic health check
       const basicHealth = await this.getBasicHealthCheck();
-      
+
       if (!options.includeDetailed) {
         logHealthCheck(basicHealth.status, basicHealth);
         return basicHealth;
@@ -77,24 +79,29 @@ export class HealthService {
 
       // Detailed health check
       const detailedHealth = await this.getDetailedHealthCheck(basicHealth);
-      
-      logHealthCheck(detailedHealth.status, detailedHealth as Record<string, unknown>);
+
+      logHealthCheck(
+        detailedHealth.status,
+        detailedHealth as Record<string, unknown>,
+      );
       return detailedHealth;
-      
     } catch (error) {
       const errorHealth: HealthCheck = {
-        status: 'unhealthy',
+        status: "unhealthy",
         timestamp: new Date(),
         uptime: this.getUptime(),
         version: this.version,
         database: {
-          status: 'disconnected',
-          error: error instanceof Error ? error.message : 'Unknown error',
+          status: "disconnected",
+          error: error instanceof Error ? error.message : "Unknown error",
         },
         memory: this.getMemoryStatus(),
       };
 
-      logHealthCheck('unhealthy', { error, responseTime: Date.now() - startTime });
+      logHealthCheck("unhealthy", {
+        error,
+        responseTime: Date.now() - startTime,
+      });
       return errorHealth;
     }
   }
@@ -103,14 +110,13 @@ export class HealthService {
   private async getBasicHealthCheck(): Promise<HealthCheck> {
     const memoryStatus = this.getMemoryStatus();
     const databaseStatus = await this.checkDatabaseHealth();
-    
+
     // Determine overall status
-    const isHealthy = 
-      databaseStatus.status === 'connected' &&
-      memoryStatus.percentage < 90; // Memory usage below 90%
+    const isHealthy =
+      databaseStatus.status === "connected" && memoryStatus.percentage < 90; // Memory usage below 90%
 
     return {
-      status: isHealthy ? 'healthy' : 'unhealthy',
+      status: isHealthy ? "healthy" : "unhealthy",
       timestamp: new Date(),
       uptime: this.getUptime(),
       version: this.version,
@@ -120,7 +126,9 @@ export class HealthService {
   }
 
   // Detailed health check (comprehensive)
-  private async getDetailedHealthCheck(basicHealth: HealthCheck): Promise<DetailedHealthCheck> {
+  private async getDetailedHealthCheck(
+    basicHealth: HealthCheck,
+  ): Promise<DetailedHealthCheck> {
     const systemStatus = this.getSystemStatus();
     const environmentStatus = this.getEnvironmentStatus();
     const dependenciesStatus = await this.checkDependencies();
@@ -136,33 +144,34 @@ export class HealthService {
   // Check database connectivity
   private async checkDatabaseHealth(): Promise<DatabaseHealthStatus> {
     const startTime = Date.now();
-    
+
     try {
       // Test database by trying to read data files
-      await fs.access('./data', fs.constants.F_OK);
-      
+      await fs.access("./data", fs.constants.F_OK);
+
       // Try to read a data file to ensure read access
-      const tasksPath = './data/tasks.json';
+      const tasksPath = "./data/tasks.json";
       try {
         await fs.access(tasksPath, fs.constants.R_OK);
       } catch {
         // Create empty file if it doesn't exist
-        await fs.writeFile(tasksPath, '[]', 'utf8');
+        await fs.writeFile(tasksPath, "[]", "utf8");
       }
 
       const responseTime = Date.now() - startTime;
-      
+
       return {
-        status: 'connected',
+        status: "connected",
         responseTime,
       };
     } catch (error) {
       const responseTime = Date.now() - startTime;
-      
+
       return {
-        status: 'disconnected',
+        status: "disconnected",
         responseTime,
-        error: error instanceof Error ? error.message : 'Unknown database error',
+        error:
+          error instanceof Error ? error.message : "Unknown database error",
       };
     }
   }
@@ -172,7 +181,7 @@ export class HealthService {
     const memUsage = process.memoryUsage();
     const totalMemory = memUsage.heapTotal + memUsage.external;
     const usedMemory = memUsage.heapUsed + memUsage.external;
-    
+
     return {
       used: usedMemory,
       total: totalMemory,
@@ -188,7 +197,7 @@ export class HealthService {
   private getSystemStatus(): SystemStatus {
     return {
       uptime: this.getUptime(),
-      loadAverage: process.platform !== 'win32' ? os.loadavg() : undefined,
+      loadAverage: process.platform !== "win32" ? os.loadavg() : undefined,
       platform: process.platform,
       nodeVersion: process.version,
       pid: process.pid,
@@ -198,23 +207,23 @@ export class HealthService {
   // Get environment information
   private getEnvironmentStatus() {
     return {
-      nodeEnv: process.env.NODE_ENV || 'development',
+      nodeEnv: process.env.NODE_ENV || "development",
       version: this.version,
-      port: parseInt(process.env.PORT || '3001', 10),
+      port: parseInt(process.env.PORT || "3001", 10),
     };
   }
 
   // Check external dependencies
   private async checkDependencies(): Promise<{
     [key: string]: {
-      status: 'healthy' | 'unhealthy';
+      status: "healthy" | "unhealthy";
       responseTime?: number;
       error?: string;
     };
   }> {
     const dependencies: {
       [key: string]: {
-        status: 'healthy' | 'unhealthy';
+        status: "healthy" | "unhealthy";
         responseTime?: number;
         error?: string;
       };
@@ -222,70 +231,74 @@ export class HealthService {
 
     // Check file system
     dependencies.filesystem = await this.checkFileSystemHealth();
-    
+
     // Check required directories
     dependencies.dataDirectory = await this.checkDataDirectory();
-    
+
     // Add more dependency checks as needed
     // dependencies.externalAPI = await this.checkExternalAPI();
-    
+
     return dependencies;
   }
 
   // Check file system health
   private async checkFileSystemHealth(): Promise<{
-    status: 'healthy' | 'unhealthy';
+    status: "healthy" | "unhealthy";
     responseTime: number;
     error?: string;
   }> {
     const startTime = Date.now();
-    
+
     try {
       // Test file operations
-      const testFile = './test-health-check.tmp';
-      const testData = 'health-check-test';
-      
-      await fs.writeFile(testFile, testData, 'utf8');
-      const readData = await fs.readFile(testFile, 'utf8');
+      const testFile = "./test-health-check.tmp";
+      const testData = "health-check-test";
+
+      await fs.writeFile(testFile, testData, "utf8");
+      const readData = await fs.readFile(testFile, "utf8");
       await fs.unlink(testFile);
-      
+
       if (readData !== testData) {
-        throw new Error('File system read/write test failed');
+        throw new Error("File system read/write test failed");
       }
-      
+
       return {
-        status: 'healthy',
+        status: "healthy",
         responseTime: Date.now() - startTime,
       };
     } catch (error) {
       return {
-        status: 'unhealthy',
+        status: "unhealthy",
         responseTime: Date.now() - startTime,
-        error: error instanceof Error ? error.message : 'Unknown file system error',
+        error:
+          error instanceof Error ? error.message : "Unknown file system error",
       };
     }
   }
 
   // Check data directory
   private async checkDataDirectory(): Promise<{
-    status: 'healthy' | 'unhealthy';
+    status: "healthy" | "unhealthy";
     responseTime: number;
     error?: string;
   }> {
     const startTime = Date.now();
-    
+
     try {
-      await fs.access('./data', fs.constants.F_OK | fs.constants.R_OK | fs.constants.W_OK);
-      
+      await fs.access(
+        "./data",
+        fs.constants.F_OK | fs.constants.R_OK | fs.constants.W_OK,
+      );
+
       return {
-        status: 'healthy',
+        status: "healthy",
         responseTime: Date.now() - startTime,
       };
     } catch (error) {
       return {
-        status: 'unhealthy',
+        status: "unhealthy",
         responseTime: Date.now() - startTime,
-        error: 'Data directory not accessible',
+        error: "Data directory not accessible",
       };
     }
   }
@@ -300,20 +313,20 @@ export class HealthService {
     try {
       const dbHealth = await this.checkDatabaseHealth();
       const memoryStatus = this.getMemoryStatus();
-      
-      if (dbHealth.status !== 'connected') {
-        return { ready: false, reason: 'Database not connected' };
+
+      if (dbHealth.status !== "connected") {
+        return { ready: false, reason: "Database not connected" };
       }
-      
+
       if (memoryStatus.percentage > 95) {
-        return { ready: false, reason: 'Memory usage too high' };
+        return { ready: false, reason: "Memory usage too high" };
       }
-      
+
       return { ready: true };
     } catch (error) {
-      return { 
-        ready: false, 
-        reason: error instanceof Error ? error.message : 'Unknown error' 
+      return {
+        ready: false,
+        reason: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
@@ -323,16 +336,16 @@ export class HealthService {
     try {
       // Basic liveness check - just ensure process is responsive
       const uptime = this.getUptime();
-      
+
       if (uptime < 5) {
-        return { alive: false, reason: 'Application still starting' };
+        return { alive: false, reason: "Application still starting" };
       }
-      
+
       return { alive: true };
     } catch (error) {
-      return { 
-        alive: false, 
-        reason: error instanceof Error ? error.message : 'Unknown error' 
+      return {
+        alive: false,
+        reason: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
@@ -342,20 +355,20 @@ export class HealthService {
     try {
       const dbHealth = await this.checkDatabaseHealth();
       const uptime = this.getUptime();
-      
+
       if (uptime < 2) {
-        return { started: false, reason: 'Application still initializing' };
+        return { started: false, reason: "Application still initializing" };
       }
-      
-      if (dbHealth.status !== 'connected') {
-        return { started: false, reason: 'Database not ready' };
+
+      if (dbHealth.status !== "connected") {
+        return { started: false, reason: "Database not ready" };
       }
-      
+
       return { started: true };
     } catch (error) {
-      return { 
-        started: false, 
-        reason: error instanceof Error ? error.message : 'Unknown error' 
+      return {
+        started: false,
+        reason: error instanceof Error ? error.message : "Unknown error",
       };
     }
   }
@@ -364,7 +377,7 @@ export class HealthService {
   async getPerformanceMetrics() {
     const memoryStatus = this.getMemoryStatus();
     const systemStatus = this.getSystemStatus();
-    
+
     return {
       memory: memoryStatus,
       uptime: systemStatus.uptime,

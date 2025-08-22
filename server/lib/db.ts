@@ -33,7 +33,7 @@ function tableExists(table: string): boolean {
 
 function ensureSchema() {
   // Always ensure auxiliary tables that never used JSON
-db.exec(`
+  db.exec(`
     CREATE TABLE IF NOT EXISTS deletions (
       type TEXT NOT NULL,
       id TEXT NOT NULL,
@@ -288,7 +288,10 @@ db.exec(`
   function migrateJsonTableToNormalized(
     logicalName: keyof typeof createStatements,
     extract:
-      | ((row: Record<string, unknown>) => { main: Record<string, unknown>; child?: Array<{ table: string; row: Record<string, unknown> }> })
+      | ((row: Record<string, unknown>) => {
+          main: Record<string, unknown>;
+          child?: Array<{ table: string; row: Record<string, unknown> }>;
+        })
       | null,
   ) {
     const name = logicalName as string;
@@ -305,14 +308,18 @@ db.exec(`
     }
     // Old JSON table: create temp normalized, copy, swap
     const tempName = `${name}_norm_temp`;
-    db.exec(createStatements[logicalName].replace(` ${name} `, ` ${tempName} `));
+    db.exec(
+      createStatements[logicalName].replace(` ${name} `, ` ${tempName} `),
+    );
 
     // Read all JSON rows
     const rows = db.prepare(`SELECT id, data FROM ${name}`).all();
 
-    const insertColsSql = (db
-      .prepare(`PRAGMA table_info(${tempName})`)
-      .all() as Array<{ name: string }>)
+    const insertColsSql = (
+      db.prepare(`PRAGMA table_info(${tempName})`).all() as Array<{
+        name: string;
+      }>
+    )
       .map((r) => r.name)
       .filter((c: string) => c !== "") as string[];
     const placeholders = insertColsSql.map(() => "?").join(", ");
@@ -331,7 +338,9 @@ db.exec(`
         if (extract) {
           const { main, child } = extract(obj);
           const mainObj = main as Record<string, unknown>;
-          const rowValues: unknown[] = insertColsSql.map((c) => mainObj[c] ?? null);
+          const rowValues: unknown[] = insertColsSql.map(
+            (c) => mainObj[c] ?? null,
+          );
           insert.run(...rowValues);
           if (child) {
             for (const ch of child) {
@@ -348,7 +357,9 @@ db.exec(`
         } else {
           // No extractor provided; assume flat object with matching columns
           const objRec = obj as Record<string, unknown>;
-          const rowValues: unknown[] = insertColsSql.map((c) => (c in objRec ? objRec[c] : null));
+          const rowValues: unknown[] = insertColsSql.map((c) =>
+            c in objRec ? objRec[c] : null,
+          );
           insert.run(...rowValues);
         }
       }
@@ -419,7 +430,8 @@ db.exec(`
   migrateJsonTableToNormalized("inventory_categories", null);
   migrateJsonTableToNormalized("inventory_tags", null);
   migrateJsonTableToNormalized("inventory_items", (obj) => {
-    const getAs = <T>(o: Record<string, unknown>, k: string): T | undefined => o[k] as T | undefined;
+    const getAs = <T>(o: Record<string, unknown>, k: string): T | undefined =>
+      o[k] as T | undefined;
     const main = {
       id: getAs<string>(obj, "id"),
       name: getAs<string>(obj, "name"),
@@ -439,7 +451,10 @@ db.exec(`
       ? (getAs<string[]>(obj, "tagIds") as string[])
       : [];
     for (const tagId of tagIds) {
-      child.push({ table: "inventory_item_tags", row: { itemId: getAs<string>(obj, "id"), tagId } });
+      child.push({
+        table: "inventory_item_tags",
+        row: { itemId: getAs<string>(obj, "id"), tagId },
+      });
     }
     return { main, child };
   });
@@ -449,7 +464,8 @@ db.exec(`
     parentId: string | null,
     acc: Array<Record<string, unknown>>,
   ) => {
-    const getAs = <T>(o: Record<string, unknown>, k: string): T | undefined => o[k] as T | undefined;
+    const getAs = <T>(o: Record<string, unknown>, k: string): T | undefined =>
+      o[k] as T | undefined;
     const row = {
       id: getAs<string>(obj, "id") as string,
       title: (getAs<string>(obj, "title") as string) || "",
@@ -499,7 +515,8 @@ db.exec(`
     const subs: Array<Record<string, unknown>> = Array.isArray(subsRaw)
       ? (subsRaw as Array<Record<string, unknown>>)
       : [];
-    for (const s of subs) extractTask(s, getAs<string>(obj, "id") as string, acc);
+    for (const s of subs)
+      extractTask(s, getAs<string>(obj, "id") as string, acc);
   };
 
   const migrateTaskTable = (logicalName: "tasks" | "recurring") => {
@@ -519,7 +536,8 @@ db.exec(`
   migrateTaskTable("recurring");
 
   migrateJsonTableToNormalized("habits", (obj) => {
-    const getAs = <T>(o: Record<string, unknown>, k: string): T | undefined => o[k] as T | undefined;
+    const getAs = <T>(o: Record<string, unknown>, k: string): T | undefined =>
+      o[k] as T | undefined;
     const main = {
       id: getAs<string>(obj, "id"),
       title: getAs<string>(obj, "title"),
@@ -545,7 +563,10 @@ db.exec(`
       ? (completionsRaw as string[])
       : [];
     for (const d of completions) {
-      child.push({ table: "habit_completions", row: { habitId: getAs<string>(obj, "id"), date: d } });
+      child.push({
+        table: "habit_completions",
+        row: { habitId: getAs<string>(obj, "id"), date: d },
+      });
     }
     return { main, child };
   });

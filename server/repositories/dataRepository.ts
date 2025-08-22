@@ -62,8 +62,6 @@ export interface AllData extends Data {
   settings: Settings;
 }
 
-
-
 export function dateReviver(key: string, value: unknown): unknown {
   if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
     const d = new Date(value);
@@ -359,7 +357,11 @@ export function saveTasks(tasks: Task[]): void {
       customIntervalDays: number | null;
       visible: number;
     }
-    const toRow = (t: Task, parentId: string | null, orderIndex: number): TaskRow => ({
+    const toRow = (
+      t: Task,
+      parentId: string | null,
+      orderIndex: number,
+    ): TaskRow => ({
       id: t.id,
       title: t.title,
       description: t.description,
@@ -374,7 +376,9 @@ export function saveTasks(tasks: Task[]): void {
       dueDate: t.dueDate ? new Date(t.dueDate).toISOString() : null,
       isRecurring: t.isRecurring ? 1 : 0,
       recurrencePattern: t.recurrencePattern ?? null,
-      lastCompleted: t.lastCompleted ? new Date(t.lastCompleted).toISOString() : null,
+      lastCompleted: t.lastCompleted
+        ? new Date(t.lastCompleted).toISOString()
+        : null,
       nextDue: t.nextDue ? new Date(t.nextDue).toISOString() : null,
       dueOption: t.dueOption ?? null,
       dueAfterDays: t.dueAfterDays ?? null,
@@ -496,7 +500,11 @@ export function saveRecurring(list: Task[]): void {
       customIntervalDays: number | null;
       visible: number;
     }
-    const toRow = (t: Task, parentId: string | null, orderIndex: number): RecurringRow => ({
+    const toRow = (
+      t: Task,
+      parentId: string | null,
+      orderIndex: number,
+    ): RecurringRow => ({
       id: t.id,
       title: t.title,
       description: t.description,
@@ -511,7 +519,9 @@ export function saveRecurring(list: Task[]): void {
       dueDate: t.dueDate ? new Date(t.dueDate).toISOString() : null,
       isRecurring: t.isRecurring ? 1 : 0,
       recurrencePattern: t.recurrencePattern ?? null,
-      lastCompleted: t.lastCompleted ? new Date(t.lastCompleted).toISOString() : null,
+      lastCompleted: t.lastCompleted
+        ? new Date(t.lastCompleted).toISOString()
+        : null,
       nextDue: t.nextDue ? new Date(t.nextDue).toISOString() : null,
       dueOption: t.dueOption ?? null,
       dueAfterDays: t.dueAfterDays ?? null,
@@ -919,7 +929,9 @@ export function loadItemTags(): ItemTag[] {
 export function saveItemTags(list: ItemTag[]): void {
   const tx = db.transaction(() => {
     db.exec("DELETE FROM inventory_tags");
-    const insert = db.prepare(`INSERT INTO inventory_tags (id, name) VALUES (?, ?)`);
+    const insert = db.prepare(
+      `INSERT INTO inventory_tags (id, name) VALUES (?, ?)`,
+    );
     for (const t of list || []) insert.run(t.id, t.name);
   });
   tx();
@@ -930,7 +942,7 @@ export function saveFlashcards(cards: Flashcard[]): void {
     db.exec("DELETE FROM flashcards");
     const insert = db.prepare(
       `INSERT INTO flashcards (id, front, back, deckId, interval, dueDate, easyCount, mediumCount, hardCount, typedCorrect, typedTotal)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     );
     for (const c of cards || []) {
       insert.run(
@@ -1031,5 +1043,3 @@ export function saveAllData(
     }
   }
 }
-
-

@@ -5,7 +5,13 @@ import { useInventoryStore } from "@/hooks/useInventoryStore";
 import InventoryModal from "@/components/InventoryModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useTranslation } from "react-i18next";
 
 const InventoryPage: React.FC = () => {
@@ -45,27 +51,33 @@ const InventoryPage: React.FC = () => {
           />
           <Select value={catFilter} onValueChange={setCatFilter}>
             <SelectTrigger className="w-40">
-              <SelectValue placeholder={t("inventory.categoryFilter")}/>
+              <SelectValue placeholder={t("inventory.categoryFilter")} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{t("common.none")}</SelectItem>
               {categories.map((c) => (
-                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                <SelectItem key={c.id} value={c.id}>
+                  {c.name}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
           <Select value={tagFilter} onValueChange={setTagFilter}>
             <SelectTrigger className="w-40">
-              <SelectValue placeholder={t("inventory.tagFilter")}/>
+              <SelectValue placeholder={t("inventory.tagFilter")} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{t("common.none")}</SelectItem>
               {tags.map((t) => (
-                <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                <SelectItem key={t.id} value={t.id}>
+                  {t.name}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <Button onClick={() => setOpen(true)}>{t("inventory.newItem")}</Button>
+          <Button onClick={() => setOpen(true)}>
+            {t("inventory.newItem")}
+          </Button>
         </div>
         <ul className="divide-y">
           {filtered.map((item) => (
@@ -84,7 +96,11 @@ const InventoryPage: React.FC = () => {
           )}
         </ul>
       </div>
-      <InventoryModal isOpen={open} onClose={() => setOpen(false)} onSave={addItem} />
+      <InventoryModal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        onSave={addItem}
+      />
     </div>
   );
 };

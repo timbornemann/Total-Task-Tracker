@@ -2,7 +2,11 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { allHomeSections } from "@/utils/homeSections";
 import { allNavbarItems } from "@/utils/navbarItems";
 import i18n from "@/lib/i18n";
-import { defaultColorPalette, themePresets, type ThemeType } from "@/lib/themes";
+import {
+  defaultColorPalette,
+  themePresets,
+  type ThemeType,
+} from "@/lib/themes";
 
 export type ShortcutKeys = {
   openCommand: string;
@@ -54,7 +58,6 @@ const defaultLlmModel = "gpt-3.5-turbo";
 const defaultOfflineCache = true;
 const defaultWorklogEnabled = true;
 const defaultBatchTasksEnabled = false;
-
 
 export const defaultHomeSectionColors: Record<string, number> =
   allHomeSections.reduce(
@@ -242,15 +245,25 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
   ]);
   // Benutze einen Ref um zu verfolgen, ob wir bereits Einstellungen geladen haben
   const initialNavSettingsLoaded = React.useRef(false);
-  
+
   // Nutze memo für die Anfangswerte, damit diese nicht bei jedem Render neu erstellt werden
   const initialNavbarGroups = React.useMemo(() => [...defaultNavbarGroups], []);
-  const initialNavbarItems = React.useMemo(() => ({...defaultNavbarItems}), []);
-  const initialNavbarItemOrder = React.useMemo(() => ({...defaultNavbarItemOrder}), []);
-  
-  const [navbarGroups, setNavbarGroups] = useState<string[]>(initialNavbarGroups);
-  const [navbarItems, setNavbarItems] = useState<Record<string, string[]>>(initialNavbarItems);
-  const [navbarItemOrder, setNavbarItemOrder] = useState<Record<string, string[]>>(initialNavbarItemOrder);
+  const initialNavbarItems = React.useMemo(
+    () => ({ ...defaultNavbarItems }),
+    [],
+  );
+  const initialNavbarItemOrder = React.useMemo(
+    () => ({ ...defaultNavbarItemOrder }),
+    [],
+  );
+
+  const [navbarGroups, setNavbarGroups] =
+    useState<string[]>(initialNavbarGroups);
+  const [navbarItems, setNavbarItems] =
+    useState<Record<string, string[]>>(initialNavbarItems);
+  const [navbarItemOrder, setNavbarItemOrder] = useState<
+    Record<string, string[]>
+  >(initialNavbarItemOrder);
   const [showPinnedTasks, setShowPinnedTasks] = useState(true);
   const [showPinnedNotes, setShowPinnedNotes] = useState(true);
   const [showPinnedCategories, setShowPinnedCategories] = useState(true);
@@ -291,7 +304,9 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
   const [llmModel, setLlmModel] = useState(defaultLlmModel);
   const [offlineCache, setOfflineCache] = useState(defaultOfflineCache);
   const [enableWorklog, setEnableWorklog] = useState(defaultWorklogEnabled);
-  const [enableBatchTasks, setEnableBatchTasks] = useState(defaultBatchTasksEnabled);
+  const [enableBatchTasks, setEnableBatchTasks] = useState(
+    defaultBatchTasksEnabled,
+  );
   const [worklogCardShadow, setWorklogCardShadow] = useState(true);
   const [defaultWorkLocation, setDefaultWorkLocation] = useState("");
   const [loaded, setLoaded] = useState(false);
@@ -374,16 +389,19 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
               ...data.homeSectionColors,
             });
           }
-          
+
           // Handle navbar settings with improved validation and protection against resets
           let hasNavbarData = false;
-          
+
           // Only update navbar groups if data exists and is valid
-          if (Array.isArray(data.navbarGroups) && data.navbarGroups.length > 0) {
+          if (
+            Array.isArray(data.navbarGroups) &&
+            data.navbarGroups.length > 0
+          ) {
             setNavbarGroups(data.navbarGroups);
             hasNavbarData = true;
           }
-          
+
           // Only update navbar items if data exists and is valid
           if (
             data.navbarItems &&
@@ -394,7 +412,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
             setNavbarItems({ ...data.navbarItems });
             hasNavbarData = true;
           }
-          
+
           // Only update navbar item order if data exists and is valid
           if (
             data.navbarItemOrder &&
@@ -402,20 +420,25 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
             Object.keys(data.navbarItemOrder).length > 0
           ) {
             const order: Record<string, string[]> = { ...data.navbarItemOrder };
-            const groups = Array.isArray(data.navbarGroups) && data.navbarGroups.length > 0
-              ? data.navbarGroups
-              : hasNavbarData ? navbarGroups : defaultNavbarGroups;
-              
+            const groups =
+              Array.isArray(data.navbarGroups) && data.navbarGroups.length > 0
+                ? data.navbarGroups
+                : hasNavbarData
+                  ? navbarGroups
+                  : defaultNavbarGroups;
+
             // Keep existing standalone items if available
             if (!order.standalone || order.standalone.length === 0) {
-              const settingsItemKey = allNavbarItems.find(item => item.labelKey === "navbar.settings")?.key;
+              const settingsItemKey = allNavbarItems.find(
+                (item) => item.labelKey === "navbar.settings",
+              )?.key;
               order.standalone = settingsItemKey ? [settingsItemKey] : [];
             }
-            
+
             groups.forEach((g) => {
               if (!order[g]) order[g] = [];
             });
-            
+
             setNavbarItemOrder(order);
             hasNavbarData = true;
           }
@@ -524,15 +547,20 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     const save = async () => {
       try {
         // Stelle sicher, dass wir vor dem Speichern initialisiert sind
-        console.log("Saving settings, navbarGroups length:", navbarGroups.length);
-        
+        console.log(
+          "Saving settings, navbarGroups length:",
+          navbarGroups.length,
+        );
+
         // Leere Navbar-Einstellungen nicht speichern, wenn wir keine Daten geladen haben
-        const navSettingsToSave = initialNavSettingsLoaded.current ? {
-          navbarGroups,
-          navbarItems,
-          navbarItemOrder,
-        } : {};
-        
+        const navSettingsToSave = initialNavSettingsLoaded.current
+          ? {
+              navbarGroups,
+              navbarItems,
+              navbarItemOrder,
+            }
+          : {};
+
         await fetch("/api/settings", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -915,18 +943,20 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
   const resetNavbarSettings = () => {
     // Führe einen echten Reset nur durch, wenn der Benutzer tatsächlich klickt
     console.log("Manual navbar reset triggered by user");
-    
+
     setNavbarGroups([...defaultNavbarGroups]);
-    
+
     // Create a modified version of default navbar items where only settings is enabled in standalone
     const modifiedNavbarItems = { ...defaultNavbarItems };
-    
+
     // Find the settings item key from all navbar items
-    const settingsItemKey = allNavbarItems.find(item => item.labelKey === "navbar.settings")?.key;
-    
+    const settingsItemKey = allNavbarItems.find(
+      (item) => item.labelKey === "navbar.settings",
+    )?.key;
+
     // Update the standalone items to only include settings if it exists
     modifiedNavbarItems.standalone = settingsItemKey ? [settingsItemKey] : [];
-    
+
     setNavbarItems(modifiedNavbarItems);
     setNavbarItemOrder({ ...defaultNavbarItemOrder });
   };

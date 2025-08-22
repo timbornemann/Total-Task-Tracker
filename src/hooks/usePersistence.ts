@@ -3,21 +3,21 @@
  * Provides easy integration with React components and stores
  */
 
-import { useEffect, useRef, useCallback, useState } from 'react';
-import { 
-  PersistenceManager, 
-  PersistenceConfig, 
+import { useEffect, useRef, useCallback, useState } from "react";
+import {
+  PersistenceManager,
+  PersistenceConfig,
   PersistableEntity,
   SyncState,
-  ConflictRecord 
-} from '@/lib/persistence';
-import { useOnlineStatus } from './useOfflineQueue';
+  ConflictRecord,
+} from "@/lib/persistence";
+import { useOnlineStatus } from "./useOfflineQueue";
 
 // Hook for managing persistence with a store
 export function usePersistence<T extends PersistableEntity>(
   config: PersistenceConfig<T>,
   data: T[],
-  onDataChange: (data: T[]) => void
+  onDataChange: (data: T[]) => void,
 ) {
   const managerRef = useRef<PersistenceManager<T>>();
   const [syncState, setSyncState] = useState<SyncState>({});
@@ -29,10 +29,10 @@ export function usePersistence<T extends PersistableEntity>(
   useEffect(() => {
     if (!managerRef.current) {
       managerRef.current = new PersistenceManager(config);
-      
+
       // Load initial sync state
       setSyncState(managerRef.current.getSyncState());
-      
+
       // Start auto-sync if configured
       if (config.syncInterval && config.syncInterval > 0) {
         managerRef.current.startAutoSync();
@@ -64,18 +64,18 @@ export function usePersistence<T extends PersistableEntity>(
   // Sync functions
   const syncWithServer = useCallback(async () => {
     if (!managerRef.current || isSyncing) return;
-    
+
     setIsSyncing(true);
-    
+
     try {
       const result = await managerRef.current.syncWithServer(data);
-      
+
       if (result.success) {
         onDataChange(result.data);
         setConflicts(result.conflicts);
         setSyncState(managerRef.current.getSyncState());
       }
-      
+
       return result;
     } finally {
       setIsSyncing(false);
@@ -84,15 +84,15 @@ export function usePersistence<T extends PersistableEntity>(
 
   // Queue operations for offline support
   const queueCreate = useCallback((item: T) => {
-    return managerRef.current?.queueCreate(item) || '';
+    return managerRef.current?.queueCreate(item) || "";
   }, []);
 
   const queueUpdate = useCallback((id: string, updates: Partial<T>) => {
-    return managerRef.current?.queueUpdate(id, updates) || '';
+    return managerRef.current?.queueUpdate(id, updates) || "";
   }, []);
 
   const queueDelete = useCallback((id: string) => {
-    return managerRef.current?.queueDelete(id) || '';
+    return managerRef.current?.queueDelete(id) || "";
   }, []);
 
   // Auto-sync when coming online
@@ -102,19 +102,21 @@ export function usePersistence<T extends PersistableEntity>(
       const timer = setTimeout(() => {
         syncWithServer();
       }, 1000);
-      
+
       return () => clearTimeout(timer);
     }
   }, [isOnline, syncWithServer, isSyncing]);
 
   // Statistics
   const getStats = useCallback(() => {
-    return managerRef.current?.getStats() || {
-      syncVersion: 0,
-      localCount: 0,
-      deletionCount: 0,
-      conflictCount: 0,
-    };
+    return (
+      managerRef.current?.getStats() || {
+        syncVersion: 0,
+        localCount: 0,
+        deletionCount: 0,
+        conflictCount: 0,
+      }
+    );
   }, []);
 
   return {
@@ -123,20 +125,20 @@ export function usePersistence<T extends PersistableEntity>(
     conflicts,
     isSyncing,
     isOnline,
-    
+
     // Actions
     syncWithServer,
     queueCreate,
     queueUpdate,
     queueDelete,
-    
+
     // Utilities
     getStats,
-    
+
     // Manual control
     startAutoSync: () => managerRef.current?.startAutoSync(),
     stopAutoSync: () => managerRef.current?.stopAutoSync(),
-    
+
     // Direct manager access for advanced use cases
     manager: managerRef.current,
   };
@@ -146,7 +148,7 @@ export function usePersistence<T extends PersistableEntity>(
 export function useLocalPersistence<T>(
   storeName: string,
   data: T,
-  defaultValue: T
+  defaultValue: T,
 ): [T, (newData: T) => void] {
   const [localData, setLocalData] = useState<T>(defaultValue);
   const storageKey = `${storeName}_data`;
@@ -157,7 +159,7 @@ export function useLocalPersistence<T>(
       const stored = localStorage.getItem(storageKey);
       if (stored) {
         const parsed = JSON.parse(stored, (_, value) => {
-          if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
+          if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
             return new Date(value);
           }
           return value;
@@ -170,16 +172,22 @@ export function useLocalPersistence<T>(
   }, [storeName, storageKey]);
 
   // Save function
-  const saveData = useCallback((newData: T) => {
-    try {
-      localStorage.setItem(storageKey, JSON.stringify(newData, (_, value) => {
-        return value instanceof Date ? value.toISOString() : value;
-      }));
-      setLocalData(newData);
-    } catch (error) {
-      console.error(`Failed to save ${storeName} to localStorage:`, error);
-    }
-  }, [storageKey, storeName]);
+  const saveData = useCallback(
+    (newData: T) => {
+      try {
+        localStorage.setItem(
+          storageKey,
+          JSON.stringify(newData, (_, value) => {
+            return value instanceof Date ? value.toISOString() : value;
+          }),
+        );
+        setLocalData(newData);
+      } catch (error) {
+        console.error(`Failed to save ${storeName} to localStorage:`, error);
+      }
+    },
+    [storageKey, storeName],
+  );
 
   // Auto-save when data prop changes
   useEffect(() => {
@@ -193,23 +201,31 @@ export function useLocalPersistence<T>(
 
 // Hook for handling sync conflicts
 export function useSyncConflicts<T extends PersistableEntity>(
-  conflicts: ConflictRecord[]
+  conflicts: ConflictRecord[],
 ) {
-  const [resolvedConflicts, setResolvedConflicts] = useState<Set<string>>(new Set());
+  const [resolvedConflicts, setResolvedConflicts] = useState<Set<string>>(
+    new Set(),
+  );
 
-  const resolveConflict = useCallback((
-    conflictId: string, 
-    resolution: 'local' | 'server' | 'merge',
-    mergedData?: T
-  ) => {
-    setResolvedConflicts(prev => new Set([...prev, conflictId]));
-    
-    // Here you would typically update the store with the resolved data
-    console.log(`Conflict ${conflictId} resolved with ${resolution}`, mergedData);
-  }, []);
+  const resolveConflict = useCallback(
+    (
+      conflictId: string,
+      resolution: "local" | "server" | "merge",
+      mergedData?: T,
+    ) => {
+      setResolvedConflicts((prev) => new Set([...prev, conflictId]));
+
+      // Here you would typically update the store with the resolved data
+      console.log(
+        `Conflict ${conflictId} resolved with ${resolution}`,
+        mergedData,
+      );
+    },
+    [],
+  );
 
   const unresolvedConflicts = conflicts.filter(
-    conflict => !resolvedConflicts.has(conflict.id)
+    (conflict) => !resolvedConflicts.has(conflict.id),
   );
 
   return {
@@ -222,7 +238,7 @@ export function useSyncConflicts<T extends PersistableEntity>(
 
 // Hook for batch sync operations
 export function useBatchSync<T extends PersistableEntity>(
-  managers: PersistenceManager<T>[]
+  managers: PersistenceManager<T>[],
 ) {
   const [batchSyncStatus, setBatchSyncStatus] = useState<{
     isRunning: boolean;
@@ -245,14 +261,14 @@ export function useBatchSync<T extends PersistableEntity>(
     });
 
     const errors: string[] = [];
-    
+
     for (let i = 0; i < managers.length; i++) {
       try {
         const manager = managers[i];
         const localData = manager.loadLocal();
         await manager.syncWithServer(localData);
-        
-        setBatchSyncStatus(prev => ({
+
+        setBatchSyncStatus((prev) => ({
           ...prev,
           completed: i + 1,
         }));
@@ -261,7 +277,7 @@ export function useBatchSync<T extends PersistableEntity>(
       }
     }
 
-    setBatchSyncStatus(prev => ({
+    setBatchSyncStatus((prev) => ({
       ...prev,
       isRunning: false,
       errors,
@@ -275,9 +291,7 @@ export function useBatchSync<T extends PersistableEntity>(
 }
 
 // Hook for persistence statistics across multiple stores
-export function usePersistenceStats(
-  managers: PersistenceManager<unknown>[]
-) {
+export function usePersistenceStats(managers: PersistenceManager<unknown>[]) {
   const [stats, setStats] = useState<{
     totalItems: number;
     totalConflicts: number;
@@ -290,19 +304,25 @@ export function usePersistenceStats(
   });
 
   const updateStats = useCallback(() => {
-    const storeStats = managers.map(manager => ({
-      storeName: manager['config']?.storeName || 'unknown',
+    const storeStats = managers.map((manager) => ({
+      storeName: manager["config"]?.storeName || "unknown",
       stats: manager.getStats(),
     }));
 
-    const totalItems = storeStats.reduce((sum, store) => sum + store.stats.localCount, 0);
-    const totalConflicts = storeStats.reduce((sum, store) => sum + store.stats.conflictCount, 0);
-    
+    const totalItems = storeStats.reduce(
+      (sum, store) => sum + store.stats.localCount,
+      0,
+    );
+    const totalConflicts = storeStats.reduce(
+      (sum, store) => sum + store.stats.conflictCount,
+      0,
+    );
+
     const lastSyncs = storeStats
-      .map(store => store.stats.lastSync)
+      .map((store) => store.stats.lastSync)
       .filter(Boolean)
       .sort((a, b) => b!.getTime() - a!.getTime());
-    
+
     const lastGlobalSync = lastSyncs[0];
 
     setStats({
@@ -330,7 +350,7 @@ export function usePersistenceStats(
 export function useCreatePersistenceConfig<T extends PersistableEntity>(
   storeName: string,
   apiEndpoint: string,
-  options: Partial<PersistenceConfig<T>> = {}
+  options: Partial<PersistenceConfig<T>> = {},
 ): PersistenceConfig<T> {
   return {
     storeName,

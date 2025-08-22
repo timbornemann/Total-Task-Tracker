@@ -364,20 +364,24 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
     }
     const breakColor = theme["pomodoro-break-ring"];
     if (mode === "break") {
-      const comp = hexToHsl(
-        complementaryColor(hslToHex(breakColor)),
-      );
+      const comp = hexToHsl(complementaryColor(hslToHex(breakColor)));
       document.documentElement.style.setProperty("--background", breakColor);
       document.documentElement.style.setProperty("--pomodoro-break-ring", comp);
     } else {
-      document.documentElement.style.setProperty("--background", theme.background);
+      document.documentElement.style.setProperty(
+        "--background",
+        theme.background,
+      );
       document.documentElement.style.setProperty(
         "--pomodoro-break-ring",
         breakColor,
       );
     }
     return () => {
-      document.documentElement.style.setProperty("--background", theme.background);
+      document.documentElement.style.setProperty(
+        "--background",
+        theme.background,
+      );
       document.documentElement.style.setProperty(
         "--pomodoro-break-ring",
         breakColor,

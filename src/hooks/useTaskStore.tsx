@@ -192,7 +192,7 @@ const useTaskStoreImpl = () => {
     // Längere Schutzzeit nach initialem Load - verhindert Race Conditions mit SSE Events
     lastChangeTimeRef.current = Date.now();
     setLoaded(true);
-    
+
     // Initialisierung abschließen nach 10 Sekunden
     setTimeout(() => {
       setInitializing(false);
@@ -237,7 +237,7 @@ const useTaskStoreImpl = () => {
         console.log("SSE Event während Initialisierung ignoriert");
         return;
       }
-      
+
       // Längere Schutzzeit: 10 Sekunden
       if (Date.now() - lastChangeTimeRef.current > 10000) {
         mergeServerUpdates();
@@ -302,7 +302,7 @@ const useTaskStoreImpl = () => {
     if (initializing) {
       setInitializing(false);
     }
-    
+
     lastChangeTimeRef.current = Date.now();
     const newTask: Task = {
       ...taskData,
@@ -419,7 +419,7 @@ const useTaskStoreImpl = () => {
     if (initializing) {
       setInitializing(false);
     }
-    
+
     lastChangeTimeRef.current = Date.now();
     const normalizedUpdates = { ...updates };
     if (
@@ -470,7 +470,7 @@ const useTaskStoreImpl = () => {
     if (initializing) {
       setInitializing(false);
     }
-    
+
     lastChangeTimeRef.current = Date.now();
     const deleteTaskRecursively = (tasks: Task[]): Task[] => {
       return tasks.filter((task) => {

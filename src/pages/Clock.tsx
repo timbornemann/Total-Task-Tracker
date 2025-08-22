@@ -20,7 +20,7 @@ const ClockPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <Navbar title={t("navbar.clock")}/> 
+      <Navbar title={t("navbar.clock")} />
       <div className="flex-grow flex items-center justify-center">
         <span
           className="font-mono leading-none w-full text-center"

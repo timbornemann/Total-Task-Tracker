@@ -3,9 +3,12 @@
  * Standardizes offline storage, API sync, and conflict resolution
  */
 
-import { api } from './apiClient';
-import { showSyncNotification, showErrorNotification } from './errorNotifications';
-import { offlineQueue, queueOperation } from './offlineQueue';
+import { api } from "./apiClient";
+import {
+  showSyncNotification,
+  showErrorNotification,
+} from "./errorNotifications";
+import { offlineQueue, queueOperation } from "./offlineQueue";
 
 // Base interfaces for persisted data
 export interface PersistableEntity {
@@ -29,7 +32,7 @@ export interface SyncState {
 
 export interface ConflictRecord {
   id: string;
-  type: 'update' | 'delete';
+  type: "update" | "delete";
   localData: unknown;
   serverData: unknown;
   timestamp: Date;
@@ -37,7 +40,7 @@ export interface ConflictRecord {
 
 export interface PendingOperation {
   id: string;
-  type: 'create' | 'update' | 'delete';
+  type: "create" | "update" | "delete";
   entityType: string;
   entityId: string;
   data?: unknown;
@@ -71,7 +74,7 @@ export class PersistenceManager<T extends PersistableEntity> {
       enableConflictResolution: true,
       ...config,
     };
-    
+
     this.storageKey = `${config.storeName}_data`;
     this.syncStateKey = `${config.storeName}_sync`;
     this.deletionsKey = `${config.storeName}_deletions`;
@@ -83,9 +86,12 @@ export class PersistenceManager<T extends PersistableEntity> {
       const serialized = JSON.stringify(data, this.dateReplacer);
       localStorage.setItem(key, serialized);
     } catch (error) {
-      console.error(`[${this.config.storeName}] Failed to save to storage:`, error);
+      console.error(
+        `[${this.config.storeName}] Failed to save to storage:`,
+        error,
+      );
       showErrorNotification(error as Error, {
-        action: 'Lokales Speichern',
+        action: "Lokales Speichern",
         resource: this.config.storeName,
       });
     }
@@ -96,7 +102,10 @@ export class PersistenceManager<T extends PersistableEntity> {
       const stored = localStorage.getItem(key);
       return stored ? JSON.parse(stored, this.dateReviver) : null;
     } catch (error) {
-      console.error(`[${this.config.storeName}] Failed to load from storage:`, error);
+      console.error(
+        `[${this.config.storeName}] Failed to load from storage:`,
+        error,
+      );
       return null;
     }
   }
@@ -107,7 +116,7 @@ export class PersistenceManager<T extends PersistableEntity> {
   };
 
   private dateReviver = (_: string, value: unknown): unknown => {
-    if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
+    if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
       return new Date(value);
     }
     return value;
@@ -157,7 +166,7 @@ export class PersistenceManager<T extends PersistableEntity> {
   }> {
     try {
       console.log(`[${this.config.storeName}] Starting sync...`);
-      
+
       // Get current state
       const syncState = this.getSyncState();
       const deletions = this.getDeletions();
@@ -168,7 +177,7 @@ export class PersistenceManager<T extends PersistableEntity> {
 
       // Merge data and handle conflicts
       const mergeResult = this.mergeData(localData, serverData, deletions);
-      
+
       // Send merged data back to server if changes detected
       if (this.hasChanges(mergeResult.data, serverData)) {
         await api.put(this.config.apiEndpoint, mergeResult.data);
@@ -187,18 +196,17 @@ export class PersistenceManager<T extends PersistableEntity> {
       }
 
       console.log(`[${this.config.storeName}] Sync completed successfully`);
-      
+
       return {
         data: mergeResult.data,
         conflicts: mergeResult.conflicts,
         success: true,
       };
-
     } catch (error) {
       console.error(`[${this.config.storeName}] Sync failed:`, error);
-      
+
       showErrorNotification(error as Error, {
-        action: 'Synchronisierung',
+        action: "Synchronisierung",
         resource: this.config.storeName,
         onRetry: () => this.syncWithServer(localData),
       });
@@ -213,11 +221,10 @@ export class PersistenceManager<T extends PersistableEntity> {
 
   // Data merging with conflict resolution
   private mergeData(
-    local: T[], 
-    server: T[], 
-    deletions: DeletionRecord[]
+    local: T[],
+    server: T[],
+    deletions: DeletionRecord[],
   ): { data: T[]; conflicts: ConflictRecord[] } {
-    
     if (this.config.customMerger) {
       return {
         data: this.config.customMerger(local, server, deletions),
@@ -227,17 +234,17 @@ export class PersistenceManager<T extends PersistableEntity> {
 
     const conflicts: ConflictRecord[] = [];
     const merged = new Map<string, T>();
-    const deletionIds = new Set(deletions.map(d => d.id));
+    const deletionIds = new Set(deletions.map((d) => d.id));
 
     // Add server data first
-    server.forEach(item => {
+    server.forEach((item) => {
       if (!deletionIds.has(item.id)) {
         merged.set(item.id, item);
       }
     });
 
     // Merge local changes
-    local.forEach(localItem => {
+    local.forEach((localItem) => {
       if (deletionIds.has(localItem.id)) {
         // Item was deleted locally
         merged.delete(localItem.id);
@@ -245,7 +252,7 @@ export class PersistenceManager<T extends PersistableEntity> {
       }
 
       const serverItem = merged.get(localItem.id);
-      
+
       if (!serverItem) {
         // New local item
         merged.set(localItem.id, localItem);
@@ -253,8 +260,9 @@ export class PersistenceManager<T extends PersistableEntity> {
         // Check for conflicts
         const localTime = localItem.updatedAt.getTime();
         const serverTime = serverItem.updatedAt.getTime();
-        
-        if (Math.abs(localTime - serverTime) > 1000) { // 1 second tolerance
+
+        if (Math.abs(localTime - serverTime) > 1000) {
+          // 1 second tolerance
           if (localTime > serverTime) {
             // Local is newer
             merged.set(localItem.id, localItem);
@@ -262,7 +270,7 @@ export class PersistenceManager<T extends PersistableEntity> {
             // Server is newer, but record conflict
             conflicts.push({
               id: localItem.id,
-              type: 'update',
+              type: "update",
               localData: localItem,
               serverData: serverItem,
               timestamp: new Date(),
@@ -287,13 +295,13 @@ export class PersistenceManager<T extends PersistableEntity> {
 
   private hasChanges(merged: T[], server: T[]): boolean {
     if (merged.length !== server.length) return true;
-    
-    const serverMap = new Map(server.map(item => [item.id, item]));
-    
-    return merged.some(item => {
+
+    const serverMap = new Map(server.map((item) => [item.id, item]));
+
+    return merged.some((item) => {
       const serverItem = serverMap.get(item.id);
       if (!serverItem) return true;
-      
+
       // Compare updatedAt timestamps
       return item.updatedAt.getTime() !== serverItem.updatedAt.getTime();
     });
@@ -302,10 +310,10 @@ export class PersistenceManager<T extends PersistableEntity> {
   // Queue operations for offline support
   queueCreate(data: T): string {
     return queueOperation({
-      type: 'create',
+      type: "create",
       resource: this.config.storeName,
       endpoint: this.config.apiEndpoint,
-      method: 'POST',
+      method: "POST",
       data,
       maxRetries: this.config.maxRetries || 3,
     });
@@ -313,10 +321,10 @@ export class PersistenceManager<T extends PersistableEntity> {
 
   queueUpdate(id: string, data: Partial<T>): string {
     return queueOperation({
-      type: 'update',
+      type: "update",
       resource: this.config.storeName,
       endpoint: `${this.config.apiEndpoint}/${id}`,
-      method: 'PUT',
+      method: "PUT",
       data,
       maxRetries: this.config.maxRetries || 3,
     });
@@ -325,10 +333,10 @@ export class PersistenceManager<T extends PersistableEntity> {
   queueDelete(id: string): string {
     this.addDeletion(id, this.config.storeName);
     return queueOperation({
-      type: 'delete',
+      type: "delete",
       resource: this.config.storeName,
       endpoint: `${this.config.apiEndpoint}/${id}`,
-      method: 'DELETE',
+      method: "DELETE",
       maxRetries: this.config.maxRetries || 3,
     });
   }
@@ -336,7 +344,7 @@ export class PersistenceManager<T extends PersistableEntity> {
   // Automatic sync management
   startAutoSync(): void {
     if (this.syncTimer) return;
-    
+
     if (this.config.syncInterval && this.config.syncInterval > 0) {
       this.syncTimer = setInterval(() => {
         if (navigator.onLine) {
@@ -344,8 +352,10 @@ export class PersistenceManager<T extends PersistableEntity> {
           this.syncWithServer(localData);
         }
       }, this.config.syncInterval);
-      
-      console.log(`[${this.config.storeName}] Auto-sync started (${this.config.syncInterval}ms)`);
+
+      console.log(
+        `[${this.config.storeName}] Auto-sync started (${this.config.syncInterval}ms)`,
+      );
     }
   }
 
@@ -366,7 +376,7 @@ export class PersistenceManager<T extends PersistableEntity> {
     const valid: T[] = [];
     const invalid: T[] = [];
 
-    data.forEach(item => {
+    data.forEach((item) => {
       if (this.config.validator!(item)) {
         valid.push(item);
       } else {
@@ -406,28 +416,30 @@ export class PersistenceManager<T extends PersistableEntity> {
 
 // Factory function for creating persistence managers
 export function createPersistenceManager<T extends PersistableEntity>(
-  config: PersistenceConfig<T>
+  config: PersistenceConfig<T>,
 ): PersistenceManager<T> {
   return new PersistenceManager(config);
 }
 
 // Utility functions for common persistence patterns
-export function createBasicMerger<T extends PersistableEntity>(): 
-  (local: T[], server: T[], deletions: DeletionRecord[]) => T[] {
-  
+export function createBasicMerger<T extends PersistableEntity>(): (
+  local: T[],
+  server: T[],
+  deletions: DeletionRecord[],
+) => T[] {
   return (local, server, deletions) => {
-    const deletionIds = new Set(deletions.map(d => d.id));
+    const deletionIds = new Set(deletions.map((d) => d.id));
     const merged = new Map<string, T>();
 
     // Add server data
-    server.forEach(item => {
+    server.forEach((item) => {
       if (!deletionIds.has(item.id)) {
         merged.set(item.id, item);
       }
     });
 
     // Override with local data (local wins)
-    local.forEach(item => {
+    local.forEach((item) => {
       if (!deletionIds.has(item.id)) {
         merged.set(item.id, item);
       }
@@ -437,17 +449,19 @@ export function createBasicMerger<T extends PersistableEntity>():
   };
 }
 
-export function createLastWriteWinsMerger<T extends PersistableEntity>(): 
-  (local: T[], server: T[], deletions: DeletionRecord[]) => T[] {
-  
+export function createLastWriteWinsMerger<T extends PersistableEntity>(): (
+  local: T[],
+  server: T[],
+  deletions: DeletionRecord[],
+) => T[] {
   return (local, server, deletions) => {
-    const deletionIds = new Set(deletions.map(d => d.id));
+    const deletionIds = new Set(deletions.map((d) => d.id));
     const merged = new Map<string, T>();
 
     // Combine all items
-    [...server, ...local].forEach(item => {
+    [...server, ...local].forEach((item) => {
       if (deletionIds.has(item.id)) return;
-      
+
       const existing = merged.get(item.id);
       if (!existing || item.updatedAt > existing.updatedAt) {
         merged.set(item.id, item);

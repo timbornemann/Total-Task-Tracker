@@ -6,7 +6,7 @@ on:
     branches: [production]
 
 permissions:
-  contents: write   # nötig für Push/Tag/Release
+  contents: write # nötig für Push/Tag/Release
   pull-requests: read
 
 jobs:
@@ -98,7 +98,7 @@ jobs:
       - name: Create tag & GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ steps.bump.outputs.new }}          # ohne 'v'? -> ändere diese Zeile
+          tag_name: v${{ steps.bump.outputs.new }} # ohne 'v'? -> ändere diese Zeile
           target_commitish: production
           body_path: ${{ steps.notes.outputs.file }}
           draft: false

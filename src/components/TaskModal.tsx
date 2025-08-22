@@ -103,10 +103,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
   const defaultCategory = React.useMemo(
     () =>
-      defaultCategoryId ||
-      parentTask?.categoryId ||
-      categories[0]?.id ||
-      "",
+      defaultCategoryId || parentTask?.categoryId || categories[0]?.id || "",
     [defaultCategoryId, parentTask?.categoryId, categories],
   );
 

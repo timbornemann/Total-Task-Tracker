@@ -2,7 +2,7 @@
  * Utilities for navigating to error pages and handling different error scenarios
  */
 
-import { NavigateFunction } from 'react-router-dom';
+import { NavigateFunction } from "react-router-dom";
 
 export interface ErrorNavigationOptions {
   /** Replace current history entry instead of pushing new one */
@@ -20,29 +20,29 @@ export interface ErrorNavigationOptions {
  */
 export function navigateTo404(
   navigate: NavigateFunction,
-  options: ErrorNavigationOptions = {}
+  options: ErrorNavigationOptions = {},
 ) {
   const { replace = false, context } = options;
-  
+
   const searchParams = new URLSearchParams();
-  
+
   if (context?.message) {
-    searchParams.set('message', context.message);
+    searchParams.set("message", context.message);
   }
   if (context?.details) {
-    searchParams.set('details', context.details);
+    searchParams.set("details", context.details);
   }
   if (context?.referrer) {
-    searchParams.set('from', context.referrer);
+    searchParams.set("from", context.referrer);
   }
 
   const path = window.location.pathname;
-  if (path !== '/') {
-    searchParams.set('path', path);
+  if (path !== "/") {
+    searchParams.set("path", path);
   }
 
   const url = `/?${searchParams.toString()}#not-found`;
-  
+
   if (replace) {
     navigate(url, { replace: true });
   } else {
@@ -56,25 +56,25 @@ export function navigateTo404(
 export function navigateToServerError(
   navigate: NavigateFunction,
   statusCode: number = 500,
-  options: ErrorNavigationOptions = {}
+  options: ErrorNavigationOptions = {},
 ) {
   const { replace = false, context } = options;
-  
+
   const searchParams = new URLSearchParams();
-  searchParams.set('status', statusCode.toString());
-  
+  searchParams.set("status", statusCode.toString());
+
   if (context?.message) {
-    searchParams.set('message', context.message);
+    searchParams.set("message", context.message);
   }
   if (context?.details) {
-    searchParams.set('details', context.details);
+    searchParams.set("details", context.details);
   }
   if (context?.referrer) {
-    searchParams.set('from', context.referrer);
+    searchParams.set("from", context.referrer);
   }
 
   const url = `/error?${searchParams.toString()}`;
-  
+
   if (replace) {
     navigate(url, { replace: true });
   } else {
@@ -88,18 +88,18 @@ export function navigateToServerError(
 export function handleApiErrorNavigation(
   error: unknown,
   navigate: NavigateFunction,
-  options: ErrorNavigationOptions = {}
+  options: ErrorNavigationOptions = {},
 ) {
   // Extract status code from different error formats
   let statusCode = 500;
-  let message = 'Ein unerwarteter Fehler ist aufgetreten';
-  let details = '';
+  let message = "Ein unerwarteter Fehler ist aufgetreten";
+  let details = "";
 
   if (error?.response?.status) {
     // Axios-style error
     statusCode = error.response.status;
     message = error.response.data?.message || error.message;
-    details = error.response.data?.details || '';
+    details = error.response.data?.details || "";
   } else if (error?.status) {
     // Fetch Response object
     statusCode = error.status;
@@ -108,11 +108,11 @@ export function handleApiErrorNavigation(
     // Custom ApiError
     statusCode = error.statusCode;
     message = error.message;
-    details = error.details || '';
+    details = error.details || "";
   } else if (error?.message) {
     // Generic error object
     message = error.message;
-    details = error.stack || '';
+    details = error.stack || "";
   }
 
   // Navigate based on status code
@@ -152,13 +152,13 @@ export function handleApiErrorNavigation(
  */
 export function createGlobalErrorHandler(navigate: NavigateFunction) {
   return (error: unknown) => {
-    console.error('[Global Error Handler]', error);
-    
+    console.error("[Global Error Handler]", error);
+
     // Don't handle certain error types that should be handled elsewhere
     if (
-      error?.name === 'ChunkLoadError' ||
-      error?.name === 'ResizeObserver loop limit exceeded' ||
-      error?.message?.includes('Non-Error promise rejection')
+      error?.name === "ChunkLoadError" ||
+      error?.name === "ResizeObserver loop limit exceeded" ||
+      error?.message?.includes("Non-Error promise rejection")
     ) {
       return;
     }
@@ -168,7 +168,8 @@ export function createGlobalErrorHandler(navigate: NavigateFunction) {
       replace: true,
       context: {
         referrer: window.location.pathname,
-        details: process.env.NODE_ENV === 'development' ? error?.stack : undefined,
+        details:
+          process.env.NODE_ENV === "development" ? error?.stack : undefined,
       },
     });
   };
@@ -179,15 +180,17 @@ export function createGlobalErrorHandler(navigate: NavigateFunction) {
  */
 export function createErrorNavigationUtils(navigate: NavigateFunction) {
   return {
-    navigateTo404: (options?: ErrorNavigationOptions) => 
+    navigateTo404: (options?: ErrorNavigationOptions) =>
       navigateTo404(navigate, options),
-    
-    navigateToServerError: (statusCode?: number, options?: ErrorNavigationOptions) => 
-      navigateToServerError(navigate, statusCode, options),
-    
+
+    navigateToServerError: (
+      statusCode?: number,
+      options?: ErrorNavigationOptions,
+    ) => navigateToServerError(navigate, statusCode, options),
+
     handleApiError: (error: unknown, options?: ErrorNavigationOptions) =>
       handleApiErrorNavigation(error, navigate, options),
-    
+
     createGlobalHandler: () => createGlobalErrorHandler(navigate),
   };
 }
@@ -196,7 +199,7 @@ export function createErrorNavigationUtils(navigate: NavigateFunction) {
  * Check if current URL is an error page
  */
 export function isErrorPage(pathname: string): boolean {
-  return pathname === '/error' || pathname.includes('not-found');
+  return pathname === "/error" || pathname.includes("not-found");
 }
 
 /**
@@ -215,22 +218,22 @@ export function getErrorInfoFromUrl(): {
   const searchParams = url.searchParams;
   const hash = url.hash;
 
-  const isNotFound = hash === '#not-found' || pathname === '/404';
-  const isServerError = pathname === '/error';
+  const isNotFound = hash === "#not-found" || pathname === "/404";
+  const isServerError = pathname === "/error";
 
   let statusCode: number | undefined;
   if (isNotFound) {
     statusCode = 404;
   } else if (isServerError) {
-    statusCode = parseInt(searchParams.get('status') || '500');
+    statusCode = parseInt(searchParams.get("status") || "500");
   }
 
   return {
     isNotFound,
     isServerError,
     statusCode,
-    message: searchParams.get('message') || undefined,
-    details: searchParams.get('details') || undefined,
-    referrer: searchParams.get('from') || undefined,
+    message: searchParams.get("message") || undefined,
+    details: searchParams.get("details") || undefined,
+    referrer: searchParams.get("from") || undefined,
   };
 }

@@ -2,13 +2,25 @@
  * Generic error page component for consistent error handling
  */
 
-import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { AlertTriangle, Home, ArrowLeft, RefreshCw, Search } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import Navbar from '@/components/Navbar';
+import React from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import {
+  AlertTriangle,
+  Home,
+  ArrowLeft,
+  RefreshCw,
+  Search,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import Navbar from "@/components/Navbar";
 
 export interface ErrorPageProps {
   /** Error status code */
@@ -46,7 +58,7 @@ export function ErrorPage({
   customActions,
   icon,
   details,
-  showDetails = process.env.NODE_ENV === 'development',
+  showDetails = process.env.NODE_ENV === "development",
 }: ErrorPageProps) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -57,26 +69,38 @@ export function ErrorPage({
     switch (statusCode) {
       case 404:
         return {
-          title: t('errors.404.title', 'Seite nicht gefunden'),
-          description: t('errors.404.description', 'Die angeforderte Seite konnte nicht gefunden werden.'),
+          title: t("errors.404.title", "Seite nicht gefunden"),
+          description: t(
+            "errors.404.description",
+            "Die angeforderte Seite konnte nicht gefunden werden.",
+          ),
           icon: <Search className="h-12 w-12 text-muted-foreground" />,
         };
       case 500:
         return {
-          title: t('errors.500.title', 'Server-Fehler'),
-          description: t('errors.500.description', 'Ein interner Server-Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.'),
+          title: t("errors.500.title", "Server-Fehler"),
+          description: t(
+            "errors.500.description",
+            "Ein interner Server-Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
+          ),
           icon: <AlertTriangle className="h-12 w-12 text-destructive" />,
         };
       case 503:
         return {
-          title: t('errors.503.title', 'Service nicht verfügbar'),
-          description: t('errors.503.description', 'Der Service ist vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut.'),
+          title: t("errors.503.title", "Service nicht verfügbar"),
+          description: t(
+            "errors.503.description",
+            "Der Service ist vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut.",
+          ),
           icon: <AlertTriangle className="h-12 w-12 text-orange-500" />,
         };
       default:
         return {
-          title: t('errors.generic.title', 'Ein Fehler ist aufgetreten'),
-          description: t('errors.generic.description', 'Es ist ein unerwarteter Fehler aufgetreten.'),
+          title: t("errors.generic.title", "Ein Fehler ist aufgetreten"),
+          description: t(
+            "errors.generic.description",
+            "Es ist ein unerwarteter Fehler aufgetreten.",
+          ),
           icon: <AlertTriangle className="h-12 w-12 text-destructive" />,
         };
     }
@@ -91,12 +115,12 @@ export function ErrorPage({
     if (window.history.length > 1) {
       navigate(-1);
     } else {
-      navigate('/');
+      navigate("/");
     }
   };
 
   const handleGoHome = () => {
-    navigate('/');
+    navigate("/");
   };
 
   const handleRefresh = () => {
@@ -145,33 +169,37 @@ export function ErrorPage({
           {/* Action buttons */}
           <div className="flex flex-col sm:flex-row gap-2">
             {showBackButton && (
-              <Button variant="outline" onClick={handleGoBack} className="flex-1">
+              <Button
+                variant="outline"
+                onClick={handleGoBack}
+                className="flex-1"
+              >
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                {t('common.goBack', 'Zurück')}
+                {t("common.goBack", "Zurück")}
               </Button>
             )}
-            
+
             {showHomeButton && (
               <Button onClick={handleGoHome} className="flex-1">
                 <Home className="mr-2 h-4 w-4" />
-                {t('common.goHome', 'Zur Startseite')}
+                {t("common.goHome", "Zur Startseite")}
               </Button>
             )}
           </div>
 
           {showRefreshButton && (
-            <Button variant="outline" onClick={handleRefresh} className="w-full">
+            <Button
+              variant="outline"
+              onClick={handleRefresh}
+              className="w-full"
+            >
               <RefreshCw className="mr-2 h-4 w-4" />
-              {t('common.refresh', 'Seite aktualisieren')}
+              {t("common.refresh", "Seite aktualisieren")}
             </Button>
           )}
 
           {/* Custom actions */}
-          {customActions && (
-            <div className="pt-2">
-              {customActions}
-            </div>
-          )}
+          {customActions && <div className="pt-2">{customActions}</div>}
         </CardContent>
       </Card>
     </div>
@@ -187,8 +215,6 @@ export function ErrorPage({
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {content}
-    </div>
+    <div className="min-h-screen bg-background flex flex-col">{content}</div>
   );
 }

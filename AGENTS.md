@@ -9,14 +9,12 @@ Diese Datei dient als Anleitung für automatisierte Agenten (z. B. Codex), wie
 - **Frontend**: React + Vite, TypeScript, Tailwind CSS, Shadcn UI
 - **Backend**: Node.js (ES Modules) mit SQLite
 - **Struktur**:
-
   - `/src` → Frontend (React/TS)
   - `/server` → Backend (Node.js + SQLite)
   - `/public` → Statische Assets
   - `Dockerfile`, `docker-compose.yml` → Container Setup
 
 - **Hauptfunktionen**:
-
   - Aufgabenverwaltung mit Kategorien, Unteraufgaben und Wiederholungen
   - Tasks und Notizen können angeheftet werden (maximal drei auf der Startseite)
   - Kalenderansicht und Task-Statistiken

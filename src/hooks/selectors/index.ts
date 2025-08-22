@@ -4,10 +4,10 @@
  */
 
 // Export all selectors
-export * from '@/lib/selectors';
+export * from "@/lib/selectors";
 
 // Export optimized store hooks
-export * from './useOptimizedStores';
+export * from "./useOptimizedStores";
 
 // Re-export commonly used selector utilities
 export {
@@ -20,7 +20,7 @@ export {
   combinedSelectors,
   createSelector,
   createMemoizedSelector,
-} from '@/lib/selectors';
+} from "@/lib/selectors";
 
 // Export specialized hooks for common use cases
 export {
@@ -36,7 +36,6 @@ export {
   useRecentTasks,
   useSearchTasks,
   useTasksByDateRange,
-  
   useCategoryById,
   useVisibleCategories,
   useSortedCategories,
@@ -44,7 +43,6 @@ export {
   useCategoriesByColor,
   useUsedColors,
   useCategoryStats,
-  
   useNoteById,
   useNotesByCategory,
   usePinnedNotes,
@@ -55,7 +53,6 @@ export {
   useSearchNotes,
   useTemplateNotes,
   useNoteStats,
-  
   useRecurringTaskById,
   useActiveRecurringTasks,
   useOverdueRecurringTasks,
@@ -65,14 +62,12 @@ export {
   useWeeklyRecurringTasks,
   useMonthlyRecurringTasks,
   useRecurringTaskStats,
-  
   useTasksWithCategories,
   useNotesWithCategories,
   useCategoryUsage,
   useGlobalStats,
-  
   useRenderCount,
   useStorePerformance,
   createComposedSelector,
   useDebouncedSelector,
-} from './useOptimizedStores';
+} from "./useOptimizedStores";

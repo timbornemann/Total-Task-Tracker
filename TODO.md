@@ -1,7 +1,6 @@
 # Architektur & Design – TODO-Liste
 
-Setze schritt für schritt die anstehenden verbesserungen um, immer wenn du eine sache fertig hast komme sofort zu dieser  TODO Datei zurück und makiere die ausgabe als erledigt, Commite danach die veränderungen. 
-
+Setze schritt für schritt die anstehenden verbesserungen um, immer wenn du eine sache fertig hast komme sofort zu dieser TODO Datei zurück und makiere die ausgabe als erledigt, Commite danach die veränderungen.
 
 Diese Liste bündelt alle anstehenden Architektur-, Design- und Qualitätsmaßnahmen für Total-Task-Tracker. Die Kästchen können direkt in Pull Requests/Commits abgehakt werden.
 

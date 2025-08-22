@@ -3,18 +3,23 @@
  * Centralized validation schemas for all API endpoints
  */
 
-import { z } from 'zod';
+import { z } from "zod";
 
 // Base schemas
 export const IdSchema = z.string().uuid().or(z.string().min(1));
 
 export const TimestampSchema = z.preprocess(
-  (arg) => (typeof arg === 'string' ? new Date(arg) : arg),
-  z.date()
+  (arg) => (typeof arg === "string" ? new Date(arg) : arg),
+  z.date(),
 );
 
-export const PrioritySchema = z.enum(['low', 'medium', 'high']);
-export const StatusSchema = z.enum(['todo', 'in-progress', 'completed', 'cancelled']);
+export const PrioritySchema = z.enum(["low", "medium", "high"]);
+export const StatusSchema = z.enum([
+  "todo",
+  "in-progress",
+  "completed",
+  "cancelled",
+]);
 
 // Task schemas
 export const TaskSchema = z.object({
@@ -180,7 +185,7 @@ export const PaginationSchema = z.object({
 
 export const SortSchema = z.object({
   sortBy: z.string().optional(),
-  sortOrder: z.enum(['asc', 'desc']).default('asc'),
+  sortOrder: z.enum(["asc", "desc"]).default("asc"),
 });
 
 export const FilterSchema = z.object({
@@ -193,7 +198,8 @@ export const FilterSchema = z.object({
   pinned: z.coerce.boolean().optional(),
 });
 
-export const TaskQuerySchema = PaginationSchema.merge(SortSchema).merge(FilterSchema);
+export const TaskQuerySchema =
+  PaginationSchema.merge(SortSchema).merge(FilterSchema);
 
 // Bulk operation schemas
 export const BulkUpdateSchema = z.object({
@@ -207,12 +213,12 @@ export const BulkDeleteSchema = z.object({
 
 // Health check schema
 export const HealthCheckSchema = z.object({
-  status: z.enum(['healthy', 'unhealthy']),
+  status: z.enum(["healthy", "unhealthy"]),
   timestamp: TimestampSchema,
   uptime: z.number(),
   version: z.string(),
   database: z.object({
-    status: z.enum(['connected', 'disconnected']),
+    status: z.enum(["connected", "disconnected"]),
     responseTime: z.number().optional(),
     error: z.string().optional(),
   }),
@@ -240,14 +246,16 @@ export const ErrorResponseSchema = z.object({
 export const SuccessResponseSchema = z.object({
   success: z.literal(true),
   data: z.unknown(),
-  metadata: z.object({
-    timestamp: TimestampSchema,
-    page: z.number().optional(),
-    limit: z.number().optional(),
-    total: z.number().optional(),
-    hasNext: z.boolean().optional(),
-    hasPrev: z.boolean().optional(),
-  }).optional(),
+  metadata: z
+    .object({
+      timestamp: TimestampSchema,
+      page: z.number().optional(),
+      limit: z.number().optional(),
+      total: z.number().optional(),
+      hasNext: z.boolean().optional(),
+      hasPrev: z.boolean().optional(),
+    })
+    .optional(),
 });
 
 // Type exports
@@ -288,10 +296,16 @@ export function validateSchema<T>(schema: z.ZodSchema<T>, data: unknown): T {
   return schema.parse(data);
 }
 
-export function validateSchemaAsync<T>(schema: z.ZodSchema<T>, data: unknown): Promise<T> {
+export function validateSchemaAsync<T>(
+  schema: z.ZodSchema<T>,
+  data: unknown,
+): Promise<T> {
   return schema.parseAsync(data);
 }
 
-export function isValidSchema<T>(schema: z.ZodSchema<T>, data: unknown): data is T {
+export function isValidSchema<T>(
+  schema: z.ZodSchema<T>,
+  data: unknown,
+): data is T {
   return schema.safeParse(data).success;
 }

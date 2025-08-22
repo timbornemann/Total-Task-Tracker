@@ -2,22 +2,35 @@
  * UI component to show offline status and queue information
  */
 
-import React from 'react';
-import { Wifi, WifiOff, Upload, Clock, AlertTriangle, CheckCircle } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { useOfflineQueue, useQueueStats } from '@/hooks/useOfflineQueue';
-import { cn } from '@/lib/utils';
+import React from "react";
+import {
+  Wifi,
+  WifiOff,
+  Upload,
+  Clock,
+  AlertTriangle,
+  CheckCircle,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { useOfflineQueue, useQueueStats } from "@/hooks/useOfflineQueue";
+import { cn } from "@/lib/utils";
 
 interface OfflineStatusIndicatorProps {
   /** Show detailed queue information */
   detailed?: boolean;
   /** Position of the indicator */
-  position?: 'fixed' | 'relative';
+  position?: "fixed" | "relative";
   /** Size variant */
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   /** Show only when offline or has queued items */
   autoHide?: boolean;
   className?: string;
@@ -25,8 +38,8 @@ interface OfflineStatusIndicatorProps {
 
 export function OfflineStatusIndicator({
   detailed = false,
-  position = 'fixed',
-  size = 'md',
+  position = "fixed",
+  size = "md",
   autoHide = true,
   className,
 }: OfflineStatusIndicatorProps) {
@@ -46,10 +59,10 @@ export function OfflineStatusIndicator({
   }
 
   const getStatusColor = () => {
-    if (!isOnline) return 'destructive';
-    if (isProcessing) return 'default';
-    if (totalQueueLength > 0) return 'warning';
-    return 'default';
+    if (!isOnline) return "destructive";
+    if (isProcessing) return "default";
+    if (totalQueueLength > 0) return "warning";
+    return "default";
   };
 
   const getStatusIcon = () => {
@@ -60,21 +73,21 @@ export function OfflineStatusIndicator({
   };
 
   const getStatusText = () => {
-    if (!isOnline) return 'Offline';
-    if (isProcessing) return 'Synchronisiert...';
+    if (!isOnline) return "Offline";
+    if (isProcessing) return "Synchronisiert...";
     if (totalQueueLength > 0) return `${totalQueueLength} ausstehend`;
-    return 'Online';
+    return "Online";
   };
 
   const formatLastSync = () => {
-    if (!lastSyncAttempt) return 'Nie';
+    if (!lastSyncAttempt) return "Nie";
     const diff = Date.now() - lastSyncAttempt;
     const minutes = Math.floor(diff / 60000);
-    if (minutes < 1) return 'Gerade eben';
+    if (minutes < 1) return "Gerade eben";
     if (minutes < 60) return `vor ${minutes} Min.`;
     const hours = Math.floor(minutes / 60);
     if (hours < 24) return `vor ${hours} Std.`;
-    return 'vor mehr als einem Tag';
+    return "vor mehr als einem Tag";
   };
 
   if (!detailed) {
@@ -83,11 +96,11 @@ export function OfflineStatusIndicator({
       <Badge
         variant={getStatusColor()}
         className={cn(
-          'flex items-center gap-2',
-          position === 'fixed' && 'fixed bottom-4 right-4 z-50',
-          size === 'sm' && 'text-xs px-2 py-1',
-          size === 'lg' && 'text-sm px-3 py-2',
-          className
+          "flex items-center gap-2",
+          position === "fixed" && "fixed bottom-4 right-4 z-50",
+          size === "sm" && "text-xs px-2 py-1",
+          size === "lg" && "text-sm px-3 py-2",
+          className,
         )}
       >
         {getStatusIcon()}
@@ -100,9 +113,9 @@ export function OfflineStatusIndicator({
   return (
     <Card
       className={cn(
-        'w-80',
-        position === 'fixed' && 'fixed bottom-4 right-4 z-50',
-        className
+        "w-80",
+        position === "fixed" && "fixed bottom-4 right-4 z-50",
+        className,
       )}
     >
       <CardHeader className="pb-3">
@@ -113,9 +126,7 @@ export function OfflineStatusIndicator({
             {getStatusText()}
           </Badge>
         </CardTitle>
-        <CardDescription>
-          Letzter Sync: {formatLastSync()}
-        </CardDescription>
+        <CardDescription>Letzter Sync: {formatLastSync()}</CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-4">
@@ -128,7 +139,7 @@ export function OfflineStatusIndicator({
             ) : (
               <WifiOff className="h-4 w-4 text-red-500" />
             )}
-            <span className="text-sm">{isOnline ? 'Online' : 'Offline'}</span>
+            <span className="text-sm">{isOnline ? "Online" : "Offline"}</span>
           </div>
         </div>
 
@@ -139,7 +150,7 @@ export function OfflineStatusIndicator({
               <span className="text-sm font-medium">Warteschlange</span>
               <span className="text-sm">{totalQueueLength} Operationen</span>
             </div>
-            
+
             {isProcessing && (
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-xs">
@@ -163,22 +174,18 @@ export function OfflineStatusIndicator({
         {/* Action Buttons */}
         <div className="flex gap-2">
           {isOnline && totalQueueLength > 0 && !isProcessing && (
-            <Button
-              size="sm"
-              onClick={processQueue}
-              className="flex-1"
-            >
+            <Button size="sm" onClick={processQueue} className="flex-1">
               <Upload className="h-4 w-4 mr-2" />
               Jetzt synchronisieren
             </Button>
           )}
-          
+
           {totalQueueLength > 0 && (
             <Button
               size="sm"
               variant="outline"
               onClick={clearQueue}
-              className={cn(isOnline && !isProcessing ? 'flex-1' : 'w-full')}
+              className={cn(isOnline && !isProcessing ? "flex-1" : "w-full")}
             >
               Warteschlange leeren
             </Button>

@@ -1,14 +1,6 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { Trip, WorkDay, Deletion, Commute } from "@/types";
-import {
-  loadOfflineData,
-  updateOfflineData,
-} from "@/utils/offline";
+import { loadOfflineData, updateOfflineData } from "@/utils/offline";
 import { normalizeDateTime } from "@/utils/time";
 
 const API_TRIPS = "/api/trips";
@@ -134,7 +126,7 @@ const useWorklogImpl = () => {
             items: [],
             itemCategories: [],
             itemTags: [],
-            settings: {}
+            settings: {},
           }),
         });
 
@@ -151,26 +143,28 @@ const useWorklogImpl = () => {
     }
   };
 
-  const addTrip = (data: { name: string; location?: string; color: number }) => {
+  const addTrip = (data: {
+    name: string;
+    location?: string;
+    color: number;
+  }) => {
     const id = generateId();
     const now = new Date();
     const newTrip = {
       id,
       ...data,
       createdAt: now,
-      updatedAt: now
+      updatedAt: now,
     };
-    
+
     const newTrips = [...trips, newTrip];
     saveAllData(newTrips, workDays, commutes, deletions);
     return id;
   };
 
   const updateTrip = (id: string, data: Partial<Trip>) => {
-    const newTrips = trips.map(trip =>
-      trip.id === id
-        ? { ...trip, ...data, updatedAt: new Date() }
-        : trip
+    const newTrips = trips.map((trip) =>
+      trip.id === id ? { ...trip, ...data, updatedAt: new Date() } : trip,
     );
     saveAllData(newTrips, workDays, commutes, deletions);
   };
@@ -178,23 +172,23 @@ const useWorklogImpl = () => {
   const deleteTrip = (id: string) => {
     const now = new Date();
     // Find work days associated with this trip
-    const removedDays = workDays.filter(day => day.tripId === id);
-    
+    const removedDays = workDays.filter((day) => day.tripId === id);
+
     // Create deletion records
     const newDeletions = [
       ...deletions,
       { id, type: "trip" as const, deletedAt: now },
-      ...removedDays.map(day => ({ 
-        id: day.id, 
-        type: "workday" as const, 
-        deletedAt: now 
-      }))
+      ...removedDays.map((day) => ({
+        id: day.id,
+        type: "workday" as const,
+        deletedAt: now,
+      })),
     ];
-    
+
     // Remove the trip and associated work days
-    const newTrips = trips.filter(trip => trip.id !== id);
-    const newWorkDays = workDays.filter(day => day.tripId !== id);
-    
+    const newTrips = trips.filter((trip) => trip.id !== id);
+    const newWorkDays = workDays.filter((day) => day.tripId !== id);
+
     saveAllData(newTrips, newWorkDays, commutes, newDeletions);
   };
 
@@ -212,7 +206,7 @@ const useWorklogImpl = () => {
       id,
       ...data,
       createdAt: now,
-      updatedAt: now
+      updatedAt: now,
     };
 
     const newWorkDays = [...workDays, normalizeDay(newWorkDay)];
@@ -220,10 +214,10 @@ const useWorklogImpl = () => {
   };
 
   const updateWorkDay = (id: string, data: Partial<WorkDay>) => {
-    const newWorkDays = workDays.map(day =>
+    const newWorkDays = workDays.map((day) =>
       day.id === id
         ? normalizeDay({ ...day, ...data, updatedAt: new Date() })
-        : day
+        : day,
     );
     saveAllData(trips, newWorkDays, commutes, deletions);
   };
@@ -233,12 +227,12 @@ const useWorklogImpl = () => {
     const now = new Date();
     const newDeletions = [
       ...deletions,
-      { id, type: "workday" as const, deletedAt: now }
+      { id, type: "workday" as const, deletedAt: now },
     ];
-    
+
     // Remove the work day
-    const newWorkDays = workDays.filter(day => day.id !== id);
-    
+    const newWorkDays = workDays.filter((day) => day.id !== id);
+
     // Save changes with deletion record
     saveAllData(trips, newWorkDays, commutes, newDeletions);
   };
@@ -263,7 +257,7 @@ const useWorklogImpl = () => {
     updateWorkDay,
     deleteWorkDay,
     addCommute,
-    isLoaded
+    isLoaded,
   };
 };
 

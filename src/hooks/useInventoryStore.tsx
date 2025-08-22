@@ -1,4 +1,10 @@
-import React, { useEffect, useState, createContext, useContext, useRef } from "react";
+import React, {
+  useEffect,
+  useState,
+  createContext,
+  useContext,
+  useRef,
+} from "react";
 import {
   InventoryItem,
   InventoryItemFormData,
@@ -56,7 +62,9 @@ const useInventoryImpl = () => {
       }
       const synced = await syncWithServer();
       setItems((prev) => mergeLists(prev, synced.items || [], null));
-      setCategories((prev) => mergeLists(prev, synced.itemCategories || [], null));
+      setCategories((prev) =>
+        mergeLists(prev, synced.itemCategories || [], null),
+      );
       setTags((prev) => mergeLists(prev, synced.itemTags || [], null));
       setLoaded(true);
     };
@@ -71,10 +79,18 @@ const useInventoryImpl = () => {
     }
     const save = async () => {
       try {
-        const dataStr = JSON.stringify({ items, itemCategories: categories, itemTags: tags });
+        const dataStr = JSON.stringify({
+          items,
+          itemCategories: categories,
+          itemTags: tags,
+        });
         if (dataStr !== lastDataRef.current) {
           lastDataRef.current = dataStr;
-          updateOfflineData({ items, itemCategories: categories, itemTags: tags });
+          updateOfflineData({
+            items,
+            itemCategories: categories,
+            itemTags: tags,
+          });
         }
         await fetch(ITEMS_URL, {
           method: "PUT",
@@ -147,7 +163,8 @@ const useInventoryImpl = () => {
         if (i.id !== id) return i;
         const next = { ...i } as InventoryItem;
         if (updates.name !== undefined) next.name = updates.name;
-        if (updates.description !== undefined) next.description = updates.description;
+        if (updates.description !== undefined)
+          next.description = updates.description;
         if (updates.quantity !== undefined) next.quantity = updates.quantity;
         if (updates.buyAgain !== undefined) next.buyAgain = updates.buyAgain;
         if (updates.categoryId !== undefined) {
@@ -190,13 +207,20 @@ type InventoryStore = ReturnType<typeof useInventoryImpl>;
 
 const InventoryContext = createContext<InventoryStore | null>(null);
 
-export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const InventoryProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const store = useInventoryImpl();
-  return <InventoryContext.Provider value={store}>{children}</InventoryContext.Provider>;
+  return (
+    <InventoryContext.Provider value={store}>
+      {children}
+    </InventoryContext.Provider>
+  );
 };
 
 export const useInventoryStore = () => {
   const ctx = useContext(InventoryContext);
-  if (!ctx) throw new Error("useInventoryStore must be used within InventoryProvider");
+  if (!ctx)
+    throw new Error("useInventoryStore must be used within InventoryProvider");
   return ctx;
 };

@@ -1,5 +1,9 @@
 import { Router } from "express";
-import type { InventoryItem, ItemCategory, ItemTag } from "../../src/types/index.js";
+import type {
+  InventoryItem,
+  ItemCategory,
+  ItemTag,
+} from "../../src/types/index.js";
 import {
   loadItems,
   saveItems,

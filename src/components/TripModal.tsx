@@ -79,44 +79,44 @@ const TripModal: React.FC<TripModalProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="trip-name">{t("tripModal.name")}</Label>
-          <Input
-            id="trip-name"
-            value={form.name}
-            onChange={(e) => handleChange("name", e.target.value)}
-            required
-            autoFocus
-          />
-        </div>
-        <div>
-          <Label htmlFor="trip-location">{t("tripModal.location")}</Label>
-          <Input
-            id="trip-location"
-            value={form.location}
-            onChange={(e) => handleChange("location", e.target.value)}
-          />
-        </div>
-        <div>
-          <Label>{t("tripModal.color")}</Label>
-          <div className="flex space-x-2 mt-2">
-            {colorPalette.map((c, idx) => (
-              <button
-                key={idx}
-                type="button"
-                className={`w-8 h-8 rounded-full border-2 transition-all ${
-                  form.color === idx
-                    ? "border-gray-800 scale-110"
-                    : "border-gray-300 hover:scale-105"
-                }`}
-                style={{ backgroundColor: c }}
-                onClick={() => handleChange("color", idx)}
-              />
-            ))}
+            <Input
+              id="trip-name"
+              value={form.name}
+              onChange={(e) => handleChange("name", e.target.value)}
+              required
+              autoFocus
+            />
           </div>
-        </div>
-        <div className="flex justify-end space-x-2 pt-4">
-          <Button type="button" variant="outline" onClick={onClose}>
-            {t("common.cancel")}
-          </Button>
+          <div>
+            <Label htmlFor="trip-location">{t("tripModal.location")}</Label>
+            <Input
+              id="trip-location"
+              value={form.location}
+              onChange={(e) => handleChange("location", e.target.value)}
+            />
+          </div>
+          <div>
+            <Label>{t("tripModal.color")}</Label>
+            <div className="flex space-x-2 mt-2">
+              {colorPalette.map((c, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  className={`w-8 h-8 rounded-full border-2 transition-all ${
+                    form.color === idx
+                      ? "border-gray-800 scale-110"
+                      : "border-gray-300 hover:scale-105"
+                  }`}
+                  style={{ backgroundColor: c }}
+                  onClick={() => handleChange("color", idx)}
+                />
+              ))}
+            </div>
+          </div>
+          <div className="flex justify-end space-x-2 pt-4">
+            <Button type="button" variant="outline" onClick={onClose}>
+              {t("common.cancel")}
+            </Button>
             <Button type="submit">
               {trip ? t("common.save") : t("common.create")}
             </Button>

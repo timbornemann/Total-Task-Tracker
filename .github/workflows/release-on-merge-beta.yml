@@ -92,8 +92,8 @@ jobs:
           target_commitish: beta
           body_path: ${{ steps.notes.outputs.file }}
           draft: false
-          prerelease: true         # ⟵ wichtig: „nicht production ready“
-          make_latest: false       # ⟵ Beta soll nicht „Latest“ überdecken
+          prerelease: true # ⟵ wichtig: „nicht production ready“
+          make_latest: false # ⟵ Beta soll nicht „Latest“ überdecken
           name: "Beta ${{ steps.tag.outputs.tag }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

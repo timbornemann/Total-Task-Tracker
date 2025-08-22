@@ -20,9 +20,9 @@ router.put("/", (req, res) => {
   } catch (error) {
     console.error("Error in PUT /api/timers:", error);
     console.error("Request body sample:", req.body?.slice(0, 2));
-    res.status(400).json({ 
-      error: "Save timers failed", 
-      message: error instanceof Error ? error.message : String(error)
+    res.status(400).json({
+      error: "Save timers failed",
+      message: error instanceof Error ? error.message : String(error),
     });
   }
 });

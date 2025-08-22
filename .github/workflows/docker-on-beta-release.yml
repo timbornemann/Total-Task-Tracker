@@ -6,7 +6,7 @@ on:
 
 jobs:
   build_and_push_beta:
-    if: github.event.release.prerelease == true   # nur Pre-Releases
+    if: github.event.release.prerelease == true # nur Pre-Releases
     runs-on: ubuntu-latest
 
     steps:

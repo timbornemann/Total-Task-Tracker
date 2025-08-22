@@ -3,18 +3,20 @@
  * Common helper functions used across stores and components
  */
 
-import type { 
-  BaseEntity, 
-  ValidationRule, 
+import type {
+  BaseEntity,
+  ValidationRule,
   ValidationResult,
   BaseSort,
-  BaseFilters 
-} from './types';
+  BaseFilters,
+} from "./types";
 
 // ID generation utilities
 export function generateId(): string {
-  return (crypto as { randomUUID?: () => string }).randomUUID?.() ||
-    `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  return (
+    (crypto as { randomUUID?: () => string }).randomUUID?.() ||
+    `${Date.now()}-${Math.random().toString(36).slice(2)}`
+  );
 }
 
 export function generateTimestamp(): number {
@@ -33,7 +35,7 @@ export function formatRelativeTime(date: Date): string {
   const diffHours = Math.floor(diffMs / 3600000);
   const diffDays = Math.floor(diffMs / 86400000);
 
-  if (diffMinutes < 1) return 'Gerade eben';
+  if (diffMinutes < 1) return "Gerade eben";
   if (diffMinutes < 60) return `vor ${diffMinutes} Min.`;
   if (diffHours < 24) return `vor ${diffHours} Std.`;
   if (diffDays < 7) return `vor ${diffDays} Tagen`;
@@ -58,41 +60,45 @@ export function isOverdue(dueDate: Date): boolean {
 
 // Array utilities
 export function sortBy<T>(
-  array: T[], 
+  array: T[],
   key: keyof T | ((item: T) => unknown),
-  direction: 'asc' | 'desc' = 'asc'
+  direction: "asc" | "desc" = "asc",
 ): T[] {
-  const getter = typeof key === 'function' ? key : (item: T) => item[key];
-  
+  const getter = typeof key === "function" ? key : (item: T) => item[key];
+
   return [...array].sort((a, b) => {
     const aValue = getter(a);
     const bValue = getter(b);
-    
-    if (aValue < bValue) return direction === 'asc' ? -1 : 1;
-    if (aValue > bValue) return direction === 'asc' ? 1 : -1;
+
+    if (aValue < bValue) return direction === "asc" ? -1 : 1;
+    if (aValue > bValue) return direction === "asc" ? 1 : -1;
     return 0;
   });
 }
 
 export function groupBy<T>(
-  array: T[], 
-  key: keyof T | ((item: T) => string)
+  array: T[],
+  key: keyof T | ((item: T) => string),
 ): Record<string, T[]> {
-  const getter = typeof key === 'function' ? key : (item: T) => String(item[key]);
-  
-  return array.reduce((groups, item) => {
-    const groupKey = getter(item);
-    if (!groups[groupKey]) {
-      groups[groupKey] = [];
-    }
-    groups[groupKey].push(item);
-    return groups;
-  }, {} as Record<string, T[]>);
+  const getter =
+    typeof key === "function" ? key : (item: T) => String(item[key]);
+
+  return array.reduce(
+    (groups, item) => {
+      const groupKey = getter(item);
+      if (!groups[groupKey]) {
+        groups[groupKey] = [];
+      }
+      groups[groupKey].push(item);
+      return groups;
+    },
+    {} as Record<string, T[]>,
+  );
 }
 
 export function uniqueBy<T>(array: T[], key: keyof T): T[] {
   const seen = new Set();
-  return array.filter(item => {
+  return array.filter((item) => {
     const value = item[key];
     if (seen.has(value)) {
       return false;
@@ -104,13 +110,13 @@ export function uniqueBy<T>(array: T[], key: keyof T): T[] {
 
 export function filterBy<T>(
   array: T[],
-  filters: Partial<T> | ((item: T) => boolean)
+  filters: Partial<T> | ((item: T) => boolean),
 ): T[] {
-  if (typeof filters === 'function') {
+  if (typeof filters === "function") {
     return array.filter(filters);
   }
-  
-  return array.filter(item => {
+
+  return array.filter((item) => {
     return Object.entries(filters).every(([key, value]) => {
       return item[key as keyof T] === value;
     });
@@ -121,16 +127,16 @@ export function filterBy<T>(
 export function searchItems<T>(
   items: T[],
   query: string,
-  searchFields: (keyof T)[]
+  searchFields: (keyof T)[],
 ): T[] {
   if (!query.trim()) return items;
-  
+
   const searchLower = query.toLowerCase();
-  
-  return items.filter(item => {
-    return searchFields.some(field => {
+
+  return items.filter((item) => {
+    return searchFields.some((field) => {
       const value = item[field];
-      if (typeof value === 'string') {
+      if (typeof value === "string") {
         return value.toLowerCase().includes(searchLower);
       }
       return false;
@@ -140,34 +146,40 @@ export function searchItems<T>(
 
 export function highlightSearchTerms(text: string, query: string): string {
   if (!query.trim()) return text;
-  
-  const regex = new RegExp(`(${query})`, 'gi');
-  return text.replace(regex, '<mark>$1</mark>');
+
+  const regex = new RegExp(`(${query})`, "gi");
+  return text.replace(regex, "<mark>$1</mark>");
 }
 
 // Validation utilities
 export function validateEntity<T>(
   entity: T,
-  rules: ValidationRule<T>[]
+  rules: ValidationRule<T>[],
 ): ValidationResult {
   const errors: Record<string, string[]> = {};
-  
-  rules.forEach(rule => {
+
+  rules.forEach((rule) => {
     const value = entity[rule.field];
     const fieldErrors: string[] = [];
-    
+
     // Required validation
-    if (rule.required && (value === undefined || value === null || value === '')) {
-      fieldErrors.push('Dieses Feld ist erforderlich');
+    if (
+      rule.required &&
+      (value === undefined || value === null || value === "")
+    ) {
+      fieldErrors.push("Dieses Feld ist erforderlich");
     }
-    
+
     // Skip other validations if value is empty and not required
-    if (!rule.required && (value === undefined || value === null || value === '')) {
+    if (
+      !rule.required &&
+      (value === undefined || value === null || value === "")
+    ) {
       return;
     }
-    
+
     // String validations
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       if (rule.minLength && value.length < rule.minLength) {
         fieldErrors.push(`Mindestens ${rule.minLength} Zeichen erforderlich`);
       }
@@ -175,25 +187,25 @@ export function validateEntity<T>(
         fieldErrors.push(`Maximal ${rule.maxLength} Zeichen erlaubt`);
       }
       if (rule.pattern && !rule.pattern.test(value)) {
-        fieldErrors.push('Ungültiges Format');
+        fieldErrors.push("Ungültiges Format");
       }
     }
-    
+
     // Custom validation
     if (rule.custom) {
       const customResult = rule.custom(value);
-      if (typeof customResult === 'string') {
+      if (typeof customResult === "string") {
         fieldErrors.push(customResult);
       } else if (!customResult) {
-        fieldErrors.push('Ungültiger Wert');
+        fieldErrors.push("Ungültiger Wert");
       }
     }
-    
+
     if (fieldErrors.length > 0) {
       errors[String(rule.field)] = fieldErrors;
     }
   });
-  
+
   return {
     isValid: Object.keys(errors).length === 0,
     errors,
@@ -202,7 +214,7 @@ export function validateEntity<T>(
 
 // Entity utilities
 export function createEntity<T extends BaseEntity>(
-  data: Omit<T, keyof BaseEntity>
+  data: Omit<T, keyof BaseEntity>,
 ): T {
   const now = new Date();
   return {
@@ -215,7 +227,7 @@ export function createEntity<T extends BaseEntity>(
 
 export function updateEntity<T extends BaseEntity>(
   entity: T,
-  updates: Partial<Omit<T, 'id' | 'createdAt'>>
+  updates: Partial<Omit<T, "id" | "createdAt">>,
 ): T {
   return {
     ...entity,
@@ -227,20 +239,20 @@ export function updateEntity<T extends BaseEntity>(
 export function mergeLists<T extends BaseEntity>(
   local: T[],
   server: T[],
-  deletions: string[] = []
+  deletions: string[] = [],
 ): T[] {
   const deletionIds = new Set(deletions);
   const merged = new Map<string, T>();
-  
+
   // Add server items first
-  server.forEach(item => {
+  server.forEach((item) => {
     if (!deletionIds.has(item.id)) {
       merged.set(item.id, item);
     }
   });
-  
+
   // Merge local items (last write wins)
-  local.forEach(item => {
+  local.forEach((item) => {
     if (!deletionIds.has(item.id)) {
       const existing = merged.get(item.id);
       if (!existing || item.updatedAt > existing.updatedAt) {
@@ -248,7 +260,7 @@ export function mergeLists<T extends BaseEntity>(
       }
     }
   });
-  
+
   return Array.from(merged.values());
 }
 
@@ -256,7 +268,7 @@ export function mergeLists<T extends BaseEntity>(
 export function reorder<T>(
   items: T[],
   startIndex: number,
-  endIndex: number
+  endIndex: number,
 ): T[] {
   const result = Array.from(items);
   const [removed] = result.splice(startIndex, 1);
@@ -268,23 +280,23 @@ export function moveItemToIndex<T>(
   items: T[],
   item: T,
   newIndex: number,
-  keyField: keyof T = 'id' as keyof T
+  keyField: keyof T = "id" as keyof T,
 ): T[] {
-  const currentIndex = items.findIndex(i => i[keyField] === item[keyField]);
+  const currentIndex = items.findIndex((i) => i[keyField] === item[keyField]);
   if (currentIndex === -1 || currentIndex === newIndex) {
     return items;
   }
-  
+
   return reorder(items, currentIndex, newIndex);
 }
 
 // Debouncing utility
 export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
-  delay: number
+  delay: number,
 ): T {
   let timeoutId: NodeJS.Timeout;
-  
+
   return ((...args: Parameters<T>) => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => func(...args), delay);
@@ -294,10 +306,10 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
 // Throttling utility
 export function throttle<T extends (...args: unknown[]) => unknown>(
   func: T,
-  delay: number
+  delay: number,
 ): T {
   let lastCall = 0;
-  
+
   return ((...args: Parameters<T>) => {
     const now = Date.now();
     if (now - lastCall >= delay) {
@@ -309,60 +321,79 @@ export function throttle<T extends (...args: unknown[]) => unknown>(
 
 // Deep cloning utility
 export function deepClone<T>(obj: T): T {
-  if (obj === null || typeof obj !== 'object') {
+  if (obj === null || typeof obj !== "object") {
     return obj;
   }
-  
+
   if (obj instanceof Date) {
     return new Date(obj.getTime()) as unknown as T;
   }
-  
+
   if (Array.isArray(obj)) {
-    return obj.map(item => deepClone(item)) as unknown as T;
+    return obj.map((item) => deepClone(item)) as unknown as T;
   }
-  
+
   const cloned = {} as T;
-  Object.keys(obj).forEach(key => {
+  Object.keys(obj).forEach((key) => {
     cloned[key as keyof T] = deepClone((obj as Record<string, unknown>)[key]);
   });
-  
+
   return cloned;
 }
 
 // Object comparison utilities
 export function shallowEqual<T>(a: T, b: T): boolean {
   if (a === b) return true;
-  
-  if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) {
+
+  if (
+    typeof a !== "object" ||
+    typeof b !== "object" ||
+    a === null ||
+    b === null
+  ) {
     return false;
   }
-  
+
   const keysA = Object.keys(a);
   const keysB = Object.keys(b);
-  
+
   if (keysA.length !== keysB.length) return false;
-  
-  return keysA.every(key => (a as Record<string, unknown>)[key] === (b as Record<string, unknown>)[key]);
+
+  return keysA.every(
+    (key) =>
+      (a as Record<string, unknown>)[key] ===
+      (b as Record<string, unknown>)[key],
+  );
 }
 
 export function deepEqual<T>(a: T, b: T): boolean {
   if (a === b) return true;
-  
-  if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) {
+
+  if (
+    typeof a !== "object" ||
+    typeof b !== "object" ||
+    a === null ||
+    b === null
+  ) {
     return false;
   }
-  
+
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
     return a.every((item, index) => deepEqual(item, b[index]));
   }
-  
+
   const keysA = Object.keys(a);
   const keysB = Object.keys(b);
-  
+
   if (keysA.length !== keysB.length) return false;
-  
-  return keysA.every(key => deepEqual((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key]));
+
+  return keysA.every((key) =>
+    deepEqual(
+      (a as Record<string, unknown>)[key],
+      (b as Record<string, unknown>)[key],
+    ),
+  );
 }
 
 // Color utilities
@@ -371,7 +402,7 @@ export function generateColorFromString(str: string): string {
   for (let i = 0; i < str.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
   }
-  
+
   const hue = hash % 360;
   return `hsl(${hue}, 70%, 50%)`;
 }
@@ -412,23 +443,23 @@ export function safeLocalStorageSet<T>(key: string, value: T): boolean {
 export function parseSearchParams(search: string): Record<string, string> {
   const params = new URLSearchParams(search);
   const result: Record<string, string> = {};
-  
+
   params.forEach((value, key) => {
     result[key] = value;
   });
-  
+
   return result;
 }
 
 export function buildSearchParams(params: Record<string, unknown>): string {
   const searchParams = new URLSearchParams();
-  
+
   Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== '') {
+    if (value !== undefined && value !== null && value !== "") {
       searchParams.set(key, String(value));
     }
   });
-  
+
   return searchParams.toString();
 }
 
@@ -437,7 +468,9 @@ export function assertNever(value: never): never {
   throw new Error(`Unexpected value: ${value}`);
 }
 
-export function isNotNullOrUndefined<T>(value: T | null | undefined): value is T {
+export function isNotNullOrUndefined<T>(
+  value: T | null | undefined,
+): value is T {
   return value !== null && value !== undefined;
 }
 
@@ -446,10 +479,7 @@ export function isDefined<T>(value: T | undefined): value is T {
 }
 
 // Performance utilities
-export function measurePerformance<T>(
-  name: string,
-  fn: () => T
-): T {
+export function measurePerformance<T>(name: string, fn: () => T): T {
   const start = performance.now();
   const result = fn();
   const end = performance.now();
@@ -459,7 +489,7 @@ export function measurePerformance<T>(
 
 export async function measureAsyncPerformance<T>(
   name: string,
-  fn: () => Promise<T>
+  fn: () => Promise<T>,
 ): Promise<T> {
   const start = performance.now();
   const result = await fn();

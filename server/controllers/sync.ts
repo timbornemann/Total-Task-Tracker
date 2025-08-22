@@ -1,5 +1,9 @@
 import { Router } from "express";
-import { loadAllData, saveAllData, dateReviver } from "../services/dataService.js";
+import {
+  loadAllData,
+  saveAllData,
+  dateReviver,
+} from "../services/dataService.js";
 import { syncLogs, getSyncRole } from "../services/syncService.js";
 
 const router = Router();
@@ -16,7 +20,11 @@ router.get("/", (req, res) => {
     delete data.settings.syncEnabled;
     delete data.settings.llmToken;
   }
-  syncLogs.push({ time: Date.now(), ip: req.socket.remoteAddress, method: "GET" });
+  syncLogs.push({
+    time: Date.now(),
+    ip: req.socket.remoteAddress,
+    method: "GET",
+  });
   res.json(data);
 });
 
@@ -34,7 +42,11 @@ router.post("/", (req, res) => {
       delete incoming.settings.llmToken;
     }
     saveAllData(incoming);
-    syncLogs.push({ time: Date.now(), ip: req.socket.remoteAddress, method: "POST" });
+    syncLogs.push({
+      time: Date.now(),
+      ip: req.socket.remoteAddress,
+      method: "POST",
+    });
     res.json({ status: "ok" });
   } catch {
     res.sendStatus(400);

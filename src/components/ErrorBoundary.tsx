@@ -1,8 +1,14 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import React, { Component, ErrorInfo, ReactNode } from "react";
+import { AlertTriangle, RefreshCw, Home } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface Props {
   children: ReactNode;
@@ -27,8 +33,8 @@ class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log error to console in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error('ErrorBoundary caught an error:', error, errorInfo);
+    if (process.env.NODE_ENV === "development") {
+      console.error("ErrorBoundary caught an error:", error, errorInfo);
     }
 
     this.setState({
@@ -46,7 +52,7 @@ class ErrorBoundary extends Component<Props, State> {
 
   handleGoHome = () => {
     this.setState({ hasError: false, error: undefined, errorInfo: undefined });
-    window.location.href = '/';
+    window.location.href = "/";
   };
 
   render() {
@@ -64,20 +70,25 @@ class ErrorBoundary extends Component<Props, State> {
               <div className="mx-auto mb-4 p-3 bg-destructive/10 rounded-full w-fit">
                 <AlertTriangle className="h-8 w-8 text-destructive" />
               </div>
-              <CardTitle className="text-2xl">Oops! Something went wrong</CardTitle>
+              <CardTitle className="text-2xl">
+                Oops! Something went wrong
+              </CardTitle>
               <CardDescription>
-                We're sorry, but something unexpected happened. Please try refreshing the page or going back to the home page.
+                We're sorry, but something unexpected happened. Please try
+                refreshing the page or going back to the home page.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {process.env.NODE_ENV === 'development' && this.state.error && (
+              {process.env.NODE_ENV === "development" && this.state.error && (
                 <Alert variant="destructive">
                   <AlertTriangle className="h-4 w-4" />
                   <AlertDescription className="text-sm">
                     <strong>Error:</strong> {this.state.error.message}
                     {this.state.errorInfo && (
                       <details className="mt-2">
-                        <summary className="cursor-pointer">Stack trace</summary>
+                        <summary className="cursor-pointer">
+                          Stack trace
+                        </summary>
                         <pre className="mt-2 text-xs overflow-auto">
                           {this.state.error.stack}
                         </pre>
@@ -86,13 +97,17 @@ class ErrorBoundary extends Component<Props, State> {
                   </AlertDescription>
                 </Alert>
               )}
-              
+
               <div className="flex flex-col sm:flex-row gap-2">
                 <Button onClick={this.handleReset} className="flex-1">
                   <RefreshCw className="mr-2 h-4 w-4" />
                   Try Again
                 </Button>
-                <Button variant="outline" onClick={this.handleGoHome} className="flex-1">
+                <Button
+                  variant="outline"
+                  onClick={this.handleGoHome}
+                  className="flex-1"
+                >
                   <Home className="mr-2 h-4 w-4" />
                   Go Home
                 </Button>

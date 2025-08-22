@@ -61,8 +61,7 @@ const WorklogStatsPage: React.FC = () => {
         .reduce(
           (sum, d) =>
             sum +
-            (new Date(d.end).getTime() - new Date(d.start).getTime()) /
-              60000,
+            (new Date(d.end).getTime() - new Date(d.start).getTime()) / 60000,
           0,
         );
       const hobbyMinutes = dayEntries
@@ -70,8 +69,7 @@ const WorklogStatsPage: React.FC = () => {
         .reduce(
           (sum, d) =>
             sum +
-            (new Date(d.end).getTime() - new Date(d.start).getTime()) /
-              60000,
+            (new Date(d.end).getTime() - new Date(d.start).getTime()) / 60000,
           0,
         );
       result.push({
@@ -132,8 +130,7 @@ const WorklogStatsPage: React.FC = () => {
     );
     const minutes = days.reduce(
       (sum, d) =>
-        sum +
-        (new Date(d.end).getTime() - new Date(d.start).getTime()) / 60000,
+        sum + (new Date(d.end).getTime() - new Date(d.start).getTime()) / 60000,
       0,
     );
     const km = days.reduce((s, d) => {
@@ -161,7 +158,10 @@ const WorklogStatsPage: React.FC = () => {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">
-              {t("worklogStats.totalTime", { hours: totalHours, minutes: totalMins })}
+              {t("worklogStats.totalTime", {
+                hours: totalHours,
+                minutes: totalMins,
+              })}
             </CardTitle>
           </CardHeader>
         </Card>
@@ -170,7 +170,10 @@ const WorklogStatsPage: React.FC = () => {
             <CardTitle className="text-base">
               {t("worklogStats.perTrip")}
             </CardTitle>
-            <Select value={range} onValueChange={(v) => setRange(v as "week" | "month")}> 
+            <Select
+              value={range}
+              onValueChange={(v) => setRange(v as "week" | "month")}
+            >
               <SelectTrigger className="w-[110px]">
                 <SelectValue placeholder="Week" />
               </SelectTrigger>

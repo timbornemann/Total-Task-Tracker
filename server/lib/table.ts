@@ -4,7 +4,10 @@ function jsonReplacer(key: string, value: unknown): unknown {
   return value instanceof Date ? value.toISOString() : value;
 }
 
-export function loadTable<T>(name: string, reviver: ((key: string, value: unknown) => unknown) | null = null): T[] {
+export function loadTable<T>(
+  name: string,
+  reviver: ((key: string, value: unknown) => unknown) | null = null,
+): T[] {
   try {
     return db
       .prepare(`SELECT data FROM ${name}`)
@@ -29,4 +32,3 @@ export function saveTable<T extends { id: string }>(
   });
   tx();
 }
-

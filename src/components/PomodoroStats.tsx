@@ -27,10 +27,12 @@ const PomodoroStats: React.FC = () => {
         </CardHeader>
         <CardContent>
           <p className="text-sm">
-            {t("pomodoroStats.work")}: {formatDuration(stats.totalWorkMinutes, t)}
+            {t("pomodoroStats.work")}:{" "}
+            {formatDuration(stats.totalWorkMinutes, t)}
           </p>
           <p className="text-sm">
-            {t("pomodoroStats.break")}: {formatDuration(stats.totalBreakMinutes, t)}
+            {t("pomodoroStats.break")}:{" "}
+            {formatDuration(stats.totalBreakMinutes, t)}
           </p>
           <p className="text-sm mb-2">
             {t("pomodoroStats.cycles")}: {stats.totalCycles}
@@ -72,10 +74,12 @@ const PomodoroStats: React.FC = () => {
         </CardHeader>
         <CardContent>
           <p className="text-sm">
-            {t("pomodoroStats.work")}: {formatDuration(stats.todayTotals.workMinutes, t)}
+            {t("pomodoroStats.work")}:{" "}
+            {formatDuration(stats.todayTotals.workMinutes, t)}
           </p>
           <p className="text-sm">
-            {t("pomodoroStats.break")}: {formatDuration(stats.todayTotals.breakMinutes, t)}
+            {t("pomodoroStats.break")}:{" "}
+            {formatDuration(stats.todayTotals.breakMinutes, t)}
           </p>
           <p className="text-sm mb-2">
             {t("pomodoroStats.cycles")}: {stats.todayTotals.cycles}

@@ -1654,7 +1654,10 @@ const SettingsPage: React.FC = () => {
                         const val = newNavItems.standalone;
                         if (val) {
                           addNavbarItemToGroup("standalone", val);
-                          setNewNavItems((prev) => ({ ...prev, standalone: "" }));
+                          setNewNavItems((prev) => ({
+                            ...prev,
+                            standalone: "",
+                          }));
                         }
                       }}
                     >

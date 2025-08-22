@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { loadOfflineData, updateOfflineData, syncWithServer } from "@/utils/offline";
+import {
+  loadOfflineData,
+  updateOfflineData,
+  syncWithServer,
+} from "@/utils/offline";
 
 const generateId = () =>
   (crypto as { randomUUID?: () => string }).randomUUID?.() ||
@@ -219,10 +223,10 @@ export const TimersProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     if (!loaded) return;
-    
+
     // Only sync for non-tick updates (debounced approach)
-    const hasRunningTimers = timers.some(t => t.isRunning && !t.isPaused);
-    
+    const hasRunningTimers = timers.some((t) => t.isRunning && !t.isPaused);
+
     const save = async () => {
       try {
         updateOfflineData({ timers });
@@ -232,7 +236,7 @@ export const TimersProvider: React.FC<{ children: React.ReactNode }> = ({
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(timers),
           });
-          
+
           // Only sync with server for significant changes, not tick updates
           if (!hasRunningTimers) {
             await syncWithServer();
@@ -242,7 +246,7 @@ export const TimersProvider: React.FC<{ children: React.ReactNode }> = ({
         console.error("Error saving timers", err);
       }
     };
-    
+
     // Debounce: Don't sync immediately if timers are running (frequent ticks)
     if (hasRunningTimers) {
       const timeoutId = setTimeout(save, 5000); // Sync every 5 seconds max when running

@@ -3,8 +3,13 @@
  * Integrates with existing toast systems to show meaningful error messages
  */
 
-import { toast } from 'sonner';
-import { ApiError, NetworkError, TimeoutError, ValidationError } from './apiClient';
+import { toast } from "sonner";
+import {
+  ApiError,
+  NetworkError,
+  TimeoutError,
+  ValidationError,
+} from "./apiClient";
 
 // Error message translations for different locales
 interface ErrorMessages {
@@ -53,93 +58,101 @@ interface ErrorMessages {
 
 const errorMessages: ErrorMessages = {
   network: {
-    title: 'Verbindungsfehler',
-    description: 'Überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.',
-    retry: 'Erneut versuchen',
+    title: "Verbindungsfehler",
+    description:
+      "Überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.",
+    retry: "Erneut versuchen",
   },
   timeout: {
-    title: 'Zeitüberschreitung',
-    description: 'Die Anfrage dauerte zu lange. Versuchen Sie es erneut.',
-    retry: 'Erneut versuchen',
+    title: "Zeitüberschreitung",
+    description: "Die Anfrage dauerte zu lange. Versuchen Sie es erneut.",
+    retry: "Erneut versuchen",
   },
   validation: {
-    title: 'Eingabefehler',
-    description: 'Bitte überprüfen Sie Ihre Eingaben und versuchen Sie es erneut.',
+    title: "Eingabefehler",
+    description:
+      "Bitte überprüfen Sie Ihre Eingaben und versuchen Sie es erneut.",
   },
   server: {
-    title: 'Server-Fehler',
-    description: 'Ein Fehler ist auf dem Server aufgetreten. Versuchen Sie es später erneut.',
-    retry: 'Erneut versuchen',
+    title: "Server-Fehler",
+    description:
+      "Ein Fehler ist auf dem Server aufgetreten. Versuchen Sie es später erneut.",
+    retry: "Erneut versuchen",
   },
   client: {
-    title: 'Anfragefehler',
-    description: 'Die Anfrage konnte nicht verarbeitet werden.',
+    title: "Anfragefehler",
+    description: "Die Anfrage konnte nicht verarbeitet werden.",
   },
   storage: {
-    title: 'Speicherfehler',
-    description: 'Die Daten konnten nicht gespeichert werden.',
-    retry: 'Erneut versuchen',
+    title: "Speicherfehler",
+    description: "Die Daten konnten nicht gespeichert werden.",
+    retry: "Erneut versuchen",
   },
   sync: {
-    title: 'Synchronisierungsfehler',
-    description: 'Die Daten konnten nicht synchronisiert werden.',
-    retry: 'Synchronisieren',
+    title: "Synchronisierungsfehler",
+    description: "Die Daten konnten nicht synchronisiert werden.",
+    retry: "Synchronisieren",
   },
   offline: {
-    title: 'Offline-Modus',
-    description: 'Sie sind offline. Änderungen werden synchronisiert, sobald Sie wieder online sind.',
+    title: "Offline-Modus",
+    description:
+      "Sie sind offline. Änderungen werden synchronisiert, sobald Sie wieder online sind.",
   },
   generic: {
-    title: 'Unbekannter Fehler',
-    description: 'Ein unerwarteter Fehler ist aufgetreten.',
+    title: "Unbekannter Fehler",
+    description: "Ein unerwarteter Fehler ist aufgetreten.",
   },
 };
 
 // User-friendly HTTP status code messages
-const httpStatusMessages: Record<number, { title: string; description: string }> = {
+const httpStatusMessages: Record<
+  number,
+  { title: string; description: string }
+> = {
   400: {
-    title: 'Ungültige Anfrage',
-    description: 'Die gesendeten Daten sind ungültig.',
+    title: "Ungültige Anfrage",
+    description: "Die gesendeten Daten sind ungültig.",
   },
   401: {
-    title: 'Nicht autorisiert',
-    description: 'Sie sind nicht berechtigt, diese Aktion auszuführen.',
+    title: "Nicht autorisiert",
+    description: "Sie sind nicht berechtigt, diese Aktion auszuführen.",
   },
   403: {
-    title: 'Zugriff verweigert',
-    description: 'Sie haben keine Berechtigung für diese Ressource.',
+    title: "Zugriff verweigert",
+    description: "Sie haben keine Berechtigung für diese Ressource.",
   },
   404: {
-    title: 'Nicht gefunden',
-    description: 'Die angeforderte Ressource wurde nicht gefunden.',
+    title: "Nicht gefunden",
+    description: "Die angeforderte Ressource wurde nicht gefunden.",
   },
   409: {
-    title: 'Konflikt',
-    description: 'Es liegt ein Konflikt mit vorhandenen Daten vor.',
+    title: "Konflikt",
+    description: "Es liegt ein Konflikt mit vorhandenen Daten vor.",
   },
   422: {
-    title: 'Ungültige Daten',
-    description: 'Die übertragenen Daten sind nicht gültig.',
+    title: "Ungültige Daten",
+    description: "Die übertragenen Daten sind nicht gültig.",
   },
   429: {
-    title: 'Zu viele Anfragen',
-    description: 'Sie haben zu viele Anfragen gesendet. Versuchen Sie es später erneut.',
+    title: "Zu viele Anfragen",
+    description:
+      "Sie haben zu viele Anfragen gesendet. Versuchen Sie es später erneut.",
   },
   500: {
-    title: 'Server-Fehler',
-    description: 'Ein interner Server-Fehler ist aufgetreten.',
+    title: "Server-Fehler",
+    description: "Ein interner Server-Fehler ist aufgetreten.",
   },
   502: {
-    title: 'Server nicht erreichbar',
-    description: 'Der Server ist vorübergehend nicht erreichbar.',
+    title: "Server nicht erreichbar",
+    description: "Der Server ist vorübergehend nicht erreichbar.",
   },
   503: {
-    title: 'Service nicht verfügbar',
-    description: 'Der Service ist vorübergehend nicht verfügbar.',
+    title: "Service nicht verfügbar",
+    description: "Der Service ist vorübergehend nicht verfügbar.",
   },
   504: {
-    title: 'Server-Timeout',
-    description: 'Der Server antwortet nicht rechtzeitig.',
+    title: "Server-Timeout",
+    description: "Der Server antwortet nicht rechtzeitig.",
   },
 };
 
@@ -147,7 +160,7 @@ const httpStatusMessages: Record<number, { title: string; description: string }>
 export interface ErrorContext {
   action?: string; // e.g., 'saving task', 'loading data'
   resource?: string; // e.g., 'task', 'note', 'flashcard'
-  operation?: 'create' | 'update' | 'delete' | 'fetch' | 'sync';
+  operation?: "create" | "update" | "delete" | "fetch" | "sync";
   retryable?: boolean;
   onRetry?: () => void | Promise<void>;
 }
@@ -163,7 +176,13 @@ export interface ErrorNotificationConfig {
   /** Show retry button for retryable errors (default: true) */
   showRetry?: boolean;
   /** Custom toast position */
-  position?: 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
+  position?:
+    | "top-left"
+    | "top-center"
+    | "top-right"
+    | "bottom-left"
+    | "bottom-center"
+    | "bottom-right";
 }
 
 /**
@@ -172,7 +191,7 @@ export interface ErrorNotificationConfig {
 export function showErrorNotification(
   error: Error,
   context: ErrorContext = {},
-  config: ErrorNotificationConfig = {}
+  config: ErrorNotificationConfig = {},
 ) {
   const {
     show = true,
@@ -202,12 +221,12 @@ export function showErrorNotification(
     defaultDuration = 7000;
   } else if (error instanceof ApiError) {
     const statusCode = error.statusCode || 0;
-    
+
     if (httpStatusMessages[statusCode]) {
       message = {
         title: httpStatusMessages[statusCode].title,
         description: httpStatusMessages[statusCode].description,
-        retry: statusCode >= 500 ? 'Erneut versuchen' : '',
+        retry: statusCode >= 500 ? "Erneut versuchen" : "",
       };
       isRetryable = statusCode >= 500 || statusCode === 429;
     } else if (statusCode >= 500) {
@@ -217,7 +236,7 @@ export function showErrorNotification(
       message = errorMessages.client;
       isRetryable = false;
     }
-    
+
     defaultDuration = isRetryable ? 8000 : 6000;
   }
 
@@ -240,7 +259,7 @@ export function showErrorNotification(
 
   // Show the notification
   const toastDuration = duration ?? defaultDuration;
-  
+
   if (isRetryable && showRetry && context.onRetry) {
     // Show error with retry action
     toast.error(title, {
@@ -248,7 +267,7 @@ export function showErrorNotification(
       duration: toastDuration,
       dismissible,
       action: {
-        label: message.retry || 'Erneut versuchen',
+        label: message.retry || "Erneut versuchen",
         onClick: () => {
           if (context.onRetry) {
             try {
@@ -282,7 +301,7 @@ export function showErrorNotification(
   }
 
   // Log detailed error information for debugging
-  console.error('[ErrorNotification]', {
+  console.error("[ErrorNotification]", {
     error: error.message,
     type: error.constructor.name,
     context,
@@ -296,10 +315,10 @@ export function showErrorNotification(
 export function showSuccessNotification(
   message: string,
   context: ErrorContext = {},
-  config: Pick<ErrorNotificationConfig, 'duration' | 'dismissible'> = {}
+  config: Pick<ErrorNotificationConfig, "duration" | "dismissible"> = {},
 ) {
   const { duration = 3000, dismissible = true } = config;
-  
+
   let title = message;
   if (context.action && context.resource) {
     const actionText = getActionText(context.operation, context.resource);
@@ -318,10 +337,10 @@ export function showSuccessNotification(
 export function showInfoNotification(
   title: string,
   description?: string,
-  config: Pick<ErrorNotificationConfig, 'duration' | 'dismissible'> = {}
+  config: Pick<ErrorNotificationConfig, "duration" | "dismissible"> = {},
 ) {
   const { duration = 4000, dismissible = true } = config;
-  
+
   toast.info(title, {
     description,
     duration,
@@ -345,44 +364,58 @@ export function showOfflineNotification() {
  */
 export function showSyncNotification(success: boolean, onRetry?: () => void) {
   if (success) {
-    toast.success('Synchronisierung erfolgreich', {
-      description: 'Alle Daten wurden synchronisiert.',
+    toast.success("Synchronisierung erfolgreich", {
+      description: "Alle Daten wurden synchronisiert.",
       duration: 2000,
     });
   } else {
     toast.error(errorMessages.sync.title, {
       description: errorMessages.sync.description,
       duration: 6000,
-      action: onRetry ? {
-        label: errorMessages.sync.retry,
-        onClick: onRetry,
-      } : undefined,
+      action: onRetry
+        ? {
+            label: errorMessages.sync.retry,
+            onClick: onRetry,
+          }
+        : undefined,
     });
   }
 }
 
 // Helper functions for contextual messages
 function getActionText(operation?: string, resource?: string): string {
-  const resourceText = resource || 'Element';
-  
+  const resourceText = resource || "Element";
+
   switch (operation) {
-    case 'create': return `Erstellen von ${resourceText}`;
-    case 'update': return `Aktualisieren von ${resourceText}`;
-    case 'delete': return `Löschen von ${resourceText}`;
-    case 'fetch': return `Laden von ${resourceText}`;
-    case 'sync': return `Synchronisieren von ${resourceText}`;
-    default: return `Verarbeiten von ${resourceText}`;
+    case "create":
+      return `Erstellen von ${resourceText}`;
+    case "update":
+      return `Aktualisieren von ${resourceText}`;
+    case "delete":
+      return `Löschen von ${resourceText}`;
+    case "fetch":
+      return `Laden von ${resourceText}`;
+    case "sync":
+      return `Synchronisieren von ${resourceText}`;
+    default:
+      return `Verarbeiten von ${resourceText}`;
   }
 }
 
 function getActionPastTense(operation?: string): string {
   switch (operation) {
-    case 'create': return 'erstellt';
-    case 'update': return 'aktualisiert';
-    case 'delete': return 'gelöscht';
-    case 'fetch': return 'geladen';
-    case 'sync': return 'synchronisiert';
-    default: return 'verarbeitet';
+    case "create":
+      return "erstellt";
+    case "update":
+      return "aktualisiert";
+    case "delete":
+      return "gelöscht";
+    case "fetch":
+      return "geladen";
+    case "sync":
+      return "synchronisiert";
+    default:
+      return "verarbeitet";
   }
 }
 
@@ -400,16 +433,16 @@ export function handleApiError(error: Error, context: ErrorContext = {}) {
 export async function withErrorHandling<T>(
   apiCall: () => Promise<T>,
   context: ErrorContext = {},
-  config: ErrorNotificationConfig = {}
+  config: ErrorNotificationConfig = {},
 ): Promise<T | null> {
   try {
     const result = await apiCall();
-    
+
     // Show success notification if specified
-    if (context.action && context.resource && context.operation !== 'fetch') {
-      showSuccessNotification('', context);
+    if (context.action && context.resource && context.operation !== "fetch") {
+      showSuccessNotification("", context);
     }
-    
+
     return result;
   } catch (error) {
     showErrorNotification(error as Error, context, config);

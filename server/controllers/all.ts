@@ -54,7 +54,10 @@ router.put("/", (req, res) => {
   try {
     // Reduced logging for timer updates
     if (!req.body?.timers || req.body.timers.length === 0) {
-      console.log("PUT /api/all - Received data with keys:", Object.keys(req.body || {}));
+      console.log(
+        "PUT /api/all - Received data with keys:",
+        Object.keys(req.body || {}),
+      );
     }
     saveAllData(req.body || ({} as AllData));
     res.json({ status: "ok" });
@@ -64,9 +67,9 @@ router.put("/", (req, res) => {
     if (req.body?.timers) {
       console.error("Sample timer data:", req.body.timers.slice(0, 2));
     }
-    res.status(400).json({ 
-      error: "Save failed", 
-      message: error instanceof Error ? error.message : String(error)
+    res.status(400).json({
+      error: "Save failed",
+      message: error instanceof Error ? error.message : String(error),
     });
   }
 });

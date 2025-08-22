@@ -4,7 +4,7 @@
  */
 
 // Re-export all types from the main types file
-export * from '@/types';
+export * from "@/types";
 
 // Base interfaces for all persisted entities
 export interface BaseEntity {
@@ -45,7 +45,7 @@ export interface BaseFilters {
 
 export interface BaseSort<T = string> {
   field: T;
-  direction: 'asc' | 'desc';
+  direction: "asc" | "desc";
 }
 
 // Store state interfaces
@@ -56,7 +56,8 @@ export interface BaseStoreState<T> {
   lastUpdated?: Date;
 }
 
-export interface FilterableStoreState<T, F = BaseFilters> extends BaseStoreState<T> {
+export interface FilterableStoreState<T, F = BaseFilters>
+  extends BaseStoreState<T> {
   filters: F;
   filteredItems: T[];
 }
@@ -74,7 +75,7 @@ export interface PaginatableStoreState<T> extends BaseStoreState<T> {
 }
 
 // CRUD operation types
-export type CrudOperation = 'create' | 'read' | 'update' | 'delete';
+export type CrudOperation = "create" | "read" | "update" | "delete";
 
 export interface CrudOperationResult<T = unknown> {
   success: boolean;
@@ -93,7 +94,7 @@ export interface SyncMetadata {
 }
 
 export interface ConflictResolution<T = unknown> {
-  strategy: 'local-wins' | 'server-wins' | 'last-write-wins' | 'manual';
+  strategy: "local-wins" | "server-wins" | "last-write-wins" | "manual";
   resolvedData?: T;
   timestamp: Date;
 }
@@ -177,7 +178,8 @@ export interface CrudHookReturn<T> extends BaseHookReturn<T[]> {
   findById: (id: string) => T | undefined;
 }
 
-export interface FilterableHookReturn<T, F = BaseFilters> extends BaseHookReturn<T[]> {
+export interface FilterableHookReturn<T, F = BaseFilters>
+  extends BaseHookReturn<T[]> {
   filters: F;
   setFilters: (filters: Partial<F>) => void;
   filteredData: T[];
@@ -210,15 +212,15 @@ export interface UserPreferences {
   notifications: {
     enabled: boolean;
     sound: boolean;
-    frequency: 'realtime' | 'hourly' | 'daily';
+    frequency: "realtime" | "hourly" | "daily";
   };
   sync: {
     autoSync: boolean;
     syncInterval: number;
-    conflictResolution: 'ask' | 'local-wins' | 'server-wins';
+    conflictResolution: "ask" | "local-wins" | "server-wins";
   };
   display: {
-    density: 'compact' | 'comfortable' | 'spacious';
+    density: "compact" | "comfortable" | "spacious";
     showCompletedTasks: boolean;
     defaultView: string;
   };
@@ -234,7 +236,7 @@ export interface ModalProps extends BaseComponentProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
-  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  size?: "sm" | "md" | "lg" | "xl" | "full";
 }
 
 export interface FormProps<T = unknown> extends BaseComponentProps {
@@ -288,24 +290,30 @@ export interface StoreMiddleware<T> {
 
 // Export utility functions for type guards
 export function isBaseEntity(obj: unknown): obj is BaseEntity {
-  return obj && 
-    typeof obj.id === 'string' &&
+  return (
+    obj &&
+    typeof obj.id === "string" &&
     obj.createdAt instanceof Date &&
-    obj.updatedAt instanceof Date;
+    obj.updatedAt instanceof Date
+  );
 }
 
 export function hasCategory(obj: unknown): obj is CategoryMixin {
-  return obj && (typeof obj.categoryId === 'string' || obj.categoryId === undefined);
+  return (
+    obj && (typeof obj.categoryId === "string" || obj.categoryId === undefined)
+  );
 }
 
 export function isPinnable(obj: unknown): obj is PinnedMixin {
-  return obj && typeof obj.pinned === 'boolean';
+  return obj && typeof obj.pinned === "boolean";
 }
 
 export function isOrderable(obj: unknown): obj is OrderMixin {
-  return obj && typeof obj.order === 'number';
+  return obj && typeof obj.order === "number";
 }
 
 export function isArchivable(obj: unknown): obj is ArchiveMixin {
-  return obj && (typeof obj.archived === 'boolean' || obj.archived === undefined);
+  return (
+    obj && (typeof obj.archived === "boolean" || obj.archived === undefined)
+  );
 }

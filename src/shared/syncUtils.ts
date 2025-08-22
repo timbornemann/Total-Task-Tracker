@@ -43,7 +43,7 @@ export interface SyncData {
 export function mergeLists<T>(
   curr: T[] = [],
   inc: T[] = [],
-  compare: string | null = "updatedAt"
+  compare: string | null = "updatedAt",
 ): T[] {
   const map = new Map<string | undefined, T>();
   for (const c of curr) map.set((c as Identified).id, c);
@@ -85,7 +85,7 @@ export function mergeData(curr: SyncData, inc: SyncData): SyncData {
     pomodoroSessions: mergeLists(
       curr.pomodoroSessions,
       inc.pomodoroSessions,
-      null
+      null,
     ),
     timers: mergeLists(curr.timers, inc.timers, null),
     trips: mergeLists(curr.trips, inc.trips, "updatedAt"),
@@ -121,24 +121,30 @@ export function applyDeletions(data: SyncData): SyncData {
     return new Date(updatedAt) > deletedAt;
   };
   data.tasks = (data.tasks || []).filter((t) => shouldKeep("task", t));
-  data.categories = (data.categories || []).filter((c) => shouldKeep("category", c));
+  data.categories = (data.categories || []).filter((c) =>
+    shouldKeep("category", c),
+  );
   data.notes = (data.notes || []).filter((n) => shouldKeep("note", n));
-  data.recurring = (data.recurring || []).filter((r) => shouldKeep("recurring", r));
+  data.recurring = (data.recurring || []).filter((r) =>
+    shouldKeep("recurring", r),
+  );
   data.habits = (data.habits || []).filter((h) => shouldKeep("habit", h));
-  data.flashcards = (data.flashcards || []).filter((f) => shouldKeep("flashcard", f));
+  data.flashcards = (data.flashcards || []).filter((f) =>
+    shouldKeep("flashcard", f),
+  );
   data.decks = (data.decks || []).filter((d) => shouldKeep("deck", d));
   data.trips = (data.trips || []).filter((t) => shouldKeep("trip", t));
   data.workDays = (data.workDays || []).filter((d) => shouldKeep("workday", d));
   data.commutes = (data.commutes || []).filter((c) => shouldKeep("commute", c));
   data.items = (data.items || []).filter((i) => shouldKeep("inventoryItem", i));
   data.itemCategories = (data.itemCategories || []).filter((c) =>
-    shouldKeep("inventoryCategory", c)
+    shouldKeep("inventoryCategory", c),
   );
   data.itemTags = (data.itemTags || []).filter((t) =>
-    shouldKeep("inventoryTag", t)
+    shouldKeep("inventoryTag", t),
   );
   data.pomodoroSessions = (data.pomodoroSessions || []).filter((s) =>
-    shouldKeep("pomodoro", s)
+    shouldKeep("pomodoro", s),
   );
   data.timers = (data.timers || []).filter((t) => shouldKeep("timer", t));
   return data;

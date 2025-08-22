@@ -32,10 +32,7 @@ const WorklogDetailPage: React.FC = () => {
 
   const days = workDays
     .filter((d) => (id === "default" ? !d.tripId : d.tripId === id))
-    .sort(
-      (a, b) =>
-        new Date(a.start).getTime() - new Date(b.start).getTime(),
-    );
+    .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
   const totalMinutes = days.reduce(
     (sum, d) =>
       sum + (new Date(d.end).getTime() - new Date(d.start).getTime()) / 60000,
@@ -62,14 +59,16 @@ const WorklogDetailPage: React.FC = () => {
       day.setDate(base.getDate() + i);
       const dateStr = day.toISOString().slice(0, 10);
       const minutes = days
-        .filter((d) =>
-          (typeof d.start === "string"
-            ? d.start.slice(0, 10)
-            : d.start.toISOString().slice(0, 10)) === dateStr,
+        .filter(
+          (d) =>
+            (typeof d.start === "string"
+              ? d.start.slice(0, 10)
+              : d.start.toISOString().slice(0, 10)) === dateStr,
         )
         .reduce(
           (sum, d) =>
-            sum + (new Date(d.end).getTime() - new Date(d.start).getTime()) / 60000,
+            sum +
+            (new Date(d.end).getTime() - new Date(d.start).getTime()) / 60000,
           0,
         );
       result.push({ date: dateStr, minutes });
@@ -121,10 +120,10 @@ const WorklogDetailPage: React.FC = () => {
         title={t("worklogDetail.title") as string}
         onHomeClick={() => navigate("/worklog")}
       />
-        <div className="max-w-4xl mx-auto px-4 py-4 space-y-6">
-          <Button variant="ghost" size="sm" onClick={() => navigate("/worklog")}>
-            <ArrowLeft className="h-4 w-4 mr-2" /> {t("common.back")}
-          </Button>
+      <div className="max-w-4xl mx-auto px-4 py-4 space-y-6">
+        <Button variant="ghost" size="sm" onClick={() => navigate("/worklog")}>
+          <ArrowLeft className="h-4 w-4 mr-2" /> {t("common.back")}
+        </Button>
         <h2 className="font-semibold">
           {id === "default" ? t("worklog.workTime") : trip?.name}
         </h2>
@@ -219,10 +218,8 @@ const WorklogDetailPage: React.FC = () => {
           <ul className="ml-4 list-disc">
             {days.map((d) => (
               <li key={d.id}>
-                {format(new Date(d.start), "dd.MM.yyyy HH:mm")} - {format(
-                  new Date(d.end),
-                  "dd.MM.yyyy HH:mm",
-                )} ({" "}
+                {format(new Date(d.start), "dd.MM.yyyy HH:mm")} -{" "}
+                {format(new Date(d.end), "dd.MM.yyyy HH:mm")} ({" "}
                 {(
                   (new Date(d.end).getTime() - new Date(d.start).getTime()) /
                   3600000

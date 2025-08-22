@@ -8,38 +8,41 @@ export class ApiError extends Error {
     message: string,
     public statusCode?: number,
     public response?: Response,
-    public data?: unknown
+    public data?: unknown,
   ) {
     super(message);
-    this.name = 'ApiError';
+    this.name = "ApiError";
   }
 }
 
 export class NetworkError extends ApiError {
   constructor(message: string, originalError?: Error) {
     super(message);
-    this.name = 'NetworkError';
+    this.name = "NetworkError";
     this.cause = originalError;
   }
 }
 
 export class TimeoutError extends ApiError {
-  constructor(message: string = 'Request timeout') {
+  constructor(message: string = "Request timeout") {
     super(message);
-    this.name = 'TimeoutError';
+    this.name = "TimeoutError";
   }
 }
 
 export class ValidationError extends ApiError {
-  constructor(message: string, public errors?: Record<string, string[]>) {
+  constructor(
+    message: string,
+    public errors?: Record<string, string[]>,
+  ) {
     super(message);
-    this.name = 'ValidationError';
+    this.name = "ValidationError";
   }
 }
 
 // Request configuration interface
 export interface ApiRequestConfig {
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   headers?: Record<string, string>;
   body?: unknown;
   timeout?: number;
@@ -67,7 +70,9 @@ interface RetryConfig {
 }
 
 // Default configuration
-const DEFAULT_CONFIG: Required<Pick<ApiRequestConfig, 'timeout' | 'retries' | 'retryDelay'>> & {
+const DEFAULT_CONFIG: Required<
+  Pick<ApiRequestConfig, "timeout" | "retries" | "retryDelay">
+> & {
   retry: RetryConfig;
 } = {
   timeout: 30000, // 30 seconds
@@ -83,7 +88,7 @@ const DEFAULT_CONFIG: Required<Pick<ApiRequestConfig, 'timeout' | 'retries' | 'r
 };
 
 // HTTP status codes that are considered idempotent-safe for retries
-const IDEMPOTENT_METHODS = ['GET', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'];
+const IDEMPOTENT_METHODS = ["GET", "PUT", "DELETE", "HEAD", "OPTIONS"];
 const RETRY_STATUS_CODES = [408, 429, 500, 502, 503, 504];
 
 /**
@@ -114,14 +119,14 @@ const logger: Logger = {
 function calculateRetryDelay(attempt: number, config: RetryConfig): number {
   const delay = Math.min(
     config.baseDelay * Math.pow(config.exponentialBase, attempt - 1),
-    config.maxDelay
+    config.maxDelay,
   );
-  
+
   // Add jitter to prevent thundering herd
   if (config.jitter) {
     return delay + Math.random() * 1000;
   }
-  
+
   return delay;
 }
 
@@ -133,14 +138,14 @@ function shouldRetry(
   statusCode: number,
   attempt: number,
   maxRetries: number,
-  skipRetryOn: number[] = []
+  skipRetryOn: number[] = [],
 ): boolean {
   if (attempt >= maxRetries) return false;
   if (skipRetryOn.includes(statusCode)) return false;
-  
+
   // Only retry idempotent methods or specific error codes
   return (
-    IDEMPOTENT_METHODS.includes(method.toUpperCase()) || 
+    IDEMPOTENT_METHODS.includes(method.toUpperCase()) ||
     RETRY_STATUS_CODES.includes(statusCode)
   );
 }
@@ -148,16 +153,19 @@ function shouldRetry(
 /**
  * Create timeout promise
  */
-function createTimeoutPromise(timeout: number, signal?: AbortSignal): Promise<never> {
+function createTimeoutPromise(
+  timeout: number,
+  signal?: AbortSignal,
+): Promise<never> {
   return new Promise((_, reject) => {
     const timeoutId = setTimeout(() => {
       reject(new TimeoutError(`Request timed out after ${timeout}ms`));
     }, timeout);
 
     // Clear timeout if request is aborted
-    signal?.addEventListener('abort', () => {
+    signal?.addEventListener("abort", () => {
       clearTimeout(timeoutId);
-      reject(new ApiError('Request aborted'));
+      reject(new ApiError("Request aborted"));
     });
   });
 }
@@ -166,24 +174,24 @@ function createTimeoutPromise(timeout: number, signal?: AbortSignal): Promise<ne
  * Process response and handle different content types
  */
 async function processResponse<T>(response: Response): Promise<ApiResponse<T>> {
-  const contentType = response.headers.get('content-type') || '';
-  
+  const contentType = response.headers.get("content-type") || "";
+
   let data: T;
   try {
-    if (contentType.includes('application/json')) {
+    if (contentType.includes("application/json")) {
       data = await response.json();
-    } else if (contentType.includes('text/')) {
+    } else if (contentType.includes("text/")) {
       data = (await response.text()) as unknown as T;
     } else {
       data = (await response.blob()) as unknown as T;
     }
   } catch (parseError) {
-    logger.error('Failed to parse response', { 
+    logger.error("Failed to parse response", {
       status: response.status,
       contentType,
-      error: parseError 
+      error: parseError,
     });
-    throw new ApiError('Failed to parse response', response.status, response);
+    throw new ApiError("Failed to parse response", response.status, response);
   }
 
   return {
@@ -203,13 +211,13 @@ export class ApiClient {
   private defaultConfig: typeof DEFAULT_CONFIG;
 
   constructor(
-    baseURL: string = '',
+    baseURL: string = "",
     defaultHeaders: Record<string, string> = {},
-    config: Partial<typeof DEFAULT_CONFIG> = {}
+    config: Partial<typeof DEFAULT_CONFIG> = {},
   ) {
     this.baseURL = baseURL;
     this.defaultHeaders = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...defaultHeaders,
     };
     this.defaultConfig = { ...DEFAULT_CONFIG, ...config };
@@ -220,10 +228,10 @@ export class ApiClient {
    */
   async request<T = unknown>(
     url: string,
-    config: ApiRequestConfig = {}
+    config: ApiRequestConfig = {},
   ): Promise<ApiResponse<T>> {
     const {
-      method = 'GET',
+      method = "GET",
       headers = {},
       body,
       timeout = this.defaultConfig.timeout,
@@ -236,7 +244,7 @@ export class ApiClient {
     const requestHeaders = { ...this.defaultHeaders, ...headers };
 
     let lastError: Error;
-    
+
     for (let attempt = 1; attempt <= retries + 1; attempt++) {
       try {
         // Create AbortController for this attempt if none provided
@@ -251,13 +259,14 @@ export class ApiClient {
         };
 
         // Add body for non-GET requests
-        if (body && method !== 'GET' && method !== 'HEAD') {
-          requestOptions.body = typeof body === 'string' ? body : JSON.stringify(body);
+        if (body && method !== "GET" && method !== "HEAD") {
+          requestOptions.body =
+            typeof body === "string" ? body : JSON.stringify(body);
         }
 
-        logger.info(`Making ${method} request to ${fullUrl}`, { 
-          attempt, 
-          retries: retries + 1 
+        logger.info(`Making ${method} request to ${fullUrl}`, {
+          attempt,
+          retries: retries + 1,
         });
 
         // Race between fetch and timeout
@@ -269,21 +278,30 @@ export class ApiClient {
         // Handle HTTP errors
         if (!response.ok) {
           const errorData = await processResponse(response).catch(() => null);
-          
+
           // Check if we should retry
           if (
             attempt <= retries &&
-            shouldRetry(method, response.status, attempt, retries + 1, skipRetryOn)
+            shouldRetry(
+              method,
+              response.status,
+              attempt,
+              retries + 1,
+              skipRetryOn,
+            )
           ) {
-            const delay = calculateRetryDelay(attempt, this.defaultConfig.retry);
+            const delay = calculateRetryDelay(
+              attempt,
+              this.defaultConfig.retry,
+            );
             logger.warn(`Request failed, retrying in ${delay}ms`, {
               url: fullUrl,
               status: response.status,
               attempt,
               delay,
             });
-            
-            await new Promise(resolve => setTimeout(resolve, delay));
+
+            await new Promise((resolve) => setTimeout(resolve, delay));
             continue;
           }
 
@@ -292,15 +310,15 @@ export class ApiClient {
           if (response.status >= 400 && response.status < 500) {
             if (response.status === 422) {
               error = new ValidationError(
-                'Validation failed',
-                errorData?.data?.errors
+                "Validation failed",
+                errorData?.data?.errors,
               );
             } else {
               error = new ApiError(
                 `Client error: ${response.statusText}`,
                 response.status,
                 response,
-                errorData?.data
+                errorData?.data,
               );
             }
           } else {
@@ -308,11 +326,11 @@ export class ApiClient {
               `Server error: ${response.statusText}`,
               response.status,
               response,
-              errorData?.data
+              errorData?.data,
             );
           }
 
-          logger.error('Request failed with HTTP error', {
+          logger.error("Request failed with HTTP error", {
             url: fullUrl,
             status: response.status,
             statusText: response.statusText,
@@ -324,13 +342,14 @@ export class ApiClient {
 
         // Success - process and return response
         const result = await processResponse<T>(response);
-        
-        if (attempt > 1) {
-          logger.info(`Request succeeded after ${attempt} attempts`, { url: fullUrl });
-        }
-        
-        return result;
 
+        if (attempt > 1) {
+          logger.info(`Request succeeded after ${attempt} attempts`, {
+            url: fullUrl,
+          });
+        }
+
+        return result;
       } catch (error) {
         lastError = error as Error;
 
@@ -338,20 +357,23 @@ export class ApiClient {
         if (
           error instanceof TimeoutError ||
           error instanceof ValidationError ||
-          (error as DOMException)?.name === 'AbortError'
+          (error as DOMException)?.name === "AbortError"
         ) {
-          logger.error('Non-retryable error occurred', { 
-            url: fullUrl, 
-            error: error.message 
+          logger.error("Non-retryable error occurred", {
+            url: fullUrl,
+            error: error.message,
           });
           throw error;
         }
 
         // Network/fetch errors
-        if (error instanceof TypeError || error.message.includes('Failed to fetch')) {
+        if (
+          error instanceof TypeError ||
+          error.message.includes("Failed to fetch")
+        ) {
           const networkError = new NetworkError(
-            'Network request failed - check your internet connection',
-            error as Error
+            "Network request failed - check your internet connection",
+            error as Error,
           );
 
           // Retry network errors for idempotent methods
@@ -359,57 +381,78 @@ export class ApiClient {
             attempt <= retries &&
             shouldRetry(method, 0, attempt, retries + 1, skipRetryOn)
           ) {
-            const delay = calculateRetryDelay(attempt, this.defaultConfig.retry);
+            const delay = calculateRetryDelay(
+              attempt,
+              this.defaultConfig.retry,
+            );
             logger.warn(`Network error, retrying in ${delay}ms`, {
               url: fullUrl,
               attempt,
               delay,
               error: error.message,
             });
-            
-            await new Promise(resolve => setTimeout(resolve, delay));
+
+            await new Promise((resolve) => setTimeout(resolve, delay));
             continue;
           }
 
-          logger.error('Network error - max retries exceeded', { 
-            url: fullUrl, 
-            error: error.message 
+          logger.error("Network error - max retries exceeded", {
+            url: fullUrl,
+            error: error.message,
           });
           throw networkError;
         }
 
         // Re-throw other errors immediately
-        logger.error('Unexpected error during request', { 
-          url: fullUrl, 
-          error: error.message 
+        logger.error("Unexpected error during request", {
+          url: fullUrl,
+          error: error.message,
         });
         throw error;
       }
     }
 
     // This should never be reached, but just in case
-    throw lastError || new ApiError('Request failed after all retries');
+    throw lastError || new ApiError("Request failed after all retries");
   }
 
   // Convenience methods
-  async get<T>(url: string, config?: Omit<ApiRequestConfig, 'method' | 'body'>) {
-    return this.request<T>(url, { ...config, method: 'GET' });
+  async get<T>(
+    url: string,
+    config?: Omit<ApiRequestConfig, "method" | "body">,
+  ) {
+    return this.request<T>(url, { ...config, method: "GET" });
   }
 
-  async post<T>(url: string, body?: unknown, config?: Omit<ApiRequestConfig, 'method'>) {
-    return this.request<T>(url, { ...config, method: 'POST', body });
+  async post<T>(
+    url: string,
+    body?: unknown,
+    config?: Omit<ApiRequestConfig, "method">,
+  ) {
+    return this.request<T>(url, { ...config, method: "POST", body });
   }
 
-  async put<T>(url: string, body?: unknown, config?: Omit<ApiRequestConfig, 'method'>) {
-    return this.request<T>(url, { ...config, method: 'PUT', body });
+  async put<T>(
+    url: string,
+    body?: unknown,
+    config?: Omit<ApiRequestConfig, "method">,
+  ) {
+    return this.request<T>(url, { ...config, method: "PUT", body });
   }
 
-  async delete<T>(url: string, config?: Omit<ApiRequestConfig, 'method' | 'body'>) {
-    return this.request<T>(url, { ...config, method: 'DELETE' });
+  async delete<T>(
+    url: string,
+    config?: Omit<ApiRequestConfig, "method" | "body">,
+  ) {
+    return this.request<T>(url, { ...config, method: "DELETE" });
   }
 
-  async patch<T>(url: string, body?: unknown, config?: Omit<ApiRequestConfig, 'method'>) {
-    return this.request<T>(url, { ...config, method: 'PATCH', body });
+  async patch<T>(
+    url: string,
+    body?: unknown,
+    config?: Omit<ApiRequestConfig, "method">,
+  ) {
+    return this.request<T>(url, { ...config, method: "PATCH", body });
   }
 }
 
@@ -418,18 +461,29 @@ export const apiClient = new ApiClient();
 
 // Export convenience functions that use the default client
 export const api = {
-  get: <T>(url: string, config?: Omit<ApiRequestConfig, 'method' | 'body'>) =>
+  get: <T>(url: string, config?: Omit<ApiRequestConfig, "method" | "body">) =>
     apiClient.get<T>(url, config),
-  
-  post: <T>(url: string, body?: unknown, config?: Omit<ApiRequestConfig, 'method'>) =>
-    apiClient.post<T>(url, body, config),
 
-  put: <T>(url: string, body?: unknown, config?: Omit<ApiRequestConfig, 'method'>) =>
-    apiClient.put<T>(url, body, config),
+  post: <T>(
+    url: string,
+    body?: unknown,
+    config?: Omit<ApiRequestConfig, "method">,
+  ) => apiClient.post<T>(url, body, config),
 
-  delete: <T>(url: string, config?: Omit<ApiRequestConfig, 'method' | 'body'>) =>
-    apiClient.delete<T>(url, config),
+  put: <T>(
+    url: string,
+    body?: unknown,
+    config?: Omit<ApiRequestConfig, "method">,
+  ) => apiClient.put<T>(url, body, config),
 
-  patch: <T>(url: string, body?: unknown, config?: Omit<ApiRequestConfig, 'method'>) =>
-    apiClient.patch<T>(url, body, config),
+  delete: <T>(
+    url: string,
+    config?: Omit<ApiRequestConfig, "method" | "body">,
+  ) => apiClient.delete<T>(url, config),
+
+  patch: <T>(
+    url: string,
+    body?: unknown,
+    config?: Omit<ApiRequestConfig, "method">,
+  ) => apiClient.patch<T>(url, body, config),
 };

@@ -13,10 +13,6 @@
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": [
-    "**/*.ts",
-    "**/*.d.ts",
-    "../src/types/**/*.ts"
-  ],
+  "include": ["**/*.ts", "**/*.d.ts", "../src/types/**/*.ts"],
   "exclude": ["dist"]
 }

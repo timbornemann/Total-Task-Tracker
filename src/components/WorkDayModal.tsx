@@ -29,7 +29,9 @@ interface WorkDayFormData {
 interface WorkDayModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: WorkDayFormData & { commuteId?: string; commuteKm?: number }) => void;
+  onSave: (
+    data: WorkDayFormData & { commuteId?: string; commuteKm?: number },
+  ) => void;
   workDay?: WorkDay;
   trips: Trip[];
   commutes: Commute[];
@@ -117,7 +119,11 @@ const WorkDayModal: React.FC<WorkDayModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (form.start && form.end && (categorySelection !== "new" || newCategory)) {
+    if (
+      form.start &&
+      form.end &&
+      (categorySelection !== "new" || newCategory)
+    ) {
       let commuteId: string | undefined;
       let commuteKmNum: number | undefined;
       if (commuteSelection === "new" && newCommute.name && newCommute.km) {

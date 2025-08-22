@@ -1571,4 +1571,4 @@ export const themePresets: Record<
       "#E5E7EB",
     ],
   },
-}; 
+};

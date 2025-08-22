@@ -31,8 +31,7 @@ const WorklogOverviewPage: React.FC = () => {
     .filter((d) => !d.tripId)
     .reduce(
       (sum, d) =>
-        sum +
-        (new Date(d.end).getTime() - new Date(d.start).getTime()) / 60000,
+        sum + (new Date(d.end).getTime() - new Date(d.start).getTime()) / 60000,
       0,
     );
   if (uncategorized > 0) {
@@ -54,7 +53,10 @@ const WorklogOverviewPage: React.FC = () => {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">
-              {t("worklogStats.totalTime", { hours: totalHours, minutes: totalMins })}
+              {t("worklogStats.totalTime", {
+                hours: totalHours,
+                minutes: totalMins,
+              })}
             </CardTitle>
           </CardHeader>
         </Card>
@@ -68,7 +70,13 @@ const WorklogOverviewPage: React.FC = () => {
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={data} dataKey="value" nameKey="name" outerRadius="80%" labelLine={false}>
+                  <Pie
+                    data={data}
+                    dataKey="value"
+                    nameKey="name"
+                    outerRadius="80%"
+                    labelLine={false}
+                  >
                     {data.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
@@ -84,7 +92,8 @@ const WorklogOverviewPage: React.FC = () => {
                       style={{ backgroundColor: item.color }}
                     />
                     <span className="text-sm">
-                      {item.name} ({Math.floor(item.value / 60)}h {Math.round(item.value % 60)}m)
+                      {item.name} ({Math.floor(item.value / 60)}h{" "}
+                      {Math.round(item.value % 60)}m)
                     </span>
                   </div>
                 ))}
@@ -98,4 +107,3 @@ const WorklogOverviewPage: React.FC = () => {
 };
 
 export default WorklogOverviewPage;
-

@@ -2,32 +2,32 @@
  * Consolidated app providers to reduce nesting and improve maintainability
  */
 
-import React, { ReactNode } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter } from 'react-router-dom';
-import { TooltipProvider } from '@/components/ui/tooltip';
-import { Toaster } from '@/components/ui/toaster';
-import { Toaster as Sonner } from '@/components/ui/sonner';
-import ErrorBoundary from '@/components/ErrorBoundary';
-import ServiceWorkerManager from '@/components/ServiceWorkerManager';
-import CommandPalette from '@/components/CommandPalette';
-import SurpriseListener from '@/components/SurpriseListener';
-import PomodoroTimer from '@/components/PomodoroTimer';
-import PomodoroTicker from '@/components/PomodoroTicker';
-import TimerTicker from '@/components/TimerTicker';
-import ReleaseNotesModal from '@/components/ReleaseNotesModal';
-import { FloatingOfflineIndicator } from '@/components/OfflineStatusIndicator';
+import React, { ReactNode } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter } from "react-router-dom";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import ServiceWorkerManager from "@/components/ServiceWorkerManager";
+import CommandPalette from "@/components/CommandPalette";
+import SurpriseListener from "@/components/SurpriseListener";
+import PomodoroTimer from "@/components/PomodoroTimer";
+import PomodoroTicker from "@/components/PomodoroTicker";
+import TimerTicker from "@/components/TimerTicker";
+import ReleaseNotesModal from "@/components/ReleaseNotesModal";
+import { FloatingOfflineIndicator } from "@/components/OfflineStatusIndicator";
 
 // Individual provider imports
-import { SettingsProvider } from '@/hooks/useSettings';
-import { TaskStoreProvider } from '@/hooks/useTaskStore';
-import { CurrentCategoryProvider } from '@/hooks/useCurrentCategory';
-import { FlashcardStoreProvider } from '@/hooks/useFlashcardStore';
-import { HabitStoreProvider } from '@/hooks/useHabitStore';
-import { InventoryProvider } from '@/hooks/useInventoryStore';
-import { PomodoroHistoryProvider } from '@/hooks/usePomodoroHistory';
-import { TimersProvider } from '@/hooks/useTimers';
-import { WorklogProvider } from '@/hooks/useWorklog';
+import { SettingsProvider } from "@/hooks/useSettings";
+import { TaskStoreProvider } from "@/hooks/useTaskStore";
+import { CurrentCategoryProvider } from "@/hooks/useCurrentCategory";
+import { FlashcardStoreProvider } from "@/hooks/useFlashcardStore";
+import { HabitStoreProvider } from "@/hooks/useHabitStore";
+import { InventoryProvider } from "@/hooks/useInventoryStore";
+import { PomodoroHistoryProvider } from "@/hooks/usePomodoroHistory";
+import { TimersProvider } from "@/hooks/useTimers";
+import { WorklogProvider } from "@/hooks/useWorklog";
 
 interface AppProvidersProps {
   children: ReactNode;
@@ -56,9 +56,7 @@ function CoreProviders({ children }: { children: ReactNode }) {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <BrowserRouter>
-            {children}
-          </BrowserRouter>
+          <BrowserRouter>{children}</BrowserRouter>
         </TooltipProvider>
       </QueryClientProvider>
     </ErrorBoundary>
@@ -86,7 +84,7 @@ function CombinedStateProvider({ children }: { children: ReactNode }) {
   // Reduce providers from right to left to create a flat composition
   return providers.reduceRight(
     (acc, Provider) => <Provider>{acc}</Provider>,
-    children as ReactNode
+    children as ReactNode,
   );
 }
 
@@ -100,20 +98,20 @@ function UIOverlays() {
       {/* Toast systems */}
       <Toaster />
       <Sonner />
-      
+
       {/* Global UI components */}
       <CommandPalette />
       <SurpriseListener />
-      
+
       {/* Timer components */}
       <PomodoroTimer compact />
       <PomodoroTicker />
       <TimerTicker />
-      
+
       {/* Modals and overlays */}
       <ReleaseNotesModal />
       <FloatingOfflineIndicator />
-      
+
       {/* Service worker */}
       <ServiceWorkerManager />
     </>
