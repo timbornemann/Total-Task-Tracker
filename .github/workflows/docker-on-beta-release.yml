@@ -1,12 +1,12 @@
-name: Docker Build and Push on Release
+name: Docker Build and Push on Beta Release
 
 on:
   release:
     types: [published]
 
 jobs:
-  build_and_push:
-    if: github.event.release.prerelease == false   # nur echte Production Releases
+  build_and_push_beta:
+    if: github.event.release.prerelease == true   # nur Pre-Releases
     runs-on: ubuntu-latest
 
     steps:
@@ -23,15 +23,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata for Docker
+      - name: Extract metadata (keep prerelease tag, no latest)
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}
+          # übernimmt z.B. v1.4.0-beta.3 -> Tag "1.4.0-beta.3"
           tags: |
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            latest
+            type=semver,pattern={{version}},pre-release=true
+            type=raw,value=beta    # optionaler rollierender Tag "beta"
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -41,6 +41,6 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: VERSION=${{ steps.meta.outputs.version }}
+          build-args: VERSION=${{ github.event.release.tag_name }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

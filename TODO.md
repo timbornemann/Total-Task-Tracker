@@ -93,10 +93,16 @@ Diese Liste bündelt alle anstehenden Architektur-, Design- und Qualitätsmaßna
 
 ## CI/CD
 
-- [ ] GitHub Actions: Build- und Test-Pipeline
+- [x] GitHub Actions: Build- und Test-Pipeline
+- [x] Branching-Strategie (main/beta/production) implementiert
+- [x] Automatische Releases für Production Branch
+- [x] Beta-Deployment Pipeline eingerichtet
+- [x] Docker-Image Build & Push (ghcr) automatisiert
+- [x] Release-Notes-Automatisierung
+- [x] CI Pipeline für alle Branches (Tests, Linting, Build)
+- [x] Dokumentation für Release-Prozess erstellt
 - [ ] Coverage-Bericht und Schranken in CI prüfen
-- [ ] Docker-Image Build & Push (ghcr) automatisieren
-- [ ] Optional: Release-Notes-Automatisierung
+- [ ] Branch-Protection Rules konfigurieren
 
 ## Dokumentation & ADRs
 
