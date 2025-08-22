@@ -12,4 +12,18 @@ The frontend communicates with the backend using standard `fetch` requests and m
 
 Database files live under `server/data`, and schema changes are managed with migration files in [`server/migrations`](../server/migrations).
 
-For detailed information on each side of the stack, see the [Frontend Guide](frontend.md) and [Backend Guide](backend.md).
+## Data Flow
+
+User interactions in the browser trigger component state updates and `fetch` requests.
+The backend routes these requests to controllers, which delegate to service and repository layers before touching the SQLite database.
+Changes are persisted and, when required, background services like `syncService` notify the client to refresh its state.
+
+## Build & Deployment
+
+During development run `npm run dev` for the Vite server and `npm start` for the Express API.
+`npm run build` produces a production-ready bundle that the backend can serve.
+A `Dockerfile` and `docker-compose.yml` are provided for container deployments.
+
+## Related Guides
+
+For detailed information on each side of the stack, see the [Frontend Guide](frontend.md), the [Backend Guide](backend.md) and the [Database Guide](database.md).
