@@ -244,3 +244,4 @@ export const getRequestLogger = (req: Request): pino.Logger => {
 };
 
 export default logger;
+

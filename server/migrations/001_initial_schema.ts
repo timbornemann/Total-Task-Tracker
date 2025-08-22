@@ -79,3 +79,4 @@ const migration = {
 migrationRunner.registerMigration(migration);
 
 export default migration;
+

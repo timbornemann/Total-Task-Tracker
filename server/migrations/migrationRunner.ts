@@ -364,3 +364,4 @@ export default migration;
 
 // Export singleton instance
 export const migrationRunner = new MigrationRunner();
+
