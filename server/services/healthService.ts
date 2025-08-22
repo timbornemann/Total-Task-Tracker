@@ -78,7 +78,7 @@ export class HealthService {
       // Detailed health check
       const detailedHealth = await this.getDetailedHealthCheck(basicHealth);
       
-      logHealthCheck(detailedHealth.status, detailedHealth);
+      logHealthCheck(detailedHealth.status, detailedHealth as Record<string, unknown>);
       return detailedHealth;
       
     } catch (error) {
@@ -205,8 +205,20 @@ export class HealthService {
   }
 
   // Check external dependencies
-  private async checkDependencies(): Promise<Record<string, unknown>> {
-    const dependencies: Record<string, unknown> = {};
+  private async checkDependencies(): Promise<{
+    [key: string]: {
+      status: 'healthy' | 'unhealthy';
+      responseTime?: number;
+      error?: string;
+    };
+  }> {
+    const dependencies: {
+      [key: string]: {
+        status: 'healthy' | 'unhealthy';
+        responseTime?: number;
+        error?: string;
+      };
+    } = {};
 
     // Check file system
     dependencies.filesystem = await this.checkFileSystemHealth();
@@ -221,7 +233,11 @@ export class HealthService {
   }
 
   // Check file system health
-  private async checkFileSystemHealth() {
+  private async checkFileSystemHealth(): Promise<{
+    status: 'healthy' | 'unhealthy';
+    responseTime: number;
+    error?: string;
+  }> {
     const startTime = Date.now();
     
     try {
@@ -251,7 +267,11 @@ export class HealthService {
   }
 
   // Check data directory
-  private async checkDataDirectory() {
+  private async checkDataDirectory(): Promise<{
+    status: 'healthy' | 'unhealthy';
+    responseTime: number;
+    error?: string;
+  }> {
     const startTime = Date.now();
     
     try {

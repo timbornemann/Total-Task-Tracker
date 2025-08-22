@@ -4,7 +4,8 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { healthService, DetailedHealthCheck, HealthCheck } from '../services/healthService.js';
+import { healthService, DetailedHealthCheck } from '../services/healthService.js';
+import { HealthCheck } from '../schemas/index.js';
 import { getRequestLogger } from '../lib/logger.js';
 import { validateQuery } from '../middleware/validation.js';
 import { z } from 'zod';

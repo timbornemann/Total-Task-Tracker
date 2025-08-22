@@ -9,11 +9,10 @@ import { logger } from '../lib/logger.js';
 
 // Extended Request interface for validated data  
 export interface ValidatedRequest<B = unknown, P = unknown, Q = unknown>
-  extends Request {
+  extends Omit<Request, 'body' | 'params' | 'query'> {
   body: B;
   params: P;
   query: Q;
-  headers: Record<string, unknown>;
   validatedBody?: B;
   validatedParams?: P;
   validatedQuery?: Q;

@@ -21,6 +21,7 @@ import syncLogController from "./controllers/syncLog.js";
 import serverInfoController from "./controllers/serverInfo.js";
 import syncStatusController from "./controllers/syncStatus.js";
 import llmController from "./controllers/llm.js";
+import healthController from "./controllers/health.js";
 import frontendController from "./controllers/frontend.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -50,6 +51,7 @@ app.use("/api/sync-log", syncLogController);
 app.use("/api/serverInfo", serverInfoController);
 app.use("/api/sync-status", syncStatusController);
 app.use("/api/llm", llmController);
+app.use(healthController);
 
 app.use(express.static(DIST_DIR));
 app.use(frontendController);
