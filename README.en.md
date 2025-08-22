@@ -16,6 +16,7 @@ The data is stored completely locally on the server, either by docker or in the 
 - [Manual production without Docker](#manual-production-without-docker)
 - [Build Android APK](#build-android-apk)
 - [Functions](#functions)
+- [Developer Documentation](#developer-documentation)
 
 ## Requirements
 
@@ -198,3 +199,7 @@ Use [Capacitor](https://capacitorjs.com/) to wrap the tracker as an Android app.
 - New "Info" rider in the settings shows version number, release notes and readme
 - German or English can be selected in the "Language" tab
 - Submenu "Server Info" in the settings lists IP addresses, port and finished URLs
+
+## Developer Documentation
+
+For a technical overview and architecture details, see the [docs](docs/README.md) directory.

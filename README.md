@@ -21,6 +21,7 @@ Die Daten werden dabei vollständig lokal auf dem Server gespeichert, entweder p
 - [Verwendung](#verwendung)
 - [Tastenkürzel](#tastenkürzel)
 - [Lernkarten-Algorithmus](#lernkarten-algorithmus)
+- [Entwicklerdokumentation](#entwicklerdokumentation)
 
 ## Voraussetzungen
 
@@ -251,3 +252,7 @@ Die nächste Wiederholungszeit wird dann wie folgt bestimmt:
 3. Das Intervall erhöht sich um `interval * Faktor`
 
 Dadurch fließt sowohl die bisherige Leistung als auch die aktuelle Bewertung in das nächste Fälligkeitsdatum ein.
+
+## Entwicklerdokumentation
+
+Eine technische Übersicht und weiterführende Informationen für Entwickler findest du im Ordner [docs](docs/README.md).
