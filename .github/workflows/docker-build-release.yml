@@ -6,7 +6,6 @@ on:
 
 jobs:
   build_and_push:
-    if: github.event.release.prerelease == false # nur echte Production Releases
     runs-on: ubuntu-latest
 
     steps:
