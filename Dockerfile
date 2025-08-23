@@ -15,8 +15,8 @@ RUN npm ci
 # Copy source code
 COPY . .
 
-# Build the application
-RUN npm run build
+# Build the application (frontend and server)
+RUN npm run build && npm run build:server
 
 # Production stage
 FROM node:18-alpine
@@ -34,8 +34,8 @@ COPY package*.json ./
 RUN npm prune --production || true
 
 # Persist application data
-VOLUME /app/server/data
+VOLUME /app/dist/server/data
 
 EXPOSE 3002
 
-CMD ["node", "server/index.js"]
+CMD ["node", "dist/server/index.js"]

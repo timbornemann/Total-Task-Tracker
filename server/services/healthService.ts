@@ -4,6 +4,8 @@
  */
 
 import { promises as fs } from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import os from "os";
 import { HealthCheck, HealthCheckSchema } from "../schemas/index.js";
 import { logger, logHealthCheck } from "../lib/logger.js";
@@ -146,11 +148,16 @@ export class HealthService {
     const startTime = Date.now();
 
     try {
+      // Resolve data directory relative to compiled server files, same as DB module
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = path.dirname(__filename);
+      const DATA_DIR = path.join(__dirname, "..", "data");
+
       // Test database by trying to read data files
-      await fs.access("./data", fs.constants.F_OK);
+      await fs.access(DATA_DIR, fs.constants.F_OK);
 
       // Try to read a data file to ensure read access
-      const tasksPath = "./data/tasks.json";
+      const tasksPath = path.join(DATA_DIR, "tasks.json");
       try {
         await fs.access(tasksPath, fs.constants.R_OK);
       } catch {
@@ -285,8 +292,12 @@ export class HealthService {
     const startTime = Date.now();
 
     try {
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = path.dirname(__filename);
+      const DATA_DIR = path.join(__dirname, "..", "data");
+
       await fs.access(
-        "./data",
+        DATA_DIR,
         fs.constants.F_OK | fs.constants.R_OK | fs.constants.W_OK,
       );
 
