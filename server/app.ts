@@ -53,5 +53,16 @@ app.use("/api/sync-status", syncStatusController);
 app.use("/api/llm", llmController);
 app.use(healthController);
 
-app.use(express.static(DIST_DIR));
+// Serve static files first (with correct MIME types)
+app.use(express.static(DIST_DIR, {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    } else if (path.endsWith('.webmanifest')) {
+      res.setHeader('Content-Type', 'application/manifest+json');
+    }
+  }
+}));
+
+// Frontend controller as fallback (only for routes without file extensions)
 app.use(frontendController);
