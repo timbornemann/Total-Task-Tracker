@@ -1,4 +1,3 @@
-
 services:
   total-task-tracker:
     build:
