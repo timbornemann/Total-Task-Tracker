@@ -12,12 +12,14 @@ const DIST_DIR = path.join(__dirname, "..", "..");
 // Only serve index.html for routes that don't match static files
 router.get("*", (req, res) => {
   // Skip API routes, docs, and static files like .js, .css, .webmanifest, etc.
-  if (req.path.startsWith('/api') || 
-      req.path.startsWith('/docs') ||
-      req.path.includes('.')) {
-    return res.status(404).send('Not Found');
+  if (
+    req.path.startsWith("/api") ||
+    req.path.startsWith("/docs") ||
+    req.path.includes(".")
+  ) {
+    return res.status(404).send("Not Found");
   }
-  
+
   res.sendFile(path.join(DIST_DIR, "index.html"));
 });
 
