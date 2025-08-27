@@ -22,7 +22,6 @@ export function loadFlashcards(): Flashcard[] {
   }
 }
 
-
 export function saveFlashcards(cards: Flashcard[]): void {
   const tx = db.transaction(() => {
     db.exec("DELETE FROM flashcards");
@@ -48,4 +47,3 @@ export function saveFlashcards(cards: Flashcard[]): void {
   });
   tx();
 }
-

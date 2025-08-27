@@ -28,7 +28,6 @@ export function loadItems(): InventoryItem[] {
   }
 }
 
-
 export function saveItems(list: InventoryItem[]): void {
   const tx = db.transaction(() => {
     db.exec("DELETE FROM inventory_items");
@@ -56,4 +55,3 @@ export function saveItems(list: InventoryItem[]): void {
   });
   tx();
 }
-

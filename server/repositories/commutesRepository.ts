@@ -16,7 +16,6 @@ export function loadCommutes(): Commute[] {
   }
 }
 
-
 export function saveCommutes(list: Commute[]): void {
   const tx = db.transaction(() => {
     db.exec("DELETE FROM commutes");
@@ -35,4 +34,3 @@ export function saveCommutes(list: Commute[]): void {
   });
   tx();
 }
-

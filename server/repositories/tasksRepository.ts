@@ -59,7 +59,6 @@ export function loadTasks(): Task[] {
   }
 }
 
-
 export function saveTasks(tasks: Task[]): void {
   const tx = db.transaction(() => {
     db.exec("DELETE FROM tasks");
@@ -156,4 +155,3 @@ export function saveTasks(tasks: Task[]): void {
   });
   tx();
 }
-

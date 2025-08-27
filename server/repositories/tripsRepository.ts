@@ -17,7 +17,6 @@ export function loadTrips(): Trip[] {
   }
 }
 
-
 export function saveTrips(list: Trip[]): void {
   const tx = db.transaction(() => {
     db.exec("DELETE FROM trips");
@@ -37,4 +36,3 @@ export function saveTrips(list: Trip[]): void {
   });
   tx();
 }
-

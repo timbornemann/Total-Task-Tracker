@@ -31,7 +31,6 @@ export function loadHabits(): Habit[] {
   }
 }
 
-
 export function saveHabits(list: Habit[]): void {
   const tx = db.transaction(() => {
     db.exec("DELETE FROM habits");
@@ -62,4 +61,3 @@ export function saveHabits(list: Habit[]): void {
   });
   tx();
 }
-

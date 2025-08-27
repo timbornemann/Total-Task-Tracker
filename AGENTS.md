@@ -49,7 +49,7 @@ docker-compose up --build
 
 - **Frontend**: TypeScript (`.tsx`, `.ts`)
 - **Backend**: JavaScript (ES Modules, `.js`)
-- **Formatierung**: 2 Leerzeichen, Semikolons am Ende
+- **Formatierung**: 2 Leerzeichen, Semikolons am Ende. Vor jedem Commit `npm run format` ausführen und `npm run format:check` zur Prüfung verwenden
 
 ---
 

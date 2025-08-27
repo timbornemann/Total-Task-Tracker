@@ -11,7 +11,6 @@ export function loadPomodoroSessions(): PomodoroSession[] {
   }
 }
 
-
 export function savePomodoroSessions(sessions: PomodoroSession[]): void {
   const tx = db.transaction(() => {
     db.exec("DELETE FROM pomodoro_sessions");
@@ -23,4 +22,3 @@ export function savePomodoroSessions(sessions: PomodoroSession[]): void {
   });
   tx();
 }
-

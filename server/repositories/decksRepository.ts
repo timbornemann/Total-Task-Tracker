@@ -10,7 +10,6 @@ export function loadDecks(): Deck[] {
   }
 }
 
-
 export function saveDecks(decks: Deck[]): void {
   const tx = db.transaction(() => {
     db.exec("DELETE FROM decks");
@@ -19,4 +18,3 @@ export function saveDecks(decks: Deck[]): void {
   });
   tx();
 }
-

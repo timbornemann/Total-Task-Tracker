@@ -19,7 +19,6 @@ export function loadNotes(): Note[] {
   }
 }
 
-
 export function saveNotes(notes: Note[]): void {
   const tx = db.transaction(() => {
     db.exec("DELETE FROM notes");
@@ -42,4 +41,3 @@ export function saveNotes(notes: Note[]): void {
   });
   tx();
 }
-

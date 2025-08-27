@@ -19,7 +19,6 @@ export function loadCategories(): Category[] {
   }
 }
 
-
 export function saveCategories(categories: Category[]): void {
   const tx = db.transaction(() => {
     db.exec("DELETE FROM categories");
@@ -42,4 +41,3 @@ export function saveCategories(categories: Category[]): void {
   });
   tx();
 }
-

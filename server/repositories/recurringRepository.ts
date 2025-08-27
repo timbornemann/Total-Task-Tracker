@@ -59,7 +59,6 @@ export function loadRecurring(): Task[] {
   }
 }
 
-
 export function saveRecurring(list: Task[]): void {
   const tx = db.transaction(() => {
     db.exec("DELETE FROM recurring");
@@ -156,4 +155,3 @@ export function saveRecurring(list: Task[]): void {
   });
   tx();
 }
-

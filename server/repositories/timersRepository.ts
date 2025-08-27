@@ -22,7 +22,6 @@ export function loadTimers(): Timer[] {
   }
 }
 
-
 export function saveTimers(list: Timer[]): void {
   const tx = db.transaction(() => {
     db.exec("DELETE FROM timers");
@@ -48,4 +47,3 @@ export function saveTimers(list: Timer[]): void {
   });
   tx();
 }
-

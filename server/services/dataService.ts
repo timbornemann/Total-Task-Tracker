@@ -6,18 +6,27 @@ import {
   loadCategories,
   saveCategories as repoSaveCategories,
 } from "../repositories/categoriesRepository.js";
-import { loadNotes, saveNotes as repoSaveNotes } from "../repositories/notesRepository.js";
+import {
+  loadNotes,
+  saveNotes as repoSaveNotes,
+} from "../repositories/notesRepository.js";
 import {
   loadRecurring,
   saveRecurring as repoSaveRecurring,
 } from "../repositories/recurringRepository.js";
-import { loadHabits, saveHabits as repoSaveHabits } from "../repositories/habitsRepository.js";
+import {
+  loadHabits,
+  saveHabits as repoSaveHabits,
+} from "../repositories/habitsRepository.js";
 import { loadDeletions } from "../repositories/deletionsRepository.js";
 import {
   loadFlashcards,
   saveFlashcards as repoSaveFlashcards,
 } from "../repositories/flashcardsRepository.js";
-import { loadDecks, saveDecks as repoSaveDecks } from "../repositories/decksRepository.js";
+import {
+  loadDecks,
+  saveDecks as repoSaveDecks,
+} from "../repositories/decksRepository.js";
 import {
   loadSettings,
   saveSettings as repoSaveSettings,
@@ -26,11 +35,26 @@ import {
   loadPomodoroSessions,
   savePomodoroSessions as repoSavePomodoroSessions,
 } from "../repositories/pomodoroSessionsRepository.js";
-import { loadTimers, saveTimers as repoSaveTimers } from "../repositories/timersRepository.js";
-import { loadTrips, saveTrips as repoSaveTrips } from "../repositories/tripsRepository.js";
-import { loadWorkDays, saveWorkDays as repoSaveWorkDays } from "../repositories/workDaysRepository.js";
-import { loadCommutes, saveCommutes as repoSaveCommutes } from "../repositories/commutesRepository.js";
-import { loadItems, saveItems as repoSaveItems } from "../repositories/itemsRepository.js";
+import {
+  loadTimers,
+  saveTimers as repoSaveTimers,
+} from "../repositories/timersRepository.js";
+import {
+  loadTrips,
+  saveTrips as repoSaveTrips,
+} from "../repositories/tripsRepository.js";
+import {
+  loadWorkDays,
+  saveWorkDays as repoSaveWorkDays,
+} from "../repositories/workDaysRepository.js";
+import {
+  loadCommutes,
+  saveCommutes as repoSaveCommutes,
+} from "../repositories/commutesRepository.js";
+import {
+  loadItems,
+  saveItems as repoSaveItems,
+} from "../repositories/itemsRepository.js";
 import {
   loadItemCategories,
   saveItemCategories as repoSaveItemCategories,
