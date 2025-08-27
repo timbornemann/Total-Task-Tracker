@@ -37,7 +37,7 @@ import {
   loadAllData,
   saveAllData as repoSaveAllData,
   dateReviver,
-} from "../repositories/dataRepository.js";
+} from "../repositories/index.js";
 import { notifyClients } from "../lib/sse.js";
 
 export {

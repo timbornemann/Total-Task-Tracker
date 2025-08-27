@@ -3,7 +3,7 @@ import {
   mergeData,
   applyDeletions as applyDel,
 } from "../../src/shared/syncUtils.js";
-import type { AllData, Settings } from "../repositories/dataRepository.js";
+import type { AllData, Settings } from "../repositories/index.js";
 
 interface SyncLogEntry {
   time: number;

@@ -13,7 +13,7 @@ import {
   UpdateTaskSchema,
   validateSchema,
 } from "../schemas/index.js";
-import { loadTasks, saveTasks } from "../repositories/dataRepository.js";
+import { loadTasks, saveTasks } from "../repositories/index.js";
 import { notifyClients } from "../lib/sse.js";
 
 // Service error classes
