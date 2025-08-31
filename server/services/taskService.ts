@@ -13,8 +13,7 @@ import {
   UpdateTaskSchema,
   validateSchema,
 } from "../schemas/index.js";
-import { loadTasks, saveTasks } from "../repositories/tasksRepository.js";
-import { notifyClients } from "../lib/sse.js";
+import { loadTasks, saveTasks } from "./dataService.js";
 
 // Service error classes
 export class TaskServiceError extends Error {
@@ -227,9 +226,6 @@ export class TaskService {
 
       saveTasks(tasks);
 
-      // Notify clients
-      notifyClients();
-
       return newTask;
     } catch (error) {
       if (error instanceof TaskServiceError) {
@@ -300,9 +296,6 @@ export class TaskService {
       this.updateTaskRecursive(tasks, taskId, updatedTask);
       saveTasks(tasks);
 
-      // Notify clients
-      notifyClients();
-
       return updatedTask;
     } catch (error) {
       if (error instanceof TaskServiceError) {
@@ -327,9 +320,6 @@ export class TaskService {
       const tasks = loadTasks();
       const filtered = this.removeTaskRecursive(tasks, taskId);
       saveTasks(filtered);
-
-      // Notify clients
-      notifyClients();
     } catch (error) {
       if (error instanceof TaskServiceError) {
         throw error;

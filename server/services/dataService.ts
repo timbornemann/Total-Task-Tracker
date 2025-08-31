@@ -70,7 +70,7 @@ import {
   saveAllData as repoSaveAllData,
   dateReviver,
 } from "../repositories/dataRepository.js";
-import { notifyClients } from "../lib/sse.js";
+import events from "../lib/events.js";
 
 export {
   loadTasks,
@@ -95,75 +95,79 @@ export {
   dateReviver,
 };
 
+function emitUpdate(): void {
+  events.emit("data:updated");
+}
+
 export function saveTasks(tasks) {
   repoSaveTasks(tasks);
-  notifyClients();
+  emitUpdate();
 }
 export function saveCategories(categories) {
   repoSaveCategories(categories);
-  notifyClients();
+  emitUpdate();
 }
 export function saveNotes(notes) {
   repoSaveNotes(notes);
-  notifyClients();
+  emitUpdate();
 }
 export function saveRecurring(list) {
   repoSaveRecurring(list);
-  notifyClients();
+  emitUpdate();
 }
 export function saveHabits(list) {
   repoSaveHabits(list);
-  notifyClients();
+  emitUpdate();
 }
 export function saveData(data) {
   repoSaveData(data);
-  notifyClients();
+  emitUpdate();
 }
 export function saveFlashcards(cards) {
   repoSaveFlashcards(cards);
-  notifyClients();
+  emitUpdate();
 }
 export function saveDecks(decks) {
   repoSaveDecks(decks);
-  notifyClients();
+  emitUpdate();
 }
 export function saveSettings(settings) {
   repoSaveSettings(settings);
-  notifyClients();
+  emitUpdate();
 }
 export function savePomodoroSessions(list) {
   repoSavePomodoroSessions(list);
-  notifyClients();
+  emitUpdate();
 }
 export function saveTimers(list) {
   repoSaveTimers(list);
-  notifyClients();
+  emitUpdate();
 }
 export function saveTrips(list) {
   repoSaveTrips(list);
-  notifyClients();
+  emitUpdate();
 }
 export function saveWorkDays(list) {
   repoSaveWorkDays(list);
-  notifyClients();
+  emitUpdate();
 }
 export function saveCommutes(list) {
   repoSaveCommutes(list);
-  notifyClients();
+  emitUpdate();
 }
 export function saveItems(list) {
   repoSaveItems(list);
-  notifyClients();
+  emitUpdate();
 }
 export function saveItemCategories(list) {
   repoSaveItemCategories(list);
-  notifyClients();
+  emitUpdate();
 }
 export function saveItemTags(list) {
   repoSaveItemTags(list);
-  notifyClients();
+  emitUpdate();
 }
 export function saveAllData(data) {
   repoSaveAllData(data);
-  notifyClients();
+  emitUpdate();
 }
