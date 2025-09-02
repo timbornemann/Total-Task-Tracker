@@ -13,9 +13,10 @@ The frontend lives in the `src` directory and is built with React 18, TypeScript
 - [`src/pages`](../src/pages) – route components; each page represents a top-level feature like tasks, notes or the pomodoro timer.
 - [`src/hooks`](../src/hooks) – custom React hooks for shared logic.
 - [`src/providers`](../src/providers) – context providers for state like themes or query clients.
+- [`src/stores`](../src/stores) – Zustand stores for global state.
 - [`src/locales`](../src/locales) – translation files in German and English consumed by `react-i18next`.
 - [`src/utils`](../src/utils) and [`src/lib`](../src/lib) – helper functions and abstractions.
-- [`src/shared`](../src/shared) – Zustand stores and shared types.
+- [`src/shared`](../src/shared) – shared utilities and types.
 
 ## Routing
 
@@ -25,9 +26,9 @@ defined in [`src/components/Navbar.tsx`](../src/components/Navbar.tsx).
 
 ## State Management
 
-Local state is handled with Zustand stores and React hooks. For example,
-[`useTimers`](../src/hooks/useTimers.tsx) persists timer state to local storage
-and syncs it to the server.
+Local state is handled with Zustand stores. For example,
+the [timers store](../src/stores/timers.ts) persists timer state to local storage
+and syncs it to the server via the [TimersProvider](../src/providers/TimersProvider.tsx).
 Server state and caching are provided by `@tanstack/react-query` via context
 providers in [`src/providers`](../src/providers).
 

@@ -4,7 +4,7 @@ import TaskCard from "@/components/TaskCard";
 import Navbar from "@/components/Navbar";
 import TaskModal from "@/components/TaskModal";
 import { useNavigate } from "react-router-dom";
-import { usePomodoroStore } from "@/components/PomodoroTimer";
+import { usePomodoroStore } from "@/stores/pomodoro";
 import { useToast } from "@/hooks/use-toast";
 import { Task, TaskFormData } from "@/types";
 import { flattenTasks, FlattenedTask } from "@/utils/taskUtils";

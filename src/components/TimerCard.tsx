@@ -10,7 +10,7 @@ import {
   Settings,
 } from "lucide-react";
 import TimerCircle from "./TimerCircle";
-import { useTimers } from "@/hooks/useTimers.tsx";
+import { useTimers } from "@/stores/timers";
 import { useSettings } from "@/hooks/useSettings";
 import { isColorDark, complementarySameHue, adjustColor } from "@/utils/color";
 import { Button } from "@/components/ui/button";

@@ -53,7 +53,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import Navbar from "./Navbar";
-import { usePomodoroStore } from "./PomodoroTimer";
+import { usePomodoroStore } from "@/stores/pomodoro";
 
 interface SortableCategoryProps {
   category: Category;
