@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useTimers } from "@/hooks/useTimers.tsx";
+import { useTimers } from "@/stores/timers";
 
 const TimerTicker = () => {
   const tick = useTimers((state) => state.tick);

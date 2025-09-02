@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { usePomodoroStore } from "./PomodoroTimer";
+import { usePomodoroStore } from "@/stores/pomodoro";
 import { usePomodoroHistory } from "@/hooks/usePomodoroHistory.tsx";
 
 const PomodoroTicker = () => {

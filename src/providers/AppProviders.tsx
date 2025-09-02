@@ -26,7 +26,7 @@ import { FlashcardStoreProvider } from "@/hooks/useFlashcardStore";
 import { HabitStoreProvider } from "@/hooks/useHabitStore";
 import { InventoryProvider } from "@/hooks/useInventoryStore";
 import { PomodoroHistoryProvider } from "@/hooks/usePomodoroHistory";
-import { TimersProvider } from "@/hooks/useTimers";
+import { TimersProvider } from "@/providers/TimersProvider";
 import { WorklogProvider } from "@/hooks/useWorklog";
 
 interface AppProvidersProps {
