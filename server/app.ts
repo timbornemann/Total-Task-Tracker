@@ -10,9 +10,10 @@ const DIST_CANDIDATES = [
   path.resolve(__dirname, "..", "dist"),
   path.resolve(__dirname, ".."),
 ];
-const DIST_DIR = DIST_CANDIDATES.find((candidate) =>
-  fs.existsSync(path.join(candidate, "index.html")),
-) ?? DIST_CANDIDATES[0];
+const DIST_DIR =
+  DIST_CANDIDATES.find((candidate) =>
+    fs.existsSync(path.join(candidate, "index.html")),
+  ) ?? DIST_CANDIDATES[0];
 
 export const app = express();
 app.use(express.json());
