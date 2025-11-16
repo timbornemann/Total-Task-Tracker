@@ -23,7 +23,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
@@ -312,8 +311,8 @@ const DatabaseExplorer: React.FC = () => {
     }
     const headers = Object.keys(queryResult.rows[0] || {});
     return (
-      <ScrollArea className="max-h-72 w-full">
-        <div className="min-w-full">
+      <div className="max-h-72 w-full overflow-auto">
+        <div className="min-w-max">
           <Table>
             <TableHeader>
               <TableRow>
@@ -335,7 +334,7 @@ const DatabaseExplorer: React.FC = () => {
             </TableBody>
           </Table>
         </div>
-      </ScrollArea>
+      </div>
     );
   };
 
@@ -448,8 +447,8 @@ const DatabaseExplorer: React.FC = () => {
                 {t("settingsPage.database.loading")}
               </div>
             ) : tableData && tableData.rows.length ? (
-              <ScrollArea className="max-h-[480px] w-full">
-                <div className="min-w-full">
+              <div className="max-h-[480px] w-full overflow-auto">
+                <div className="min-w-max">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -498,7 +497,7 @@ const DatabaseExplorer: React.FC = () => {
                     </TableBody>
                   </Table>
                 </div>
-              </ScrollArea>
+              </div>
             ) : (
               <p className="text-sm text-muted-foreground">
                 {t("settingsPage.database.noRows")}
