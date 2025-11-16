@@ -1,11 +1,18 @@
 import express from "express";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import routers, { frontendController } from "./controllers/index.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const DIST_DIR = path.join(__dirname, "..", "dist");
+const DIST_CANDIDATES = [
+  path.resolve(__dirname, "..", "dist"),
+  path.resolve(__dirname, ".."),
+];
+const DIST_DIR = DIST_CANDIDATES.find((candidate) =>
+  fs.existsSync(path.join(candidate, "index.html")),
+) ?? DIST_CANDIDATES[0];
 
 export const app = express();
 app.use(express.json());
