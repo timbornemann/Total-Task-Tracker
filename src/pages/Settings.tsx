@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Navbar from "@/components/Navbar";
+import DatabaseExplorer from "@/components/DatabaseExplorer";
 import { useSettings } from "@/hooks/useSettings";
 import { themePresets } from "@/lib/themes";
 import { builtInSounds, playSound } from "@/utils/sounds";
@@ -819,6 +820,9 @@ const SettingsPage: React.FC = () => {
                       <TabsTrigger className="justify-start" value="data">
                         {t("settings.tabs.data")}
                       </TabsTrigger>
+                      <TabsTrigger className="justify-start" value="database">
+                        {t("settingsPage.databaseTab")}
+                      </TabsTrigger>
                       <TabsTrigger className="justify-start" value="ai">
                         {t("settings.tabs.ai")}
                       </TabsTrigger>
@@ -852,6 +856,7 @@ const SettingsPage: React.FC = () => {
                     "flashcards",
                     "timers",
                     "data",
+                    "database",
                     "ai",
                     "info",
                   ].map((key) => (
@@ -2223,6 +2228,9 @@ const SettingsPage: React.FC = () => {
                     )}
                   </div>
                 )}
+              </TabsContent>
+              <TabsContent value="database" className="space-y-4">
+                <DatabaseExplorer />
               </TabsContent>
               <TabsContent value="ai" className="space-y-4">
                 <div className="space-y-2">
