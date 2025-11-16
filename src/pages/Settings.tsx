@@ -742,9 +742,9 @@ const SettingsPage: React.FC = () => {
           <Tabs
             value={currentTab}
             onValueChange={handleTabChange}
-            className="flex gap-6"
+            className="flex gap-6 overflow-hidden"
           >
-            <div className="w-48 overflow-y-auto max-h-[calc(100vh-8rem)]">
+            <div className="w-48 flex-shrink-0 overflow-y-auto max-h-[calc(100vh-8rem)]">
               <TabsList className="flex flex-col gap-1 mb-2 bg-transparent p-0 h-auto">
                 <TabsTrigger className="justify-start" value="overview">
                   {t("settings.tabs.overview")}
@@ -843,7 +843,7 @@ const SettingsPage: React.FC = () => {
                 </AccordionItem>
               </Accordion>
             </div>
-            <div className="flex-1 space-y-4">
+            <div className="flex-1 min-w-0 space-y-4">
               <TabsContent value="overview" className="space-y-4">
                 <div className="grid grid-cols-2 gap-2">
                   {[

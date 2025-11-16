@@ -41,15 +41,13 @@ function tableExists(table: string): boolean {
 
 function getTableColumns(table: string): ColumnInfo[] {
   try {
-    const rows = db
-      .prepare(`PRAGMA table_info(${table})`)
-      .all() as Array<{
-        cid: number;
-        name: string;
-        type: string;
-        notnull: number;
-        pk: number;
-        dflt_value: string | null;
+    const rows = db.prepare(`PRAGMA table_info(${table})`).all() as Array<{
+      cid: number;
+      name: string;
+      type: string;
+      notnull: number;
+      pk: number;
+      dflt_value: string | null;
     }>;
     return rows.map((col) => ({
       name: col.name,
@@ -217,12 +215,10 @@ router.post("/query", (req, res) => {
   }
   const normalized = trimmed.replace(/^\(+/, "").toLowerCase();
   if (!/^(select|pragma|with|explain)/.test(normalized)) {
-    res
-      .status(400)
-      .json({
-        error:
-          "Only read-only SELECT, PRAGMA, WITH or EXPLAIN queries are allowed",
-      });
+    res.status(400).json({
+      error:
+        "Only read-only SELECT, PRAGMA, WITH or EXPLAIN queries are allowed",
+    });
     return;
   }
   try {
