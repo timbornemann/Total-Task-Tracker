@@ -42,6 +42,7 @@
       "navbar": "Navigation",
       "theme": "Theme",
       "data": "Daten & Server",
+      "database": "Datenbank",
       "ai": "KI",
       "info": "Info",
       "language": "Sprache"
@@ -198,7 +199,48 @@
     "aiUrl": "API-URL",
     "aiToken": "API-Token",
     "aiModel": "Modell",
-    "categories": "Kategorien: {{count}}"
+    "categories": "Kategorien: {{count}}",
+    "databaseTab": "Datenbank",
+    "database": {
+      "title": "Datenbank Explorer",
+      "description": "Betrachte Tabellen, bearbeite Zeilen und führe einfache SQL-Abfragen aus.",
+      "selectTable": "Tabelle auswählen",
+      "selectPlaceholder": "Bitte Tabelle wählen",
+      "refreshTables": "Tabellen aktualisieren",
+      "rowCount": "Einträge: {{count}}",
+      "tablePreview": "Tabellenvorschau",
+      "tablePreviewDescription": "Zeige bis zu {{limit}} Zeilen aus {{table}}",
+      "noTableSelected": "Keine Tabelle ausgewählt",
+      "refreshTable": "Tabelle neu laden",
+      "addRow": "Zeile hinzufügen",
+      "loading": "Lade Daten...",
+      "actions": "Aktionen",
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "noRows": "Keine Zeilen gefunden",
+      "queryTitle": "SQL-Abfrage",
+      "queryDescription": "Nur SELECT/PRAGMA/WITH-Abfragen sind erlaubt.",
+      "queryPlaceholder": "SELECT * FROM tasks LIMIT 10",
+      "runQuery": "Abfrage ausführen",
+      "queryMeta": "Änderungen: {{changes}} {{rowid}}",
+      "editRow": "Zeile bearbeiten ({{table}})",
+      "rowJson": "JSON-Daten",
+      "rowId": "RowID: {{id}}",
+      "confirmDelete": "Diese Zeile wirklich löschen?",
+      "emptyResult": "Keine Ergebnisse",
+      "messages": {
+        "rowUpdated": "Zeile aktualisiert",
+        "rowCreated": "Zeile hinzugefügt",
+        "rowDeleted": "Zeile gelöscht"
+      },
+      "errors": {
+        "loadTables": "Tabellen konnten nicht geladen werden",
+        "loadTable": "Tabellendaten konnten nicht geladen werden",
+        "invalidJson": "Ungültiges JSON",
+        "deleteRow": "Zeile konnte nicht gelöscht werden",
+        "queryFailed": "Abfrage fehlgeschlagen: {{error}}"
+      }
+    }
   },
   "noteModal": {
     "editTitle": "Notiz bearbeiten",

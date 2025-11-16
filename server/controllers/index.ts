@@ -8,6 +8,7 @@ import habitsController from "./habits.js";
 import healthController from "./health.js";
 import inventoryController from "./inventory.js";
 import llmController from "./llm.js";
+import databaseController from "./database.js";
 import notesController from "./notes.js";
 import pomodoroController from "./pomodoro.js";
 import recurringController from "./recurring.js";
@@ -42,6 +43,7 @@ export const routers = {
   "/api/serverInfo": serverInfoController,
   "/api/sync-status": syncStatusController,
   "/api/llm": llmController,
+  "/api/database": databaseController,
   "/": healthController,
 };
 

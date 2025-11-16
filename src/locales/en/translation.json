@@ -42,6 +42,7 @@
       "navbar": "Navbar",
       "theme": "Theme",
       "data": "Data & Server",
+      "database": "Database",
       "ai": "AI",
       "info": "Info",
       "language": "Language"
@@ -198,7 +199,48 @@
     "aiUrl": "API URL",
     "aiToken": "API Token",
     "aiModel": "Model",
-    "categories": "Categories: {{count}}"
+    "categories": "Categories: {{count}}",
+    "databaseTab": "Database",
+    "database": {
+      "title": "Database Explorer",
+      "description": "Inspect tables, edit rows and run simple SQL queries.",
+      "selectTable": "Select table",
+      "selectPlaceholder": "Choose a table",
+      "refreshTables": "Refresh tables",
+      "rowCount": "Rows: {{count}}",
+      "tablePreview": "Table preview",
+      "tablePreviewDescription": "Showing up to {{limit}} rows from {{table}}",
+      "noTableSelected": "No table selected",
+      "refreshTable": "Reload table",
+      "addRow": "Add row",
+      "loading": "Loading data...",
+      "actions": "Actions",
+      "edit": "Edit",
+      "delete": "Delete",
+      "noRows": "No rows found",
+      "queryTitle": "SQL query",
+      "queryDescription": "Only SELECT / PRAGMA / WITH queries are allowed.",
+      "queryPlaceholder": "SELECT * FROM tasks LIMIT 10",
+      "runQuery": "Run query",
+      "queryMeta": "Changes: {{changes}} {{rowid}}",
+      "editRow": "Edit row ({{table}})",
+      "rowJson": "Row JSON",
+      "rowId": "RowID: {{id}}",
+      "confirmDelete": "Delete this row?",
+      "emptyResult": "No results",
+      "messages": {
+        "rowUpdated": "Row updated",
+        "rowCreated": "Row added",
+        "rowDeleted": "Row deleted"
+      },
+      "errors": {
+        "loadTables": "Could not load tables",
+        "loadTable": "Could not load table data",
+        "invalidJson": "Invalid JSON",
+        "deleteRow": "Could not delete row",
+        "queryFailed": "Query failed: {{error}}"
+      }
+    }
   },
   "noteModal": {
     "editTitle": "Edit Note",
