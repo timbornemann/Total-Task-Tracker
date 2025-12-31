@@ -73,6 +73,22 @@ export function mergeLists<T>(
   return Array.from(map.values());
 }
 
+// Helper for sessions without IDs
+function mergeSessions(
+  curr: PomodoroSession[] = [],
+  inc: PomodoroSession[] = [],
+): PomodoroSession[] {
+  const map = new Map<string, PomodoroSession>();
+
+  const generateKey = (s: PomodoroSession) =>
+    `${s.start}-${s.end}-${s.type || "work"}`;
+
+  for (const c of curr) map.set(generateKey(c), c);
+  for (const i of inc) map.set(generateKey(i), i);
+
+  return Array.from(map.values()).sort((a, b) => a.start - b.start);
+}
+
 export function mergeData(curr: SyncData, inc: SyncData): SyncData {
   return {
     tasks: mergeLists(curr.tasks, inc.tasks),
@@ -82,10 +98,9 @@ export function mergeData(curr: SyncData, inc: SyncData): SyncData {
     habits: mergeLists(curr.habits, inc.habits),
     flashcards: mergeLists(curr.flashcards, inc.flashcards, null),
     decks: mergeLists(curr.decks, inc.decks, null),
-    pomodoroSessions: mergeLists(
+    pomodoroSessions: mergeSessions(
       curr.pomodoroSessions,
       inc.pomodoroSessions,
-      null,
     ),
     timers: mergeLists(curr.timers, inc.timers, null),
     trips: mergeLists(curr.trips, inc.trips, "updatedAt"),
