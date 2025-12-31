@@ -28,9 +28,9 @@ const toLocalISOString = (timestamp: number) => {
 };
 
 const fromLocalISOString = (s: string) => {
-    const d = new Date(s);
-    return d.getTime();
-}
+  const d = new Date(s);
+  return d.getTime();
+};
 
 const PomodoroHistoryPage: React.FC = () => {
   const { sessions, updateSession, deleteSession, addSession } =
@@ -54,15 +54,18 @@ const PomodoroHistoryPage: React.FC = () => {
   ) => {
     let val = value;
     if (field === "start" || field === "end") {
-        if (typeof value === 'string')
-             val = fromLocalISOString(value);
+      if (typeof value === "string") val = fromLocalISOString(value);
     }
     updateSession(index, { [field]: val } as Partial<PomodoroSession>);
   };
 
   const handleCreate = () => {
-      addSession(fromLocalISOString(newSession.start), fromLocalISOString(newSession.end), newSession.type);
-      setIsAddOpen(false);
+    addSession(
+      fromLocalISOString(newSession.start),
+      fromLocalISOString(newSession.end),
+      newSession.type,
+    );
+    setIsAddOpen(false);
   };
 
   return (

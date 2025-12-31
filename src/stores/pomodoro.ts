@@ -14,7 +14,7 @@ export interface PomodoroState {
   lastTick?: number;
   pauseStart?: number;
   // Transient state to notify UI to record a session
-  finishedSession?: PomodoroSession & { type: "work" | "break" }; 
+  finishedSession?: PomodoroSession & { type: "work" | "break" };
   start: (taskId?: string) => void;
   pause: () => void;
   resume: () => void;
@@ -97,7 +97,7 @@ export const usePomodoroStore = create<PomodoroState>()(
           const now = Date.now();
           const lastTick = state.lastTick || now;
           const elapsed = Math.max(0, Math.floor((now - lastTick) / 1000));
-          
+
           if (elapsed === 0) return state;
 
           if (state.remainingTime > elapsed) {
@@ -106,18 +106,19 @@ export const usePomodoroStore = create<PomodoroState>()(
               lastTick: now,
             };
           }
-          
+
           // Timer finished
           const finishedMode = state.mode;
           // Calculate when it roughly finished (startTime + duration) or just now
           // If huge drift, we prefer 'expected' end time to avoid 2-hour sessions
-          const durationSec = finishedMode === "work" ? state.workDuration : state.breakDuration;
-          const expectedEnd = (state.startTime || now) + (durationSec * 1000);
-          
+          const durationSec =
+            finishedMode === "work" ? state.workDuration : state.breakDuration;
+          const expectedEnd = (state.startTime || now) + durationSec * 1000;
+
           const finishedSession = {
-              start: state.startTime || (now - durationSec * 1000),
-              end: expectedEnd,
-              type: finishedMode
+            start: state.startTime || now - durationSec * 1000,
+            end: expectedEnd,
+            type: finishedMode,
           };
 
           const nextMode = state.mode === "work" ? "break" : "work";

@@ -115,8 +115,6 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
     return () => clearInterval(i);
   }, [isPaused]);
 
-
-
   const pauseDuration = pauseStart ? Math.floor((now - pauseStart) / 1000) : 0;
 
   const openFloatingWindow = async () => {
@@ -189,7 +187,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
     }
   };
   // We rely on store.startTime for both work and break now.
-  
+
   const handlePause = () => {
     if (startTime) {
       addSession(startTime, Date.now(), mode);
