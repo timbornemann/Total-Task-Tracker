@@ -250,31 +250,49 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
       prevMode.current = mode;
     }
     const breakColor = theme["pomodoro-break-ring"];
-    if (mode === "break") {
-      const comp = hexToHsl(complementaryColor(hslToHex(breakColor)));
-      document.documentElement.style.setProperty("--background", breakColor);
-      document.documentElement.style.setProperty("--pomodoro-break-ring", comp);
-    } else {
-      document.documentElement.style.setProperty(
-        "--background",
-        theme.background,
-      );
-      document.documentElement.style.setProperty(
-        "--pomodoro-break-ring",
-        breakColor,
-      );
-    }
-    return () => {
-      document.documentElement.style.setProperty(
-        "--background",
-        theme.background,
-      );
-      document.documentElement.style.setProperty(
-        "--pomodoro-break-ring",
-        breakColor,
-      );
+
+    // Helper to update a document's styles
+    const updateStyles = (doc: Document) => {
+      if (mode === "break") {
+        const comp = hexToHsl(complementaryColor(hslToHex(breakColor)));
+        doc.documentElement.style.setProperty("--background", breakColor);
+        doc.documentElement.style.setProperty("--pomodoro-break-ring", comp);
+      } else {
+        doc.documentElement.style.setProperty("--background", theme.background);
+        doc.documentElement.style.setProperty(
+          "--pomodoro-break-ring",
+          breakColor,
+        );
+      }
     };
-  }, [mode, pomodoro.workSound, pomodoro.breakSound, theme]);
+
+    updateStyles(document);
+    if (pipWindowRef.current) {
+      updateStyles(pipWindowRef.current.document);
+    }
+
+    return () => {
+      // limiting cleanup to main doc for safety, PIP cleanup handled on close
+      document.documentElement.style.setProperty(
+        "--background",
+        theme.background,
+      );
+      document.documentElement.style.setProperty(
+        "--pomodoro-break-ring",
+        breakColor,
+      );
+      if (pipWindowRef.current && pipWindowRef.current.document) {
+        pipWindowRef.current.document.documentElement.style.setProperty(
+          "--background",
+          theme.background,
+        );
+        pipWindowRef.current.document.documentElement.style.setProperty(
+          "--pomodoro-break-ring",
+          breakColor,
+        );
+      }
+    };
+  }, [mode, pomodoro.workSound, pomodoro.breakSound, theme, pipWindowRef]);
 
   if (compact && !isRunning) return null;
 
@@ -352,26 +370,22 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
             {t("pomodoroTimer.pause")}
           </Button>
         )}
-        {isRunning && !isPaused && mode === "work" && !floating && !compact && (
+        {isRunning && !isPaused && mode === "work" && !compact && (
           <Button onClick={handleStartBreak} variant="outline">
             {t("pomodoroTimer.break")}
           </Button>
         )}
-        {isRunning &&
-          !isPaused &&
-          mode === "break" &&
-          !floating &&
-          !compact && (
-            <Button onClick={handleSkipBreak} variant="outline">
-              {t("pomodoroTimer.skipBreak")}
-            </Button>
-          )}
+        {isRunning && !isPaused && mode === "break" && !compact && (
+          <Button onClick={handleSkipBreak} variant="outline">
+            {t("pomodoroTimer.skipBreak")}
+          </Button>
+        )}
         {isRunning && isPaused && (
           <Button onClick={handleResume} variant="outline">
             {t("pomodoroTimer.resume")}
           </Button>
         )}
-        {isRunning && !floating && !compact && (
+        {isRunning && !compact && (
           <Button onClick={handleReset} variant="outline">
             {t("pomodoroTimer.reset")}
           </Button>
