@@ -43,7 +43,8 @@ function ensureSchema() {
   CREATE TABLE IF NOT EXISTS pomodoro_sessions (
     start INTEGER NOT NULL,
     end INTEGER NOT NULL,
-    breakEnd INTEGER
+    breakEnd INTEGER,
+    type TEXT
   );
   `);
 
@@ -597,6 +598,13 @@ try {
 // Migration for workdays table - add missing category column
 try {
   db.prepare("ALTER TABLE workdays ADD COLUMN category TEXT").run();
+} catch (_) {
+  /* ignore - column already exists or other error */
+}
+
+// Migration for pomodoro_sessions table - add missing type column
+try {
+  db.prepare("ALTER TABLE pomodoro_sessions ADD COLUMN type TEXT").run();
 } catch (_) {
   /* ignore - column already exists or other error */
 }

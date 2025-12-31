@@ -48,17 +48,8 @@ const usePomodoroHistoryImpl = () => {
     save();
   }, [sessions, loaded]);
 
-  const addSession = (start: number, end: number) => {
-    setSessions((prev) => [...prev, { start, end }]);
-  };
-
-  const endBreak = (time: number) => {
-    setSessions((prev) => {
-      if (!prev.length) return prev;
-      const last = { ...prev[prev.length - 1] };
-      last.breakEnd = time;
-      return [...prev.slice(0, -1), last];
-    });
+  const addSession = (start: number, end: number, type: "work" | "break") => {
+    setSessions((prev) => [...prev, { start, end, type }]);
   };
 
   const updateSession = (index: number, data: Partial<PomodoroSession>) => {
@@ -71,7 +62,7 @@ const usePomodoroHistoryImpl = () => {
     setSessions((prev) => prev.filter((_, i) => i !== index));
   };
 
-  return { sessions, addSession, endBreak, updateSession, deleteSession };
+  return { sessions, addSession, updateSession, deleteSession };
 };
 
 type Store = ReturnType<typeof usePomodoroHistoryImpl>;

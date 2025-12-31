@@ -10,15 +10,19 @@ export const usePomodoroStats = (): PomodoroStats => {
     const minutes = (start: number, end: number) =>
       Math.round((end - start) / 60000);
     const locale = i18n.language === "de" ? "de-DE" : "en-US";
-    const totalWorkMinutes = sessions.reduce(
+    
+    const workSessions = sessions.filter(s => s.type === 'work');
+    const breakSessions = sessions.filter(s => s.type === 'break');
+
+    const totalWorkMinutes = workSessions.reduce(
       (sum, s) => sum + minutes(s.start, s.end),
       0,
     );
-    const totalBreakMinutes = sessions.reduce(
-      (sum, s) => sum + minutes(s.end, s.breakEnd ?? s.end),
+    const totalBreakMinutes = breakSessions.reduce(
+      (sum, s) => sum + minutes(s.start, s.end),
       0,
     );
-    const totalCycles = sessions.length;
+    const totalCycles = workSessions.length;
 
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
@@ -32,10 +36,16 @@ export const usePomodoroStats = (): PomodoroStats => {
     yearStart.setMonth(0, 1);
     yearStart.setHours(0, 0, 0, 0);
 
-    const today = sessions.filter((s) => s.start >= todayStart.getTime());
-    const week = sessions.filter((s) => s.start >= weekStart.getTime());
-    const month = sessions.filter((s) => s.start >= monthStart.getTime());
-    const year = sessions.filter((s) => s.start >= yearStart.getTime());
+    const filterByDate = (arr: typeof sessions, date: Date) => arr.filter(s => s.start >= date.getTime());
+
+    const todayWork = filterByDate(workSessions, todayStart);
+    const todayBreak = filterByDate(breakSessions, todayStart);
+    
+    // For lists, we just use all sessions but formatted
+    const todayAll = filterByDate(sessions, todayStart);
+    const weekAll = filterByDate(sessions, weekStart);
+    const monthAll = filterByDate(sessions, monthStart);
+    const yearAll = filterByDate(sessions, yearStart);
 
     const fmt = (t: number) =>
       new Date(t).toLocaleTimeString(locale, {
@@ -43,10 +53,10 @@ export const usePomodoroStats = (): PomodoroStats => {
         minute: "2-digit",
       });
 
-    const todayData = today.map((s) => ({
+    const todayData = todayAll.map((s) => ({
       time: `${fmt(s.start)}-${fmt(s.end)}`,
-      work: minutes(s.start, s.end),
-      break: minutes(s.end, s.breakEnd ?? s.end),
+      work: s.type === 'work' ? minutes(s.start, s.end) : 0,
+      break: s.type === 'break' ? minutes(s.start, s.end) : 0,
     }));
 
     const aggregateBy = (
@@ -67,40 +77,38 @@ export const usePomodoroStats = (): PomodoroStats => {
         const d = new Date(s.start);
         const key = fmt(d);
         if (key in data) {
-          data[key].work += minutes(s.start, s.end);
-          data[key].break += minutes(s.end, s.breakEnd ?? s.end);
+          const m = minutes(s.start, s.end);
+          if (s.type === 'work') data[key].work += m;
+          else data[key].break += m;
         }
       });
       return Object.keys(data).map((key) => ({ date: key, ...data[key] }));
     };
 
     const weekData = aggregateBy(
-      week,
+      weekAll,
       (d) => d.toLocaleDateString(locale, { weekday: "short" }),
       7,
       "day",
     );
     const daysInMonth = new Date().getDate();
     const monthData = aggregateBy(
-      month,
+      monthAll,
       (d) => d.getDate().toString(),
       daysInMonth,
       "day",
     );
     const yearData = aggregateBy(
-      year,
+      yearAll,
       (d) => d.toLocaleDateString(locale, { month: "short" }),
       12,
       "month",
-    );
+    ).map(d => ({ month: d.date, work: d.work, break: d.break }));
 
     const todayTotals = {
-      workMinutes: today.reduce((sum, s) => sum + minutes(s.start, s.end), 0),
-      breakMinutes: today.reduce(
-        (sum, s) => sum + minutes(s.end, s.breakEnd ?? s.end),
-        0,
-      ),
-      cycles: today.length,
+      workMinutes: todayWork.reduce((sum, s) => sum + minutes(s.start, s.end), 0),
+      breakMinutes: todayBreak.reduce((sum, s) => sum + minutes(s.start, s.end), 0),
+      cycles: todayWork.length,
     };
 
     const timeOfDay = {
@@ -110,7 +118,9 @@ export const usePomodoroStats = (): PomodoroStats => {
       night: 0,
     };
     sessions.forEach((s) => {
-      const start = new Date(s.start);
+      // Only count work for time of day distribution? Or both? Usually focus is on work.
+      // Let's count both for "activity"
+       const start = new Date(s.start);
       const h = start.getHours();
       const m = minutes(s.start, s.end);
       if (h >= 6 && h < 12) timeOfDay.morning += m;

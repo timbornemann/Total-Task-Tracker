@@ -210,7 +210,8 @@ export interface TaskStats {
 export interface PomodoroSession {
   start: number;
   end: number;
-  breakEnd?: number;
+  breakEnd?: number; // Legacy field, kept for migration
+  type: "work" | "break";
 }
 
 export interface PomodoroStats {

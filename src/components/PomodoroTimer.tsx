@@ -53,7 +53,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
     startTime,
   } = usePomodoroStore();
   const { pomodoro, updatePomodoro, theme } = useSettings();
-  const { addSession, endBreak } = usePomodoroHistory();
+  const { addSession } = usePomodoroHistory();
   const { t } = useTranslation();
   const pipWindowRef = useRef<Window | null>(null);
   const [now, setNow] = useState(Date.now());
@@ -115,13 +115,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
     return () => clearInterval(i);
   }, [isPaused]);
 
-  useEffect(() => {
-    if (!isPaused) return;
-    const id = setInterval(() => {
-      endBreak(Date.now());
-    }, 1000);
-    return () => clearInterval(id);
-  }, [isPaused, endBreak]);
+
 
   const pauseDuration = pauseStart ? Math.floor((now - pauseStart) / 1000) : 0;
 
@@ -194,45 +188,45 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
       console.error("Failed to open floating window", err);
     }
   };
+  // We rely on store.startTime for both work and break now.
+  
   const handlePause = () => {
-    if (mode === "work" && startTime) {
-      const now = Date.now();
-      addSession(startTime, now);
-      endBreak(now);
+    if (startTime) {
+      addSession(startTime, Date.now(), mode);
       setStartTime(undefined);
-    }
-    if (mode === "break") {
-      endBreak(Date.now());
     }
     pause();
   };
 
   const handleReset = () => {
-    if (mode === "work" && startTime) {
-      addSession(startTime, Date.now());
+    if (startTime) {
+      addSession(startTime, Date.now(), mode);
     }
-    if (mode === "break") {
-      endBreak(Date.now());
-    }
+    setStartTime(undefined);
     reset();
   };
 
   const handleResume = () => {
     resume();
-    endBreak(Date.now());
-    if (mode === "work") {
-      setStartTime(Date.now());
-    }
+    setStartTime(Date.now());
   };
 
   const handleStartBreak = () => {
+    // If we are currently working, save the work done so far
+    if (mode === "work" && startTime) {
+      addSession(startTime, Date.now(), "work");
+    }
     startBreak();
+    // Store sets startTime in startBreak()
   };
 
   const handleSkipBreak = () => {
-    endBreak(Date.now());
+    // If we are currently in a break, save the break time taken so far
+    if (mode === "break" && startTime) {
+      addSession(startTime, Date.now(), "break");
+    }
     skipBreak();
-    setStartTime(Date.now());
+    // Store sets startTime in skipBreak()
   };
 
   useEffect(() => {
