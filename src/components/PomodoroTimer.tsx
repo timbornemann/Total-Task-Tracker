@@ -205,6 +205,9 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
   };
 
   const handleResume = () => {
+    if (pauseStart) {
+      addSession(pauseStart, Date.now(), "break");
+    }
     resume();
     setStartTime(Date.now());
   };
@@ -213,6 +216,9 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
     // If we are currently working, save the work done so far
     if (mode === "work" && startTime) {
       addSession(startTime, Date.now(), "work");
+    } else if (pauseStart) {
+      // If we were paused, the gap was a break
+      addSession(pauseStart, Date.now(), "break");
     }
     startBreak();
     // Store sets startTime in startBreak()
@@ -222,6 +228,8 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
     // If we are currently in a break, save the break time taken so far
     if (mode === "break" && startTime) {
       addSession(startTime, Date.now(), "break");
+    } else if (pauseStart) {
+      addSession(pauseStart, Date.now(), "break");
     }
     skipBreak();
     // Store sets startTime in skipBreak()
