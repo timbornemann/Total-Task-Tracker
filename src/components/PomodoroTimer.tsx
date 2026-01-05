@@ -37,7 +37,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
   const {
     isRunning,
     isPaused,
-    remainingTime,
+    remainingTime: storeRemainingTime, // Rename to distinguish from local smooth state
     mode,
     start,
     pause,
@@ -50,7 +50,8 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
     breakDuration,
     setDurations,
     setStartTime,
-    startTime,
+    startTime: storeStartTime,
+    endTime, // Use endTime for smooth calcs
   } = usePomodoroStore();
   const { pomodoro, updatePomodoro, theme } = useSettings();
   const { addSession } = usePomodoroHistory();
@@ -72,6 +73,10 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
     };
   });
   const offsetRef = useRef({ x: 0, y: 0 });
+
+  // Local state for smooth updates
+  const [smoothRemaining, setSmoothRemaining] = useState(storeRemainingTime);
+  const [smoothProgress, setSmoothProgress] = useState(0);
 
   useEffect(() => {
     try {
@@ -109,6 +114,46 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
     window.addEventListener("pointerup", stopDrag);
   };
 
+  // High frequency update loop for smooth visuals
+  useEffect(() => {
+    if (!isRunning || isPaused || !endTime) {
+      // Fallback to store values when not running smoothly
+      setSmoothRemaining(storeRemainingTime);
+      const duration = mode === "work" ? workDuration : breakDuration;
+      setSmoothProgress(storeRemainingTime / duration);
+      return;
+    }
+
+    let animationFrameId: number;
+
+    const animate = () => {
+      const now = Date.now();
+      const msRemaining = Math.max(0, endTime - now);
+      const secondsRemaining = Math.ceil(msRemaining / 1000);
+      
+      const duration = mode === "work" ? workDuration : breakDuration;
+      // Calculate precise progress (0.0 to 1.0)
+      // We use ms for the ring to be buttery smooth
+      // Total duration in ms
+      const durationMs = duration * 1000;
+      // Progress acts inverted in the original code (remaining / total)
+      const exactProgress = Math.min(1, Math.max(0, msRemaining / durationMs));
+      
+      setSmoothRemaining(secondsRemaining);
+      setSmoothProgress(exactProgress);
+
+      if (msRemaining > 0) {
+        animationFrameId = requestAnimationFrame(animate);
+      }
+    };
+
+    animate();
+
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [isRunning, isPaused, endTime, mode, workDuration, breakDuration, storeRemainingTime]);
+
+
+  // Keep 'now' updated for pause duration display (low freq is fine for this)
   useEffect(() => {
     if (!isPaused) return;
     const i = setInterval(() => setNow(Date.now()), 1000);
@@ -189,16 +234,16 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
   // We rely on store.startTime for both work and break now.
 
   const handlePause = () => {
-    if (startTime) {
-      addSession(startTime, Date.now(), mode);
+    if (storeStartTime) {
+      addSession(storeStartTime, Date.now(), mode);
       setStartTime(undefined);
     }
     pause();
   };
 
   const handleReset = () => {
-    if (startTime) {
-      addSession(startTime, Date.now(), mode);
+    if (storeStartTime) {
+      addSession(storeStartTime, Date.now(), mode);
     }
     setStartTime(undefined);
     reset();
@@ -209,13 +254,13 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
       addSession(pauseStart, Date.now(), "break");
     }
     resume();
-    setStartTime(Date.now());
+    // Resume function in store now handles startTime/endTime logic
   };
 
   const handleStartBreak = () => {
     // If we are currently working, save the work done so far
-    if (mode === "work" && startTime) {
-      addSession(startTime, Date.now(), "work");
+    if (mode === "work" && storeStartTime) {
+      addSession(storeStartTime, Date.now(), "work");
     } else if (pauseStart) {
       // If we were paused, the gap was a break
       addSession(pauseStart, Date.now(), "break");
@@ -226,8 +271,8 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
 
   const handleSkipBreak = () => {
     // If we are currently in a break, save the break time taken so far
-    if (mode === "break" && startTime) {
-      addSession(startTime, Date.now(), "break");
+    if (mode === "break" && storeStartTime) {
+      addSession(storeStartTime, Date.now(), "break");
     } else if (pauseStart) {
       addSession(pauseStart, Date.now(), "break");
     }
@@ -296,14 +341,19 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
 
   if (compact && !isRunning) return null;
 
-  const duration = mode === "work" ? workDuration : breakDuration;
-  const progress = remainingTime / duration;
-
   const radius = size;
   const stroke = 8;
   const normalizedRadius = radius - stroke / 2;
   const circumference = normalizedRadius * 2 * Math.PI;
-  const strokeDashoffset = circumference - progress * circumference;
+
+  // Use smoothProgress for ring, smoothRemaining for text
+  // smoothProgress is 0..1 (remaining/total), but we want inverse for strokeDashoffset calc if we want it to shrink
+  // The original code was: progress = remainingTime / duration
+  // strokeDashoffset = circumference - progress * circumference
+  
+  // So if progress is 1 (full), offset is 0 (full ring).
+  // If progress is 0 (empty), offset is circumference (empty ring).
+  const strokeDashoffset = circumference - smoothProgress * circumference;
 
   return (
     <div
@@ -344,7 +394,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
             strokeDasharray={`${circumference} ${circumference}`}
             style={{
               strokeDashoffset,
-              transition: "stroke-dashoffset 1s linear",
+              transition: "stroke-dashoffset 0s linear", // Disable CSS transition for smooth JS animation
             }}
             r={normalizedRadius}
             cx={radius}
@@ -357,7 +407,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
           >
             {isPaused
               ? `${t("pomodoroTimer.pauseLabel")} ${formatTime(pauseDuration)}`
-              : formatTime(remainingTime)}
+              : formatTime(smoothRemaining)}
           </div>
         </div>
       </div>

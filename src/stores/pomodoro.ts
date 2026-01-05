@@ -11,6 +11,7 @@ export interface PomodoroState {
   workDuration: number;
   breakDuration: number;
   startTime?: number;
+  endTime?: number; // Target timestamp when timer ends
   lastTick?: number;
   pauseStart?: number;
   // Transient state to notify UI to record a session
@@ -45,20 +46,49 @@ export const usePomodoroStore = create<PomodoroState>()(
       startTime: undefined,
       lastTick: undefined,
       finishedSession: undefined,
+      endTime: undefined, // New: track expected end time
+      
       start: (taskId?: string) =>
-        set((state) => ({
-          isRunning: true,
-          isPaused: false,
-          pauseStart: undefined,
-          remainingTime: state.workDuration,
-          mode: "work",
-          currentTaskId: taskId,
-          startTime: Date.now(),
-          lastTick: Date.now(),
-        })),
-      pause: () => set({ isPaused: true, pauseStart: Date.now() }),
+        set((state) => {
+          const now = Date.now();
+          const duration = state.workDuration;
+          return {
+            isRunning: true,
+            isPaused: false,
+            pauseStart: undefined,
+            remainingTime: duration,
+            mode: "work",
+            currentTaskId: taskId,
+            startTime: now,
+            endTime: now + duration * 1000, 
+            lastTick: now,
+          };
+        }),
+
+      pause: () => 
+        set((state) => {
+           // When pausing, we clear endTime because "real time" flow stops for the timer.
+           // remainingTime is preserved.
+           return { 
+             isPaused: true, 
+             pauseStart: Date.now(),
+             endTime: undefined 
+           };
+        }),
+
       resume: () =>
-        set({ isPaused: false, lastTick: Date.now(), pauseStart: undefined }),
+        set((state) => {
+          const now = Date.now();
+          // Calculate new endTime based on preserved remainingTime
+          const newEndTime = now + state.remainingTime * 1000;
+          return {
+            isPaused: false,
+            pauseStart: undefined,
+            lastTick: now,
+            endTime: newEndTime,
+          };
+        }),
+
       reset: () =>
         set((state) => ({
           isRunning: false,
@@ -70,73 +100,110 @@ export const usePomodoroStore = create<PomodoroState>()(
           lastTick: undefined,
           pauseStart: undefined,
           finishedSession: undefined,
+          endTime: undefined,
         })),
+
       startBreak: () =>
-        set((state) => ({
-          isRunning: true,
-          isPaused: false,
-          pauseStart: undefined,
-          mode: "break",
-          remainingTime: state.breakDuration,
-          lastTick: Date.now(),
-          startTime: Date.now(), // Explicitly track break start
-        })),
+        set((state) => {
+          const now = Date.now();
+          const duration = state.breakDuration;
+          return {
+            isRunning: true,
+            isPaused: false,
+            pauseStart: undefined,
+            mode: "break",
+            remainingTime: duration,
+            lastTick: now,
+            startTime: now,
+            endTime: now + duration * 1000,
+          };
+        }),
+
       skipBreak: () =>
-        set((state) => ({
-          isRunning: true,
-          isPaused: false,
-          pauseStart: undefined,
-          mode: "work",
-          remainingTime: state.workDuration,
-          lastTick: Date.now(),
-          startTime: Date.now(),
-        })),
+        set((state) => {
+          const now = Date.now();
+          const duration = state.workDuration;
+          return {
+            isRunning: true,
+            isPaused: false,
+            pauseStart: undefined,
+            mode: "work",
+            remainingTime: duration,
+            lastTick: now,
+            startTime: now,
+            endTime: now + duration * 1000,
+          };
+        }),
+
       tick: () =>
         set((state) => {
           if (!state.isRunning || state.isPaused) return state;
+          
           const now = Date.now();
-          const lastTick = state.lastTick || now;
-          const elapsed = Math.max(0, Math.floor((now - lastTick) / 1000));
+          // If we somehow don't have an endTime (legacy state or bug), set it now
+          if (!state.endTime) {
+             return {
+                 ...state,
+                 endTime: now + state.remainingTime * 1000,
+                 lastTick: now,
+             };
+          }
 
-          if (elapsed === 0) return state;
-
-          if (state.remainingTime > elapsed) {
-            return {
-              remainingTime: state.remainingTime - elapsed,
-              lastTick: now,
-            };
+          const msRemaining = state.endTime - now;
+          // Ceiling to keep 0.9s as "1s" remaining on UI until it truly hits 0
+          const remainingSeconds = Math.max(0, Math.ceil(msRemaining / 1000));
+          
+          if (remainingSeconds > 0) {
+            // Only update if changed to avoid unnecessary re-renders if called rapidly
+            if (remainingSeconds !== state.remainingTime) {
+                return {
+                    remainingTime: remainingSeconds,
+                    lastTick: now,
+                };
+            }
+            return state;
           }
 
           // Timer finished
           const finishedMode = state.mode;
-          // Calculate when it roughly finished (startTime + duration) or just now
-          // If huge drift, we prefer 'expected' end time to avoid 2-hour sessions
+          // Accurate start/end for history
           const durationSec =
             finishedMode === "work" ? state.workDuration : state.breakDuration;
-          const expectedEnd = (state.startTime || now) + durationSec * 1000;
+          
+          // Use stored endTime for exact record, or now if significantly off
+          const exactEnd = state.endTime; 
+          const calculatedStart = exactEnd - durationSec * 1000;
 
           const finishedSession = {
-            start: state.startTime || now - durationSec * 1000,
-            end: expectedEnd,
+            start: calculatedStart,
+            end: exactEnd,
             type: finishedMode,
           };
 
           const nextMode = state.mode === "work" ? "break" : "work";
+          const nextDuration = nextMode === "work" ? state.workDuration : state.breakDuration;
+          
+          // Start next session immediately from 'now'. 
+          // (Optionally could be 'exactEnd' if we want zero gap, but 'now' is safer for user perception)
+          
           return {
             mode: nextMode,
-            remainingTime:
-              nextMode === "work" ? state.workDuration : state.breakDuration,
+            remainingTime: nextDuration,
             lastTick: now,
-            startTime: now, // Start the next session NOW (resetting the gap)
+            startTime: now,
+            endTime: now + nextDuration * 1000,
             finishedSession,
-          } as PomodoroState;
+          };
         }),
+
       setStartTime: (time) => set({ startTime: time }),
       setLastTick: (time) => set({ lastTick: time }),
       setDurations: (work, brk) =>
         set((state) => ({
           workDuration: work,
           breakDuration: brk,
+          // If not running, update display immediately. 
+          // If running, don't change current session but next one will use new durations.
           remainingTime: !state.isRunning ? work : state.remainingTime,
         })),
       consumeFinishedSession: () => set({ finishedSession: undefined }),
