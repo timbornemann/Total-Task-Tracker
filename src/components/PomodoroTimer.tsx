@@ -10,6 +10,7 @@ import {
   usePomodoroHistory,
   PomodoroHistoryProvider,
 } from "@/hooks/usePomodoroHistory.tsx";
+import { useToast } from "@/components/ui/use-toast";
 
 const formatTime = (sec: number) => {
   const m = Math.floor(sec / 60)
@@ -56,6 +57,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
   const { pomodoro, updatePomodoro, theme } = useSettings();
   const { addSession } = usePomodoroHistory();
   const { t } = useTranslation();
+  const { toast } = useToast();
   const pipWindowRef = useRef<Window | null>(null);
   const [now, setNow] = useState(Date.now());
   const [position, setPosition] = useState<{ x: number; y: number }>(() => {
@@ -185,14 +187,45 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
         };
       };
       if (w.documentPictureInPicture) {
-        pip = await w.documentPictureInPicture.requestWindow({
-          width: 200,
-          height: 200,
-        });
+        try {
+          pip = await w.documentPictureInPicture.requestWindow({
+            width: 200,
+            height: 200,
+          });
+        } catch (err) {
+          console.error("Failed to open PiP window", err);
+          toast({
+            title: t("pomodoroTimer.pipErrorTitle", "Floating Window Error"),
+            description: t(
+              "pomodoroTimer.pipErrorDesc",
+              "Could not open always-on-top window. Falling back to standard window.",
+            ),
+            variant: "destructive",
+          });
+          pip = window.open("", "", "width=200,height=200");
+        }
       } else {
+        toast({
+          title: t("pomodoroTimer.pipUnsupportedTitle", "Not Supported"),
+          description: t(
+            "pomodoroTimer.pipUnsupportedDesc",
+            "Your browser does not support always-on-top floating windows. Using standard window instead.",
+          ),
+          variant: "default",
+        });
         pip = window.open("", "", "width=200,height=200");
       }
-      if (!pip) return;
+      if (!pip) {
+        toast({
+          title: t("pomodoroTimer.popupBlockedTitle", "Popup Blocked"),
+          description: t(
+            "pomodoroTimer.popupBlockedDesc",
+            "Please allow popups for this site to use the floating timer.",
+          ),
+          variant: "destructive",
+        });
+        return;
+      }
       pipWindowRef.current = pip;
       if (!pip.document.body) {
         pip.document.write(
@@ -236,6 +269,12 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
       pip.addEventListener("beforeunload", cleanup);
     } catch (err) {
       console.error("Failed to open floating window", err);
+      toast({
+        title: "Error",
+        description:
+          "An unexpected error occurred while opening the floating window.",
+        variant: "destructive",
+      });
     }
   };
   // We rely on store.startTime for both work and break now.
