@@ -130,7 +130,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
       const now = Date.now();
       const msRemaining = Math.max(0, endTime - now);
       const secondsRemaining = Math.ceil(msRemaining / 1000);
-      
+
       const duration = mode === "work" ? workDuration : breakDuration;
       // Calculate precise progress (0.0 to 1.0)
       // We use ms for the ring to be buttery smooth
@@ -138,7 +138,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
       const durationMs = duration * 1000;
       // Progress acts inverted in the original code (remaining / total)
       const exactProgress = Math.min(1, Math.max(0, msRemaining / durationMs));
-      
+
       setSmoothRemaining(secondsRemaining);
       setSmoothProgress(exactProgress);
 
@@ -150,8 +150,15 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
     animate();
 
     return () => cancelAnimationFrame(animationFrameId);
-  }, [isRunning, isPaused, endTime, mode, workDuration, breakDuration, storeRemainingTime]);
-
+  }, [
+    isRunning,
+    isPaused,
+    endTime,
+    mode,
+    workDuration,
+    breakDuration,
+    storeRemainingTime,
+  ]);
 
   // Keep 'now' updated for pause duration display (low freq is fine for this)
   useEffect(() => {
@@ -350,7 +357,7 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
   // smoothProgress is 0..1 (remaining/total), but we want inverse for strokeDashoffset calc if we want it to shrink
   // The original code was: progress = remainingTime / duration
   // strokeDashoffset = circumference - progress * circumference
-  
+
   // So if progress is 1 (full), offset is 0 (full ring).
   // If progress is 0 (empty), offset is circumference (empty ring).
   const strokeDashoffset = circumference - smoothProgress * circumference;

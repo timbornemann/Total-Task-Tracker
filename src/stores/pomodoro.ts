@@ -47,7 +47,7 @@ export const usePomodoroStore = create<PomodoroState>()(
       lastTick: undefined,
       finishedSession: undefined,
       endTime: undefined, // New: track expected end time
-      
+
       start: (taskId?: string) =>
         set((state) => {
           const now = Date.now();
@@ -60,20 +60,20 @@ export const usePomodoroStore = create<PomodoroState>()(
             mode: "work",
             currentTaskId: taskId,
             startTime: now,
-            endTime: now + duration * 1000, 
+            endTime: now + duration * 1000,
             lastTick: now,
           };
         }),
 
-      pause: () => 
+      pause: () =>
         set((state) => {
-           // When pausing, we clear endTime because "real time" flow stops for the timer.
-           // remainingTime is preserved.
-           return { 
-             isPaused: true, 
-             pauseStart: Date.now(),
-             endTime: undefined 
-           };
+          // When pausing, we clear endTime because "real time" flow stops for the timer.
+          // remainingTime is preserved.
+          return {
+            isPaused: true,
+            pauseStart: Date.now(),
+            endTime: undefined,
+          };
         }),
 
       resume: () =>
@@ -138,28 +138,28 @@ export const usePomodoroStore = create<PomodoroState>()(
       tick: () =>
         set((state) => {
           if (!state.isRunning || state.isPaused) return state;
-          
+
           const now = Date.now();
           // If we somehow don't have an endTime (legacy state or bug), set it now
           if (!state.endTime) {
-             return {
-                 ...state,
-                 endTime: now + state.remainingTime * 1000,
-                 lastTick: now,
-             };
+            return {
+              ...state,
+              endTime: now + state.remainingTime * 1000,
+              lastTick: now,
+            };
           }
 
           const msRemaining = state.endTime - now;
           // Ceiling to keep 0.9s as "1s" remaining on UI until it truly hits 0
           const remainingSeconds = Math.max(0, Math.ceil(msRemaining / 1000));
-          
+
           if (remainingSeconds > 0) {
             // Only update if changed to avoid unnecessary re-renders if called rapidly
             if (remainingSeconds !== state.remainingTime) {
-                return {
-                    remainingTime: remainingSeconds,
-                    lastTick: now,
-                };
+              return {
+                remainingTime: remainingSeconds,
+                lastTick: now,
+              };
             }
             return state;
           }
@@ -169,9 +169,9 @@ export const usePomodoroStore = create<PomodoroState>()(
           // Accurate start/end for history
           const durationSec =
             finishedMode === "work" ? state.workDuration : state.breakDuration;
-          
+
           // Use stored endTime for exact record, or now if significantly off
-          const exactEnd = state.endTime; 
+          const exactEnd = state.endTime;
           const calculatedStart = exactEnd - durationSec * 1000;
 
           const finishedSession = {
@@ -181,11 +181,12 @@ export const usePomodoroStore = create<PomodoroState>()(
           };
 
           const nextMode = state.mode === "work" ? "break" : "work";
-          const nextDuration = nextMode === "work" ? state.workDuration : state.breakDuration;
-          
-          // Start next session immediately from 'now'. 
+          const nextDuration =
+            nextMode === "work" ? state.workDuration : state.breakDuration;
+
+          // Start next session immediately from 'now'.
           // (Optionally could be 'exactEnd' if we want zero gap, but 'now' is safer for user perception)
-          
+
           return {
             mode: nextMode,
             remainingTime: nextDuration,
@@ -202,7 +203,7 @@ export const usePomodoroStore = create<PomodoroState>()(
         set((state) => ({
           workDuration: work,
           breakDuration: brk,
-          // If not running, update display immediately. 
+          // If not running, update display immediately.
           // If running, don't change current session but next one will use new durations.
           remainingTime: !state.isRunning ? work : state.remainingTime,
         })),
