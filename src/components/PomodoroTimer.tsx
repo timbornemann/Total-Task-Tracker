@@ -236,12 +236,38 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({
       pip.document.title = t("navbar.pomodoro");
       pip.document.documentElement.className =
         document.documentElement.className;
-      document
-        .querySelectorAll('style, link[rel="stylesheet"]')
-        .forEach((el) => {
-          const clone = el.cloneNode(true) as HTMLElement;
-          pip.document.head.appendChild(clone);
-        });
+      // Copy styles using styleSheets API to handle both inline and external styles robustly
+      // and explicitly copy all computed styles if needed, but usually stylesheet copying is enough.
+      Array.from(document.styleSheets).forEach((styleSheet) => {
+        try {
+          if (styleSheet.href) {
+            // It's a link tag, create a new link tag explicitly to ensure href is absolute/correct
+            const link = pip!.document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = styleSheet.href;
+            pip!.document.head.appendChild(link);
+          } else {
+            // It's an inline style or loaded via JS (Vite dev mode often does this)
+            // We try to copy the rules content.
+            const cssRules = Array.from(styleSheet.cssRules)
+              .map((rule) => rule.cssText)
+              .join("");
+            const style = pip!.document.createElement("style");
+            style.textContent = cssRules;
+            pip!.document.head.appendChild(style);
+          }
+        } catch (e) {
+          // If we can't access cssRules (CORS), fallback to cloning the link if possible
+          console.warn("Could not copy stylesheet rules", e);
+          if (styleSheet.href) {
+            const link = pip!.document.createElement("link");
+            link.rel = "stylesheet";
+            link.type = "text/css";
+            link.href = styleSheet.href;
+            pip!.document.head.appendChild(link);
+          }
+        }
+      });
       pip.document.body.style.margin = "0";
       const container = pip.document.createElement("div");
       pip.document.body.appendChild(container);
