@@ -23,8 +23,9 @@ const CATS_URL = "/api/inventory/item-categories";
 const TAGS_URL = "/api/inventory/item-tags";
 
 const generateId = () =>
-  (crypto as { randomUUID?: () => string }).randomUUID?.() ||
-  `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  typeof globalThis.crypto?.randomUUID === "function"
+    ? globalThis.crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
 const useInventoryImpl = () => {
   const [items, setItems] = useState<InventoryItem[]>([]);

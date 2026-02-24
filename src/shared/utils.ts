@@ -13,10 +13,9 @@ import type {
 
 // ID generation utilities
 export function generateId(): string {
-  return (
-    (crypto as { randomUUID?: () => string }).randomUUID?.() ||
-    `${Date.now()}-${Math.random().toString(36).slice(2)}`
-  );
+  return typeof globalThis.crypto?.randomUUID === "function"
+    ? globalThis.crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
 export function generateTimestamp(): number {

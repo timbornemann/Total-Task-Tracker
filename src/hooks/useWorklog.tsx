@@ -9,8 +9,9 @@ const API_COMMUTES = "/api/commutes";
 const API_ALL = "/api/all";
 
 const generateId = () =>
-  (crypto as { randomUUID?: () => string }).randomUUID?.() ||
-  `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  typeof globalThis.crypto?.randomUUID === "function"
+    ? globalThis.crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
 const useWorklogImpl = () => {
   const [trips, setTrips] = useState<Trip[]>([]);
